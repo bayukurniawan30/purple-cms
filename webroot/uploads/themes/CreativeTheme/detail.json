@@ -1,0 +1,15 @@
+{
+	"name" : "Creative",
+	"author" : "Bootstrapious.com",
+	"image" : "",
+	"preview" : "home.jpg",
+	"homepage" : 
+		{
+			"use" : "theme",
+			"function" : "homeBlogs"
+		}
+	,
+	"blocks" : "contact,dynamic",
+	"description" : "Creative blog theme from Bootstrapious",
+	"version" : "1.0"
+}

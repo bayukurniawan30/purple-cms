@@ -1,0 +1,16 @@
+{
+	"name" : "Engage",
+	"author" : "Purple CMS",
+	"image" : "",
+	"preview" : "",
+	"homepage" : 
+		{
+			"use" : "default",
+			"function" : ""
+		}
+	,
+	"globalFunction" : "",
+	"blocks" : "content",
+	"description" : "Default theme for Purple CMS",
+	"version" : "1.0"
+}

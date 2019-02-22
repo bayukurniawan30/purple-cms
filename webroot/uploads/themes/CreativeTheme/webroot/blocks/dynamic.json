@@ -1,0 +1,14 @@
+{
+	"options" : [
+		{
+			"theme" : "Creative",
+			"name" : "Dynamic Tester",
+			"category" : "features", 
+			"editable" : "",
+			"title"	 : "",
+			"content" : "",
+			"block" : "<div class='purple-theme-block-preview uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white'>Theme Block - Creative<br><small>Contact Form<br>Visit your website to view the content.</small></div>",
+			"html" : "<section id='fdb-{bind.id}' class='fdb-block purple-theme-block-section remove-padding-in-real' data-fdb-id='{bind.id}'><div class='purple-theme-block'><div class='purple-theme-dynamic-block'>{{function|aaa}} {{function|bbb}}</div></div></section>"
+		}
+	]
+}

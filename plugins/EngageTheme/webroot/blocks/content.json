@@ -1,0 +1,14 @@
+{
+	"options" : [
+		{
+			"theme" : "Engage",
+			"name" : "Content 1",
+			"category" : "contents", 
+			"editable" : "title,content",
+			"title"	 : "",
+			"content" : "",
+			"block" : "<div class='purple-theme-block-preview uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white'>Theme Block - Engage<br><small>Content 1<br>Visit your website to view the content.</small></div>",
+			"html" : "<section id='fdb-{bind.id}' class='fdb-block purple-theme-block-section' data-fdb-id='{bind.id}'><div class='purple-theme-block'><p class='fdb-editor'>This is custom blocks</p></div></section>"
+		}
+	]
+}

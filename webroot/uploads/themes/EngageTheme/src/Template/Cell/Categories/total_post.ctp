@@ -1,0 +1,1 @@
+<?php if ($postInCategory > 0) echo "<span class='float-right'>(" . $postInCategory . ")</span>" ?>

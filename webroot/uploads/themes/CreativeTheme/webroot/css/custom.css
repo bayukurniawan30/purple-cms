@@ -1,0 +1,51 @@
+/* your styles go here */
+
+/**
+ * Logo
+ */
+.theme-main-logo:hover {
+	border-bottom: none!important;
+}
+
+/**
+ * Header / Title
+ */
+.has-subtitle {
+	margin-bottom: .8rem!important;
+}
+.subtitle {
+	font-size: 1.5rem;
+}
+.post-info-card {
+	font-size: .8rem;
+	font-style: italic;
+}
+
+/**
+ * UL OL List
+ */
+ul.parsley-errors-list {
+	margin-top: 10px;
+}
+ul.post-author li:before, ul.post-comment li:before, ul.parsley-errors-list li:before {
+	content: '';
+}
+
+/**
+ * Form
+ */
+.search-input-home::placeholder {
+	color: #999;
+	font-style: italic;
+}
+input.parsley-success,
+select.parsley-success,
+textarea.parsley-success {
+  color: #ef5285;
+  background-color: #ffffff;
+  border: 1px solid #ef5285;
+}
+.form-control:focus {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
