@@ -1,0 +1,34 @@
+# CakePHP 3
+
+/vendor/*
+/config/database.php
+
+/tmp/cache/models/*
+!/tmp/cache/models/empty
+/tmp/cache/persistent/*
+!/tmp/cache/persistent/empty
+/tmp/cache/views/*
+!/tmp/cache/views/empty
+/tmp/sessions/*
+!/tmp/sessions/empty
+/tmp/tests/*
+!/tmp/tests/empty
+/tmp/uploads/images*
+/tmp/uploads/themes*
+
+
+/logs/*
+!/logs/empty
+
+/webroot/uploads/documents/*
+/webroot/uploads/images/original/*
+/webroot/uploads/images/thumbnails/300x300/*
+/webroot/uploads/images/thumbnails/480x270/*
+/webroot/uploads/videos/*
+
+# CakePHP 2
+
+/app/tmp/*
+/app/Config/core.php
+/app/Config/database.php
+/vendors/*
