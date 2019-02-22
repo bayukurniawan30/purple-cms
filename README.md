@@ -1,3 +1,5 @@
+![Alt text](webroot/master-assets/img/logo.svg?raw=true "Purple CMS")
+
 # Purple CMS
 
 Content Management System Base on CakePHP 3
@@ -7,7 +9,7 @@ Purple CMS adalah sebuah Content Management System yang dibuat dengan framework 
 
 ### Fitur
  - ***Easy Setup***, setup Purple CMS hanya dalam 3 langkah.
- - Block Editor, sebuah live html editor yang bisa diedit secara live langsung dari CMS.
+ - ***Block Editor***, sebuah live html editor yang bisa diedit secara live langsung dari CMS.
  - ***Visitors Statistics***, menampilkan data pengunjung website dengan tampilan yang user friendly.
  - ***Themes***, mudah diintegrasikan dengan template Bootstrap 4, dan bisa membuat custom block yang bisa digunakan di Block Editor!
  - ***Notification***, mengirim notifikasi ke email jika ada pemberitahuan, walaupun diinstal di localhost (harus terkoneksi ke internet).
