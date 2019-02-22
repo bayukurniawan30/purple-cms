@@ -1,4 +1,4 @@
-![Alt text](webroot/master-assets/img/logo.svg?raw=true "Purple CMS")
+![Alt text](webroot/master-assets/img/purple-logo-small.png?raw=true "Purple CMS")
 
 # Purple CMS
 
