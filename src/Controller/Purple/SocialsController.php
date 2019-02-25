@@ -129,7 +129,7 @@ class SocialsController extends AppController
 	}
 	public function ajaxAdd() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $socialAdd = new SocialAddForm();
         if ($this->request->is('ajax')) {
@@ -185,7 +185,7 @@ class SocialsController extends AppController
     }
     public function ajaxUpdate() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $socialEdit = new SocialEditForm();
         if ($this->request->is('ajax')) {
@@ -235,7 +235,7 @@ class SocialsController extends AppController
     }
     public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $socialDelete = new SocialDeleteForm();
         if ($this->request->is('ajax')) {
@@ -287,7 +287,7 @@ class SocialsController extends AppController
     }
 	public function ajaxReorder()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$order = $this->request->getData('order');
@@ -310,7 +310,7 @@ class SocialsController extends AppController
 	}
     public function ajaxSharingButtons()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $socialButtons = new SocialSharingButtonsForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {

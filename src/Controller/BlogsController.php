@@ -337,7 +337,7 @@ class BlogsController extends AppController
     }
     public function ajaxSendComment()
     {
-    	$this->viewBuilder()->autoLayout(false);
+    	$this->viewBuilder()->enableAutoLayout(false);
 
 		$postComment = new PostCommentForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {

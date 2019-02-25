@@ -240,7 +240,7 @@ class SettingsController extends AppController
 	}
     public function ajaxFormStandardSetting()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('post') || $this->request->is('ajax')) {
             $settingsStandardModal  = new SettingsStandardModalForm();
@@ -271,7 +271,7 @@ class SettingsController extends AppController
     }
     public function ajaxUpdate()
 	{
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
             $session   = $this->getRequest()->getSession();
@@ -360,7 +360,7 @@ class SettingsController extends AppController
     }
     public function ajaxSendTestEmail()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $settingsTestEmail = new SettingsTestEmailForm();
         if ($this->request->is('ajax')) {

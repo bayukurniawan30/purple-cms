@@ -149,7 +149,7 @@ class MessagesController extends AppController
 	}
 	public function ajaxMessagesCounter()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
 	        $messages = $this->Messages->find()->where(['folder' => 'inbox', 'is_read' => '0'])->order(['id' => 'DESC']);
@@ -161,7 +161,7 @@ class MessagesController extends AppController
 	}
 	public function ajaxReadMessage()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$session   = $this->getRequest()->getSession();
@@ -208,7 +208,7 @@ class MessagesController extends AppController
 	}
 	public function ajaxMoveToTrash()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$messageDelete = new MessageDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {

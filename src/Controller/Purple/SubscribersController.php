@@ -118,7 +118,7 @@ class SubscribersController extends AppController
 	}
 	public function ajaxAdd()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$subscriberAdd = new SubscriberAddForm();
         if ($this->request->is('ajax')) {
@@ -187,7 +187,7 @@ class SubscribersController extends AppController
 	}
 	public function ajaxUpdate()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$subscriberEdit = new SubscriberEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -256,7 +256,7 @@ class SubscribersController extends AppController
 	}
 	public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$subscriberDelete = new SubscriberDeleteForm();
         if ($this->request->is('ajax')) {

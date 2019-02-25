@@ -71,7 +71,7 @@
         <div class="card">
             <div class="card-body">
                 <div>
-                    <img class="img-fluid" src="<?= $this->request->webroot . 'uploads/images/original/' . $favicon->value; ?>" width="64">
+                    <img class="img-fluid" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $favicon->value; ?>" width="64">
                 </div>
             </div>
             <div class="card-footer">

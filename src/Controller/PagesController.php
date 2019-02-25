@@ -304,7 +304,7 @@ class PagesController extends AppController
     }
     public function ajaxSendContact()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageContact = new PageContactForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -405,7 +405,7 @@ class PagesController extends AppController
     }
     public function ajaxVerifyForm($action, $token)
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if (empty($action) || empty($token)) {
             throw new NotFoundException(__('Page not found'));

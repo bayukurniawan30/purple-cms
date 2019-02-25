@@ -188,7 +188,7 @@ class ThemesController extends AppController
 	}
 	public function ajaxApplyTheme()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 		
         $themeApply = new ThemeApplyForm();
         if ($this->request->is('ajax')) {
@@ -286,7 +286,7 @@ class ThemesController extends AppController
 	}
 	public function ajaxUploadTheme()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post')) {
 			$session   = $this->getRequest()->getSession();
@@ -362,7 +362,7 @@ class ThemesController extends AppController
 	}
 	public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$themeDelete = new ThemeDeleteForm();
         if ($this->request->is('ajax')) {

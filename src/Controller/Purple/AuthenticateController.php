@@ -70,7 +70,7 @@ class AuthenticateController extends AppController
 	public function logout() 
 	{
 		$session = $this->getRequest()->getSession();
-        if ($this->request->env('HTTP_HOST') == $session->read('Admin.host')) {
+        if ($this->request->getEnv('HTTP_HOST') == $session->read('Admin.host')) {
             $session->delete('Admin.host');
             $session->delete('Admin.id');
             $session->delete('Admin.password');
@@ -95,7 +95,7 @@ class AuthenticateController extends AppController
 	}
 	public function ajaxLogin() 
 	{
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$adminLogin   = new AdminLoginForm();
         if ($this->request->is('ajax')) { 
@@ -125,7 +125,7 @@ class AuthenticateController extends AppController
 				if ($checkPassword) {
 					$session = $this->getRequest()->getSession();
 					$session->write([
-						'Admin.host'     => $this->request->env('HTTP_HOST'),
+						'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
 					  	'Admin.id'       => $admin->id,
 					  	'Admin.password' => $admin->password,
 					]);
@@ -179,7 +179,7 @@ class AuthenticateController extends AppController
 	}
 	public function ajaxForgotPassword() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$forgotPassword = new ForgotPasswordForm();
         if ($this->request->is('ajax')) {
@@ -272,7 +272,7 @@ class AuthenticateController extends AppController
     }
     public function ajaxResetPassword() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$newPassword = new NewPasswordForm();
         if ($this->request->is('ajax')) {

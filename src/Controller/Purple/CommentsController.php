@@ -166,7 +166,7 @@ class CommentsController extends AppController
 	}
 	public function ajaxChangeStatus()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$commentStatus = new CommentStatusForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -231,7 +231,7 @@ class CommentsController extends AppController
 	}
 	public function ajaxReply()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$commentReply = new CommentReplyForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -292,7 +292,7 @@ class CommentsController extends AppController
 	}
 	public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$commentDelete = new CommentDeleteForm();
         if ($this->request->is('ajax')) {

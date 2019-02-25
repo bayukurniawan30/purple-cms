@@ -167,7 +167,7 @@ class AdminsController extends AppController
     }
 	public function ajaxSaveProfilePicture() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('post') || $this->request->is('ajax')) {
             $base64 = $this->request->getData('base64');
@@ -197,7 +197,7 @@ class AdminsController extends AppController
     }
     public function ajaxAdd() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $adminAdd = new AdminAddForm();
         if ($this->request->is('ajax')) {
@@ -297,7 +297,7 @@ class AdminsController extends AppController
     }
     public function ajaxUpdate() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $adminEdit = new AdminEditForm();
         if ($this->request->is('ajax')) {
@@ -375,7 +375,7 @@ class AdminsController extends AppController
     }
     public function ajaxUpdatePassword() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $adminEditPassword = new AdminEditPasswordForm();
         if ($this->request->is('ajax')) {
@@ -426,7 +426,7 @@ class AdminsController extends AppController
     }
     public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $adminDelete = new AdminDeleteForm();
         if ($this->request->is('ajax')) {

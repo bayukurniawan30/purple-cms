@@ -165,7 +165,7 @@ class MediasController extends AppController
 	}
 	public function ajaxBrowseImages()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('ajax') || $this->request->is('post')) {
 			$medias = $this->Medias->find('all', [
@@ -207,7 +207,7 @@ class MediasController extends AppController
 	}
 	public function ajaxUploadImages()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post')) {
 			if (!empty($this->request->getData('file'))) {
@@ -322,7 +322,7 @@ class MediasController extends AppController
 	}
 	public function ajaxImagesDetail()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('ajax')) {
 			$medias = $this->Medias->find('all', [
@@ -349,7 +349,7 @@ class MediasController extends AppController
 	}
     public function ajaxUpdateImages()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaImageModal  = new MediaImageModalForm();
         if ($this->request->is('ajax')) {
@@ -403,7 +403,7 @@ class MediasController extends AppController
     }
     public function ajaxDeleteImages()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaImageDelete = new MediaImageDeleteForm();
         if ($this->request->is('ajax')) {
@@ -464,7 +464,7 @@ class MediasController extends AppController
     }
     public function ajaxUploadDocuments()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
@@ -537,7 +537,7 @@ class MediasController extends AppController
     }
     public function ajaxDocumentsDetail()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('ajax')) {
 	    	$this->loadModel('MediaDocs');
@@ -551,7 +551,7 @@ class MediasController extends AppController
 	}
     public function ajaxUpdateDocuments()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaDocumentModal  = new MediaDocumentModalForm();
         if ($this->request->is('ajax')) {
@@ -606,7 +606,7 @@ class MediasController extends AppController
     }
     public function ajaxDeleteDocuments()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaDocumentDelete = new MediaDocumentDeleteForm();
         if ($this->request->is('ajax')) {
@@ -666,7 +666,7 @@ class MediasController extends AppController
     }
     public function ajaxUploadVideos()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
@@ -739,7 +739,7 @@ class MediasController extends AppController
     }
     public function ajaxVideosDetail()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('ajax')) {
 	    	$this->loadModel('MediaVideos');
@@ -753,7 +753,7 @@ class MediasController extends AppController
 	}
     public function ajaxUpdateVideos()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaVideoModal  = new MediaVideoModalForm();
         if ($this->request->is('ajax')) {
@@ -808,7 +808,7 @@ class MediasController extends AppController
     }
     public function ajaxDeleteVideos()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaVideoDelete = new MediaVideoDeleteForm();
         if ($this->request->is('ajax')) {

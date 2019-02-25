@@ -29,7 +29,7 @@ class FroalaController extends AppController
 	}
     public function froalaManagerLoadUrl() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         $this->loadModel('Medias');
         $medias      = $this->Medias->find('all', ['contain' => ['Admins']])->order(['Medias.id' => 'DESC']);
@@ -38,7 +38,7 @@ class FroalaController extends AppController
     }
     public function froalaImageUploadUrl()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('post') || $this->request->is('ajax')) {
             if (!empty($this->request->getData('file'))) {
@@ -131,7 +131,7 @@ class FroalaController extends AppController
     }
     public function froalaFileUploadUrl()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('post') || $this->request->is('ajax')) {
             if (!empty($this->request->getData('file'))) {
@@ -190,7 +190,7 @@ class FroalaController extends AppController
     }
     public function froalaVideoUploadUrl()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('post') || $this->request->is('ajax')) {
             if (!empty($this->request->getData('file'))) {
@@ -249,7 +249,7 @@ class FroalaController extends AppController
     }
     public function froalaManagerDeleteUrl() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('post')) {
 

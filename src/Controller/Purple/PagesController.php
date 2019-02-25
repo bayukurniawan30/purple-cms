@@ -280,7 +280,7 @@ class PagesController extends AppController
     }
     public function ajaxAdd() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageAdd = new PageAddForm();
         if ($this->request->is('ajax')) {
@@ -326,7 +326,7 @@ class PagesController extends AppController
     }
     public function ajaxSave() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageSave = new PageSaveForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -483,7 +483,7 @@ class PagesController extends AppController
     }
     public function ajaxChangeStatus() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageStatus = new PageStatusForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -541,7 +541,7 @@ class PagesController extends AppController
     }
     public function ajaxSaveBlogPage() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageBlogEdit = new PageBlogEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -605,7 +605,7 @@ class PagesController extends AppController
     }
     public function ajaxSaveCustomPage() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageCustomSave = new PageCustomSaveForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -738,7 +738,7 @@ class PagesController extends AppController
     }
     public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $pageDelete = new PageDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -859,7 +859,7 @@ class PagesController extends AppController
     }
     public function ajaxFroalaBlocks()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
@@ -880,7 +880,7 @@ class PagesController extends AppController
     }
     public function ajaxThemeBlocks()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
@@ -901,7 +901,7 @@ class PagesController extends AppController
     }
     public function ajaxFroalaCodeEditor()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
             $id   = $this->request->getData('id');

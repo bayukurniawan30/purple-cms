@@ -115,7 +115,7 @@ class BlogCategoriesController extends AppController
 	}
 	public function ajaxLoadSelectbox()
 	{
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
         	$page = $this->request->getData('page');
@@ -136,7 +136,7 @@ class BlogCategoriesController extends AppController
 	}
 	public function ajaxAdd()
 	{
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$blogCategoryAdd = new BlogCategoryAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -201,7 +201,7 @@ class BlogCategoriesController extends AppController
 	}
 	public function ajaxUpdate()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$blogCategoryEdit = new BlogCategoryEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -264,7 +264,7 @@ class BlogCategoriesController extends AppController
 	}
 	public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $blogCategoryDelete  = new BlogCategoryDeleteForm();
         if ($this->request->is('ajax')) {
@@ -316,7 +316,7 @@ class BlogCategoriesController extends AppController
     }
 	public function ajaxReorder() 
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$order = $this->request->getData('order');

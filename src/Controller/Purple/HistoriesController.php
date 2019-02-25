@@ -161,7 +161,7 @@ class HistoriesController extends AppController
 	}
 	public function ajaxFilter()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$historyFilter = new HistoryFilterForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {

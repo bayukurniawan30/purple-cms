@@ -40,7 +40,7 @@ class VisitorsTable extends Table
     }
     public function totalMobileVisitors() 
     {
-        $totalVisitors = $this->find()->where(['device' => 'Phone'])->orWhere(['device' => 'Tablet'])->count();
+        $totalVisitors = $this->find()->where(['OR' => [['device' => 'Phone'], ['device' => 'Tablet']]])->count();
         return $totalVisitors;
     }
     public function lastTwoWeeksTotalVisitors() 

@@ -130,7 +130,7 @@ class NavigationController extends AppController
     }
     public function ajaxAdd()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$menuAdd = new MenuAddForm();
         if ($this->request->is('ajax')) {
@@ -251,7 +251,7 @@ class NavigationController extends AppController
     }
     public function ajaxUpdate()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
 		$menuEdit = new MenuEditForm();
         if ($this->request->is('ajax')) {
@@ -318,7 +318,7 @@ class NavigationController extends AppController
     }
     public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $menuDelete = new MenuDeleteForm();
         if ($this->request->is('ajax')) {
@@ -438,7 +438,7 @@ class NavigationController extends AppController
     }
 	public function ajaxReorderMenu()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$this->loadModel('Menus');
@@ -462,7 +462,7 @@ class NavigationController extends AppController
 	}
 	public function ajaxReorderSubmenu()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$this->loadModel('Submenus');

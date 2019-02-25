@@ -207,7 +207,7 @@ class DashboardController extends AppController
 	}
 	public function ajaxUpdateStatistic()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $dashboardMonthOfVisit  = new DashboardMonthOfVisitForm();
 		if ($this->request->is('ajax')) {

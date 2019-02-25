@@ -130,7 +130,7 @@ class NotificationsController extends AppController
 	}
 	public function ajaxLoadHeaderNotifications()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
         	$unreadNotifications = $this->Notifications->find()->where(['is_read' => '0'])->order(['id' => 'DESC']);
@@ -150,7 +150,7 @@ class NotificationsController extends AppController
     }
 	public function ajaxReadNotification()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			$session   = $this->getRequest()->getSession();

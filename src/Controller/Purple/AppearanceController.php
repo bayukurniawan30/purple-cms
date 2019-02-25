@@ -147,7 +147,7 @@ class AppearanceController extends AppController
     }
     public function ajaxImagesUpload() 
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post')) {
 			if (!empty($this->request->getData('file'))) {
@@ -246,7 +246,7 @@ class AppearanceController extends AppController
 	}
     public function ajaxSave() 
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('post') || $this->request->is('ajax')) {
         	$session   = $this->getRequest()->getSession();
@@ -303,7 +303,7 @@ class AppearanceController extends AppController
     }
     public function ajaxDelete() 
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
         
         $appearanceDelete  = new AppearanceDeleteForm();
         if ($this->request->is('ajax')) {
@@ -361,7 +361,7 @@ class AppearanceController extends AppController
     }
     public function ajaxUpdateFooter()
 	{
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $sfooterEdit    = new FooterEditForm();
         if ($this->request->is('ajax')) {

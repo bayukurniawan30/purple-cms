@@ -187,7 +187,7 @@ class BlogsController extends AppController
 	}
 	public function ajaxAdd()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$blogAdd = new BlogAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -281,7 +281,7 @@ class BlogsController extends AppController
 	}
 	public function ajaxUpdate()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
 		$blogEdit = new BlogEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -376,7 +376,7 @@ class BlogsController extends AppController
 	}
 	public function ajaxDelete()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         $blogDelete = new BlogDeleteForm();
         if ($this->request->is('ajax')) {
@@ -428,7 +428,7 @@ class BlogsController extends AppController
     }
     public function ajaxRemoveTag()
 	{
-		$this->viewBuilder()->autoLayout(false);
+		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
 			$blogId  = $this->request->getData('id');

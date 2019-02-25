@@ -71,7 +71,7 @@
         <div class="card">
             <div class="card-body">
                 <div>
-                    <img class="img-fluid" src="<?= $this->request->webroot . 'uploads/images/original/' . $logo->value; ?>" width="300">
+                    <img class="img-fluid" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $logo->value; ?>" width="300">
                 </div>
             </div>
             <div class="card-footer">
