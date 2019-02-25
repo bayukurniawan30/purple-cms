@@ -120,7 +120,7 @@
         function formatFactory(html) {
             function parse(html, tab = 0) {
                 var tab;
-                var html = $.parseHTML(html);
+                var html = $.parseHTML(html, null, true);
                 var formatHtml = new String();
 
                 function setTabs () {
