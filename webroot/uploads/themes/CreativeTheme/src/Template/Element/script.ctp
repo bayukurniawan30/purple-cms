@@ -33,20 +33,20 @@
     	$('body').find('.form-send-contact').prepend('<input type="hidden" name="score" value="">');
 	    if ($('.form-send-contact').length > 0) {
 		    grecaptcha.ready(function() {
-		        grecaptcha.execute('<?= $recaptchaSitekey ?>', {action: 'verifyForm'}).then(function(token) {
-		            fetch('<?= $this->Url->build(['_name' => 'ajaxVerifyForm', 'action' => 'verifyForm', 'token' => '']); ?>' + token).then(function(response) {
+		        grecaptcha.execute('<?= $recaptchaSitekey ?>', {action: 'ajaxVerifyForm'}).then(function(token) {
+		            fetch('<?= $this->Url->build(['_name' => 'ajaxVerifyForm', 'action' => 'ajaxVerifyForm', 'token' => '']); ?>' + token).then(function(response) {
 		                response.json().then(function(data) {
 		                    var json    = $.parseJSON(data),
 		                        success = (json.success),
 		                        score   = (json.score);
 
 		                    if (success == true) {
-		                       $('#form-send-contact').find('input[name=status]').val('success'); 
-		                       $('#form-send-contact').find('input[name=score]').val(score); 
+		                       $('.form-send-contact').find('input[name=status]').val('success'); 
+		                       $('.form-send-contact').find('input[name=score]').val(score); 
 		                    }
 		                    else {
-		                       $('#form-send-contact').find('input[name=status]').val('failed'); 
-		                       $('#form-send-contact').find('input[name=score]').val('0'); 
+		                       $('.form-send-contact').find('input[name=status]').val('failed'); 
+		                       $('.form-send-contact').find('input[name=score]').val('0'); 
 		                    }
 		                });
 		            });

@@ -25,4 +25,7 @@ $(document).ready(function() {
        		}
      	});
 	}
+
+	// Hide reCaptcha Badge
+	$('.grecaptcha-badge').css('display', 'none');
 })

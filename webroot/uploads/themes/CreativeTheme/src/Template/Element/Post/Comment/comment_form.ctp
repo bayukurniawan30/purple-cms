@@ -72,8 +72,8 @@
 ?>
 <script type="text/javascript">
     grecaptcha.ready(function() {
-        grecaptcha.execute('<?= $recaptchaSitekey ?>', {action: 'verifyForm'}).then(function(token) {
-            fetch('<?= $this->Url->build(['_name' => 'ajaxVerifyForm', 'action' => 'verifyForm', 'token' => '']); ?>' + token).then(function(response) {
+        grecaptcha.execute('<?= $recaptchaSitekey ?>', {action: 'ajaxVerifyForm'}).then(function(token) {
+            fetch('<?= $this->Url->build(['_name' => 'ajaxVerifyForm', 'action' => 'ajaxVerifyForm', 'token' => '']); ?>' + token).then(function(response) {
                 response.json().then(function(data) {
                     console.log(data);
                     var json    = $.parseJSON(data),

@@ -230,7 +230,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->get('https://api.purple-cms.com/action/administrative-setup', 
+			$response     = $http->get('https://api.purple-cms.com/action/contact', 
 								[
 									'key'			=> $key,
 									'dashboardLink' => $dashboardLink,

@@ -411,16 +411,22 @@ class PagesController extends AppController
             throw new NotFoundException(__('Page not found'));
         }
         else {
+            $explodeAction = explode('-', $action);
+            $newAction     = '';
+            foreach ($explodeAction as $act) {
+                $newAction .= ucwords($act);
+            }
+
             $this->loadModel('Settings');
             $sitekey = $this->Settings->settingsRecaptchaSitekey();
             $secret  = $this->Settings->settingsRecaptchaSecret();
 
             $recaptcha = new \ReCaptcha\ReCaptcha($secret);
             $response  = $recaptcha->setExpectedHostname($_SERVER['SERVER_NAME'])
-                              ->setExpectedAction($action)
+                              ->setExpectedAction($newAction)
                               ->setScoreThreshold(0.5)
                               ->verify($token, $_SERVER['REMOTE_ADDR']);
-            $json = json_encode($resp->toArray());
+            $json = json_encode($response->toArray());
             $this->set(['json' => $json]);
         }
     }
