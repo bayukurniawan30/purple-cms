@@ -50,6 +50,18 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-md-12">
+        <div class="uk-alert-primary uk-margin-medium-bottom" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>
+                <strong>Still confused how to use Purple?</strong><br>
+                Read the full documentation <a href="http://doc.purple-cms.com" target="_blank">here</a>. Are you a developer? We have a <a href="http://doc.purple-cms.com/developer-guide" target="_blank">complete guide</a> to customize Purple CMS.
+            </p>
+        </div>
+    </div>
+</div>
+
 <div id="dashboard-main-panel" class="row">
     <div id="dashboard-statistic-container" class="col-md-7 grid-margin stretch-card">
         <div class="card">

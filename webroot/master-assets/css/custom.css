@@ -67,6 +67,9 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
     margin-bottom: 20px!important;
     color: #ffffff!important;
 }
+.card-read-documentation h4, .card-read-documentation p {
+    color: #ffffff!important;
+}
 
 /* Dmuploader */
 #drag-and-drop-zone {
