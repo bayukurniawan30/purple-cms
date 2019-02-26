@@ -1,3 +1,10 @@
+<?php
+    if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):
+        $previewUrl = $this->Url->build('/', true);
+    else:
+        $previewUrl = $this->Url->build('/'.$pages->slug, true);;
+    endif;
+?>
 <div class="uk-child-width-expand@s" uk-grid>
     <?php
         if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):
@@ -15,14 +22,6 @@
                 <div class="form-group">
                     <input id="form-input-title" type="text" class="form-control" name="title" data-parsley-maxlength="100" placeholder="Page Title (Max 100 charecters)" value="<?= $pages->title ?>" required>
                 </div>
-
-                <?php
-                    $objectUrl = $this->Url->build([
-                        '_name' => 'adminPagesHtmlBlocks',
-                        'file'  => $tmpFile
-                    ]);
-                ?>
-                <!-- <object id="object-tmp-html" width="100%" height="500" data="<?= $objectUrl ?>"></object> -->
             </div>
         </div>
     </div>
@@ -204,9 +203,9 @@
 
                     <span class="preview-screen-modifier" style="display: none">
                         <span class="fdb-button-screen-divider uk-margin-small-left">|</span>
-                        <a id="button-toggle-desktop-screen" class="uk-margin-small-left" uk-tooltip="title: Desktop Screen"><i class="mdi mdi-desktop-mac"></i></a>
-                        <a id="button-toggle-tablet-screen" class="uk-margin-small-left" uk-tooltip="title: Tablet Screen"><i class="mdi mdi-tablet-android"></i></a>
-                        <a id="button-toggle-phone-screen" class="uk-margin-small-left" uk-tooltip="title: Mobile Screen"><i class="mdi mdi-cellphone-android"></i></a>
+                        <!-- <a id="button-toggle-desktop-screen" class="uk-margin-small-left" uk-tooltip="title: Desktop Screen"><i class="mdi mdi-desktop-mac"></i></a> -->
+                        <a id="button-toggle-tablet-screen" class="uk-margin-small-left" uk-tooltip="title: Tablet Screen" data-purple-page="<?= $previewUrl ?>" title="Tablet Screen"><i class="mdi mdi-tablet-android"></i></a>
+                        <a id="button-toggle-phone-screen" class="uk-margin-small-left" uk-tooltip="title: Mobile Screen" data-purple-page="<?= $previewUrl ?>" title="Mobile Screen"><i class="mdi mdi-cellphone-android"></i></a>
                     </span>
 
                     <span class="fdb-button-option-divider uk-margin-small-left">|</span>
@@ -232,7 +231,7 @@
                     endif;
                 ?>
             </div>
-            <div id="bottom-of-builder">&nbsp;</div>
+            <div id="bottom-of-builder"></div>
         </div>
     </div>
 </div>
@@ -273,6 +272,18 @@
         <?php
             echo $this->Form->end();
         ?>
+    </div>
+</div>
+
+<div id="modal-device-screen" class="uk-modal-container purple-modal" uk-modal="bg-close: false" style="z-index: 99999999">
+    <div class="uk-modal-dialog uk-margin-auto-vertical">
+        <button class="uk-modal-close-outside" type="button" uk-close></button>
+        <div class="uk-modal-header">
+            <h3 class="uk-modal-title screen-type"></h3>
+        </div>
+        <div class="uk-modal-body" style="margin: 0; padding: 0">
+
+        </div>
     </div>
 </div>
 
@@ -319,7 +330,7 @@
             button          : 'button-save-html',
             action          : 'edit',
             redirectType    : 'redirect',
-            redirect        : '<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'index']); ?>',
+            redirect        : '<?= $_SERVER['REQUEST_URI']; ?>',
             btnNormal       : false,
             btnLoading      : false
         };

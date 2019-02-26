@@ -79,7 +79,7 @@
             button          : 'button-save-page',
             action          : 'edit',
             redirectType    : 'redirect',
-            redirect        : '<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'index']); ?>',
+            redirect        : '<?= $_SERVER['REQUEST_URI'] ?>',
             btnNormal       : false,
             btnLoading      : false
         };

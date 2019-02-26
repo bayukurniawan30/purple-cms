@@ -24,12 +24,36 @@
                 })
 
                 $("#button-toggle-tablet-screen").click(function() {
-                    $("#bind-fdb-blocks").animate({width: "768px"});
+                    UIkit.modal('#modal-device-screen').hide();
+
+                    var html       = $("#bind-fdb-blocks").html();
+                    var previewUrl = $(this).data('purple-page');
+                    $("#modal-device-screen").find('.uk-modal-dialog').css('width', '768px');
+                    $("#modal-device-screen").find('.uk-modal-body').html('<div class="text-center uk-padding-large"><div uk-spinner="ratio: 2"></div></div>');
+                    $("#modal-device-screen").find('.screen-type').html('Tablet');
+                    setTimeout(function() {
+                        UIkit.modal('#modal-device-screen').show();
+                    }, 1000);
+                    setTimeout(function() {
+                        $("#modal-device-screen").find('.uk-modal-body').html('<object width="100%" height="550" data="'+previewUrl+'"></object>');
+                    }, 2000);
                     return false;
                 })
 
                 $("#button-toggle-phone-screen").click(function() {
-                    $("#bind-fdb-blocks").animate({width: "480px"});
+                    UIkit.modal('#modal-device-screen').hide();
+
+                    var html       = $("#bind-fdb-blocks").html();
+                    var previewUrl = $(this).data('purple-page');
+                    $("#modal-device-screen").find('.uk-modal-dialog').css('width', '480px');
+                    $("#modal-device-screen").find('.uk-modal-body').html('<div class="text-center uk-padding-large"><div uk-spinner="ratio: 2"></div></div>');
+                    $("#modal-device-screen").find('.screen-type').html('Mobile');
+                    setTimeout(function() {
+                        UIkit.modal('#modal-device-screen').show();
+                    }, 1000);
+                    setTimeout(function() {
+                        $("#modal-device-screen").find('.uk-modal-body').html('<object width="100%" height="500" data="'+previewUrl+'"></object>');
+                    }, 2000);
                     return false;
                 })
 
