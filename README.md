@@ -32,7 +32,7 @@ Perhatikan, folder-name adalah folder tempat anda menginstal Purple CMS, sesuaik
 
 ### Setup
 Setup Purple CMS dalam 3 langkah :
- - ***Database***, isikan nama database, user, dan password untuk koneksi ke database. Database harus dibuat terlebih dahulu.
+ - ***Database***, isikan nama database, user, dan password untuk koneksi ke database. Database harus dibuat terlebih dahulu, dengan collation utf8mb4_general_ci.
  - ***Administrative***, isikan Site Name, dan data anda untuk membuat user administrator.
  - ***Finishing Setup***, selesaikan setup dengan menekan tombol Start Purple. Jika anda terhubung ke internet, anda akan menerima email data Sign In ke halaman Purple.
 
@@ -42,6 +42,15 @@ Untuk masuk ke halaman administrator Purple CMS, silahkan buka halaman :
 http://localhost/folder-name/purple
 ```
 Gunakan username dan password yang anda buat pada setup bagian administrative untuk sign in.
+
+### Deploy to Production
+Untuk memindahkan Purple CMS ke production atau ke server, bisa dengan proses instalasi yang tertulis di atas, atau dengan membuat archive .zip dari Purple CMS yang terinstal di localhost, kemudian diupload ke server production.
+Hal-hal yang harus dipastikan setelah memindahkan Purple CMS ke server production adalah :
+ - Ubah debug mode menjadi ***false*** pada file ***config/app.php***
+ - Clear cache dengan terminal/cmd, masuk ke folder instalasi Purple CMS, ketikkan ***bin/cake cache clear_all***
+
+### Dokumentasi 
+Halaman dokumentasi lengkap dari Purple CMS bisa dilihat di [***Purple CMS Documentation***](http://doc.purple-cms.com/) dan di [***Purple CMS Developer Guide Documentation***](http://doc.purple-cms.com/developer-guide/).
 
 ### Credits
  - [***CakePHP 3***](https://cakephp.org/) - PHP framework
