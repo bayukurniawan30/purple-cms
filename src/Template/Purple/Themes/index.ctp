@@ -54,14 +54,14 @@
                         $explodePreview = explode(',', $themePreview);
                 ?>
                 <div id="modal-preview-active-theme" class="uk-flex-top purple-modal" uk-modal>
-                    <div class="uk-modal-dialog uk-margin-auto-vertical" style="width: 80%">
+                    <div class="uk-modal-dialog uk-margin-auto-vertical" style="width: 75%">
                         <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="animation: push;">
                             <ul class="uk-slideshow-items">
                                 <?php
                                     foreach ($explodePreview as $slider):
                                 ?>
                                 <li>
-                                    <?= $this->Html->image('EngageTheme.preview/'.$slider, ['alt' => $themeName]) ?>
+                                    <?= $this->Html->image('EngageTheme.preview/'.$slider, ['alt' => $themeName, 'width' => '100%']) ?>
                                 </li>
                                 <?php
                                     endforeach;
@@ -181,14 +181,14 @@
             $explodePreview = explode(',', $preview);
     ?>
     <div id="modal-preview-<?= $i ?>" class="uk-flex-top purple-modal" uk-modal>
-        <div class="uk-modal-dialog uk-margin-auto-vertical" style="width: 80%">
+        <div class="uk-modal-dialog uk-margin-auto-vertical" style="width: 75%">
             <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="animation: push;">
                 <ul class="uk-slideshow-items">
                     <?php
                         foreach ($explodePreview as $slider):
                     ?>
                     <li>
-                        <img src="<?= $this->request->getAttribute("webroot") .'uploads/themes/' . $list['themeFolder'] . '/webroot/img/preview/' . $slider ?>" alt="Theme Preview">
+                        <img src="<?= $this->request->getAttribute("webroot") .'uploads/themes/' . $list['themeFolder'] . '/webroot/img/preview/' . $slider ?>" alt="Theme Preview" width="100%">
                     </li>
                     <?php
                         endforeach;
