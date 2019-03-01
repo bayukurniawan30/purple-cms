@@ -1,4 +1,4 @@
-![Alt text](webroot/master-assets/img/purple-logo-small.png?raw=true "Purple CMS")
+![Purple CMS](webroot/master-assets/img/purple-logo-small.png?raw=true "Purple CMS")
 
 # Purple CMS
 
@@ -49,8 +49,6 @@ Hal-hal yang harus dipastikan setelah memindahkan Purple CMS ke server productio
  - Ubah debug mode menjadi ***false*** pada file ***config/app.php***
  - Clear cache dengan terminal/cmd, masuk ke folder instalasi Purple CMS, ketikkan ***bin/cake cache clear_all***
 
-### Dokumentasi 
-Halaman dokumentasi lengkap dari Purple CMS bisa dilihat di [***Purple CMS Documentation***](http://doc.purple-cms.com/) dan di [***Purple CMS Developer Guide Documentation***](http://doc.purple-cms.com/developer-guide/).
 
 ### Credits
  - [***CakePHP 3***](https://cakephp.org/) - PHP framework
