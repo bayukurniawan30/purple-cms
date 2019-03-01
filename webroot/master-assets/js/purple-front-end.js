@@ -28,4 +28,6 @@ $(document).ready(function() {
 
 	// Hide reCaptcha Badge
 	$('.grecaptcha-badge').css('display', 'none');
+
+	$('a[href="https://www.froala.com/wysiwyg-editor?k=u"]').remove();
 })
