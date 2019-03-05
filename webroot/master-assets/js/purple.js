@@ -319,16 +319,61 @@
                         var id = $(this).attr('data-fdb-id');
 
                         $(this).addClass('fdb-block-selected');
+                        if ($(this).hasClass('uk-block-filter')) {
+                            $(this).addClass('uk-block-filter-selected');
 
-                        var menuBtn = '<div class="fdb-block-menu-button-right"><a id="fdb-block-menu-button-copy-'+id+'" class="fdb-block-menu-button-copy" data-fdb-id="'+id+'" uk-tooltip="title: Copy Block"><i class="mdi mdi-content-copy" id=""></i></a><a id="fdb-block-menu-button-delete-block-'+id+'" class="fdb-block-menu-button-delete-block" data-fdb-id="'+id+'" uk-tooltip="title: Delete Block"><i class="mdi mdi-delete" id=""></i></a></div>';
+                            var min    = 10000; 
+                            var max    = 99999;  
+                            var random = Math.floor(Math.random() * (+max - +min)) + +min;
+                            if ($(this).hasClass('uk-filter-hovered')) {
+                            }
+                            else {
+                                $(this).attr('data-filter-id', random);
+                            }
+
+                            var currentId  = $(this).attr('uk-filter-control');
+                            var replaceId1 = currentId.replace("[data-category='", '');
+                            var replaceId2 = replaceId1.replace("']", '');
+
+                            var filterBtn = '<a id="fdb-block-uk-filter-list-button-'+id+'" class="fdb-block-uk-filter-list-button" data-current-filter="'+replaceId2+'" data-fdb-id="'+id+'" uk-tooltip="title: Set Filter ID"><i class="mdi mdi-settings" id=""></i></a>';
+                            var filterItemBtn = '';
+
+                            $(this).addClass('uk-filter-hovered');
+                        }
+                        else if ($(this).hasClass('uk-block-filter-item')) {
+                            var min    = 10000; 
+                            var max    = 99999;  
+                            var random = Math.floor(Math.random() * (+max - +min)) + +min;
+                            if ($(this).hasClass('uk-filter-item-hovered')) {
+                            }
+                            else {
+                                $(this).attr('data-filter-item', random);
+                            }
+
+                            var currentFilter = $(this).attr('data-category');
+
+                            var filterItemBtn = '<a id="fdb-block-uk-filter-item-button-'+id+'" class="fdb-block-uk-filter-item-button" data-current-filter="'+currentFilter+'" data-fdb-id="'+id+'" uk-tooltip="title: Set Filter Category"><i class="mdi mdi-filter-variant" id=""></i></a>';
+                            var filterBtn     = '';
+                        }
+                        else {
+                            var filterBtn     = '';
+                            var filterItemBtn = '';
+                        }
+
+                        var menuBtn = '<div class="fdb-block-menu-button-right">'+filterBtn+filterItemBtn+'<a id="fdb-block-menu-button-copy-'+id+'" class="fdb-block-menu-button-copy" data-fdb-id="'+id+'" uk-tooltip="title: Copy Block"><i class="mdi mdi-content-copy" id=""></i></a><a id="fdb-block-menu-button-delete-block-'+id+'" class="fdb-block-menu-button-delete-block" data-fdb-id="'+id+'" uk-tooltip="title: Delete Block"><i class="mdi mdi-delete" id=""></i></a></div>';
 
                         $(this).append(menuBtn);
+
+                        var setUikitFilterIdBtn       = setUikitFilterId();
+                        var setUikitFilterCategoryBtn = setUikitFilterCategory();
 
                         $('.fdb-block-menu-button-copy').click(function() {
                             var btn    = $(this),
                                 idBtn  = btn.data('fdb-id'),
                                 parent = copyBlock.parent();
 
+                            btn.closest('li').removeClass('uk-filter-hovered');
+                            btn.closest('li').removeClass('uk-filter-item-hovered');
                             parent.append(copyBlock.clone());
                             parent.find('.fdb-block-menu-button-right').remove();
                             blockCopyInitial();
@@ -349,6 +394,9 @@
                 },
                 mouseleave: function () {
                     $(this).removeClass('fdb-block-selected');
+                    if ($(this).hasClass('uk-block-filter')) {
+                        $(this).removeClass('uk-block-filter-selected');
+                    }
                     $(this).find('.fdb-block-menu-button-right').remove();
                 }
             });

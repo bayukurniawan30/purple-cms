@@ -315,6 +315,10 @@
 <!-- UIkit Animation -->
 <?= $this->element('Dashboard/Modal/uikit_add_animation_modal') ?>
 
+<!-- UIkit Filter -->
+<?= $this->element('Dashboard/Modal/uikit_set_filter_id_modal') ?>
+<?= $this->element('Dashboard/Modal/uikit_set_filter_category_modal') ?>
+
 <!-- Font Awesome Icons for Froala Blocks -->
 <?= $this->element('Dashboard/Modal/font_awesome_icons_modal') ?>
 

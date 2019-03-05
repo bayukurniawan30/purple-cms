@@ -29,5 +29,8 @@ $(document).ready(function() {
 	// Hide reCaptcha Badge
 	$('.grecaptcha-badge').css('display', 'none');
 
+	// Disable Editable Content
+	$('[contenteditable]').attr('contenteditable', 'false');
+
 	$('a[href="https://www.froala.com/wysiwyg-editor?k=u"]').remove();
 })

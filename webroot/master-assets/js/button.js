@@ -575,6 +575,87 @@ $(document).ready(function() {
 
     /**
      *
+     * Froala Blocks UIkit Filter
+     * 
+     */
+    
+    setUikitFilterId = function() {
+        $(".fdb-block-uk-filter-list-button").click(function() {
+            var btn     = $(this),
+                target  = btn.closest('li').attr('data-filter-id'),
+                current = btn.attr('data-current-filter'),
+                modal   = "#modal-uikit-set-filter-id";
+
+            $(modal).find("#button-uikit-set-filter-id").attr('data-purple-target', target);
+            $(modal).find("#button-uikit-set-filter-id").attr('data-current-filter', current);
+            $(modal).find('input[name=category]').val(current);
+            UIkit.modal(modal).show();
+            return false;
+        })
+
+        $("#modal-uikit-set-filter-id").find("#button-uikit-set-filter-id").click(function() {
+            var btn      = $(this),
+                target   = btn.attr('data-purple-target'),
+                category = $("#modal-uikit-set-filter-id").find('input[name=category]').val();
+
+            var value  = category.indexOf(" ");
+            if (value == -1) {
+                $('li[data-filter-id='+target+']').attr('uk-filter-control', "[data-category='"+category+"']")
+                UIkit.modal("#modal-uikit-set-filter-id").hide();
+            }
+            else {
+                alert('Please remove spaces in Filter ID');
+            }
+            
+            return false;
+        })
+    }
+    
+    setUikitFilterCategory = function() {
+        $(".fdb-block-uk-filter-item-button").click(function() {
+            var btn     = $(this),
+                target  = btn.closest('li').attr('data-filter-item'),
+                current = btn.attr('data-current-filter'),
+                modal   = "#modal-uikit-set-filter-category";
+
+            $(modal).find("#button-uikit-set-filter-category").attr('data-purple-target', target);
+            $(modal).find("#button-uikit-set-filter-category").attr('data-current-filter', current);
+
+            var bindSelect = '<select class="form-control" name="category" required>';
+            $('.uk-block-filter').each(function(i){
+                var filterName = $(this).find('a').text();
+                var filterId   = $(this).attr('uk-filter-control');
+                var replaceId1 = filterId.replace("[data-category='", '');
+                var replaceId2 = replaceId1.replace("']", ''); 
+
+                if (current == replaceId2) {
+                    bindSelect += '<option value="'+replaceId2+'" selected="selected">'+filterName+'</option>';
+                }
+                else {
+                    bindSelect += '<option value="'+replaceId2+'">'+filterName+'</option>';
+                }
+            });
+            bindSelect += '</select>';
+
+            $(modal).find('.bind-select-category').html('<label>Filter Category</label>'+bindSelect);
+            UIkit.modal(modal).show();
+            return false;
+        })
+
+        $("#modal-uikit-set-filter-category").find("#button-uikit-set-filter-category").click(function() {
+            var btn      = $(this),
+                target   = btn.attr('data-purple-target'),
+                category = $("#modal-uikit-set-filter-category").find('select[name=category]').val();
+
+            $('li[data-filter-item='+target+']').attr('data-category', category);
+            UIkit.modal("#modal-uikit-set-filter-category").hide();
+            
+            return false;
+        })
+    }
+
+    /**
+     *
      * Froala Blocks UIkit Animation
      * 
      */
