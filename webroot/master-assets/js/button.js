@@ -575,6 +575,150 @@ $(document).ready(function() {
 
     /**
      *
+     * Save Block to File
+     * 
+     */
+    
+    saveBlockToFile = function() {
+        $(".fdb-block-menu-button-saveblock").click(function() {
+            $('.fdb-block-menu-button').remove();
+
+            var btn    = $(this),
+                target = btn.attr('data-fdb-id'),
+                html   = $('#fdb-'+target).get(0).outerHTML,
+
+                modal  = "#modal-save-block";
+
+            $(modal).find("input[name=html]").val(html);
+            $(modal).find("#button-save-block").attr('data-purple-target', target);
+            UIkit.modal(modal).show();
+            return false;
+        })
+
+        $("#modal-save-block").find("#button-save-block").off().one('click',function() {
+            console.log('klik button');
+            var btn    = $(this),
+                target = btn.attr('data-purple-target'),
+                html   = $("#modal-save-block").find('input[name=html]').val(),
+                name   = $("#modal-save-block").find('input[name=name]').val(),
+                url    = $('#fdb-block-save-url').val(),
+                token  = $('#csrf-ajax-token').val(),
+                data   = { html:html, name:name, target:target };
+
+            if (name.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url:  url,
+                    headers : {
+                        'X-CSRF-Token': token
+                    },
+                    data: data,
+                    cache: false,
+                    beforeSend: function() {
+                        btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Saving Block...')
+                        btn.attr('disabled', 'disabled');
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        var json    = $.parseJSON(data),
+                            status  = (json.status);
+
+                        if (status == 'ok') {
+                            btn.html('Block Saved');
+                            btn.removeAttr('disabled', 'disabled');
+                            setTimeout(function() {
+                                btn.html('Save');
+                                $("#modal-save-block").find('input[name=name]').val('');
+                                $("#modal-save-block").find('input[name=html]').val('');
+                                UIkit.modal('#modal-save-block').hide();
+                            }, 2000);
+                        }
+                        else {
+                            btn.html('Save');
+                            btn.removeAttr('disabled', 'disabled');
+                            alert("Can't save block. Please try again.") 
+                        }
+                    }
+                })
+            }
+            else {
+                alert('Please fill the block name and try again.');
+            }
+        })
+            
+    }
+
+    /**
+     *
+     * Delete Saved Block
+     * 
+     */
+    
+    $(".button-delete-saved-block").click(function() {
+        var btn    = $(this),
+            modal  = "#modal-delete-saved-block",
+            target = btn.data('purple-target'),
+            clsBlk = btn.data('purple-class'),
+            name   = btn.data('purple-name');
+
+        $(modal).find('.bind-name').html(name);
+        $(modal).find('input[name=file]').val(target);
+        $(modal).find('input[name=class]').val(clsBlk);
+
+        UIkit.modal(modal).show();
+        return false;
+    })
+
+    $("#button-delete-saved-block").click(function() {
+        var btn   = $(this),
+            file  = $('#modal-delete-saved-block').find('input[name=file]').val(),
+            cls   = $('#modal-delete-saved-block').find('input[name=class]').val(),
+            block = $('#saved-block-'+file),
+            url   = $('#fdb-block-delete-url').val(),
+            token = $('#csrf-ajax-token').val(),
+            data  = { file:file, class:cls }
+
+        $.ajax({
+            type: "POST",
+            url:  url,
+            headers : {
+                'X-CSRF-Token': token
+            },
+            data: data,
+            cache: false,
+            beforeSend: function() {
+                btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Deleting Block...')
+                btn.attr('disabled', 'disabled');
+            },
+            success: function(data) {
+                console.log(data);
+                var json    = $.parseJSON(data),
+                    status  = (json.status);
+
+                if (status == 'ok') {
+                    var jsonFile = (json.json);
+
+                    btn.html('Block Deleted');
+                    btn.removeAttr('disabled', 'disabled');
+                    $('.js-filter').find('.saved-block-'+jsonFile).remove();
+                    $('.js-filter').find('.saved-block-'+jsonFile+'-button').remove();
+                    setTimeout(function() {
+                        btn.html('Yes, Delete it');
+                        $("#modal-delete-saved-block").find('input[name=file]').val('');
+                        UIkit.modal('#modal-delete-saved-block').hide();
+                    }, 2000);
+                }
+                else {
+                    btn.html('Yes, Delete it');
+                    btn.removeAttr('disabled', 'disabled');
+                    alert("Can't delete block. Please try again.") 
+                }
+            }
+        })
+    })
+
+    /**
+     *
      * Froala Blocks UIkit Filter
      * 
      */

@@ -27,33 +27,33 @@ class PagesController extends AppController
 {
     public $imagesLimit = 30;
     
-	public function beforeFilter(Event $event)
-	{
-	    parent::beforeFilter($event);
-	    $purpleGlobal = new PurpleProjectGlobal();
-		$databaseInfo   = $purpleGlobal->databaseInfo();
-		if ($databaseInfo == 'default') {
-			return $this->redirect(
-	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
-	        );
-		}
-	}
-	public function initialize()
-	{
-		parent::initialize();
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $purpleGlobal = new PurpleProjectGlobal();
+        $databaseInfo   = $purpleGlobal->databaseInfo();
+        if ($databaseInfo == 'default') {
+            return $this->redirect(
+                ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
+            );
+        }
+    }
+    public function initialize()
+    {
+        parent::initialize();
         $this->loadComponent('RequestHandler');
-		$session = $this->getRequest()->getSession();
-		$sessionHost     = $session->read('Admin.host');
-		$sessionID       = $session->read('Admin.id');
-		$sessionPassword = $session->read('Admin.password');
+        $session = $this->getRequest()->getSession();
+        $sessionHost     = $session->read('Admin.host');
+        $sessionID       = $session->read('Admin.id');
+        $sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
-		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
+        if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+            return $this->redirect(
+                ['controller' => 'Authenticate', 'action' => 'login']
+            );
+        }
+        else {
+            $this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Admins');
             $this->loadModel('Settings');
 
@@ -72,7 +72,7 @@ class PagesController extends AppController
             $browseMedias  = TableRegistry::get('Medias')->find('all', [
                 'order' => ['Medias.id' => 'DESC']])->contain('Admins');
 
-			$rowCount = $queryAdmin->count();
+            $rowCount = $queryAdmin->count();
             if ($rowCount > 0) {
                 $adminData = $queryAdmin->first();
 
@@ -98,28 +98,28 @@ class PagesController extends AppController
                     'settingsTimeFormat' => $queryTimeFormat->value,
                     'mediaImageTotal'    => $browseMedias->count(),
                     'mediaImageLimit'    => $this->imagesLimit
-		    	];
-	        	$this->set($data);
+                ];
+                $this->set($data);
                 $this->set(compact('browseMedias'));
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
-	}
+            }
+            else {
+                return $this->redirect(
+                    ['controller' => 'Authenticate', 'action' => 'login']
+                );
+            }
+        }
+    }
     public function index()
     {
         $pageAdd    = new PageAddForm();
         $pageEdit   = new PageEditForm();
-		$pageStatus = new PageStatusForm();
+        $pageStatus = new PageStatusForm();
         $pageDelete = new PageDeleteForm();
 
-		$data = [
-			'pageTitle'         => 'Pages',
-			'pageBreadcrumb'    => 'Pages',
-			'pageAdd'           => $pageAdd,
+        $data = [
+            'pageTitle'         => 'Pages',
+            'pageBreadcrumb'    => 'Pages',
+            'pageAdd'           => $pageAdd,
             'pageEdit'          => $pageEdit,
             'pageStatus'        => $pageStatus,
             'pageDelete'        => $pageDelete
@@ -127,9 +127,9 @@ class PagesController extends AppController
 
         $pageTemplatesTable  = TableRegistry::get('PageTemplates');
         $pageTemplates = $pageTemplatesTable->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
-    	$this->set(compact('pageTemplates'));
+        $this->set(compact('pageTemplates'));
 
-		$pages = $this->Pages->find('all', [
+        $pages = $this->Pages->find('all', [
             'order' => ['Pages.id' => 'DESC']])->contain('PageTemplates')->contain('Admins');
 
         $this->set(compact('pages'));
@@ -168,19 +168,21 @@ class PagesController extends AppController
             $froalaSlider       = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/slider');
             $filesSlider        = $froalaSlider->find('.*\.jpg', true);
 
+            $savedBlocks        = $purpleFroalaBlocks->savedBlocks();
+
             $themeBlocks        = $purpleFroalaBlocks->themeBlocks();
 
             $generals = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug])->limit(1);
-			if ($generals->count() == 0) {
-				$result = NULL;
+            if ($generals->count() == 0) {
+                $result = NULL;
                 $generatedTempFile->write('');
-			}
-			else {
-				$result = $this->Pages->get($id, [
-				    'contain' => ['Generals']
-				]);
+            }
+            else {
+                $result = $this->Pages->get($id, [
+                    'contain' => ['Generals']
+                ]);
                 $generatedTempFile->write(html_entity_decode($result->general->content));
-			}
+            }
 
             $froalaBlocks = [
                 'fdbCallToAction' => $filesCallToAction,
@@ -190,6 +192,7 @@ class PagesController extends AppController
                 'fdbContacts'     => $filesContacts,
                 'fdbLightbox'     => $filesLightbox,
                 'fdbSlider'       => $filesSlider,
+                'savedBlocks'     => $savedBlocks,
                 'themeBlocks'     => $themeBlocks,
                 'pageSave'        => $pageSave,
                 'query'           => $result,
@@ -303,26 +306,26 @@ class PagesController extends AppController
                         $page = $this->Pages->newEntity();
                         $page = $this->Pages->patchEntity($page, $this->request->getData());
                         $page->admin_id = $sessionID;
-    				
-    	                if ($this->Pages->save($page)) {
-    	                    $json = json_encode(['status' => 'ok']);
-    	                }
-    	                else {
-    	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
-    	                }
+                    
+                        if ($this->Pages->save($page)) {
+                            $json = json_encode(['status' => 'ok']);
+                        }
+                        else {
+                            $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                        }
                     }
-				}
+                }
             }
             else {
-            	$errors = $pageAdd->errors();
+                $errors = $pageAdd->errors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same title and please fill all field."]);
             }
 
             $this->set(['json' => $json]);
         }
         else {
-	        throw new NotFoundException(__('Page not found'));
-	    }
+            throw new NotFoundException(__('Page not found'));
+        }
     }
     public function ajaxSave() 
     {
@@ -387,10 +390,10 @@ class PagesController extends AppController
                             $general->page_id          = $this->request->getData('id');
                             $general->admin_id         = $sessionID;
 
-    						$page = $this->Pages->get($this->request->getData('id'));
-    		                $page->title = $this->request->getData('title');
+                            $page = $this->Pages->get($this->request->getData('id'));
+                            $page->title = $this->request->getData('title');
 
-    	                    if ($generalsTable->save($general) && $this->Pages->save($page)) {
+                            if ($generalsTable->save($general) && $this->Pages->save($page)) {
                                 $record_id = $page->id;
                                 $page      = $this->Pages->get($record_id);
                                 $title     = $page->title;
@@ -414,10 +417,10 @@ class PagesController extends AppController
                                 else {
                                     $json = json_encode(['status' => 'ok', 'activity' => false]);
                                 }
-    	                    }
-    	                    else {
-    	                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
-    	                    }
+                            }
+                            else {
+                                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                            }
                         }
                         else {
                             $generals = $generalsTable->find()->where(['page_id' => $this->request->getData('id')])->first();
@@ -429,16 +432,16 @@ class PagesController extends AppController
                             $general->page_id          = $this->request->getData('id');
                             $general->admin_id         = $sessionID;
 
-        					$findDuplicate = $this->Pages->find('all')->where(['slug' => $slug, 'id <>' => $this->request->getData('id')]);
-        					if ($findDuplicate->count() >= 1) {
-        						$json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another title."]);
-        					}
-        					else {
-        						$page = $this->Pages->get($this->request->getData('id'));
-        		                $page->title = $this->request->getData('title');
+                            $findDuplicate = $this->Pages->find('all')->where(['slug' => $slug, 'id <>' => $this->request->getData('id')]);
+                            if ($findDuplicate->count() >= 1) {
+                                $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another title."]);
+                            }
+                            else {
+                                $page = $this->Pages->get($this->request->getData('id'));
+                                $page->title = $this->request->getData('title');
 
-        	                    if ($generalsTable->save($general) && $this->Pages->save($page)) {
-        	                        $record_id = $page->id;
+                                if ($generalsTable->save($general) && $this->Pages->save($page)) {
+                                    $record_id = $page->id;
                                     $page      = $this->Pages->get($record_id);
                                     $title     = $page->title;
                                     /**
@@ -461,25 +464,25 @@ class PagesController extends AppController
                                     else {
                                         $json = json_encode(['status' => 'ok', 'activity' => false]);
                                     }
-        	                    }
-        	                    else {
-        	                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
-        	                    }
-        					}
+                                }
+                                else {
+                                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                }
+                            }
                         }
                     }
                 }
             }
             else {
-            	$errors = $pageSave->errors();
+                $errors = $pageSave->errors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
             $this->set(['json' => $json]);
         }
         else {
-	        throw new NotFoundException(__('Page not found'));
-	    }
+            throw new NotFoundException(__('Page not found'));
+        }
     }
     public function ajaxChangeStatus() 
     {
@@ -737,8 +740,8 @@ class PagesController extends AppController
         }
     }
     public function ajaxDelete()
-	{
-		$this->viewBuilder()->enableAutoLayout(false);
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageDelete = new PageDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -847,15 +850,15 @@ class PagesController extends AppController
                 }
             }
             else {
-            	$errors = $pageDelete->errors();
+                $errors = $pageDelete->errors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
             $this->set(['json' => $json]);
         }
         else {
-	        throw new NotFoundException(__('Page not found'));
-	    }
+            throw new NotFoundException(__('Page not found'));
+        }
     }
     public function ajaxFroalaBlocks()
     {
@@ -875,8 +878,8 @@ class PagesController extends AppController
             $this->set(['json' => $json]);
         }
         else {
-	        throw new NotFoundException(__('Page not found'));
-	    }
+            throw new NotFoundException(__('Page not found'));
+        }
     }
     public function ajaxThemeBlocks()
     {
@@ -899,6 +902,95 @@ class PagesController extends AppController
             throw new NotFoundException(__('Page not found'));
         }
     }
+    public function ajaxLoadSavedBlock()
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+            $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
+
+            $number  = $this->request->getData('number');
+            $svId    = $this->request->getData('svId');
+            $filter  = $this->request->getData('filter');
+            $webroot = $this->request->getAttribute('webroot');
+            $randomNumber = rand(0, 99999);
+
+            $findBlock = $purpleFroalaBlocks->savedBlocksJson($filter);
+
+            if (strpos($svId, 'saved::') !== false) {
+                $explodeId = explode('::', $svId);
+                $json      = json_encode(['status' => 'ok', 'id' => $explodeId[1], 'html' => $findBlock]);
+            }
+            else {
+                $json = json_encode(['status' => 'ok', 'id' => $randomNumber, 'html' => $findBlock]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxSaveBlock()
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+            $name   = $this->request->getData('name');
+            $html   = $this->request->getData('html');
+            $target = $this->request->getData('target');
+
+            $randomId = rand(10000, 99999);
+            $newHtml  = str_replace($target, $randomId, $html);
+            $newHtml2 = str_replace('fdb-block-selected', $randomId, $newHtml);
+
+            $random   = rand(1000, 9999);
+            $fileName = Text::slug(strtolower($this->request->getData('name')));
+            $content  = [
+                'name' => trim($name),
+                'id'   => $randomId,
+                'html' => $newHtml2
+            ];
+            $json = json_encode($content);
+
+            $jsonFile   = $fileName.'_'.$random.'.json';
+            $writeJson  = new File(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved' . DS . $jsonFile);
+            
+            if ($writeJson->write($json)) {
+                $json = json_encode(['status' => 'ok', 'json' => $jsonFile]);
+            }
+            else {
+                $json = json_encode(['status' => 'error']);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxDeleteBlock() 
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+            $file     = $this->request->getData('file');
+            $class    = $this->request->getData('class');
+            $fileJson = new File(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved' . DS . $file);
+
+            if ($fileJson->delete()) {
+                $json = json_encode(['status' => 'ok', 'json' => $class]);
+            }
+            else {
+                $json = json_encode(['status' => 'error']);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
     public function ajaxFroalaCodeEditor()
     {
         $this->viewBuilder()->enableAutoLayout(false);
@@ -913,7 +1005,7 @@ class PagesController extends AppController
             $this->render();
         }
         else {
-	        throw new NotFoundException(__('Page not found'));
-	    }
+            throw new NotFoundException(__('Page not found'));
+        }
     }
 }

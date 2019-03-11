@@ -242,6 +242,7 @@
                         '<a id="fdb-block-menu-button-bgcolor-'+id+'" class="fdb-block-menu-button-bgcolor" data-fdb-id="'+id+'" data-fdb-bg="section" uk-tooltip="title: Change Background Color"><i class="mdi mdi-format-color-fill" id=""></i></a>' +
                         '<a id="fdb-block-menu-button-animation-'+id+'" class="fdb-block-menu-button-animation" data-fdb-id="'+id+'" uk-tooltip="title: Add Animation on Scroll"><i class="mdi mdi-animation" id=""></i></a>' + 
                         sliderTuning +
+                        '<a id="fdb-block-menu-button-saveblock-'+id+'" class="fdb-block-menu-button-saveblock" data-fdb-id="'+id+'" uk-tooltip="title: Save Block"><i class="mdi mdi-content-save-settings" id=""></i></a>' +
                         '<a id="fdb-block-menu-button-movedown-'+id+'" class="fdb-block-menu-button-delete" data-fdb-id="'+id+'" uk-tooltip="title: Delete Block"><i class="mdi mdi-delete" id=""></i></a>' +
                     '</div>';
 
@@ -258,6 +259,7 @@
                     var addUikitAnimationBtn  = addUikitAnimationBlock();
                     var fontAwesomeIconBtn    = changeFontAwesomeIcon();
                     var buttonsCustomizingBtn = buttonsCustomizing();
+                    var saveBlockToFileBtn    = saveBlockToFile();
 
                     $('.fdb-block-menu-button-delete').click(function() {
                         var btn = $(this),
@@ -454,6 +456,7 @@
             var template  = $(this),
                 number    = template.data('purple-number'),
                 filter    = template.data('purple-filter'),
+                svId      = template.data('purple-id'),
                 url       = template.data('purple-url'),
                 urlReload = template.data('purple-urlreload'),
                 token     = $('#csrf-ajax-token').val();
@@ -476,20 +479,15 @@
                 headers : {
                     'X-CSRF-Token': token
                 },
-                data: { number:number, filter:filter },
+                data: { number:number, filter:filter, svId:svId },
                 cache: false,
                 beforeSend: function() {
                 },
                 success: function(msg) {
-                    console.log(msg);
-
                     $("#button-save-page").html('<i class="mdi mdi-content-save"></i> Save');
                     $("#button-save-page").click(function() {
                         return true;
                     })
-                    $('html, body').animate({
-                        scrollTop: $("#bottom-of-builder").offset().top
-                    }, 1000);
                     
                     var json    = $.parseJSON(msg),
 				        status  = (json.status),
@@ -501,6 +499,10 @@
                         $("#bind-fdb-blocks").find(".fdb-blocks-empty").remove();
                         var html = html.replace(/{bind.id}/g, id);
                         $("#bind-fdb-blocks").append(html);
+
+                        $('html, body').animate({
+                            scrollTop: $("section#fdb-"+id).offset().top - 120
+                        }, 1000);
 
                         $("section#fdb-"+id).on({
                                 mouseenter: function () {
@@ -521,6 +523,7 @@
                                             '<a id="fdb-block-menu-button-bgcolor-'+id+'" class="fdb-block-menu-button-bgcolor" data-fdb-id="'+id+'" data-fdb-bg="section" uk-tooltip="title: Change Background Color"><i class="mdi mdi-format-color-fill" id=""></i></a>' +
                                             '<a id="fdb-block-menu-button-animation-'+id+'" class="fdb-block-menu-button-animation" data-fdb-id="'+id+'" uk-tooltip="title: Add Animation on Scroll"><i class="mdi mdi-animation" id=""></i></a>' +
                                             sliderTuning +
+                                            '<a id="fdb-block-menu-button-saveblock-'+id+'" class="fdb-block-menu-button-saveblock" data-fdb-id="'+id+'" uk-tooltip="title: Save Block"><i class="mdi mdi-content-save-settings" id=""></i></a>' +
                                             '<a id="fdb-block-menu-button-movedown-'+id+'" class="fdb-block-menu-button-delete" data-fdb-id="'+id+'" uk-tooltip="title: Delete Block"><i class="mdi mdi-delete" id=""></i></a>' +
                                         '</div>';
 
@@ -537,6 +540,7 @@
                                         var addUikitAnimationBtn  = addUikitAnimationBlock();
                                         var fontAwesomeIconBtn    = changeFontAwesomeIcon();
                                         var buttonsCustomizingBtn = buttonsCustomizing();
+                                        var saveBlockToFileBtn    = saveBlockToFile();
 
                                         $('.fdb-block-menu-button-delete').click(function() {
                                             var btn    = $(this),

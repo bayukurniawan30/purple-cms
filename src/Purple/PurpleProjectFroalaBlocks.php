@@ -7,8 +7,8 @@ use Cake\Filesystem\File;
 
 class PurpleProjectFroalaBlocks 
 {
-	public function call_to_action($number, $webroot, $randomNumber) 
-	{
+    public function call_to_action($number, $webroot, $randomNumber) 
+    {
         if ($number == 1) {
             $html = '<section id="fdb-'.$randomNumber.'" class="fdb-block" data-fdb-id="'.$randomNumber.'"> <div class="container"> <div class="row justify-content-center"> <div class="col-12 col-md-8 text-center fdb-editor"> <p class="text-h3"> "Separated they live in Bookmarksgrove right at the coast of the Semantics, far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast." </p><p class="mt-5 mt-sm-4"> <a class="bttn-to-customize btn bttn-no-outline fdb-link" href="#">Download</a> </p></div></div></div></section>';
         }
@@ -195,7 +195,7 @@ class PurpleProjectFroalaBlocks
         return $html;
     }
     public function teams($number, $webroot, $randomNumber) 
-	{
+    {
         if ($number == 1) {
             $html = '<section id="fdb-'.$randomNumber.'" class="fdb-block team-1" data-fdb-id="'.$randomNumber.'"><div class="container"> <div class="row text-center justify-content-center"> <div class="col-8 fdb-editor"> <h1 class="fdb-heading">Our Team</h1> <p class="text-h3">Far far away, behind the word mountains, far from the countries.</p></div></div><div class="row-50"></div><div class="row"> <div class="col text-left"> <div class="fdb-box fdb-editor"> <img alt="image" class="img-fluid fdb-image" src="'.$webroot.'master-assets/plugins/froala-blocks/images/html/img_square_1.svg"> <div class="content"> <h3 class="fdb-heading"><strong>Sara Doe</strong></h3> <p>Founder</p></div></div></div><div class="col text-left"> <div class="fdb-box fdb-editor"> <img alt="image" class="img-fluid fdb-image" src="'.$webroot.'master-assets/plugins/froala-blocks/images/html/img_square_2.svg"> <div class="content"> <h3 class="fdb-heading"><strong>Sara Doe</strong></h3> <p>Founder</p></div></div></div><div class="col text-left"> <div class="fdb-box fdb-editor"> <img alt="image" class="img-fluid fdb-image" src="'.$webroot.'master-assets/plugins/froala-blocks/images/html/img_square_3.svg"> <div class="content"> <h3 class="fdb-heading"><strong>Sara Doe</strong></h3> <p>Founder</p></div></div></div><div class="col text-left"> <div class="fdb-box fdb-editor"> <img alt="image" class="img-fluid fdb-image" src="'.$webroot.'master-assets/plugins/froala-blocks/images/html/img_square_4.svg"> <div class="content"> <h3 class="fdb-heading"><strong>Sara Doe</strong></h3> <p>Founder</p></div></div></div></div></div></section>';
         }
@@ -224,7 +224,7 @@ class PurpleProjectFroalaBlocks
         return $html;
     }
     public function features($number, $webroot, $randomNumber) 
-	{
+    {
         if ($number == 1) {
             $html = '<section id="fdb-'.$randomNumber.'" class="fdb-block" data-fdb-id="'.$randomNumber.'"><div class="container"> <div class="row text-center justify-content-sm-center no-gutters"> <div class="col-12 col-sm-8 col-md-3 m-auto fdb-editor"> <h3 class="fdb-heading"><strong>Feature 1</strong></h3> <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p></div><div class="col-12 col-sm-8 col-md-3 m-auto pt-3 pt-md-0 fdb-editor"> <h3 class="fdb-heading"><strong>Feature 2</strong></h3> <p>Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p></div><div class="col-12 col-sm-8 col-md-3 m-auto pt-3 pt-md-0 fdb-editor"> <h3 class="fdb-heading"><strong>Feature 3</strong></h3> <p>A small river named Duden flows by their place and supplies it with the necessary regelialia.</p></div></div><div class="row text-center justify-content-md-center pt-3 pt-md-5"> <div class="col-12 col-sm-8 col-md-3 m-auto fdb-editor"> <h3 class="fdb-heading"><strong>Feature 4</strong></h3> <p>It is a paradisematic country, in which roasted parts of sentences fly into your mouth</p></div><div class="col-12 col-sm-8 col-md-3 m-auto pt-3 pt-md-0 fdb-editor"> <h3 class="fdb-heading"><strong>Feature 5</strong></h3> <p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day.</p></div><div class="col-12 col-sm-8 col-md-3 m-auto pt-3 pt-md-0 fdb-editor"> <h3 class="fdb-heading"><strong>Feature 6</strong></h3> <p>The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks</p></div></div></div></section>';
         }
@@ -372,6 +372,21 @@ class PurpleProjectFroalaBlocks
         
         return $html;
     }
+    public function savedBlocks()
+    {
+        $blocksFolder = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved'. DS);
+        $blocks       = $blocksFolder->find('.*\.json', true);
+        return $blocks;
+    } 
+    public function savedBlocksJson($file)
+    {
+        $fileBlock   = file_get_contents(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved'. DS . $file);
+        $decodeBlock = json_decode($fileBlock, true);
+        $html        = $decodeBlock['html'];
+
+        return $html;
+
+    }
     public function themeBlocks($theme = 'EngageTheme')
     {
         $blocksFolder = new Folder(PLUGINS . $theme.'/webroot/blocks/');
@@ -399,10 +414,6 @@ class PurpleProjectFroalaBlocks
         }
 
         return $html;
-
-    }
-    public function savedBlocks($webroot, $randomNumber) 
-    {
 
     }
 }

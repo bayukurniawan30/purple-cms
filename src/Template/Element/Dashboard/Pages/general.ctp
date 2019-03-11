@@ -6,6 +6,10 @@
     endif;
 ?>
 <div class="uk-child-width-expand@s" uk-grid>
+     <!--Save Block URL-->
+    <input id="fdb-block-save-url" type="hidden" name="fdb-save-block-url" value="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxSaveBlock"]); ?>">
+     <!--Delete Block URL-->
+    <input id="fdb-block-delete-url" type="hidden" name="fdb-delete-block-url" value="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxDeleteBlock"]); ?>">
     <?php
         if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):
     ?>
@@ -45,6 +49,7 @@
                                 <li uk-filter-control=".fdb-contacts"><a href="#">Contacts</a></li>
                                 <li uk-filter-control=".uikit-lightbox"><a href="#">Lightbox</a></li>
                                 <li uk-filter-control=".uikit-slider"><a href="#">Slider</a></li>
+                                <li uk-filter-control=".saved-block"><a href="#">Saved Blocks</a></li>
                                 <li class="uk-nav-divider"></li>
                                 <li uk-filter-control=".theme-blocks"><a href="#">Theme Blocks <span class="mdi mdi-information-outline text-primary" uk-tooltip="Special Blocks from active Theme. The looks of the theme block might be slightly different from what is seen on the front-end page because the .css file from the used theme. Please remove the block if you change the active theme. Only use block from active theme."></span></a></li>
                             </ul>
@@ -134,20 +139,43 @@
                     </div>
                     <?php endforeach; ?>
 
+                    <!-- Saved Blocks -->
+                    <?php 
+                        if ($savedBlocks):
+                            $savedNumber = 1;
+                            foreach ($savedBlocks as $savedBlock): 
+                                $fileBlock   = file_get_contents(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved'. DS . $savedBlock);
+                                $decodeBlock = json_decode($fileBlock, true);
+                                $classBlock  = str_replace('.json', '', $savedBlock);
+                    ?>
+                        <div class="fdb-image-container saved-block fdb-blocks saved-block-<?= $classBlock ?>" data-purple-number="<?= $savedNumber ?>" data-purple-filter="<?= $savedBlock ?>" data-purple-id="saved::<?= $decodeBlock['id'] ?>" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxLoadSavedBlock"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>" style="border-bottom: none;">
+                            <div class="uk-card uk-card-default uk-card-body uk-text-center bg-success text-white"><strong>Saved Block</strong><br><small><?= $decodeBlock['name'] ?></small></div>
+                        </div>
+                        <div class="uk-margin-small-bottom saved-block uk-button-group uk-width-1-1 saved-block-<?= $classBlock ?>-button" style="border-left: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5">
+                            <button class="uk-button uk-button-danger uk-button-small uk-width-1-1 button-delete-saved-block" style="border: none" data-purple-target="<?= $savedBlock ?>" data-purple-class="<?= $classBlock ?>" data-purple-name="<?= $decodeBlock['name'] ?>"><i class="mdi mdi-delete"></i> Delete Block</button>
+                        </div>
+                    <?php 
+                                $savedNumber++;
+                            endforeach; 
+                        endif;
+                    ?>
+
                     <!-- Theme Blocks -->
                     <?php 
                         if ($themeBlocks):
+                            $themeNumber = 1;
                             foreach ($themeBlocks as $themeBlock): 
                                 $fileBlock   = file_get_contents(PLUGINS .'EngageTheme/webroot/blocks/'.$themeBlock);
                                 $decodeBlock = json_decode($fileBlock, true);
 
                                 foreach($decodeBlock["options"] as $options):
                     ?>
-                        <div class="fdb-image-container uk-margin-small-bottom theme-blocks fdb-blocks" data-purple-number="<?= $number ?>" data-purple-filter="<?= $themeBlock ?>" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxThemeBlocks"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
+                        <div class="fdb-image-container uk-margin-small-bottom theme-blocks fdb-blocks" data-purple-number="<?= $themeNumber ?>" data-purple-filter="<?= $themeBlock ?>" data-purple-id="theme" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxThemeBlocks"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
                             <div class="uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white"><strong><?= $options['theme'] ?></strong> Theme Block<br><small><?= $options['name'] ?></small></div>
                         </div>
                     <?php 
                                 endforeach; 
+                                $themeNumber++;
                             endforeach; 
                         endif;
                     ?>
@@ -321,6 +349,12 @@
 
 <!-- Font Awesome Icons for Froala Blocks -->
 <?= $this->element('Dashboard/Modal/font_awesome_icons_modal') ?>
+
+<!-- Save Block to File -->
+<?= $this->element('Dashboard/Modal/froala_save_block_modal') ?>
+
+<!-- Delete Saved Block -->
+<?= $this->element('Dashboard/Modal/froala_delete_block_modal') ?>
 
 <!-- Buttons Customizing for Froala Blocks -->
 <?= $this->element('Dashboard/Modal/buttons_customizing_modal') ?>
