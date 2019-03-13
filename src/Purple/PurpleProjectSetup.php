@@ -439,7 +439,7 @@ class PurpleProjectSetup
 		]);
 		$this->conn->insert('settings', [
 			'name'  => 'secondaryfooter',
-			'value' => 'NULL::Created with &#60;a href=http://purpleproject.com&#62;Purple&#60;/a&#62;'
+			'value' => 'NULL::Created with &#60;a href=http://purple-cms.com&#62;Purple&#60;/a&#62;'
 		]);
 		$this->conn->insert('settings', [
 			'name'  => 'metakeywords',

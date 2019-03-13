@@ -175,4 +175,21 @@ class VisitorsTable extends Table
         $query = $this->find()->where(['DATE(date_created)' => $fullDate, 'ip' => $ip, 'browser' => $browser, 'platform' => $platform, 'device' => $device]);
         return $query->count(); 
     }
+    public function isVisitorsEnough() {
+        $totalVisitors = $this->find()->count();
+        if ($totalAllVisitors == 50 || $totalAllVisitors == 100 || $totalAllVisitors == 500 || $totalAllVisitors == 1000 || $totalAllVisitors == 5000 || $totalAllVisitors == 20000 || $totalAllVisitors == 50000) { 
+            return true;
+        }
+        elseif ($totalAllVisitors > 50000) {
+            if ($totalAllVisitors % 50000 == 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
 }

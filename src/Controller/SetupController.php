@@ -197,6 +197,15 @@ class SetupController extends AppController
 					$updateFolder   = $connection->update('settings', ['value' => $this->request->getData('foldername')], ['name' => 'foldername']);
 					$updateEmail    = $connection->update('settings', ['value' => $this->request->getData('email')], ['name' => 'email']);
 	                $updateTimezone = $connection->update('settings', ['value' => $this->request->getData('timezone')], ['name' => 'timezone']);
+					$updateFooter   = $connection->update('settings', ['value' => '&amp;copy; '.date('Y').' '.trim($this->request->getData('sitename')).'::Created with &#60;a href=http://purple-cms.com&#62;Purple&#60;/a&#62;'], ['name' => 'secondaryfooter']);
+					
+					if ($this->request->getData('foldername') == '') {
+						$bindFolder = '';
+					}
+					else {
+						$bindFolder = '/'.$this->request->getData('foldername');
+					}
+					$updateHomepage = $connection->update('settings', ['value' => '&lt;section id=&quot;fdb-71781&quot; class=&quot;fdb-block uk-flex uk-flex-middle&quot; data-fdb-id=&quot;71781&quot; style=&quot;background-image: url(&amp;quot;'.$bindFolder.'/master-assets/img/svg-img.svg&amp;quot;); box-sizing: border-box; min-height: calc(100vh); height: 626px;&quot; uk-height-viewport=&quot;&quot;&gt;    &lt;div class=&quot;container&quot;&gt;&lt;div class=&quot;row uk-flex uk-flex-middle&quot;&gt;&lt;div class=&quot;col-12 col-md-6 col-lg-6 text-left fdb-editor royal-theme&quot;&gt;&lt;h1 class=&quot;fdb-heading&quot;&gt;&lt;span style=&quot;font-size: 42px;&quot;&gt;&lt;strong&gt;Welcome to Purple CMS&lt;/strong&gt;&lt;/span&gt;&lt;/h1&gt;&lt;p class=&quot;text-h3&quot;&gt;&lt;span style=&quot;font-size: 24px;&quot;&gt;A Content Management System build with CakePHP 3. Aiming to make website developer easier and faster to make a website, whether simple or complex.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;col-12 col-md-6 col-lg-6&quot;&gt;&lt;img src=&quot;'.$bindFolder.'/master-assets/img/purple-dashboard.png&quot; class=&quot;img-fluid uk-border-rounded&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;'], ['name' => 'homepagestyle']);
 
 					if (TableRegistry::get('Admins')->save($admin) && $updateSitename && $updateSiteurl && $updateFolder && $updateEmail && $updateTimezone) {
                         $record_id = $admin->id;

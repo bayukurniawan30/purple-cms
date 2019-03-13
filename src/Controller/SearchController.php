@@ -6,6 +6,7 @@ use Cake\Event\Event;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
+use Cake\Log\Log;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
@@ -38,6 +39,7 @@ class SearchController extends AppController
     {
         if ($this->request->is('post')) {
             $this->loadModel('Settings');
+            $this->loadModel('Admins');
             $this->loadModel('Menus');
             $this->loadModel('Blogs');
             $this->loadModel('Tags');
@@ -64,6 +66,50 @@ class SearchController extends AppController
                 $visitor->device   = $device;
 
                 $this->Visitors->save($visitor);
+            }
+
+            $isVisitorsEnough = $this->Visitors->isVisitorsEnough();
+
+            if ($isVisitorsEnough) {
+                $totalAllVisitors = $this->Visitors->totalAllVisitors();
+
+                // Send Email to User to Notify user
+                $users     = $this->Admins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
+                $totalUser = $users->count();
+
+                $emailStatus = [];
+                $counter = 0;
+                foreach ($users as $user) {
+                    $key           = $this->Settings->settingsPublicApiKey();
+                    $userData      = array(
+                        'sitename'    => $this->Settings->settingsSiteName(),
+                        'email'       => $user->email,
+                        'displayName' => $user->display_name,
+                        'level'       => $user->level
+                    );
+                    $senderData   = array(
+                        'total'   => $totalAllVisitors,
+                        'domain'  => $this->request->domain()
+                    );
+                    $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));
+
+                    if ($notifyUser == true) {
+                        $counter++;
+                        $emailStatus[$user->email] = true; 
+                    }
+                    else {
+                        $emailStatus[$user->email] = false; 
+                    }
+                }
+
+                if ($totalUser == $counter) {
+                    $emailNotification = true;
+                }
+                else {
+                    $emailNotification = false;
+                }
+
+                // Log::write('debug', $emailNotification);
             }
 
             $search = new SearchForm();
