@@ -32,5 +32,13 @@ $(document).ready(function() {
 	// Disable Editable Content
 	$('[contenteditable]').attr('contenteditable', 'false');
 
+	// Remove Duplicate UIKit Slider Navigation
+	$('.uk-slidenav').each(function() {
+	    var child = $(this).children('svg').first().get(0).outerHTML;
+	    console.log(child);
+
+	    $(this).html(child);
+	});
+
 	$('a[href="https://www.froala.com/wysiwyg-editor?k=u"]').remove();
 })

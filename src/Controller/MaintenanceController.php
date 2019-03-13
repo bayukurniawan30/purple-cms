@@ -75,7 +75,7 @@ class MaintenanceController extends AppController
     }
     public function ajaxGetEmail()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
         
         $maintenance  = new MaintenanceForm();
         if ($this->request->is('ajax')) {

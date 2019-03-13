@@ -70,7 +70,7 @@ class AuthenticateController extends AppController
 	public function logout() 
 	{
 		$session = $this->getRequest()->getSession();
-        if ($this->request->getEnv('HTTP_HOST') == $session->read('Admin.host')) {
+        if ($this->request->env('HTTP_HOST') == $session->read('Admin.host')) {
             $session->delete('Admin.host');
             $session->delete('Admin.id');
             $session->delete('Admin.password');

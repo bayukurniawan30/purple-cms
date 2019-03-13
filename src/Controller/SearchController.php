@@ -29,6 +29,17 @@ class SearchController extends AppController
                 ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
             );
         }
+        else {
+            $purpleSettings = new PurpleProjectSettings();
+            $maintenance    = $purpleSettings->maintenanceMode();
+            $userLoggedIn   = $purpleSettings->checkUserLoggedIn();
+
+            if ($maintenance == 'enable' && $userLoggedIn == false) {
+                return $this->redirect(
+                    ['controller' => 'Maintenance', 'action' => 'index']
+                );
+            }
+        }
     }
     public function beforeRender(\Cake\Event\Event $event)
     {

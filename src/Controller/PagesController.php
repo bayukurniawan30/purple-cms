@@ -29,11 +29,24 @@ class PagesController extends AppController
                 ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
             );
         }
+        else {
+            $purpleSettings = new PurpleProjectSettings();
+            $maintenance    = $purpleSettings->maintenanceMode();
+            $userLoggedIn   = $purpleSettings->checkUserLoggedIn();
+
+            if ($maintenance == 'enable' && $userLoggedIn == false) {
+                return $this->redirect(
+                    ['controller' => 'Maintenance', 'action' => 'index']
+                );
+            }
+        }
     }
     public function beforeRender(\Cake\Event\Event $event)
     {
         $this->viewBuilder()->setTheme('EngageTheme');
         $this->viewBuilder()->setLayout('EngageTheme.default');
+
+        
     }
     public function initialize()
     {
@@ -350,7 +363,7 @@ class PagesController extends AppController
     }
     public function ajaxSendContact()
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         $pageContact = new PageContactForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
@@ -451,7 +464,7 @@ class PagesController extends AppController
     }
     public function ajaxVerifyForm($action, $token)
     {
-        $this->viewBuilder()->autoLayout(false);
+        $this->viewBuilder()->enableAutoLayout(false);
 
         if (empty($action) || empty($token)) {
             throw new NotFoundException(__('Page not found'));

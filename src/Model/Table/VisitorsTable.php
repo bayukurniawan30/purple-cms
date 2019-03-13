@@ -176,7 +176,7 @@ class VisitorsTable extends Table
         return $query->count(); 
     }
     public function isVisitorsEnough() {
-        $totalVisitors = $this->find()->count();
+        $totalAllVisitors = $this->find()->count();
         if ($totalAllVisitors == 50 || $totalAllVisitors == 100 || $totalAllVisitors == 500 || $totalAllVisitors == 1000 || $totalAllVisitors == 5000 || $totalAllVisitors == 20000 || $totalAllVisitors == 50000) { 
             return true;
         }

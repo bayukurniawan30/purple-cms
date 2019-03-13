@@ -281,7 +281,7 @@ class PurpleProjectGlobal
 	public function isRecaptchaPass($status, $score)
 	{
 		$serverRequest = new ServerRequest();
-		$host = $serverRequest->env('HTTP_HOST');
+		$host = $serverRequest->getEnv('HTTP_HOST');
 		if ($host == 'localhost') {
 			return true;
 		}

@@ -22,9 +22,6 @@ use Cake\Core\Plugin;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;
-use Cake\Datasource\ConnectionManager;
-use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 
 /**
  * The default class to use for all routes
@@ -49,231 +46,199 @@ use App\Purple\PurpleProjectSettings;
  */
 Router::defaultRouteClass(DashedRoute::class);
 
-$purpleGlobal = new PurpleProjectGlobal();
-$databaseInfo   = $purpleGlobal->databaseInfo();
-if ($databaseInfo == 'default') {
-    $maintenance    = 'disable';
-    $userLoggedIn   = false;
-}
-else {
-    $connection = ConnectionManager::get('default');
-    $results = $connection->execute("SHOW TABLES LIKE 'settings'");
-    $count   = $results->rowCount();
+Router::scope('/sitemap', function ($routes) {
+    $routes->setExtensions(['xml']);
+    $routes->connect('/',
+            ['controller' => 'Sitemap', 'action' => 'index'],
+            ['_name' => 'websiteSitemap']
+    );
+});
 
-    if ($count > 0) {
-        $purpleSettings = new PurpleProjectSettings();
-        $maintenance    = $purpleSettings->maintenanceMode();
-        $userLoggedIn   = $purpleSettings->checkUserLoggedIn();
-    }
-    else {
-        $maintenance    = 'disable';
-        $userLoggedIn   = false;
-    }
-}
+Router::scope('/', function (RouteBuilder $routes) {
+    /**
+     * Here, we are connecting '/' (base path) to a controller called 'Pages',
+     * its action called 'display', and we pass a param to select the view file
+     * to use (in this case, src/Template/Pages/home.ctp)...
+     */
 
-if ($maintenance == 'enable' && $userLoggedIn == false) {
-    Router::scope('/', function ($routes) {
-        /**
-         * Maintenance Routing
-         */
-        $routes->connect('/', 
-                ['controller' => 'Maintenance', 'action' => 'index'], 
-                ['_name' => 'home']
-        );
+    /**
+     * Maintenance Routing
+     */
+    $routes->connect('/maintenance', 
+            ['controller' => 'Maintenance', 'action' => 'index'], 
+            ['_name' => 'websiteIsMaintenance']
+    );
 
-        $routes->connect('/maintenance/ajax-get-email', 
-                ['controller' => 'Maintenance', 'action' => 'ajaxGetEmail'], 
-                ['_name' => 'ajaxGetNotifyEmail']
-        );
+    $routes->connect('/maintenance/ajax-get-email', 
+            ['controller' => 'Maintenance', 'action' => 'ajaxGetEmail'], 
+            ['_name' => 'ajaxGetNotifyEmail']
+    );
+    
+    /**
+     * Home Routing
+     */
+    $routes->connect('/', 
+            ['controller' => 'Pages', 'action' => 'home'], 
+            ['_name' => 'home']
+    );
+    
 
-        $routes->redirect(
-            '/*',
-            ['controller' => 'Maintenance', 'action' => 'index']
-        );
-    });
-}
-else {
-    Router::scope('/sitemap', function ($routes) {
-        $routes->setExtensions(['xml']);
-        $routes->connect('/',
-                ['controller' => 'Sitemap', 'action' => 'index'],
-                ['_name' => 'websiteSitemap']
-        );
-    });
+    /**
+     * Specific Page Routing
+     * E.g. General, Blog, or Custom Page 
+     */
+    $routes->connect('/:page', 
+            ['controller' => 'Pages'], 
+            ['_name' => 'specificPage'])
+        ->setPass(['page']
+    );
 
-    Router::scope('/', function (RouteBuilder $routes) {
-        /**
-         * Here, we are connecting '/' (base path) to a controller called 'Pages',
-         * its action called 'display', and we pass a param to select the view file
-         * to use (in this case, src/Template/Pages/home.ctp)...
-         */
-        
-        /**
-         * Home Routing
-         */
-        $routes->connect('/', 
-                ['controller' => 'Pages', 'action' => 'home'], 
-                ['_name' => 'home']
-        );
-        
+    /**
+     * Blog Routing with paging
+     */
+    $routes->connect('/:page/page/:paging', 
+            ['controller' => 'Pages', 'action' => 'blog'], 
+            ['_name' => 'blogPagination'])
+        ->setPatterns(['paging' => '\d+'])
+        ->setPass(['paging']
+    );
 
-        /**
-         * Specific Page Routing
-         * E.g. General, Blog, or Custom Page 
-         */
-        $routes->connect('/:page', 
-                ['controller' => 'Pages'], 
-                ['_name' => 'specificPage'])
-            ->setPass(['page']
-        );
+    /**
+     * Blog Posts in Category Routing
+     */
+    $routes->connect('/posts/:category', 
+            ['controller' => 'Blogs', 'action' => 'postsInCategory'], 
+            ['_name' => 'postsInCategory'])
+        ->setPass(['category']
+    );
 
-        /**
-         * Blog Routing with paging
-         */
-        $routes->connect('/:page/page/:paging', 
-                ['controller' => 'Pages', 'action' => 'blog'], 
-                ['_name' => 'blogPagination'])
-            ->setPatterns(['paging' => '\d+'])
-            ->setPass(['paging']
-        );
+    /**
+     * Blog Posts in Category Routing with paging
+     */
+    $routes->connect('/posts/:category/page/:paging', 
+            ['controller' => 'Blogs', 'action' => 'postsInCategory'], 
+            ['_name' => 'postsInCategoryPagination'])
+        ->setPatterns(['paging' => '\d+'])
+        ->setPass(['category', 'paging']
+    );
 
-        /**
-         * Blog Posts in Category Routing
-         */
-        $routes->connect('/posts/:category', 
-                ['controller' => 'Blogs', 'action' => 'postsInCategory'], 
-                ['_name' => 'postsInCategory'])
-            ->setPass(['category']
-        );
+    /**
+     * Blog Post Detail Routing
+     * Use post DATE created and slug as URL
+     */
+    $routes->connect('/:year/:month/:date/:post', 
+            ['controller' => 'Blogs', 'action' => 'detail'], 
+            ['_name' => 'specificPost'])
+        ->setPatterns([
+            'year'  => '[12][0-9]{3}', 
+            'month' => '0[1-9]|1[012]', 
+            'date'  => '0[1-9]|[12][0-9]|3[01]'])
+        ->setPass(['post']
+    );
 
-        /**
-         * Blog Posts in Category Routing with paging
-         */
-        $routes->connect('/posts/:category/page/:paging', 
-                ['controller' => 'Blogs', 'action' => 'postsInCategory'], 
-                ['_name' => 'postsInCategoryPagination'])
-            ->setPatterns(['paging' => '\d+'])
-            ->setPass(['category', 'paging']
-        );
+    /* Use post YEAR and MONTH created and slug as URL */
+    $routes->connect('/:year/:month/:post', 
+            ['controller' => 'Blogs', 'action' => 'detail'], 
+            ['_name' => 'specificPostMonth'])
+        ->setPatterns([
+            'year'  => '[12][0-9]{3}', 
+            'month' => '0[1-9]|1[012]'])
+        ->setPass(['post']
+    );
 
-        /**
-         * Blog Post Detail Routing
-         * Use post DATE created and slug as URL
-         */
-        $routes->connect('/:year/:month/:date/:post', 
-                ['controller' => 'Blogs', 'action' => 'detail'], 
-                ['_name' => 'specificPost'])
-            ->setPatterns([
-                'year'  => '[12][0-9]{3}', 
-                'month' => '0[1-9]|1[012]', 
-                'date'  => '0[1-9]|[12][0-9]|3[01]'])
-            ->setPass(['post']
-        );
+    /* Use post slug as URL */
+    $routes->connect('/:post', 
+            ['controller' => 'Blogs', 'action' => 'detail'], 
+            ['_name' => 'specificPostName'])
+        ->setPass(['post']
+    );
 
-        /* Use post YEAR and MONTH created and slug as URL */
-        $routes->connect('/:year/:month/:post', 
-                ['controller' => 'Blogs', 'action' => 'detail'], 
-                ['_name' => 'specificPostMonth'])
-            ->setPatterns([
-                'year'  => '[12][0-9]{3}', 
-                'month' => '0[1-9]|1[012]'])
-            ->setPass(['post']
-        );
+    /**
+     * Blog Post in Tag Routing
+     */
+    $routes->connect('/tag/:tag', 
+            ['controller' => 'Blogs', 'action' => 'tag'], 
+            ['_name' => 'taggedPosts'])
+        ->setPass(['tag']
+    );
 
-        /* Use post slug as URL */
-        $routes->connect('/:post', 
-                ['controller' => 'Blogs', 'action' => 'detail'], 
-                ['_name' => 'specificPostName'])
-            ->setPass(['post']
-        );
+    /**
+     * Blog Post in Tag Routing with paging
+     */
+    $routes->connect('/tag/:tag/page/:paging', 
+            ['controller' => 'Blogs', 'action' => 'tag'], 
+            ['_name' => 'taggedPostsPagination'])
+        ->setPatterns(['paging' => '\d+'])
+        ->setPass(['tag', 'paging']
+    );
 
-        /**
-         * Blog Post in Tag Routing
-         */
-        $routes->connect('/tag/:tag', 
-                ['controller' => 'Blogs', 'action' => 'tag'], 
-                ['_name' => 'taggedPosts'])
-            ->setPass(['tag']
-        );
+    /**
+     * Blog Post Archives Routing
+     */
+    $routes->connect('/archives/:year/:month', 
+            ['controller' => 'Blogs', 'action' => 'archives'], 
+            ['_name' => 'archivesPost'])
+        ->setPatterns([
+            'year'  => '[12][0-9]{3}', 
+            'month' => '0[1-9]|1[012]'])
+        ->setPass(['year', 'month']
+    );
 
-        /**
-         * Blog Post in Tag Routing with paging
-         */
-        $routes->connect('/tag/:tag/page/:paging', 
-                ['controller' => 'Blogs', 'action' => 'tag'], 
-                ['_name' => 'taggedPostsPagination'])
-            ->setPatterns(['paging' => '\d+'])
-            ->setPass(['tag', 'paging']
-        );
+    /**
+     * Blog Post Archives Routing with paging
+     */
+    $routes->connect('/archives/:year/:month/page/:paging', 
+            ['controller' => 'Blogs', 'action' => 'archives'], 
+            ['_name' => 'archivesPostPagination'])
+        ->setPatterns([
+            'year'  => '[12][0-9]{3}', 
+            'month' => '0[1-9]|1[012]'])
+        ->setPass(['year', 'month', 'paging']
+    );
 
-        /**
-         * Blog Post Archives Routing
-         */
-        $routes->connect('/archives/:year/:month', 
-                ['controller' => 'Blogs', 'action' => 'archives'], 
-                ['_name' => 'archivesPost'])
-            ->setPatterns([
-                'year'  => '[12][0-9]{3}', 
-                'month' => '0[1-9]|1[012]'])
-            ->setPass(['year', 'month']
-        );
+    /**
+     * Search Routing
+     * Only accept POST
+     */
+    $routes->connect('/search', 
+            ['controller' => 'Search', 'action' => 'index'], 
+            ['_name' => 'searchPost'])
+        ->setPass(['search'])
+        ->setMethods(['POST']
+    );
 
-        /**
-         * Blog Post Archives Routing with paging
-         */
-        $routes->connect('/archives/:year/:month/page/:paging', 
-                ['controller' => 'Blogs', 'action' => 'archives'], 
-                ['_name' => 'archivesPostPagination'])
-            ->setPatterns([
-                'year'  => '[12][0-9]{3}', 
-                'month' => '0[1-9]|1[012]'])
-            ->setPass(['year', 'month', 'paging']
-        );
+    /**
+     * Ajax Routing
+     */
+    $routes->connect('/ajax/verify-form/:action/:token', 
+            ['controller' => 'Pages', 'action' => 'ajaxVerifyForm'], 
+            ['_name' => 'ajaxVerifyForm'])
+        ->setPass(['action', 'token']);
+    $routes->connect('/ajax/send-comment', 
+            ['controller' => 'Blogs', 'action' => 'ajaxSendComment'], 
+            ['_name' => 'ajaxSendComment']);
+    $routes->connect('/ajax/send-contact', 
+            ['controller' => 'Pages', 'action' => 'ajaxSendContact'], 
+            ['_name' => 'ajaxSendContact']);
 
-        /**
-         * Search Routing
-         * Only accept POST
-         */
-        $routes->connect('/search', 
-                ['controller' => 'Search', 'action' => 'index'], 
-                ['_name' => 'searchPost'])
-            ->setPass(['search'])
-            ->setMethods(['POST']
-        );
-
-        /**
-         * Ajax Routing
-         */
-        $routes->connect('/ajax/verify-form/:action/:token', 
-                ['controller' => 'Pages', 'action' => 'ajaxVerifyForm'], 
-                ['_name' => 'ajaxVerifyForm'])
-            ->setPass(['action', 'token']);
-        $routes->connect('/ajax/send-comment', 
-                ['controller' => 'Blogs', 'action' => 'ajaxSendComment'], 
-                ['_name' => 'ajaxSendComment']);
-        $routes->connect('/ajax/send-contact', 
-                ['controller' => 'Pages', 'action' => 'ajaxSendContact'], 
-                ['_name' => 'ajaxSendContact']);
-
-        /**
-         * Connect catchall routes for all controllers.
-         *
-         * Using the argument `DashedRoute`, the `fallbacks` method is a shortcut for
-         *    `$routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);`
-         *    `$routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);`
-         *
-         * Any route class can be used with this method, such as:
-         * - DashedRoute
-         * - InflectedRoute
-         * - Route
-         * - Or your own route class
-         *
-         * You can remove these routes once you've connected the
-         * routes you want in your application.
-         */
-        $routes->fallbacks(DashedRoute::class);
-    });
-}
+    /**
+     * Connect catchall routes for all controllers.
+     *
+     * Using the argument `DashedRoute`, the `fallbacks` method is a shortcut for
+     *    `$routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);`
+     *    `$routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);`
+     *
+     * Any route class can be used with this method, such as:
+     * - DashedRoute
+     * - InflectedRoute
+     * - Route
+     * - Or your own route class
+     *
+     * You can remove these routes once you've connected the
+     * routes you want in your application.
+     */
+    $routes->fallbacks(DashedRoute::class);
+});
 
 /**
  *  Setup route
