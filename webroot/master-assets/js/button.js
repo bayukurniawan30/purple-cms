@@ -313,6 +313,36 @@ $(document).ready(function() {
     })
 
     /**
+     * 
+     * Froala Master Element
+     * 
+     */
+
+    modifyElementProperties = function() {
+        $('#button-element-properties').click(function() {
+            var btn     = $(this),
+                modal   = $('#modal-element-properties'),
+                idEl    = modal.find('input[name=element-id]').val(),
+                target  = btn.attr('data-purple-target'),
+                classes = modal.find('input[name=element-class]').tagEditor('getTags')[0].tags;
+
+            if (classes.length > 0) {
+                var bindClass  = classes.join(' ');
+            }
+            else {
+                var bindClass  = '';
+            }
+
+            $("#bind-fdb-blocks").find('*[data-tree-id='+target+']').attr('id', idEl);
+            $("#bind-fdb-blocks").find('*[data-tree-id='+target+']').attr('class', bindClass);
+
+            UIkit.modal('#modal-element-properties').hide();
+
+            return false;
+        })
+    }
+
+    /**
      *
      * UIkit Slider Tuning
      * 

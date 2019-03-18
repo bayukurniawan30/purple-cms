@@ -26,7 +26,8 @@ use \Gumlet\ImageResize;
 class PagesController extends AppController
 {
     public $imagesLimit = 30;
-    
+    public $pagesLimit  = 10;
+
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
@@ -109,12 +110,15 @@ class PagesController extends AppController
             }
         }
     }
-    public function index()
+    public function index($id = 1)
     {
         $pageAdd    = new PageAddForm();
         $pageEdit   = new PageEditForm();
         $pageStatus = new PageStatusForm();
         $pageDelete = new PageDeleteForm();
+
+        $pages = $this->Pages->find('all', [
+            'order' => ['Pages.id' => 'DESC']])->contain('PageTemplates')->contain('Admins');
 
         $data = [
             'pageTitle'         => 'Pages',
@@ -122,17 +126,21 @@ class PagesController extends AppController
             'pageAdd'           => $pageAdd,
             'pageEdit'          => $pageEdit,
             'pageStatus'        => $pageStatus,
-            'pageDelete'        => $pageDelete
+            'pageDelete'        => $pageDelete,
+            'pagesTotal'        => $pages->count(),
+            'pagesLimit'        => $this->pagesLimit
         ];
 
         $pageTemplatesTable  = TableRegistry::get('PageTemplates');
         $pageTemplates = $pageTemplatesTable->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
         $this->set(compact('pageTemplates'));
 
-        $pages = $this->Pages->find('all', [
-            'order' => ['Pages.id' => 'DESC']])->contain('PageTemplates')->contain('Admins');
-
-        $this->set(compact('pages'));
+        $this->paginate = [
+			'limit' => $this->pagesLimit,
+			'page'  => $id
+		];
+		$pagesList = $this->paginate($pages);
+	    $this->set('pages', $pagesList);
 
         $this->set($data);
     }
@@ -1003,6 +1011,100 @@ class PagesController extends AppController
             $json = json_encode(['status' => 'ok', 'id' => $id, 'url' => $url, 'redirect' => $redirect, 'html' => $html]);
             $this->set(['json' => $json]);
             $this->render();
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxParseJsonHtml()
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+            $cssPath    = $this->request->getData('css');
+            $jsPath     = $this->request->getData('js');
+            $html       = $this->request->getData('htmldata');
+            $jsonDecode = json_decode($html, true);
+
+            ob_start();
+
+            function createHtmlFromArray($array) {
+                echo '<ul>';
+                foreach ($array['child'] as $data) {
+                    if ($data['node'] == 'element') {
+                        $tag      = $data['tag'];
+
+                        if (array_key_exists('attr', $data)) {
+                            if (array_key_exists('class', $data['attr'])) {
+                                $tagClass = $data['attr']['class'];
+                                if (is_array($tagClass)) {
+                                    $countClass = count($tagClass);
+                                    if ($countClass > 1) {
+                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'...</span>';
+                                    }
+                                    else {
+                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'</span>';
+                                    }
+
+                                    $treeClass = implode('::', $tagClass); 
+                                }
+                                else {
+                                    if ($tagClass == '') {
+                                        $formatedClass = '';
+                                        $treeClass     = 'empty-class';
+                                    }
+                                    else {
+                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass.'</span>';
+                                        $treeClass     = $tagClass;
+                                    }
+                                }
+                            }
+                            else {
+                                $formatedClass = '';
+                                $treeClass     = 'empty-class';
+                            }
+
+                            if (array_key_exists('id', $data['attr'])) {
+                                $tagId    = $data['attr']['id'];
+                                $formatedId = '<span class="text-success">#'.$tagId.'</span>';
+                            }
+                            else {
+                                $formatedId = '';
+                                $tagId      = 'empty-id';
+                            }
+
+                            if (array_key_exists('data-tree-id', $data['attr'])) {
+                                $treeId = $data['attr']['data-tree-id'];
+                            }
+                            else {
+                                $treeId = '';
+                            }
+                        }
+                        else {
+                            $formatedClass = '';
+                            $formatedId    = '';
+                        }
+
+                        echo '<li class="jstree-open" data-jstree=\'{"icon":"fa fa-code"}\' data-purple-tree-hover="yes" data-purple-tree-id="'.$treeId.'" data-purple-tree-tag="'.$tag.'" data-purple-tree-class="'.$treeClass.'" data-purple-tree-hash="'.$tagId.'"><a href="#"><strong>'.$tag.'</strong>'.$formatedId.$formatedClass.'</a>';
+
+                        if (array_key_exists("child",$data)) {
+                            createHtmlFromArray($data);
+                        }
+                        else {
+                            echo '</li>';
+                        }
+                    }
+                }
+                echo '</ul>';
+            }
+            
+            createHtmlFromArray($jsonDecode);
+            
+            $htmlNow = ob_get_contents();
+            ob_end_clean();
+            
+            $json = json_encode(['status' => 'ok', 'content' => $htmlNow, 'jsond' => $jsonDecode]);
+            $this->set(['json' => $json]);
         }
         else {
             throw new NotFoundException(__('Page not found'));

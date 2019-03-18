@@ -88,7 +88,7 @@
                             <h3 class="text-primary"><strong><?= $currentStep ?></strong></h3>
                             <p>
                                 <?= $currentDesc ?>
-                                <br><a href="#" target="_blank"><span class="mdi mdi-open-in-new"></span> Read full documentation</a>
+                                <br><a href="http://doc.purple-cms.com/" target="_blank"><span class="mdi mdi-open-in-new"></span> Read full documentation</a>
                             </p>
                         </div>
                     </div>

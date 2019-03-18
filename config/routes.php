@@ -535,6 +535,11 @@ Router::prefix('purple', function ($routes) {
     $routes->connect('/pages', 
             ['controller' => 'Pages'], 
             ['_name' => 'adminPages']);
+    $routes->connect('/pages/page/:id', 
+            ['controller' => 'Pages', 'action' => 'index'], 
+            ['_name' => 'adminPagesPagination'])
+        ->setPatterns(['id' => '\d+'])
+        ->setPass(['id']);
     $routes->connect('/pages/:action', 
             ['controller' => 'Pages'], 
             ['_name' => 'adminPagesAction']);

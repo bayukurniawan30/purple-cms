@@ -26,6 +26,7 @@
                         <div class="uk-card uk-card-default uk-card-small uk-card-body ">
                             <span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: home"></span>Home
                             <div class="uk-inline uk-align-right">
+                                <a href="#" class="uk-margin-small-right" uk-icon="icon: home" uk-tooltip="Your Homepage"></a>
                                 <a href="#" class="uk-margin-small-right" uk-icon="icon: cog" uk-tooltip="Genaral (Block Editor)"></a>
                                 <button class="uk-button uk-button-link"><span uk-icon="more-vertical"></span></button>
                                 <div uk-dropdown="mode: click; pos: bottom-right">
@@ -41,6 +42,7 @@
 
                     <?php
                         if ($pages->count() > 0):
+                            $initPage = 1;
                     ?>
                         <?php foreach ($pages as $page): ?>
                         <?php
@@ -63,7 +65,7 @@
                             }
                         ?>
                         <li class="uk-width-1-1 <?php if ($this->request->getQuery('u') == $page->slug) echo 'uk-animation-shake' ?>">
-                            <div class="uk-card uk-card-default uk-card-small uk-card-body ">
+                            <div class="uk-card uk-card-default uk-card-small uk-card-body" style="<?php if ($initPage == $pagesLimit) echo 'box-shadow: none' ?>">
                                 <span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: <?= $icon ?>"></span><?= $page->title ?>
                                 <div class="uk-inline uk-align-right">
                                     <a href="#" class="uk-margin-small-right" uk-icon="icon: cog" uk-tooltip="<?= $page->page_template->name ?>"></a>
@@ -83,10 +85,65 @@
                                 </div>
                             </div>
                         </li>
-                        <?php endforeach; ?>
+                        <?php 
+                                $initPage++;
+                            endforeach; 
+                        ?>
                     <?php endif; ?>
                 </ul>
             </div>
+            <?php
+                if ($pagesTotal > $pagesLimit):
+            ?>
+             <div class="card-footer">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="uk-position-center-left">Page <?= $this->Paginator->counter() ?></div>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="uk-pagination purple-pagination uk-margin-remove-bottom uk-flex-right">
+                                <?php
+                                    if ($this->Paginator->current() - 1 <= 0) {
+                                        $previousUrl = [
+                                            '_name'  => 'adminPagesPagination',
+                                            'id'     => $this->Paginator->current() - 0
+                                        ];
+                                    }
+                                    else {
+                                        $previousUrl = [
+                                            '_name'  => 'adminPagesPagination',
+                                            'id'     => $this->Paginator->current() - 1
+                                        ];
+                                    }
+
+                                    if ($this->Paginator->current() + 1 > $this->Paginator->total()) {
+                                        $nextUrl = [
+                                            '_name'  => 'adminPagesPagination',
+                                            'id'     => $this->Paginator->current() + 0
+                                        ];
+                                    }
+                                    else {
+                                        $nextUrl = [
+                                            '_name'  => 'adminPagesPagination',
+                                            'id'     => $this->Paginator->current() + 1
+                                        ];
+                                    }
+
+                                    echo $this->Paginator->prev('<span uk-pagination-previous class="uk-margin-small-right"></span> Previous', [
+                                        'escape' => false,
+                                    ]);
+                                    // echo $this->Paginator->numbers();
+                                    echo $this->Paginator->next('Next <span uk-pagination-next class="uk-margin-small-left"></span>', [
+                                        'escape' => false,
+                                    ]);
+                                ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+            <?php endif ?>
         </div>
     </div>
 </div>
@@ -280,6 +337,15 @@
 
 <script>
     $(document).ready(function() {
+        <?php
+            if ($pagesTotal > $pagesLimit):
+        ?>
+        $('.purple-pagination .prev a').attr('href', '<?= $this->Url->build($previousUrl) ?>')
+        $('.purple-pagination .next a').attr('href', '<?= $this->Url->build($nextUrl) ?>')
+        <?php
+            endif;
+        ?>
+
         var pageAdd = {
             form            : 'form-add-page',
             button          : 'button-add-page',

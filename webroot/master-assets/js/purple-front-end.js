@@ -40,5 +40,8 @@ $(document).ready(function() {
 	    $(this).html(child);
 	});
 
+	// Remove Tree Panel Identifier
+	$('body').find('*').removeAttr('data-tree-id');
+
 	$('a[href="https://www.froala.com/wysiwyg-editor?k=u"]').remove();
 })
