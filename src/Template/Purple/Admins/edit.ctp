@@ -13,7 +13,13 @@
                 ]);
 
                 echo $this->Form->hidden('id', ['value' => $adminData->id]);
-                echo $this->Form->hidden('photo', ['value' => $adminData->photo]);
+
+                if ($adminData->photo == '' || $adminData->photo == NULL) {
+                    echo $this->Form->hidden('photo', ['value' => 'NULL']);
+                }
+                else {
+                    echo $this->Form->hidden('photo', ['value' => $adminData->photo]);
+                }
             ?>
             <div class="card-body">
                 <div class="form-group">

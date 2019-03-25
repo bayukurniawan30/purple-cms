@@ -46,6 +46,11 @@ class SettingsTable extends Table
         $metaDescription = $this->find()->where(['name' => 'metadescription'])->first();
         return $metaDescription->value;
     }
+    public function settingsAnalyticscode() 
+    {
+        $googleAnalyticsCode = $this->find()->where(['name' => 'googleanalyticscode'])->first();
+        return $googleAnalyticsCode->value;
+    }
     public function settingsFavicon() 
     {
     	$favicon = $this->find()->where(['name' => 'favicon'])->first();

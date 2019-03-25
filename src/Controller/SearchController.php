@@ -161,6 +161,7 @@ class SearchController extends AppController
                 'tagLine'         => $this->Settings->settingsTagLine(),
                 'metaKeywords'    => $this->Settings->settingsMetaKeywords(),
                 'metaDescription' => $this->Settings->settingsMetaDescription(),
+                'googleAnalytics' => $this->Settings->settingsAnalyticscode(),
                 'metaOgType'      => 'website',
                 'metaImage'       => '',
                 'favicon'         => $this->Settings->settingsFavicon(),

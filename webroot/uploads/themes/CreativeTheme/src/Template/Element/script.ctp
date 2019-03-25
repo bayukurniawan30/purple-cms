@@ -1,20 +1,16 @@
 <!-- JavaScript & jQuery Plugins -->
-<?= $this->Html->script('/vendor/popper.js/umd/popper.min.js'); ?>
-<?= $this->Html->script('/vendor/bootstrap/js/bootstrap.min.js'); ?>
-<?= $this->Html->script('/vendor/jquery.cookie/jquery.cookie.js'); ?>
-<?= $this->Html->script('/vendor/owl.carousel/owl.carousel.min.js'); ?>
-<?= $this->Html->script('/vendor/masonry-layout/masonry.pkgd.min.js'); ?>
-<?= $this->Html->script('front.js'); ?>
+<!-- Bootstrap -->
+<?= $this->Html->script('bootstrap.min.js'); ?>
+<!-- UI Kit -->
+<?= $this->Html->script('/master-assets/plugins/uikit/js/uikit.js'); ?>
+<?= $this->Html->script('/master-assets/plugins/uikit/js/uikit-icons.js'); ?>
+<!-- Parsley -->
+<?= $this->Html->script('/master-assets/plugins/parsley/dist/parsley.js'); ?>
 <!-- Initial -->
 <?= $this->Html->script('/master-assets/plugins/initial/initial.min.js'); ?>
 <!-- Livestamp -->
 <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/livestamp/livestamp.min.js'); ?>
-<!-- Parsley -->
-<?= $this->Html->script('/master-assets/plugins/parsley/dist/parsley.js'); ?>
-<!-- UI Kit -->
-<?= $this->Html->script('/master-assets/plugins/uikit/js/uikit.js'); ?>
-<?= $this->Html->script('/master-assets/plugins/uikit/js/uikit-icons.js'); ?>
 <!-- Purple -->
 <?= $this->Html->script('/master-assets/js/ajax-front-end.js'); ?>
 <?= $this->Html->script('/master-assets/js/purple-front-end.js'); ?>
@@ -28,7 +24,7 @@
 		$('body').find('.form-send-contact').prepend('<input type="hidden" name="ds" value=<?= $this->Url->build(['_name' => 'adminMessages']); ?>>');
 		$('body').find('.form-send-comment').attr('action', urlActionCommentForm);
 
-	    <?php if ($formSecurity == 'on'): ?>
+		<?php if ($formSecurity == 'on'): ?>
     	$('body').find('.form-send-contact').prepend('<input type="hidden" name="status" value="">');
     	$('body').find('.form-send-contact').prepend('<input type="hidden" name="score" value="">');
 	    if ($('.form-send-contact').length > 0) {
@@ -58,3 +54,6 @@
 		$('.initial-photo').initial(); 
 	})
 </script>
+
+<!-- Google Analytics Code -->
+<?php echo $googleAnalytics != '' ? $googleAnalytics : ''; ?>

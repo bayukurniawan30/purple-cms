@@ -54,3 +54,6 @@
 		$('.initial-photo').initial(); 
 	})
 </script>
+
+<!-- Google Analytics Code -->
+<?php echo $googleAnalytics != '' ? $googleAnalytics : ''; ?>

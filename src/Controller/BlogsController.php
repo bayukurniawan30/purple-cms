@@ -153,6 +153,7 @@ class BlogsController extends AppController
             'tagLine'         => $this->Settings->settingsTagLine(),
             'metaKeywords'    => $this->Settings->settingsMetaKeywords(),
             'metaDescription' => $this->Settings->settingsMetaDescription(),
+            'googleAnalytics' => $this->Settings->settingsAnalyticscode(),
             'metaOgType'      => 'blog',
             'metaImage'       => '',
             'favicon'         => $this->Settings->settingsFavicon(),

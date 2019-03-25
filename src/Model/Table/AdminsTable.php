@@ -46,6 +46,13 @@ class AdminsTable extends Table
 		}
 		else {
 			$entity->modified = $date;
+			
+			if ($entity->photo == '' || $entity->photo == 'NULL') {
+				$entity->photo = NULL;
+            }
+            else {
+                $entity->photo = trim($entity->photo);
+            }
 		}
 	}
 	public function lastUser()
