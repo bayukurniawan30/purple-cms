@@ -7,7 +7,7 @@ use Cake\Routing\Router;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
-use Cake\Filesystem\File;
+use Cake\Filesystem\Folder;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
@@ -96,7 +96,7 @@ class SitemapController extends AppController
 
         // Blogs
         $blogs = $this->Blogs->find('all', [
-                'order' => ['Blogs.created' => 'DESC']])->contain('BlogCategories')->where(['Blogs.status' => '1']);
+                'order' => ['Blogs.created' => 'DESC']])->contain('BlogTypes')->contain('BlogCategories')->where(['Blogs.status' => '1']);
 
         if ($blogs->count() > 0) {
             foreach ($blogs as $blog) {
@@ -191,8 +191,13 @@ class SitemapController extends AppController
         $this->set([
             // Define an attribute on the root node.
             '@xmlns' => 'http://www.sitemaps.org/schemas/sitemap/0.9',
+            'xmlns:image' => 'http://www.google.com/schemas/sitemap-image/1.1',
             'url' => $urls
         ]);
-        $this->set('_serialize', ['@xmlns', 'url']);
+        $this->set('_serialize', ['@xmlns', 'xmlns:image', 'url']);
+    }
+    public function robots()
+    {
+        $this->viewBuilder()->setLayout('robots');
     }
 }

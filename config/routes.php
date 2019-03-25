@@ -54,6 +54,14 @@ Router::scope('/sitemap', function ($routes) {
     );
 });
 
+Router::scope('/robots', function ($routes) {
+        $routes->setExtensions(['txt']);
+        $routes->connect('/',
+                ['controller' => 'Sitemap', 'action' => 'robots'],
+                ['_name' => 'websiteRobots']
+        );
+    });
+
 Router::scope('/', function (RouteBuilder $routes) {
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
