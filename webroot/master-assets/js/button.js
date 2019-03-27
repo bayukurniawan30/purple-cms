@@ -1159,7 +1159,9 @@ $(document).ready(function() {
             $("#purple-fdb-blocks").addClass('meta-fullscreen-mode');
             $("html").css('overflow', 'hidden');
             $('#fdb-code-editor-ace').css('height', '1000px');
+            $('#fdb-css-editor-ace').css('height', '1000px');
             $('#fdb-code-editor-ace').ace({ theme: 'chrome', lang: 'html' })
+            $('#fdb-css-editor-ace').ace({ theme: 'chrome', lang: 'css' })
 
             $(this).one("click", toggleEditorFullscreen2);
         }
@@ -1175,6 +1177,7 @@ $(document).ready(function() {
             $("#purple-fdb-blocks").removeClass('meta-fullscreen-mode');
             $("html").css('overflow', 'auto');
             $('#fdb-code-editor-ace').ace({ theme: 'chrome', lang: 'html' })
+            $('#fdb-css-editor-ace').ace({ theme: 'chrome', lang: 'css' })
 
             $(this).one("click", toggleEditorFullscreen1);
         }

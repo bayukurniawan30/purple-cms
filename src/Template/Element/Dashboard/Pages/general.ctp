@@ -20,7 +20,7 @@
     <div class="uk-width-1-1">
         <div class="uk-card uk-card-default uk-card-small uk-margin-top">
             <div class="uk-card-header uk-padding-small">
-                <h4 class="card-title"><small>Page Title</small></h4>
+                <h4 class="card-title uk-margin-remove-bottom"><small>Page Title</small></h4>
             </div>
             <div class="uk-card-body">
                 <div class="form-group">
@@ -35,9 +35,9 @@
     <div id="purple-fdb-blocks" class="uk-width-1-3@m">
         <div class="uk-card uk-card-default uk-card-small" uk-filter="target: .js-filter">
             <div class="uk-card-header uk-padding-small">
-                <h4 class="card-title"><small>Blocks</small>
+                <h4 class="card-title uk-margin-remove-bottom"><small>Blocks</small>
                     <div class="uk-inline uk-align-right" style="margin-bottom: 0">
-                        <button class="uk-button uk-button-link"><i class="mdi mdi-filter-outline"></i></button>
+                        <button class="uk-button uk-button-link"><!--<i class="mdi mdi-filter-outline"></i>--><span uk-icon="menu"></span></button>
                         <div uk-dropdown="mode: click; pos: bottom-right">
                             <ul class="uk-nav uk-dropdown-nav">
                                 <li uk-filter-control><a href="#">All</a></li>
@@ -54,11 +54,12 @@
                                 <li uk-filter-control=".theme-blocks"><a href="#">Theme Blocks <span class="mdi mdi-information-outline text-primary" uk-tooltip="Special Blocks from active Theme. The looks of the theme block might be slightly different from what is seen on the front-end page because the .css file from the used theme. Please remove the block if you change the active theme. Only use block from active theme."></span></a></li>
                             </ul>
                         </div>
+                        <button class="uk-button uk-button-link uk-margin-small-left" uk-toggle="target: #block-panel" ><span uk-icon="icon: chevron-down"></span></button>
                     </div>
                 </h4>
             </div>
 
-            <div class="uk-card-body">
+            <div id="block-panel" class="uk-card-body">
                 <div class="js-filter uk-height-large" style="overflow-y: scroll">
                     <!-- Froala Blocks => Call to Action -->
                     <?php foreach ($fdbCallToAction as $blocksCallToAction): ?>
@@ -183,6 +184,20 @@
             </div>
         </div>
 
+        <div class="uk-card uk-card-default uk-card-small uk-margin-top">
+            <div class="uk-card-header uk-padding-small">
+                <h4 class="card-title uk-margin-remove-bottom"><small>Tree Panel</small>
+                    <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                        <button class="uk-button uk-button-link btn-spinner-tree-panel uk-invisible"><i class="fa fa-circle-o-notch fa-spin"></i></button>
+                        <button class="uk-button uk-button-link" uk-toggle="target: #tree-panel" ><span uk-icon="icon: chevron-down"></span></button>
+                    </div>
+                </h4>
+            </div>
+            <div id="tree-panel" class="uk-card-body" hidden data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxParseJsonHtml"]); ?>">
+                
+            </div>
+        </div>
+
         <?php
             if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):
         ?>
@@ -193,7 +208,7 @@
         ?>
         <div class="uk-card uk-card-default uk-card-small uk-margin-top">
             <div class="uk-card-header uk-padding-small">
-                <h4 class="card-title"><small>SEO (Search Engine Optimization)</small></h4>
+                <h4 class="card-title uk-margin-remove-bottom"><small>SEO (Search Engine Optimization)</small></h4>
             </div>
             <div class="uk-card-body">
                 <div class="form-group">
@@ -220,11 +235,11 @@
                     <?php
                         if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):
                     ?>
-                    <a id="button-toggle-code" uk-tooltip="title: Edit HTML Code" data-purple-modal="#modal-fdb-code-editor" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaCodeEditor"]); ?>" data-purple-id="0" data-purple-actionurl="<?= $this->Url->build(['controller' => $this->request->getParam('controller'), 'action' => 'ajaxSave']); ?>" data-purple-redirect="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action'), 'type' => 'general', 'slug' => $this->request->getParam('slug')]); ?>" class="uk-margin-small-left"><i class="mdi mdi-code-tags"></i></a>
+                    <a id="button-toggle-code" uk-tooltip="title: Edit HTML and CSS Code" data-purple-modal="#modal-fdb-code-editor" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaCodeEditor"]); ?>" data-purple-id="0" data-purple-actionurl="<?= $this->Url->build(['controller' => $this->request->getParam('controller'), 'action' => 'ajaxSave']); ?>" data-purple-redirect="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action'), 'type' => 'general', 'slug' => $this->request->getParam('slug')]); ?>" class="uk-margin-small-left"><i class="mdi mdi-code-tags"></i></a>
                     <?php
                         else:
                     ?>
-                    <a id="button-toggle-code" uk-tooltip="title: Edit HTML Code" data-purple-modal="#modal-fdb-code-editor" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaCodeEditor"]); ?>" data-purple-id="<?php echo $pages->id ?>" data-purple-actionurl="<?= $this->Url->build(['controller' => $this->request->getParam('controller'), 'action' => 'ajaxSave']); ?>" data-purple-redirect="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action'), 'type' => $pages->page_template->type, 'slug' => $pages->slug]); ?>" class="uk-margin-small-left"><i class="mdi mdi-code-tags"></i></a>
+                    <a id="button-toggle-code" uk-tooltip="title: Edit HTML and CSS Code" data-purple-modal="#modal-fdb-code-editor" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaCodeEditor"]); ?>" data-purple-id="<?php echo $pages->id ?>" data-purple-actionurl="<?= $this->Url->build(['controller' => $this->request->getParam('controller'), 'action' => 'ajaxSave']); ?>" data-purple-redirect="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action'), 'type' => $pages->page_template->type, 'slug' => $pages->slug]); ?>" class="uk-margin-small-left"><i class="mdi mdi-code-tags"></i></a>
                 <?php endif; ?>
                     <a id="button-toggle-tuning" uk-tooltip="title: Enable/Disable Tuning Mode" data-purple-active="yes" class="uk-margin-small-left active"><i class="mdi mdi-tune"></i>
                     <a id="button-toggle-editing" uk-tooltip="title: Enable/Disable Editing Mode" data-purple-active="no" class="uk-margin-small-left"><i class="mdi mdi-pencil"></i></a>
@@ -267,7 +282,7 @@
 <div id="modal-fdb-code-editor" class="uk-modal-container purple-modal" uk-modal="bg-close: false">
     <div class="uk-modal-dialog">
         <div class="uk-modal-header">
-            <h2 class="uk-modal-title">Edit HTML Code</h2>
+            <h2 class="uk-modal-title">Edit HTML and CSS Code</h2>
         </div>
         <?php
             echo $this->Form->create($pageSave, [
@@ -329,7 +344,7 @@
             <p>The display on the editor's screen might be slightly different from what is seen on the front-end page because the .css file from the used theme.</p>
         </div>
         <div class="uk-modal-footer uk-text-right">
-            <button class="btn btn-gradient-primary uk-modal-close" type="button">I Understand</button>
+            <button class="btn btn-gradient-primary uk-modal-close" type="button" autofocus>I Understand</button>
         </div>
     </div>
 </div>
@@ -359,8 +374,16 @@
 <!-- Buttons Customizing for Froala Blocks -->
 <?= $this->element('Dashboard/Modal/buttons_customizing_modal') ?>
 
+<!-- Element Properties for Froala Blocks -->
+<?= $this->element('Dashboard/Modal/froala_master_attribute_modal') ?>
+
 <script>
     $(document).ready(function() {
+        $("#bind-fdb-blocks").find('*').each(function() {
+            var random = Math.floor((Math.random() * 100000000000) + 1);
+            $(this).attr('data-tree-id', random);
+        })
+
         UIkit.modal("#modal-show-information").show();
 
         var pageHtml = {

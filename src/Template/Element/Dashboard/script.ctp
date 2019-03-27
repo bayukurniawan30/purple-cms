@@ -52,6 +52,7 @@
 	<?= $this->Html->script('/master-assets/plugins/ace/ace/ace.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/ace/ace/theme-github.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/ace/ace/mode-html.js'); ?>
+	<?= $this->Html->script('/master-assets/plugins/ace/ace/mode-css.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/ace/jquery-ace.min.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/tag-editor/jquery.caret.min.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/jquery-ui/jquery-ui.min.js'); ?>

@@ -21,6 +21,8 @@
                     $(this).attr('data-tree-id', random);
                 })
 
+                $("#bind-fdb-blocks").find('style').removeAttr('data-tree-id');
+
                 var blockHtml = $('#bind-fdb-blocks').html();
                 
                 if ($('.fdb-blocks-empty').length == 0) {
@@ -380,6 +382,7 @@
                     beforeSend: function() {
                     },
                     success: function(data) {
+                        console.log(data);
                         UIkit.modal(modal).show();
                         $(modal).find('.uk-modal-body').html('<div class="text-center uk-padding-large"><div uk-spinner="ratio: 2"></div></div>');
                         setTimeout(function() {

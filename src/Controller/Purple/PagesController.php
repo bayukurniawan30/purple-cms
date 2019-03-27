@@ -349,7 +349,7 @@ class PagesController extends AppController
                     $settingsTable  = TableRegistry::get('Settings');
                     $queryHomepage  = $settingsTable->find()->where(['name' => 'homepagestyle'])->first();
                     $setting        = $settingsTable->get($queryHomepage->id);
-                    $setting->value = trim(htmlentities($this->request->getData('content')));
+                    $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content')));
 
                     if ($settingsTable->save($setting)) {
                         /**
@@ -392,7 +392,7 @@ class PagesController extends AppController
                         if ($generals->count() < 1) {
                             $general = $generalsTable->newEntity();
 
-                            $general->content          = trim($this->request->getData('content'));
+                            $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content'));
                             $general->meta_keywords    = $this->request->getData('meta_keywords');
                             $general->meta_description = $this->request->getData('meta_description');
                             $general->page_id          = $this->request->getData('id');
@@ -434,7 +434,7 @@ class PagesController extends AppController
                             $generals = $generalsTable->find()->where(['page_id' => $this->request->getData('id')])->first();
                             $general  = $generalsTable->get($generals->id);
 
-                            $general->content          = trim($this->request->getData('content'));
+                            $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content'));
                             $general->meta_keywords    = $this->request->getData('meta_keywords');
                             $general->meta_description = $this->request->getData('meta_description');
                             $general->page_id          = $this->request->getData('id');
@@ -1004,11 +1004,20 @@ class PagesController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax')) {
-            $id   = $this->request->getData('id');
-            $url  = $this->request->getData('url');
-            $redirect = $this->request->getData('redirect');
-            $html = $this->request->getData('html');
-            $json = json_encode(['status' => 'ok', 'id' => $id, 'url' => $url, 'redirect' => $redirect, 'html' => $html]);
+            $id          = $this->request->getData('id');
+            $url         = $this->request->getData('url');
+            $redirect    = $this->request->getData('redirect');
+            $html        = $this->request->getData('html');
+            if (strpos($html, '</style>') !== false) {
+                $explodeHtml = explode('</style>', $html);
+                $style       = str_replace('<style>', '', $explodeHtml[0]);
+                $json        = json_encode(['status' => 'ok', 'id' => $id, 'url' => $url, 'redirect' => $redirect, 'html' => $explodeHtml[1], 'css' => $style]);
+            }
+            else {
+                $html        = $this->request->getData('html');
+                $style       = '';
+                $json        = json_encode(['status' => 'ok', 'id' => $id, 'url' => $url, 'redirect' => $redirect, 'html' => $html, 'css' => $style]);
+            }
             $this->set(['json' => $json]);
             $this->render();
         }
@@ -1065,8 +1074,14 @@ class PagesController extends AppController
                             }
 
                             if (array_key_exists('id', $data['attr'])) {
-                                $tagId    = $data['attr']['id'];
-                                $formatedId = '<span class="text-success">#'.$tagId.'</span>';
+                                if ($data['attr']['id'] == '') {
+                                    $tagId = 'empty-id';
+                                    $formatedId = '';
+                            }
+                                else {
+                                    $tagId = $data['attr']['id'];
+                                    $formatedId = '<span class="text-success">#'.$tagId.'</span>';
+                                }
                             }
                             else {
                                 $formatedId = '';
