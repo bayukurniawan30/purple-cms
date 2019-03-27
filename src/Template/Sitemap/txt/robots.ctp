@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /cgi-bin
+Disallow: /uploads/themes
 User-agent: Mediapartners-Google
 Allow: /
 User-agent: Adsbot-Google
