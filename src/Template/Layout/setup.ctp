@@ -64,7 +64,7 @@
     <body>
         <div class="container-scroller">
             <div class="container-fluid page-body-wrapper full-page-wrapper">
-                <div class="content-wrapper d-flex align-items-center auth bg-primary text-center">
+                <div class="content-wrapper d-flex align-items-center auth text-center" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)">
                     <?php
                         if ($checkStep == 'index' || $checkStep == 'administrative'):
                     ?>
@@ -83,7 +83,7 @@
         <div id="modal-setup-purple" class="uk-modal-full" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-grid-collapse uk-flex-middle" uk-grid>
-                    <div class="uk-width-2-3@m uk-hidden@xl  bg-primary uk-background-contain setup-information" style="background-image: url('<?= $this->request->getAttribute("webroot") . 'master-assets/img/signin-background.svg' ?>');" uk-height-viewport>
+                    <div class="uk-width-2-3@m uk-hidden@xl uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
                         <div class="uk-overlay uk-overlay-default uk-position-bottom">
                             <h3 class="text-primary"><strong><?= $currentStep ?></strong></h3>
                             <p>
