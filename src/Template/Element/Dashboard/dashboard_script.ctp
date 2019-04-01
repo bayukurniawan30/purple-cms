@@ -129,8 +129,8 @@
 	                  		ticks: {
 	                      		display: false,
 	                      		min: 0,
-	                      		stepSize: <?php if (max($totalVisitors6Month) == 0) echo '50'; else { $maxAxis = round((max($totalVisitors6Month) + 200) / 10); echo $maxAxis; }  ?>,
-	                      		max: <?php if (max($totalVisitors6Month) <= 50) echo '50'; else { $findDivider = round($totalVisitors6Month / 50, PHP_ROUND_HALF_DOWN); $maxAxis = ($findDivider + 1) * 50; echo $maxAxis; }  ?>
+	                      		stepSize: <?php if (max($totalVisitors6Month) == 0) echo '50'; else { $stepSize = round((max($totalVisitors6Month) + 200) / 10); echo $stepSize; }  ?>,
+	                      		max: <?php if (max($totalVisitors6Month) <= 50) echo '50'; else { $findDivider = round(max($totalVisitors6Month) / 50, PHP_ROUND_HALF_DOWN); $maxAxis = ($findDivider + 1) * 50; echo $maxAxis; }  ?>
 	                  	},
 	                  	gridLines: {
 	                    	drawBorder: false,
