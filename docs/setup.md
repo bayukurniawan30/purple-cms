@@ -5,7 +5,7 @@ Setup Purple CMS in 3 steps, Database, Administrative, and Finising Setup.
 #### Database
 
 Fill the database, user, and password field for database connection. Database 
-Pada langkah ini, isikan nama database, user, dan password untuk koneksi ke database. The database must be created first, with collation *utf8mb4_general_ci*.
+Pada langkah ini, isikan nama database, user, dan password untuk koneksi ke database. The database must be created first, with collation <code>utf8mb4_general_ci</code>.
 
 #### Administrative
 

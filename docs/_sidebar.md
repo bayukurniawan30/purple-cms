@@ -9,3 +9,9 @@
 	- [Folder Permission](folder-permission.md)
 	- [Debug Mode](debug-mode.md)
 	- [Production](production.md)
+
+- **Developer Guide**
+    - [Generate Documentation](generate-documentation.md)
+    - [API](purple-cms-api.md)
+    - [Creating Theme](creating-theme.md)
+    - [Customizing](customizing.md)

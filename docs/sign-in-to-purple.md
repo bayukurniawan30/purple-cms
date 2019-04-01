@@ -2,7 +2,7 @@
 
 In your web browser, go to 
 
-```sh
+```http
 http://<hostname>/purple
 ```
 
