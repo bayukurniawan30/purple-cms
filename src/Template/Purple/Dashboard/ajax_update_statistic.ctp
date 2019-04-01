@@ -184,8 +184,8 @@
 	                  		ticks: {
 	                      		display: false,
 	                      		min: 0,
-	                      		stepSize: 20,
-	                      		max: <?php if ($maxVisitor == 0) echo '50'; else { $maxAxis = $maxVisitor + 200; echo $maxAxis; }  ?>
+	                      		stepSize: <?php if ($maxVisitor == 0) echo '50'; else { $stepSize = round(($maxVisitor + 200) / 10); echo $stepSize; }  ?>,
+	                      		max: <?php if ($maxVisitor <= 50) echo '50'; else { $findDivider = round($maxVisitor / 50, PHP_ROUND_HALF_DOWN); $maxAxis = ($findDivider + 1) * 50; echo $maxAxis; }  ?>
 	                  	},
 	                  	gridLines: {
 	                    	drawBorder: false,
