@@ -53,7 +53,7 @@ endif;
 </div>
 <div class="col-lg-6 error-page-divider text-lg-left pl-lg-4">
     <h2>SORRY!</h2>
-    <h3 class="font-weight-light"><?= __d('cake', 'The requested address {0} was not found on this server.', "<strong>'{$url}'</strong>") ?></h3>
+    <h3 class="font-weight-light"><?= __d('cake', 'Internal server error.', "<strong>'{$url}'</strong>") ?></h3>
 </div>
 <?php
     endif;

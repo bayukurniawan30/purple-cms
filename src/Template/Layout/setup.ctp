@@ -117,6 +117,7 @@
         <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone-with-data.js'); ?>
         <?php if ($checkStep == 'administrative'): ?>
         <?= $this->Html->script('/master-assets/plugins/password/password.min.js'); ?>
+        <?= $this->Html->script('/master-assets/plugins/password/password-generator.js'); ?>
         <?php endif; ?>
         <!-- UI Kit -->
         <?= $this->Html->script('/master-assets/plugins/uikit/js/uikit.js'); ?>
