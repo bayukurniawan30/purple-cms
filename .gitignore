@@ -11,6 +11,7 @@
 !/tmp/cache/views/empty
 /tmp/sessions/*
 !/tmp/sessions/empty
+/tmp/html/*
 /tmp/tests/*
 !/tmp/tests/empty
 /tmp/uploads/images*

@@ -34,11 +34,11 @@
                 <div class="uk-inline uk-align-right" style="margin-bottom: 0">
                     <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text button-add-purple uk-margin-small-left">
                         <i class="mdi mdi-filter btn-icon-prepend"></i>
-                            All Categories
+                            <?= $this->request->getParam('category') ?>
                     </button>
-                    <div uk-dropdown="pos: bottom-right">
+                    <div uk-dropdown>
                         <ul class="uk-nav uk-dropdown-nav text-right">
-                            <li class="uk-active"><a href="<?= $this->Url->build(['_name' => 'adminBlogs']) ?>">All Categories</a></li>
+                            <li><a href="<?= $this->Url->build(['_name' => 'adminBlogs']) ?>">All Categories</a></li>
                             <?php
                                 if ($blogCategories->count() > 0):
                             ?>
@@ -50,7 +50,7 @@
                                             'category' => $blogCategory->slug,
                                         ]);
                                 ?>
-                                <li><a href="<?= $filterPostUrl ?>"><?= $blogCategory->name ?></a></li>
+                                <li class="<?php if ($this->request->getParam('category') == $blogCategory->slug) echo 'uk-active' ?>"><a href="<?= $filterPostUrl ?>"><?= $blogCategory->name ?></a></li>
                             <?php
                                     endforeach;
                                 endif;

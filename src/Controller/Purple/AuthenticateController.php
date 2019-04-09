@@ -70,7 +70,7 @@ class AuthenticateController extends AppController
 	public function logout() 
 	{
 		$session = $this->getRequest()->getSession();
-        if ($this->request->env('HTTP_HOST') == $session->read('Admin.host')) {
+        if ($this->request->getEnv('HTTP_HOST') == $session->read('Admin.host')) {
             $session->delete('Admin.host');
             $session->delete('Admin.id');
             $session->delete('Admin.password');
@@ -217,7 +217,7 @@ class AuthenticateController extends AppController
                             $emailNotification = false;
                         }
 
-                        $json = json_encode(['status' => 'ok', 'email' => [$admin->email => $emailNotification], 'content' => '<div class="alert alert-success" role="alert">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
+                        $json = json_encode(['status' => 'ok', 'email' => [$admin->email => $emailNotification], 'content' => '<div class="alert alert-success" role="alert" style="margin-top: 15px">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
 					}
 		            else {
 		            	$json = json_encode(['status' => 'error', 'error' => "Cannot reset your password. Please try again."]);

@@ -26,7 +26,9 @@
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages'): ?>
     <?= $this->Html->css('/master-assets/plugins/leaflet/leaflet.css') ?>
+    <?php if ($this->request->getParam('type') == 'general'): ?>
     <?= $this->Html->css('/master-assets/plugins/jstree/themes/default/style.css', ['id' => 'tree-css-path']) ?>
+    <?php endif; ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
     <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_editor.pkgd.min.css') ?>
@@ -62,7 +64,7 @@
     <?= $this->Html->script('/master-assets/js/notification.js'); ?>
     <?= $this->Html->script('/master-assets/js/button.js'); ?>
     <?= $this->Html->script('/master-assets/js/ajax.js'); ?>
-    <?php if ($this->request->getParam('controller') == 'Pages'): ?>
+    <?php if ($this->request->getParam('controller') == 'Pages' && $this->request->getParam('type') == 'general'): ?>
     <?= $this->Html->script('/master-assets/plugins/jstree/jstree.min.js', ['id' => 'tree-js-path']); ?>
     <?= $this->Html->script('/master-assets/plugins/html2json/htmlparser.js'); ?>
     <?= $this->Html->script('/master-assets/plugins/html2json/html2json.js'); ?>

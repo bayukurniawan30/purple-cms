@@ -357,6 +357,10 @@ Router::prefix('purple', function ($routes) {
     $routes->connect('/blogs/:action', 
             ['controller' => 'Blogs'], 
             ['_name' => 'adminBlogsAction']);
+    $routes->connect('/blogs/filter/category/:category', 
+            ['controller' => 'Blogs', 'action' => 'filterCategory'], 
+            ['_name' => 'adminBlogsFilterCategory'])
+        ->setPass(['category']);
     $routes->connect('/blogs/edit/:blogid', 
             ['controller' => 'Blogs', 'action' => 'edit'], 
             ['_name' => 'adminBlogsEdit'])
@@ -556,6 +560,11 @@ Router::prefix('purple', function ($routes) {
             ['_name' => 'adminPagesDetail'])
         ->setPatterns(['id' => '\d+'])
         ->setPass(['type', 'id', 'slug']);
+    $routes->connect('/pages/:type/:id/:slug/category/:category',
+            ['controller' => 'Pages', 'action' => 'detail'],
+            ['_name' => 'adminPagesBlogFilterCategory'])
+        ->setPatterns(['id' => '\d+'])
+        ->setPass(['type', 'id', 'slug', 'category']);
     $routes->connect('/pages/html-blocks/:file',
             ['controller' => 'Pages', 'action' => 'generatedBlocks'],
             ['_name' => 'adminPagesHtmlBlocks'])

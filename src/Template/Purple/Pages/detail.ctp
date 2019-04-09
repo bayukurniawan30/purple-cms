@@ -13,7 +13,11 @@
                         $formUrl = 'ajax-save';
                         echo $this->element('Dashboard/Pages/general');
                     elseif ($this->request->getParam('type') == 'blog'):
-                        echo $this->element('Dashboard/Pages/blog');
+                        if (empty($this->request->getParam('category'))):
+                            echo $this->element('Dashboard/Pages/blog');
+                        else:
+                            echo $this->element('Dashboard/Pages/blog_filter_category');
+                        endif;
                     elseif ($this->request->getParam('type') == 'custom'):
                         $formUrl = 'ajax-save-custom-page';
                         echo $this->element('Dashboard/Pages/custom');

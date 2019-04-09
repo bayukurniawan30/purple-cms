@@ -58,7 +58,7 @@
         <div id="modal-setup-purple" class="uk-modal-full" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-grid-collapse uk-flex-middle" uk-grid>
-                    <div class="uk-width-2-3@m uk-hidden@xl  bg-primary uk-background-contain setup-information" style="background-image: url('<?= $this->request->webroot . 'master-assets/img/signin-background.svg' ?>');" uk-height-viewport>
+                    <div class="uk-width-2-3@m uk-hidden@xl uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
                         <div class="uk-overlay uk-overlay-default uk-position-bottom">
                             <h3 class="text-primary"><strong>Reset Your Password</strong></h3>
                             <p>
@@ -90,6 +90,8 @@
         <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
         <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone-with-data.js'); ?>
         <?= $this->Html->script('/master-assets/plugins/password/password.min.js'); ?>
+        <?= $this->Html->script('/master-assets/plugins/password/password-generator.js'); ?>
+
         <!-- UI Kit -->
         <?= $this->Html->script('/master-assets/plugins/uikit/js/uikit.js'); ?>
         <?= $this->Html->script('/master-assets/plugins/uikit/js/uikit-icons.js'); ?>

@@ -112,13 +112,17 @@ class BlogsController extends AppController
 	{
 		$blogDelete = new BlogDeleteForm();
 
+		$this->loadModel('BlogCategories');
 		if ($this->request->getParam('id') == NULL) {
-	        $blogs = $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL]);
+            $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL])->order(['BlogCategories.ordering' => 'ASC']);
+	        $blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL]);
         }
         else {
-        	$blogs = $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $this->request->getParam('id')]);
+            $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id' => $this->request->getParam('id')])->order(['BlogCategories.ordering' => 'ASC']);
+        	$blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $this->request->getParam('id')]);
         }
 
+        $this->set(compact('blogCategories'));
         $this->set(compact('blogs'));
         $data = [
             'blogDelete' => $blogDelete,
@@ -149,7 +153,7 @@ class BlogsController extends AppController
 	}
 	public function edit()
 	{
-		$blogEdit = new BlogEditForm();
+		$blogEdit        = new BlogEditForm();
 		$blogCategoryAdd = new BlogCategoryAddForm();
 			
 		$this->loadModel('BlogCategories');
@@ -184,6 +188,31 @@ class BlogsController extends AppController
         else {
         	$this->setAction('index');
         }
+	}
+	public function filterCategory() {
+		$category = trim($this->request->getParam('category'));
+
+		$blogDelete = new BlogDeleteForm();
+
+		$this->loadModel('BlogCategories');
+		if ($this->request->getParam('id') == NULL) {
+            $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL])->order(['BlogCategories.ordering' => 'ASC']);
+	        $blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL, 'BlogCategories.slug' => $category]);
+        }
+        else {
+            $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id' => $this->request->getParam('id')])->order(['BlogCategories.ordering' => 'ASC']);
+        	$blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $this->request->getParam('id'), 'BlogCategories.slug' => $category]);
+		}
+		
+		$selectedBlogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.slug' => $category])->first();
+
+        $this->set(compact('blogCategories'));
+        $this->set(compact('blogs'));
+        $data = [
+			'blogDelete'             => $blogDelete,
+			'selectedBlogCategories' => $selectedBlogCategories
+        ];
+        $this->set($data);
 	}
 	public function ajaxAdd()
 	{

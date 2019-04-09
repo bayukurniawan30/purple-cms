@@ -230,8 +230,12 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
     .card-toolbar {
         padding-bottom: 0.2rem!important;
     }
-    .card-toolbar .btn-toolbar-card {
+    .card-toolbar .uk-inline {
         width: 100%;
+        margin-left: 0;
+    } 
+    .card-toolbar .btn-toolbar-card {
+        width: 100%!important;
         margin-left: 0!important;
         margin-bottom: 10px;
         text-align: left;
@@ -414,7 +418,9 @@ select.form-control {
 /* Toast UI Editor */
 #tuieditor {
     zoom: 0.8;
+    -webkit-transform: scale(0.8);
     -moz-transform: scale(0.8);
+    transform: scale(0.8);
 }
 .tui-editor-save-btn {
     background: linear-gradient(to right, #da8cff, #9a55ff);
@@ -466,5 +472,12 @@ select.form-control {
     .media-images-pageing {
         margin-top: 15px;
         justify-content: center!important;
+    }
+}
+
+/* Utilities */
+@media(min-width: 767px) {
+    .uk-overflow-auto {
+        overflow-x: hidden;
     }
 }

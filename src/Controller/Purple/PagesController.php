@@ -216,8 +216,18 @@ class PagesController extends AppController
             $this->loadModel('Blogs');
             $this->loadModel('BlogCategories');
 
-            $blogs = $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $id]);
+            $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id' => $id])->order(['BlogCategories.ordering' => 'ASC']);
 
+            if (!empty($this->request->getParam('category'))) {
+                $blogs = $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $id, 'BlogCategories.slug' => $this->request->getParam('category')]);
+                $selectedBlogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.slug' => $this->request->getParam('category')])->first();
+                $this->set('selectedBlogCategories', $selectedBlogCategories);
+            }
+            else {
+                $blogs = $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $id]);
+            }
+
+            $this->set(compact('blogCategories'));
             $this->set(compact('blogs'));
             $data = [
                 'pageBlogEdit' => $pageBlogEdit,
