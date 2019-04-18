@@ -106,9 +106,9 @@ class CommentsTable extends Table
             return false;
         }
     }
-	public function totalReplies($blogId, $id, $type = 'number')
+	public function totalReplies($blogId, $replyId, $type = 'number')
 	{
-        $query = $this->find()->where(['blog_id' => $blogId, 'reply' => $id]);
+        $query = $this->find()->where(['blog_id' => $blogId, 'reply' => $replyId]);
         $total = $query->count();
         if ($type == 'number') {
         	return $total;

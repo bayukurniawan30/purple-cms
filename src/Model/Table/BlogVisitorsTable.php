@@ -27,7 +27,7 @@ class BlogVisitorsTable extends Table
 			$entity->created  = $date;
 		}
 	}
-	public function checkVisitor($ip, $created, $blog_id)
+	public function checkVisitor($ip, $created, $blogId)
 	{
 		$year  = date('Y', strtotime($created));
 		$month = date('m', strtotime($created));
@@ -37,9 +37,9 @@ class BlogVisitorsTable extends Table
 		$query = $this->find()->where(['DATE(created)' => $fullDate, 'ip' => $ip]);
 		return $query->count(); 
 	}
-	public function totalVisitors($blog_id) 
+	public function totalVisitors($blogId) 
 	{
-		$query = $this->find()->where(['blog_id' => $blog_id]);
+		$query = $this->find()->where(['blog_id' => $blogId]);
 		return $query->count();
 	}
 	public function lastTwoWeeksVisitors() 
@@ -50,21 +50,21 @@ class BlogVisitorsTable extends Table
 		}
 		return array_reverse($arrayDays);
     }
-    public function lastTwoWeeksTotalVisitors($blog_id) 
+    public function lastTwoWeeksTotalVisitors($blogId) 
     {
     	$arrayDays = array();
 		for ($day = 1; $day <= 14; $day++) {
 			$data = date('Y-m-d', strtotime("-".$day." days"));
 
-	    	$totalVisitors = $this->find()->where(['DATE(created)' => $data, 'blog_id' => $blog_id])->count();
+	    	$totalVisitors = $this->find()->where(['DATE(created)' => $data, 'blog_id' => $blogId])->count();
 			$arrayDays[] = $totalVisitors;
 		}
 		
 		return array_reverse($arrayDays);
     }
-    public function totalVisitorsDate($blog_id, $date) 
+    public function totalVisitorsDate($blogId, $date) 
     {
-        $totalVisitors = $this->find()->where(['blog_id' => $blog_id, 'DATE(created)' => $date])->count();
+        $totalVisitors = $this->find()->where(['blog_id' => $blogId, 'DATE(created)' => $date])->count();
         return $totalVisitors;
     }
 }
