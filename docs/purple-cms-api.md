@@ -22,7 +22,7 @@ Password that will be encrypted.
 
 **Returns**
 
-Encrypted password *string*
+Encrypted password. *string*
 
 **<code>_getDisplayName()</code>** <code>protected</code>
 ```php
@@ -37,7 +37,7 @@ User display name that will converted to upper case.
 
 **Returns**
 
-Upper cased user display name *string*
+Upper cased user display name. *string*
 
 #### Blog
 
@@ -54,7 +54,7 @@ Post title
 
 **Returns**
 
-Decoded HTML entity of post title *string*
+Decoded HTML entity of post title. *string*
 
 **<code>_getContent()</code>** <code>protected</code>
 ```php
@@ -69,7 +69,7 @@ Post content
 
 **Returns**
 
-Decoded HTML entity of post content *string*
+Decoded HTML entity of post content. *string*
 
 **<code>_getTextStatus()</code>** <code>protected</code>
 ```php
@@ -78,7 +78,7 @@ _getTextStatus()
 
 **Returns**
 
-Status of the post in readable format (Draft or Publish) *string*
+Status of the post in readable format (Draft or Publish). *string*
 
 #### Comment
 
@@ -95,7 +95,7 @@ Comment message
 
 **Returns**
 
-Decoded HTML entity of comment message *string*
+Decoded HTML entity of comment message. *string*
 
 **<code>_getTextStatus()</code>** <code>protected</code>
 ```php
@@ -104,7 +104,7 @@ _getTextStatus()
 
 **Returns**
 
-Status of the comment in readable format (Unpublish or Publish) *string*
+Status of the comment in readable format (Unpublish or Publish). *string*
 
 **<code>_getRead()</code>** <code>protected</code>
 ```php
@@ -113,7 +113,7 @@ _getRead()
 
 **Returns**
 
-Read Status of the comment in readable format (Unread or Read) *string*
+Read Status of the comment in readable format (Unread or Read). *string*
 
 #### Menu
 
@@ -124,7 +124,7 @@ _getTextStatus()
 
 **Returns**
 
-Status of the navigation menu in readable format (Draft or Publish) *string*
+Status of the navigation menu in readable format (Draft or Publish). *string*
 
 #### Message
 
@@ -135,7 +135,7 @@ _getRead()
 
 **Returns**
 
-Read Status of the message in readable format (Unread or Read) *string*
+Read Status of the message in readable format (Unread or Read). *string*
 
 #### Notification
 
@@ -146,7 +146,7 @@ _getRead()
 
 **Returns**
 
-Read Status of the notification in readable format (Unread or Read) *string*
+Read Status of the notification in readable format (Unread or Read). *string*
 
 #### Page
 
@@ -157,7 +157,7 @@ _getTextStatus()
 
 **Returns**
 
-Status of the page in readable format (Draft or Publish) *string*
+Status of the page in readable format (Draft or Publish). *string*
 
 #### Submenu
 
@@ -168,7 +168,7 @@ _getTextStatus()
 
 **Returns**
 
-Status of the navigation submenu in readable format (Draft or Publish) *string*
+Status of the navigation submenu in readable format (Draft or Publish). *string*
 
 ### Table
 
@@ -199,7 +199,7 @@ lastUser()
 
 **Returns**
 
-Object data of last created user *object*
+Object data of last created user. *object*
 
 #### BlogCategories
 
@@ -254,7 +254,7 @@ List of options to pass to the finder.
 
 **Returns**
 
-Query object *object*
+Query object. *object*
 
 **<code>taggedPosts()</code>** <code>public</code>
 ```php
@@ -269,7 +269,7 @@ Id of the post tag.
 
 **Returns**
 
-Query object *object*
+Query object. *object*
 
 **<code>archivesList()</code>** <code>public</code>
 ```php
@@ -284,7 +284,7 @@ Id of the page.
 
 **Returns**
 
-Query object *object*
+Query object. *object*
 
 **<code>fetchPosts()</code>** <code>public</code>
 ```php
@@ -304,8 +304,8 @@ There are two values for this parameter.
  - ***count*** Count the result of the query object.
 
 **Returns**
- - ***fetch*** will return query object *object*
- - ***count*** will return total of the query object *integer*
+ - ***fetch*** will return query object. *object*
+ - ***count*** will return total of the query object. *integer*
 
 **<code>dashboardStatistic()</code>** <code>public</code>
 ```php
@@ -330,7 +330,7 @@ lastMonthTotalPosts()
 ```
 
 **Returns**
-Total posts created in last month *integer*
+Total posts created in last month. *integer*
 
 #### BlogsTags
 
@@ -362,7 +362,7 @@ Id post tag.
 
 **Returns**
 
-True or false *boolean*
+True or false. *boolean*
 
 #### BlogTypes
 
@@ -400,9 +400,587 @@ beforeSave($event, $entity, $options)
 checkVisitor($ip, $created, $blog_id)
 ```
 
+**Parameters**
+
+<code>$ip</code> *string*
+
+Visitor IP address.
+
+<code>$created</code> *datetime*
+
+Date when checking visitor IP address <code>(Y-m-d H:i:s)</code>.
+
+<code>$blog_id</code> *integer*
+
+Id of the blog or post.
+
+**Returns**
+
+Total visitors with related IP, created time, and blog id. *integer*
+
+**<code>totalVisitors()</code>** <code>public</code>
+```php
+totalVisitors($blog_id) 
+```
+
+**Parameters**
+
+<code>$blog_id</code> *string*
+
+Id of the blog or post.
+
+**Returns**
+
+Total visitors with blog id. *integer*
+
+**<code>lastTwoWeeksVisitors()</code>** <code>public</code>
+```php
+lastTwoWeeksVisitors() 
+```
+
+**Returns**
+
+Day and month of two weeks total visitors visited blog or post <code>(j M)</code> *array*
+
+**<code>lastTwoWeeksTotalVisitors()</code>** <code>public</code>
+```php
+lastTwoWeeksTotalVisitors($blog_id)
+```
+
+**Parameters**
+
+<code>$blog_id</code> *string*
+
+Id of the blog or post.
+
+**Returns**
+
+Total visitors visited blog or post in two weeks day by day. *array*
+
+**<code>totalVisitorsDate()</code>** <code>public</code>
+```php
+totalVisitorsDate($blog_id, $date) 
+```
+
+**Parameters**
+
+<code>$blog_id</code> *string*
+
+Id of the blog or post.
+
+<code>$date</code> *string*
+
+Specific date of visitors.
+
+**Returns**
+
+Total visitors visited blog or post in specific date. *integer*
+
+#### Comments
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>dashboardStatistic()</code>** <code>public</code>
+```php
+dashboardStatistic($read = 'all')
+```
+
+**Parameters**
+
+<code>$read</code> *string*
+
+Comment status in the database. Default value is <code>all</code>. Other value is <code>read</code> or <code>unread</code>.
+
+**Returns**
+
+Total comments to show at dashboard statistic. *integer*
+
+**<code>postComments()</code>** <code>public</code>
+```php
+postComments($blogId, $read = 'all', $type = 'fetch')
+```
+
+**Parameters**
+
+<code>$blogId</code> *integer*
+
+Id of the blog or post.
+
+<code>$read</code> *string*
+
+Comment status in the database. Default value is <code>all</code>. Other value is <code>read</code> or <code>unread</code>.
+
+<code>$type</code> *string*
+
+Return type of the function. Default value is <code>fetch</code>. Other value is <code>count</code>.
+
+**Returns**
+
+Query object for fetch, and total comments in post for count. *mixed*
+
+**<code>publishedComments()</code>** <code>public</code>
+```php
+publishedComments($blogId, $type = 'fetch')
+```
+
+**Parameters**
+
+<code>$blogId</code> *integer*
+
+Id of the blog or post.
+
+<code>$type</code> *string*
+
+Return type of the function. Default value is <code>fetch</code>. Other value is <code>count</code> or <code>countall</code>.
+
+**Returns**
+
+Query object for fetch, total comments in post for count, and total comments and comments reply for countall. *mixed*
+
+**<code>replyComments()</code>** <code>public</code>
+```php
+replyComments($blogId, $commentId, $type = 'fetch')
+```
+
+**Parameters**
+
+<code>$blogId</code> *integer*
+
+Id of the blog or post.
+
+<code>$commentId</code> *integer*
+
+Id of the comment.
+
+<code>$type</code> *string*
+
+Return type of the function. Default value is <code>fetch</code>. Other value is <code>count</code>.
+
+**Returns**
+
+Query object for fetch, and total comments reply for count. *moxed*
+
+**<code>totalReplies()</code>** <code>public</code>
+```php
+totalReplies($blogId, $replyId, $type = 'number')
+```
+
+**Parameters**
+
+<code>$blogId</code> *integer*
+
+Id of the blog or post.
+
+<code>$replyId</code> *integer*
+
+Replied comment id.
+
+<code>$type</code> *integer*
+
+Return type of the function. Default value is <code>number</code>. Other value is <code>text</code>
+
+**Returns**
+
+Total reply comments in number format for number, and total reply comments in text format for text. For example, for number, it returns 5, for text, it returns 5 replies.
+
+#### CustomPages
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Generals
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>findById()</code>** <code>public</code>
+```php
+findById(Query $query, array $options)
+```
+
+**Parameters**
+
+<code>Query $query</code> *object*
+
+Query object.
+
+<code>array $options</code> *array*
+
+Additional options for query object.
+
+**Returns**
+
+Query object. *object*
+
+#### Histories
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>saveActivity()</code>** <code>public</code>
+```php
+saveActivity($options)
+```
+
+**Parameters**
+
+<code>$options</code> *integer*
+
+Column in Histories Table.
+
+**Returns**
+
+True or false. *boolean*
+
+#### MediaDocs
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Medias
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### MediaVideos
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Menus
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>fetchPublishedMenus()</code>** <code>public</code>
+```php
+fetchPublishedMenus() 
+```
+
+**Returns**
+
+Fetch published menus and submenus. *array*
+
+#### Messages
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Notifications
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Pages
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### PageTemplates
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+#### Socials
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+#### Submenus
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+#### Subscribers
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
 
 ## View
 
 ### Helper
+
+#### Purple Helper
+
+**<code>readableFileSize()</code>** <code>public</code>
+```php
+readableFileSize($bytes, $precision = 2)
+```
+
+**Parameters**
+
+<code>$bytes</code> *integer*
+
+Size in bytes of the file.
+
+<code>$precision</code> *integer*
+
+The number of decimal digits to round to. Default value is 2.
+
+**Returns**
+
+File size in B, KB, MB, GB, or TB. *string*
+
+**<code>shortenNumber()</code>** <code>public</code>
+```php
+shortenNumber($n, $precision = 2)
+```
+
+**Parameters**
+
+<code>$n</code> *integer*
+
+Number to be converted.
+
+<code>$precision</code> *integer*
+
+The number of decimal digits to round to. Default value is 2.
+
+**Returns**
+
+Formatted number. *string*
+
+**<code>notificationCounter()</code>** <code>public</code>
+```php
+notificationCounter($number)
+```
+
+**Parameters**
+
+<code>$number</code> *integer*
+
+Total notification in Purple CMS.
+
+**Returns**
+
+Formatted total notification in Purple CMS. *integer*
+
+**<code>plural()</code>** <code>public</code>
+```php
+plural($number, $verb, $addition = 's', $shorten = false) 
+```
+
+**Parameters**
+
+<code>$number</code> *integer*
+
+Number to be formatted to plural.
+
+<code>$verb</code> *string*
+
+Verb word to be added to plural sentence.
+
+<code>$addition</code> *string*
+
+Addition to verb, s, es or whatever. Default value is <code>s</code>
+
+<code>$shorten</code> *string*
+
+Option to shorten <code>$number</code> with <code>shortenNumber()</code> function.
+
+**Returns**
+
+Plural sentence with number and verb. *string*
+
+**<code>getAllFuncInHtml()</code>** <code>public</code>
+```php
+getAllFuncInHtml($html)
+```
+
+**Parameters**
+
+<code>$html</code> *string*
+
+HTML code created in Block Editor.
+
+**Returns**
+
+All function name in HTML code. *integer*
 
 ## Controller
