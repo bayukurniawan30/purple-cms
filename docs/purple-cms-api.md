@@ -882,6 +882,253 @@ Configuration options passed to the constructor.
 beforeSave($event, $entity, $options)
 ```
 
+#### Tags
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>checkExists()</code>** <code>public</code>
+```php
+checkExists($title) 
+```
+
+**Parameters**
+
+<code>$title</code> *string*
+
+Tag title to be checked.
+
+**Returns**
+
+True if exist, otherwise false. *boolean*
+
+**<code>postTags()</code>** <code>public</code>
+```php
+postTags($blogId)
+```
+
+**Parameters**
+
+<code>$blogId</code> *integer*
+
+Id of the blog or post.
+
+**Returns**
+
+All tags in a blog or post. *Query object*
+
+**<code>tagsSidebar()</code>** <code>public</code>
+```php
+tagsSidebar($limit = NULL)
+```
+
+**Parameters**
+
+<code>$limit</code> *integer*
+
+Total tags to be shown in sidebar. Default value is <code>NULL</code>
+
+**Returns**
+
+Tags to be shown in sidebar. *Query object*
+
+#### Visitors
+
+**<code>initialize()</code>** <code>public</code>
+```php
+initialize(array $config)
+```
+
+**Parameters**
+
+<code>$config</code> *array*
+
+Configuration options passed to the constructor.
+
+**<code>beforeSave()</code>** <code>public</code> <code>callbacks/events</code>
+```php
+beforeSave($event, $entity, $options)
+```
+
+**<code>totalAllVisitors()</code>** <code>public</code>
+```php
+totalAllVisitors() 
+```
+
+**Returns**
+
+Total all visitors (Mobile and desktop). *integer*
+
+**<code>totalMobileVisitors()</code>** <code>public</code>
+```php
+totalMobileVisitors() 
+```
+
+**Returns**
+
+Total mobile visitors. *integer*
+
+**<code>lastTwoWeeksTotalVisitors()</code>** <code>public</code>
+```php
+lastTwoWeeksTotalVisitors() 
+```
+
+**Returns**
+
+Total visitors in last two weeks. *array*
+
+**<code>lastTwoWeeksBeforeTotalVisitors()</code>** <code>public</code>
+```php
+lastTwoWeeksBeforeTotalVisitors() 
+```
+
+**Returns**
+
+Total visitors two weeks before last two weeks. *integer*
+
+**<code>lastSixMonthVisitors()</code>** <code>public</code>
+```php
+lastSixMonthVisitors()
+```
+
+**Returns**
+
+Month visited by visitors in last six months. *array*
+
+**<code>lastSixMonthTotalVisitors()</code>** <code>public</code>
+```php
+lastSixMonthTotalVisitors()
+```
+
+**Returns**
+
+Total visitors in last six months. *array*
+
+**<code>lastSixMonthTotalMobileVisitors()</code>** <code>public</code>
+```php
+lastSixMonthTotalMobileVisitors()  
+```
+
+**Returns**
+
+Total mobile visitors in last six months. *array*
+
+**<code>countVisitorsInMonth()</code>** <code>public</code>
+```php
+countVisitorsInMonth($year = NULL, $month = NULL) 
+```
+
+**Parameters**
+
+<code>$year</code> *integer*
+
+Year to be checked (Y).
+
+<code>$month</code> *date*
+
+Month to be checked (m).
+
+**Returns**
+
+Total visitors in specific month and year. *integer*
+
+**<code>totalVisitorsDate()</code>** <code>public</code>
+```php
+totalVisitorsDate($date) 
+```
+
+**Parameters**
+
+<code>$date</code> *date*
+
+Date to be checked.
+
+**Returns**
+
+Total visitors in specific date. *integer*
+
+**<code>totalMobileVisitorsDate()</code>** <code>public</code>
+```php
+totalMobileVisitorsDate($date) 
+```
+
+**Parameters**
+
+<code>$date</code> *integer*
+
+Date to be checked.
+
+**Returns**
+
+Total mobile visitors in specific date. *integer*
+
+**<code>visitorsPlatform()</code>** <code>public</code>
+```php
+visitorsPlatform($browser, $month = NULL, $year = NULL)
+```
+
+**Parameters**
+
+<code>$browser</code> *string*
+
+Browser to be checked.
+
+<code>$month</code> *date*
+
+Month to be checked (m). Default value is NULL.
+
+<code>$year</code> *date*
+
+Year to be checked (Y). Default value is NULL.
+
+**Returns**
+
+Total visitors in specific month, year, and browser. *integer*
+
+**<code>checkVisitor()</code>** <code>public</code>
+```php
+checkVisitor($ip, $created, $browser, $platform, $device)
+```
+
+**Parameters**
+
+<code>$ip</code> *string*
+
+IP address to be checked.
+
+<code>$created</code> *date*
+
+Date created to be checked.
+
+<code>$browser</code> *string*
+
+Browser to be checked.
+
+<code>$platform</code> *string*
+
+Platform to be checked.
+
+<code>$device</code> *string*
+
+Device to be checked.
+
+**Returns**
+
+Total visitors with parameters above. *integer*
+
 ## View
 
 ### Helper
@@ -982,5 +1229,3 @@ HTML code created in Block Editor.
 **Returns**
 
 All function name in HTML code. *integer*
-
-## Controller
