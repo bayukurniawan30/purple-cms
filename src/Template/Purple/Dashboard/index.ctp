@@ -56,7 +56,7 @@
             <a class="uk-alert-close" uk-close></a>
             <p>
                 <strong>Still confused how to use Purple?</strong><br>
-                Read the full documentation <a href="http://doc.purple-cms.com" target="_blank">here</a>. Are you a developer? We have a <a href="http://doc.purple-cms.com/developer-guide" target="_blank">complete guide</a> to customize Purple CMS.
+                Read the full documentation <a href="https://bayukurniawan30.github.io/purple-cms/#/" target="_blank">here</a>. Are you a developer? We have a <a href="https://bayukurniawan30.github.io/purple-cms/#/generate-documentation" target="_blank">complete guide</a> to customize Purple CMS.
             </p>
         </div>
     </div>
