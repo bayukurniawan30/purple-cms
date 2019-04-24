@@ -20,12 +20,8 @@ class ThemeFunction
     	$text = '<p class="sidebar-p">I am a creative illustrator and graphic designer with more than 10 years of experience. </p><p class="sidebar-p">Originally from Toronto, currently based in London. </p>';
     	return $text;
     }
-    public function aaa($params = NULL)
+    public function myFunction()
     {
-        return '<p class="text-primary">naskleeeng</p>';
-    }
-    public function bbb()
-    {
-        return 'bbbbb';
+        return '<p class="text-primary">This is my function in custom block</p>';
     }
 }
