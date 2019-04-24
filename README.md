@@ -4,6 +4,8 @@
 
 Content Management System Base on CakePHP 3
 
+[Read Full Documentaion](https://bayukurniawan30.github.io/purple-cms/)
+
 ### Tentang Purple CMS
 Purple CMS adalah sebuah Content Management System yang dibuat dengan framework CakePHP 3. Tujuannya adalah untuk memudahkan developer dalam membuat suatu website, baik yang sederhana ataupun kompleks.
 
