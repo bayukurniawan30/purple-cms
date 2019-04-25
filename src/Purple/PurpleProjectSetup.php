@@ -100,6 +100,7 @@ class PurpleProjectSetup
 			    admin_id INT( 11 ) NOT NULL,
 			    UNIQUE KEY (slug),
 			    page_option VARCHAR( 100 ) NOT NULL,
+			    parent INT( 11 ) NULL,
 			    FOREIGN KEY admin_page (admin_id) REFERENCES admins(id),
 			    FOREIGN KEY page_template_page (page_template_id) REFERENCES page_templates(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
