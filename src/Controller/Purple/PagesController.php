@@ -118,11 +118,14 @@ class PagesController extends AppController
         $pageDelete = new PageDeleteForm();
 
         $pages = $this->Pages->find('all', [
-            'order' => ['Pages.id' => 'DESC']])->contain('PageTemplates')->contain('Admins');
+            'order' => ['Pages.id' => 'DESC']])->contain('PageTemplates')->contain('Admins')->where(['Pages.parent IS' => NULL]);
+
+        $parentPages = $this->Pages->find('list')->select(['id','title'])->order(['id' => 'ASC'])->where(['parent IS' => NULL, 'page_template_id <>' => '2'])->toArray();
 
         $data = [
             'pageTitle'         => 'Pages',
             'pageBreadcrumb'    => 'Pages',
+            'parentPages'       => $parentPages,
             'pageAdd'           => $pageAdd,
             'pageEdit'          => $pageEdit,
             'pageStatus'        => $pageStatus,

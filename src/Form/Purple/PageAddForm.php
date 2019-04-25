@@ -20,7 +20,8 @@ class PageAddForm extends Form
                   ->requirePresence('status')
                   ->notEmpty('status', 'Please select status of the menu')
                   ->requirePresence('page_template_id')
-                  ->notEmpty('page_template_id', 'Please select template');
+                  ->notEmpty('page_template_id', 'Please select template')
+                  ->allowEmpty('parent');
 
         return $validator;
     }

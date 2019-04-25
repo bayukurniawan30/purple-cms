@@ -248,7 +248,40 @@ class PagesController extends AppController
     public function index()
     {
         $slug = $this->request->getParam('page');
-        $page = $this->Pages->find('all')->contain('PageTemplates')->where(['slug' => $slug]);
+        $page = $this->Pages->find('all')->contain('PageTemplates')->where(['slug' => $slug, 'status' => '1']);
+        if ($page->count() == 1) {
+            $loadPage = $page->first();
+            if ($loadPage->page_template_id == '1') {
+                $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug])->limit(1);
+                if ($viewPage->count() == 0) {
+                    throw new NotFoundException(__('Page not found'));
+                }
+                else {
+                    $this->setAction('general');
+                }
+            }
+            elseif ($loadPage->page_template_id == '2') {
+                $this->setAction('blog');
+            }
+            elseif ($loadPage->page_template_id == '3') {
+                $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug])->limit(1);
+                if ($viewPage->count() == 0) {
+                    throw new NotFoundException(__('Page not found'));
+                }
+                else {
+                    $this->setAction('code');
+                }
+            }
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function child()
+    {
+        $slug   = $this->request->getParam('child');
+        $parent = $this->request->getParam('page');
+        $page   = $this->Pages->find('all')->contain('PageTemplates')->where(['slug' => $slug]);
         if ($page->count() == 1) {
             $loadPage = $page->first();
             if ($loadPage->page_template_id == '1') {
@@ -279,14 +312,21 @@ class PagesController extends AppController
     }
     public function general()
     {
-        $slug = $this->request->getParam('page');
-        $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+        if (empty($this->request->getParam('child'))) {
+            $slug = $this->request->getParam('page');
+            $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+        }
+        else {
+            $slug     = $this->request->getParam('child');
+            $parent   = $this->request->getParam('page');
+            $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+            $viewParent = $this->Pages->find('all')->where(['Pages.slug' => $parent])->limit(1);
+        }
+        
         if ($viewPage->count() == 0) {
             throw new NotFoundException(__('Page not found'));
         }
         else {
-            
-
             $data = [
                 'pageType'        => 'general',
                 'pageTitle'       => $viewPage->first()->title,
@@ -296,14 +336,32 @@ class PagesController extends AppController
                 'viewPage'        => $viewPage->first()
             ];
 
+            if (!empty($this->request->getParam('child'))) {
+                $data['parentPageTitle'] = $viewParent->first()->title;
+                $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$viewPage->first()->title;
+                $data['childPage']       = true;
+            }
+            else {
+                $data['childPage'] = false;
+            }
+
             $this->set($data);
             $this->render();
         }
     }
     public function code()
     {
-        $slug = $this->request->getParam('page');
-        $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+        if (empty($this->request->getParam('child'))) {
+            $slug = $this->request->getParam('page');
+            $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+        }
+        else {
+            $slug     = $this->request->getParam('child');
+            $parent   = $this->request->getParam('page');
+            $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+            $viewParent = $this->Pages->find('all')->where(['Pages.slug' => $parent])->limit(1);
+        }
+        
         if ($viewPage->count() == 0) {
             throw new NotFoundException(__('Page not found'));
         }
@@ -320,6 +378,15 @@ class PagesController extends AppController
                 'viewPage'        => $file
             ];
 
+            if (!empty($this->request->getParam('child'))) {
+                $data['parentPageTitle'] = $viewParent->first()->title;
+                $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$viewPage->first()->title;
+                $data['childPage']       = true;
+            }
+            else {
+                $data['childPage'] = false;
+            }
+
             $this->set($data);
             $this->render();
         }
@@ -328,8 +395,16 @@ class PagesController extends AppController
     {
         $this->loadComponent('Paginator');
 
-        $slug = $this->request->getParam('page');
-        $page = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.slug' => $slug]);
+        if (empty($this->request->getParam('child'))) {
+            $slug = $this->request->getParam('page');
+            $page = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.slug' => $slug]);
+        }
+        else {
+            $slug       = $this->request->getParam('child');
+            $parent     = $this->request->getParam('page');
+            $page       = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.slug' => $slug]);
+            $viewParent = $this->Pages->find('all')->where(['Pages.slug' => $parent])->limit(1);
+        }
 
         $this->loadModel('Blogs');
         $this->loadModel('BlogCategories');
@@ -350,6 +425,15 @@ class PagesController extends AppController
             'metaOgType'      => 'blog',
             'postsTotal'      => $blogs->count()
         ];
+
+        if (!empty($this->request->getParam('child'))) {
+            $data['parentPageTitle'] = $viewParent->first()->title;
+            $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$page->first()->title;
+            $data['childPage']       = true;
+        }
+        else {
+            $data['childPage'] = false;
+        }
 
         $this->paginate = [
             'limit' => $this->Settings->settingsPostLimitPerPage(),

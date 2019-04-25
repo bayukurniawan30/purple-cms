@@ -101,6 +101,12 @@ Router::scope('/', function (RouteBuilder $routes) {
         ->setPass(['page']
     );
 
+    $routes->connect('/:page/:child', 
+            ['controller' => 'Pages', 'action' => 'child'], 
+            ['_name' => 'specificPageChild'])
+        ->setPass(['page', 'child']
+    );
+
     /**
      * Blog Routing with paging
      */

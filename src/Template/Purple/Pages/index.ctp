@@ -79,13 +79,15 @@
                                             <li><a href="#" class="button-change-page-status" data-purple-id="<?= $page->id ?>" data-purple-status="<?= $page->status ?>" data-purple-name="<?= $page->title ?>" data-purple-modal="#modal-change-page-status">Change Status</a></li>
                                             <li><a class="button-get-permalink" href="#" data-purple-link="<?= $this->Url->build('/'.$page->slug, true); ?>" data-purple-modal="#modal-show-permalink">Get Permalink</a></li>
                                             <li class="uk-nav-divider"></li>
-                                            <li><a class="button-delete-purple" href="#" data-purple-id="<?= $page->id ?>" data-purple-name="<?= $page->title ?>" data-purple-type="<?= $page->page_template->type ?>" data-purple-modal="#modal-delete-page">Delete</a></li>
+                                            <li><a class="button-delete-purple text-danger" href="#" data-purple-id="<?= $page->id ?>" data-purple-name="<?= $page->title ?>" data-purple-type="<?= $page->page_template->type ?>" data-purple-modal="#modal-delete-page">Delete</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </li>
                         <?php 
+                                $fetchChild = $this->cell('Pages::childPages', [$page]);
+                                echo $fetchChild;
                                 $initPage++;
                             endforeach; 
                         ?>
@@ -185,6 +187,18 @@
                             'empty'    => 'Select Status',
                             'class'    => 'form-control',
                             'required' => 'required'
+                        ]
+                    );
+                ?>
+            </div>
+            <div class="form-group">
+                <?php
+                    echo $this->Form->select(
+                        'parent',
+                        $parentPages,
+                        [
+                            'empty'    => 'Select Parent',
+                            'class'    => 'form-control'
                         ]
                     );
                 ?>

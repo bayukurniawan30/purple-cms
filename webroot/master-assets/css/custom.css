@@ -414,6 +414,9 @@ select.form-control {
 .purple-notification-list .uk-comment-header {
     margin-bottom: 10px!important;
 }
+.child-page-list {
+    border-left: 30px solid var(--primary);
+}
 
 /* Toast UI Editor */
 #tuieditor {

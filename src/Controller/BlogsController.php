@@ -195,6 +195,8 @@ class BlogsController extends AppController
             $tags   = $this->Tags->postTags($blog->id);
 
             $page = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.id' => $pageID]);
+            $pageParent = $page->first()->parent;
+
             if ($page->count() == 0) {
                 $pageSlug   = 'posts';
                 $pageTitle  = 'Posts';
@@ -245,6 +247,13 @@ class BlogsController extends AppController
                 'recaptchaSecret'  => $this->Settings->settingsRecaptchaSecret()
             ];
 
+            if ($pageParent == NULL || $pageParent == '0') {
+            }
+            else {
+                $viewParent = $this->Pages->find('all')->where(['Pages.id' => $pageParent])->limit(1);
+                $data['breadcrumb'] = 'Home::'.$viewParent->first()->title.'::'.$pageTitle;
+            }
+
             $this->set(compact('categories'));
             $this->set(compact('archives'));
             $this->set(compact('tagsSidebar'));
@@ -273,10 +282,12 @@ class BlogsController extends AppController
 
             if ($pageID == NULL) {
                 $total = 0;
+                $pageParent = NULL;
             }
             else {
                 $page  = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.id' => $pageID]);
                 $total = $page->count();
+                $pageParent = $page->first()->parent;
             }
 
             if ($total == 0) {
@@ -302,6 +313,13 @@ class BlogsController extends AppController
                 'breadcrumb' => 'Home::'.$pageTitle.'::'.$category->name,
 	            'postsTotal' => $blogs->count()
             ];
+
+            if ($pageParent == NULL || $pageParent == '0') {
+            }
+            else {
+                $viewParent = $this->Pages->find('all')->where(['Pages.id' => $pageParent])->limit(1);
+                $data['breadcrumb'] = 'Home::'.$viewParent->first()->title.'::'.$pageTitle.'::'.$category->name;
+            }
 
             $this->paginate = [
 	            'limit' => $this->Settings->settingsPostLimitPerPage(),
