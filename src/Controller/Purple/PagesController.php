@@ -158,25 +158,25 @@ class PagesController extends AppController
 
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
 
-            $froalaCallToAction = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/call-to-action');
+            $froalaCallToAction = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'call-to-action');
             $filesCallToAction  = $froalaCallToAction->find('.*\.jpg', true);
             
-            $froalaContents     = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/contents');
+            $froalaContents     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contents');
             $filesContents      = $froalaContents->find('.*\.jpg', true);
             
-            $froalaFeatures     = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/features');
+            $froalaFeatures     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'features');
             $filesFeatures      = $froalaFeatures->find('.*\.jpg', true);
             
-            $froalaTeams        = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/teams');
+            $froalaTeams        = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'teams');
             $filesTeams         = $froalaTeams->find('.*\.jpg', true);
 
-            $froalaContacts     = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/contacts');
+            $froalaContacts     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contacts');
             $filesContacts      = $froalaContacts->find('.*\.jpg', true);
             
-            $froalaLightbox     = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/lightbox');
+            $froalaLightbox     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'lightbox');
             $filesLightbox      = $froalaLightbox->find('.*\.jpg', true);
             
-            $froalaSlider       = new Folder(WWW_ROOT . 'master-assets/plugins/froala-blocks/images/slider');
+            $froalaSlider       = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'slider');
             $filesSlider        = $froalaSlider->find('.*\.jpg', true);
 
             $savedBlocks        = $purpleFroalaBlocks->savedBlocks();
@@ -1052,9 +1052,15 @@ class PagesController extends AppController
 
             function createHtmlFromArray($array) {
                 echo '<ul>';
+
+                $treeId    = '';
+                $tagId     = '';
+                $treeClass = '';
+
                 foreach ($array['child'] as $data) {
                     if ($data['node'] == 'element') {
-                        $tag      = $data['tag'];
+                        $tag = $data['tag'];
+
 
                         if (array_key_exists('attr', $data)) {
                             if (array_key_exists('class', $data['attr'])) {

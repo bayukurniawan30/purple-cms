@@ -166,7 +166,7 @@
                         if ($themeBlocks):
                             $themeNumber = 1;
                             foreach ($themeBlocks as $themeBlock): 
-                                $fileBlock   = file_get_contents(PLUGINS .'EngageTheme/webroot/blocks/'.$themeBlock);
+                                $fileBlock   = file_get_contents(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'blocks' . DS . $themeBlock);
                                 $decodeBlock = json_decode($fileBlock, true);
 
                                 foreach($decodeBlock["options"] as $options):
@@ -379,6 +379,11 @@
 
 <script>
     $(document).ready(function() {
+        // Prevent user leave page
+        window.onbeforeunload = function() {
+            return "Your page is not saved. Are you sure want to leave?";
+        }
+            
         $("#bind-fdb-blocks").find('*').each(function() {
             var random = Math.floor((Math.random() * 100000000000) + 1);
             $(this).attr('data-tree-id', random);
@@ -398,6 +403,7 @@
 
         var targetButton = $("#"+pageHtml.button);
         targetButton.one('click',function() {
+            window.onbeforeunload = null;
             ajaxSubmit(pageHtml.form, pageHtml.action, pageHtml.redirectType, pageHtml.redirect, pageHtml.btnNormal, pageHtml.btnLoading);
         })
     })

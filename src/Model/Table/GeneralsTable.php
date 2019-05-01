@@ -34,7 +34,7 @@ class GeneralsTable extends Table
 			$entity->modified = $date;
 		}
 
-		$entity->content = htmlentities($entity->content);
+		$entity->content = htmlentities(str_replace('<style></style>', '', $entity->content));
 	}
 	public function findById(Query $query, array $options)
     {

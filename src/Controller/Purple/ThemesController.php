@@ -104,10 +104,10 @@ class ThemesController extends AppController
 		$themeApply  = new ThemeApplyForm();
 		$themeDelete = new ThemeDeleteForm();
 
-		$activeThemeFolder = new Folder(PLUGINS .'EngageTheme/');
-		$listThemeFolder   = new Folder(WWW_ROOT .'uploads/themes/');
+		$activeThemeFolder = new Folder(PLUGINS . 'EngageTheme' . DS);
+		$listThemeFolder   = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS);
 
-		$readThemeDetail   = new File(PLUGINS .'EngageTheme/detail.json');
+		$readThemeDetail   = new File(PLUGINS .'EngageTheme' . DS . 'detail.json');
 		$read              = $readThemeDetail->read();
 
 		if ($read != false) {
@@ -141,10 +141,8 @@ class ThemesController extends AppController
 			$readThemeJson = new File($list);
 			$readJson = $readThemeJson->read();
 
-			
-
 			if ($readJson != false) {
-				$explodePath  = explode('/', $list);
+				$explodePath  = explode(DS, $list);
 				$reversedPath = array_reverse($explodePath);
 				$themeFolder  = $reversedPath[1];
 
@@ -200,53 +198,53 @@ class ThemesController extends AppController
 
 	            // Delete folder from active theme
 	            $folderActive   = str_replace(' ', '', ucwords(trim($this->request->getData('active')), ' ')).'Theme'; 
-	            $folderToDelete = new Folder(WWW_ROOT .'uploads/themes/'.$folderActive);
+	            $folderToDelete = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive);
 				if ($folderToDelete->delete()) {
 
 	             	// Create theme folder
-	            	$themePath   = WWW_ROOT .'uploads/themes/'.$folderActive;
+	            	$themePath   = WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive;
 	            	$checkPath   = new Folder($themePath);
 	            	if (is_null($checkPath->path)) {
 		            	$themeFolder = new Folder($themePath, true, 0777);
 		            }
 
 					// Copy theme file to theme list
-			        $folderSrc = new Folder(PLUGINS .'EngageTheme/src');
+			        $folderSrc = new Folder(PLUGINS . 'EngageTheme' . DS . 'src');
 					$folderSrc->copy([
-						'to'     => WWW_ROOT .'uploads/themes/'.$folderActive.'/src',
-						'skip'   => [PLUGINS .'EngageTheme/src/Plugin.php'],
+						'to'     => WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive . DS . 'src',
+						'skip'   => [PLUGINS . 'EngageTheme' . DS . 'src' . DS . 'Plugin.php'],
 						'scheme' => Folder::OVERWRITE
 					]);
-					$folderWebroot = new Folder(PLUGINS .'EngageTheme/webroot');
+					$folderWebroot = new Folder(PLUGINS . 'EngageTheme' . DS . 'webroot');
 					$folderWebroot->copy([
-						'to'     => WWW_ROOT .'uploads/themes/'.$folderActive.'/webroot',
+						'to'     => WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive . DS . 'webroot',
 						'scheme' => Folder::OVERWRITE
 					]);
-					$fileJson = new File(PLUGINS .'EngageTheme/detail.json');
-					$fileJson->copy(WWW_ROOT .'uploads/themes/'.$folderActive.'/detail.json');
+					$fileJson = new File(PLUGINS . 'EngageTheme' . DS . 'detail.json');
+					$fileJson->copy(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive . DS . 'detail.json');
 
-					$deleteSrc = new Folder(PLUGINS .'EngageTheme/src');
+					$deleteSrc = new Folder(PLUGINS . 'EngageTheme' . DS . 'src');
 					$deleteSrc->delete();
-					$deleteWebroot = new Folder(PLUGINS .'EngageTheme/webroot');
+					$deleteWebroot = new Folder(PLUGINS . 'EngageTheme' . DS . 'webroot');
 					$deleteWebroot->delete();
-					$deleteJson = new File(PLUGINS .'EngageTheme/detail.json');
+					$deleteJson = new File(PLUGINS . 'EngageTheme' . DS . 'detail.json');
 					$deleteJson->delete();
 
 					// Copy applying theme to plugins
-            		$applyFolderSrc = new Folder(WWW_ROOT .'uploads/themes/'.$targetFolder.'/src');
+            		$applyFolderSrc = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $targetFolder . DS . 'src');
 					$applyFolderSrc->copy([
-						'to'     => PLUGINS .'EngageTheme/src',
-						'skip'   => [WWW_ROOT .'uploads/themes/'.$targetFolder.'/src/Plugin.php'],
+						'to'     => PLUGINS . 'EngageTheme' . DS . 'src',
+						'skip'   => [WWW_ROOT . 'uploads' . DS . 'themes' . DS . $targetFolder . DS . 'src' . DS . 'Plugin.php'],
 						'scheme' => Folder::OVERWRITE
 					]);
 
-					$folderWebroot = new Folder(WWW_ROOT .'uploads/themes/'.$targetFolder.'/webroot');
+					$folderWebroot = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $targetFolder . DS . 'webroot');
 					$folderWebroot->copy([
-						'to'     => PLUGINS .'EngageTheme/webroot',
+						'to'     => PLUGINS . 'EngageTheme' . DS . 'webroot',
 						'scheme' => Folder::OVERWRITE
 					]);
-					$fileJson = new File(WWW_ROOT .'uploads/themes/'.$targetFolder.'/detail.json');
-					$fileJson->copy(PLUGINS .'EngageTheme/detail.json');
+					$fileJson = new File(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $targetFolder . DS . 'detail.json');
+					$fileJson->copy(PLUGINS . 'EngageTheme' . DS . 'detail.json');
 
 	                /**
 					 * Save user activity to histories table
@@ -304,7 +302,7 @@ class ThemesController extends AppController
 					$uploadFile = $temporaryFolder . DS . $fileName;
 	                if (move_uploaded_file($this->request->getData('file.tmp_name'), $uploadFile)) {
 	                	// Create theme folder
-		            	$themePath   = WWW_ROOT .'uploads/themes/'.$onlyName;
+		            	$themePath   = WWW_ROOT . 'uploads' . DS . 'themes' . DS . $onlyName;
 		            	$checkPath   = new Folder($themePath);
 		            	if (is_null($checkPath->path)) {
 			            	$themeFolder = new Folder($themePath, true, 0777);
@@ -370,7 +368,7 @@ class ThemesController extends AppController
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
                 
-				$deleteTheme = new Folder(WWW_ROOT .'uploads/themes/'.$this->request->getData('folder'));
+				$deleteTheme = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $this->request->getData('folder'));
 
                 if ($deleteTheme->delete()) {
                     /**

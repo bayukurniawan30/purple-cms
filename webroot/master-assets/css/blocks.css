@@ -228,6 +228,11 @@ div.fr-modal-body div.fr-image-list div.fr-image-container .fr-delete-img {
     height: 1px;
     background: transparent;
 }
+.tree-selected-node {
+    -webkit-box-shadow:inset 0px 0px 0px 1px var(--primary);
+    -moz-box-shadow:inset 0px 0px 0px 1px var(--primary);
+    box-shadow:inset 0px 0px 0px 1px var(--primary);
+}
 
 /* Only in Block */
 .purple-theme-dynamic-block {

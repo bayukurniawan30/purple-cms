@@ -90,6 +90,7 @@
 
         var targetButton = $("#"+pageSave.button);
         targetButton.one('click',function() {
+            window.onbeforeunload = null;
             ajaxSubmit(pageSave.form, pageSave.action, pageSave.redirectType, pageSave.redirect, pageSave.btnNormal, pageSave.btnLoading, false, true);
         })
     })

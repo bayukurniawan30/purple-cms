@@ -150,6 +150,7 @@ class PagesController extends AppController
 
         $data = [
             'pageTitle'        => 'Home',
+            'childPage'        => false,
             'siteName'         => $this->Settings->settingsSiteName(),
             'tagLine'          => $this->Settings->settingsTagLine(),
             'metaKeywords'     => $this->Settings->settingsMetaKeywords(),
@@ -213,7 +214,7 @@ class PagesController extends AppController
     }
     public function home() 
     {
-        $themeFolder  = new File(PLUGINS.'EngageTheme/detail.json');
+        $themeFolder  = new File(PLUGINS . 'EngageTheme' . DS . 'detail.json');
         $detail       = $themeFolder->read();
         $decodeDetail = json_decode($detail, true);
 
