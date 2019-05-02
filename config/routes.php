@@ -268,6 +268,12 @@ Router::scope('/setup', function ($routes) {
     $routes->connect('/finish', 
             ['controller' => 'Setup', 'action' => 'finish'], 
             ['_name' => 'setupFinish']);
+    $routes->connect('/ajax-database', 
+            ['controller' => 'Setup', 'action' => 'ajaxDatabase'], 
+            ['_name' => 'setupAjaxDatabase']);
+    $routes->connect('/ajax-administrative', 
+            ['controller' => 'Setup', 'action' => 'ajaxAdministrative'], 
+            ['_name' => 'setupAjaxAdministrative']);
 });
 
 /**
