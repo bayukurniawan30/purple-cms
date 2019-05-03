@@ -222,41 +222,13 @@
     ?>
 </div>
 
-<div id="modal-delete-social" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($socialDelete, [
-                'id'                    => 'form-delete-social',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-delete']
-            ]);
 
-            echo $this->Form->hidden('id');
-        ?>
-        <div class=" uk-modal-body">
-            <p>Are you sure want to delete <span class="bind-title"></span>?</p>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <?php
-                echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-modal-close',
-                    'type'         => 'button',
-                    'data-target'  => '.purple-modal'
-                ]);
+<?= $this->element('Dashboard/Modal/delete_modal', [
+        'action'     => 'social',
+        'form'       => $socialDelete,
+        'formAction' => 'ajax-delete'
+]) ?>
 
-                echo $this->Form->button('Yes, Delete it', [
-                    'id'    => 'button-delete-social',
-                    'class' => 'btn btn-gradient-danger uk-margin-left'
-                ]);
-            ?>
-        </div>
-        <?php
-            echo $this->Form->end();
-        ?>
-    </div>
-</div>
 <?php 
 	endif;
 ?>

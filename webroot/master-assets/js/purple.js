@@ -371,6 +371,9 @@
                     redirect  = $(this).data('purple-redirect'),
                     token     = $('#csrf-ajax-token').val();
 
+                $(this).find('i').removeClass('mdi mdi-code-tags');
+                $(this).find('i').addClass('fa fa-circle-o-notch fa-spin');
+
                 $.ajax({
                     type: "POST",
                     url:  url,
@@ -382,11 +385,11 @@
                     beforeSend: function() {
                     },
                     success: function(data) {
-                        console.log(data);
                         UIkit.modal(modal).show();
                         $(modal).find('.uk-modal-body').html('<div class="text-center uk-padding-large"><div uk-spinner="ratio: 2"></div></div>');
                         setTimeout(function() {
                             $(modal).find('.uk-modal-body').html(data);
+                            $("#button-toggle-code").find('i').attr('class', 'mdi mdi-code-tags');
                         }, 1500);
                     }
                 })

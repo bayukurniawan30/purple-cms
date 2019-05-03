@@ -324,6 +324,7 @@ class SettingsController extends AppController
                 }
                 else {
                     $emailNotification = false;
+                    $emailStatus = false;
                 }
 
                 /**

@@ -36,7 +36,7 @@
 <?php
     if ($this->request->getParam('type') != 'blog'):
 ?>
-<div id="modal-save-page" class="uk-flex-top purple-modal" uk-modal>
+<div id="modal-save-page" class="uk-flex-top purple-modal" uk-modal="bg-close: false">
     <div class="uk-modal-dialog uk-margin-auto-vertical">
         <?php
             echo $this->Form->create($pageSave, [

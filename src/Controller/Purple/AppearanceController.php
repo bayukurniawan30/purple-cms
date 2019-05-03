@@ -308,7 +308,9 @@ class AppearanceController extends AppController
         $appearanceDelete  = new AppearanceDeleteForm();
         if ($this->request->is('ajax')) {
             if ($appearanceDelete->execute($this->request->getData())) {
-	            $type   = $this->request->getData('type');
+				$session   = $this->getRequest()->getSession();
+	            $sessionID = $session->read('Admin.id');
+	            $type      = $this->request->getData('type');
 
 		        $this->loadModel('Settings');
 	            $data          = $this->Settings->get($this->request->getData('id'));

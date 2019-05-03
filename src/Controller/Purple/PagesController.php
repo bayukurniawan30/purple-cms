@@ -362,7 +362,12 @@ class PagesController extends AppController
                     $settingsTable  = TableRegistry::get('Settings');
                     $queryHomepage  = $settingsTable->find()->where(['name' => 'homepagestyle'])->first();
                     $setting        = $settingsTable->get($queryHomepage->id);
-                    $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content')));
+
+                    // Trim empty style tag
+                    $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
+                    $trimContent = str_replace('<style class="" style="display: none;"></style>', '', $trimContent);
+
+                    $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$trimContent));
 
                     if ($settingsTable->save($setting)) {
                         /**
@@ -405,7 +410,11 @@ class PagesController extends AppController
                         if ($generals->count() < 1) {
                             $general = $generalsTable->newEntity();
 
-                            $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content'));
+                            // Trim empty style tag
+                            $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
+                            $trimContent = str_replace('<style class="" style="display: none;"></style>', '', $trimContent);
+
+                            $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$trimContent);
                             $general->meta_keywords    = $this->request->getData('meta_keywords');
                             $general->meta_description = $this->request->getData('meta_description');
                             $general->page_id          = $this->request->getData('id');

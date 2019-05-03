@@ -294,7 +294,7 @@
     ?>
 </div>
 
-<div id="modal-delete-page" class="uk-flex-top purple-modal" uk-modal>
+<div id="modal-delete-page" class="uk-flex-top purple-modal" uk-modal="bg-close: false">
     <div class="uk-modal-dialog uk-margin-auto-vertical">
         <?php
             echo $this->Form->create($pageDelete, [
