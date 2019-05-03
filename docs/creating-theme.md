@@ -172,6 +172,13 @@ To create a block, create a json file with lowercase name. For example <code>myb
 
  If you want to add custom functions in block, add <code>{{function|functionName}}</code> in your HTML. Replace <code>functionName</code> with function name that you created in **ThemeFunction.php**. For now, it doesn't support parameters.
 
+Blocks have some class that can be added to the HTML tag. 
+ - **fdb-editor** : class to make content editable in Block Editor. Can be added in text, image, link, button, or add it at parent tag to make whole childs editable.
+ - **non-uikit** : if your element classes are conflict with UIkit stylesheet, add this class to the element. 
+ - **remove-padding-in-real** : class to make element has no padding in front-end website.
+ - **bttn-to-customize** : special class to edit button or a tag.
+ - **fdb-font-awesome** : class that only can be added in font awesome element. Please add <code>data-purple-fa-icon</code> also with icon name as the value. For example, <code>&lt;i class=&quot;fa fa-twitter fdb-font-awesome&quot; data-purple-fa-icon=&quot;twitter&quot;&gt;&lt;/i&gt;</code>
+
 ## Custom Function
 
 Custom function is located in <code>YourTheme/src/Functions/ThemeFunction.php</code>. To create a function, create a new public function (without parameters). For example :
