@@ -14,6 +14,13 @@ Setup Purple CMS in 3 steps
 
 A live HTML editor that makes users easier to make content for web pages. There is also a Code Editor for creating an advanced content. There are more than 100 ready-made blocks that can be modified with unlimited possibilities. Save your block to reuse it in other page.
 
+Block Editor features:
+ - Live HTML Editor (Tuning Mode and Editing Mode)
+ - Code Editor (HTML and CSS)
+ - Tree Panel
+ - Saved Blocks
+ - Theme Blocks
+
 <p class="tip">Code Editor is only for developers or people who are familiar with HTML and CSS.</p>
 
 #### Visitors Statistics
@@ -30,4 +37,4 @@ Send notifications to email if there is a notification such as a contact message
 
 #### Customizable
 
-Customize or add your code to Purple CMS in easy way. Read the [Developer Guide](/developer-guide) for further explanation.
+Customize or add your code to Purple CMS in easy way. Read the [Developer Guide](/generate-documentation) for further explanation.

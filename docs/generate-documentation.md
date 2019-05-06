@@ -1,6 +1,6 @@
 # Generate Documentation {docsify-ignore-all}
 
-Purple CMS Documentation is made by [docsify](https://docsify.js.org/#/). The documentation files are located in the **docs** folder.
+Purple CMS Documentation is made by [docsify, A magical documentation site generator](https://docsify.js.org/#/). The documentation files are located in the **docs** folder.
 
 It is recommended to install <code>docsify-cli</code> globally, which helps initializing and previewing the website locally.
 
