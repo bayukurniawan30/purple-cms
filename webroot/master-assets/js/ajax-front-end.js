@@ -158,10 +158,10 @@ $(document).ready(function() {
                     $ajaxButton.removeAttr('disabled');
                     $ajaxButton.html(ajaxButtonNormalState);
                     if (action == 'notify') {
-                        errorContainer.html('Error! ' + textStatus);
+                        errorContainer.html('Error! Please refresh the page and try again.');
                     }
                     else {
-                        errorContainer.html('<div class="alert alert-danger" role="alert"><strong>Error!</strong> ' + textStatus + '</div>');
+                        errorContainer.html('<div class="alert alert-danger" role="alert"><strong>Error!</strong> Please refresh the page and try again.</div>');
                     }
                 	
                 });

@@ -232,10 +232,10 @@ $(document).ready(function() {
                     $ajaxButton.html(ajaxButtonNormalState);
                     if (action == 'login' || action == 'confirm-email') {
                         $error.html(errorTemplate);
-                        $error.find('.alert').append('Error. ' + textStatus);
+                        $error.find('.alert').append('Error. Please refresh the page and try again.');
                     }
                     else {
-                        var createToast = notifToast('Form Submiting', textStatus, 'error', true);
+                        var createToast = notifToast('Form Submiting', 'Error. Please refresh the page and try again.', 'error', true);
                     }
                 });
                 ajaxFormSubmit.always(function () {
