@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "151f7dae6ead70a293aa8d8aed28cff7",
+    "content-hash": "77cbaf62501042cc32ad013f9285015f",
     "packages": [
         {
             "name": "aura/intl",
@@ -823,6 +823,62 @@
             ],
             "description": "The Mailgun SDK provides methods for all API functions.",
             "time": "2019-02-02T07:14:32+00:00"
+        },
+        {
+            "name": "melbahja/seo",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/melbahja/seo.git",
+                "reference": "e113c60e65a51fd8d23661abb98d759c3637fd1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/melbahja/seo/zipball/e113c60e65a51fd8d23661abb98d759c3637fd1a",
+                "reference": "e113c60e65a51fd8d23661abb98d759c3637fd1a",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-xml": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Melbahja\\Seo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mohamed ELbahja",
+                    "email": "mohamed@elbahja.me",
+                    "homepage": "https://elbahja.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple PHP library to help developers ? do better on-page SEO optimization",
+            "keywords": [
+                "PHP7",
+                "meta tags",
+                "open graph",
+                "php7.1",
+                "schema.org",
+                "search engine optimization",
+                "seo",
+                "sitemap index",
+                "sitemap.xml",
+                "sitemaps",
+                "twitter tags"
+            ],
+            "time": "2019-03-02T17:07:30+00:00"
         },
         {
             "name": "mmeyer2k/dcrypt",

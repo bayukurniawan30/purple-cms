@@ -5,13 +5,17 @@
     <h4 class="font-italic">Tags</h4>
     <?php
     	foreach($tags as $tag):
-    		$url = $this->Url->build([
-				'_name' => 'taggedPosts',
-				'tag'   => $tag->slug
-			]);
+            $totalPosts = $this->cell('Tags::totalPostsInTag', [$tag->id]);
+
+            if ($totalPosts != '0'):
+        		$url = $this->Url->build([
+    				'_name' => 'taggedPosts',
+    				'tag'   => $tag->slug
+    			]);
     ?>
 	    <div class="tag-list"><a class="non-uikit" href="<?= $url ?>"><?= $tag->title ?></a></div>
     <?php
+            endif;
     	endforeach;
     ?>
 </div>

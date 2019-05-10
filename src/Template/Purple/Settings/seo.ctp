@@ -71,6 +71,75 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Schema.org ld+json</h4>
+            </div>
+            <div class="card-body">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                        <thead>
+                            <?php
+                                echo $this->Html->tableHeaders([
+                                    'Setting Name',
+                                    'Value',
+                                    ['Action' => ['class' => 'uk-width-small text-center']]
+                                ]);
+                            ?>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Schema.org ld+json</td>
+                                <td><?= $settingLdJson->value == '' ? 'None' : ucwords($settingLdJson->value) ?></td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm btn-fw button-link-to-modal-setting" data-purple-title="Schema.org ld+json" data-purple-target="#modal-edit-settings" data-purple-id="<?= $settingLdJson->id ?>" data-purple-url="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxFormStandardSetting"]); ?>" data-purple-redirect="seo" uk-tooltip="Change Schema.org ld+json"><i class="mdi mdi-pencil"></i> Change</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <?php
+                    if ($settingLdJson->value == 'enable'):
+                ?>
+                <hr>
+
+                <ul class="jsonld-accordion" uk-accordion="multiple: true">
+                    <li class="uk-open">
+                        <a class="uk-accordion-title" href="#">WebSite</a>
+                        <div class="uk-accordion-content">
+                            <pre class="language-html"><code><?= $ldJsonWebsite ?></code></pre>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="uk-accordion-title" href="#">Organization</a>
+                        <div class="uk-accordion-content">
+                            <div class="uk-accordion-content">
+                                <pre class="language-html"><code><?= $ldJsonOrganization ?></code></pre>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="uk-accordion-title" href="#">BreadcrumbList</a>
+                        <div class="uk-accordion-content">
+                            <p>This is a dynamic generated ld+json and different each page.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="uk-accordion-title" href="#">Article</a>
+                        <div class="uk-accordion-content">
+                            <p>This is a dynamic generated ld+json and different each blog post.</p>
+                        </div>
+                    </li>
+                </ul>
+                <?php
+                    endif;
+                ?>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="modal-edit-settings" class="uk-flex-top purple-modal" uk-modal>

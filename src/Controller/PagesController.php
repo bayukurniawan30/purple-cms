@@ -10,11 +10,13 @@ use Cake\Log\Log;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Form\PageContactForm;
 use App\Form\SearchForm;
 use Carbon\Carbon;
+use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 
 class PagesController extends AppController
@@ -148,30 +150,37 @@ class PagesController extends AppController
         $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
         $this->set(compact('socials'));
 
+        // Generate Schema.org ld+json
+        $purpleSeo     = new PurpleProjectSeo();
+        $websiteSchema = $purpleSeo->schemaLdJson('website');
+        $orgSchema     = $purpleSeo->schemaLdJson('organization');
+
         $data = [
-            'pageTitle'        => 'Home',
-            'childPage'        => false,
-            'siteName'         => $this->Settings->settingsSiteName(),
-            'tagLine'          => $this->Settings->settingsTagLine(),
-            'metaKeywords'     => $this->Settings->settingsMetaKeywords(),
-            'metaDescription'  => $this->Settings->settingsMetaDescription(),
-            'googleAnalytics'  => $this->Settings->settingsAnalyticscode(),
-            'metaOgType'       => 'website',
-            'metaImage'        => '',
-            'favicon'          => $this->Settings->settingsFavicon(),
-            'logo'             => $this->Settings->settingsLogo(),
-            'menus'            => $this->Menus->fetchPublishedMenus(),
-            'homepage'         => html_entity_decode($this->Settings->settingsHomepage()),
-            'leftFooter'       => $this->Settings->settingsLeftFooter(),
-            'rightFooter'      => $this->Settings->settingsRightFooter(),
-            'dateFormat'       => $this->Settings->settingsDateFormat(),
-            'timeFormat'       => $this->Settings->settingsTimeFormat(),
-            'postsLimit'       => $this->Settings->settingsPostLimitPerPage(),
-            'cakeDebug'        => $cakeDebug,
-            'formSecurity'     => $formSecurity,
-            'recaptchaSitekey' => $this->Settings->settingsRecaptchaSitekey(),
-            'recaptchaSecret'  => $this->Settings->settingsRecaptchaSecret(),
-            'sidebarSearch'    => $search
+            'pageTitle'          => 'Home',
+            'childPage'          => false,
+            'siteName'           => $this->Settings->settingsSiteName(),
+            'tagLine'            => $this->Settings->settingsTagLine(),
+            'metaKeywords'       => $this->Settings->settingsMetaKeywords(),
+            'metaDescription'    => $this->Settings->settingsMetaDescription(),
+            'googleAnalytics'    => $this->Settings->settingsAnalyticscode(),
+            'metaOgType'         => 'website',
+            'metaImage'          => '',
+            'favicon'            => $this->Settings->settingsFavicon(),
+            'logo'               => $this->Settings->settingsLogo(),
+            'menus'              => $this->Menus->fetchPublishedMenus(),
+            'homepage'           => html_entity_decode($this->Settings->settingsHomepage()),
+            'leftFooter'         => $this->Settings->settingsLeftFooter(),
+            'rightFooter'        => $this->Settings->settingsRightFooter(),
+            'dateFormat'         => $this->Settings->settingsDateFormat(),
+            'timeFormat'         => $this->Settings->settingsTimeFormat(),
+            'postsLimit'         => $this->Settings->settingsPostLimitPerPage(),
+            'cakeDebug'          => $cakeDebug,
+            'formSecurity'       => $formSecurity,
+            'recaptchaSitekey'   => $this->Settings->settingsRecaptchaSitekey(),
+            'recaptchaSecret'    => $this->Settings->settingsRecaptchaSecret(),
+            'sidebarSearch'      => $search,
+            'ldJsonWebsite'      => $websiteSchema,
+            'ldJsonOrganization' => $orgSchema
         ];
         $this->set($data);
     }
@@ -344,13 +353,75 @@ class PagesController extends AppController
                 'viewPage'        => $viewPage->first()
             ];
 
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+
             if (!empty($this->request->getParam('child'))) {
                 $data['parentPageTitle'] = $viewParent->first()->title;
                 $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$viewPage->first()->title;
                 $data['childPage']       = true;
+
+                // Generate Schema.org ld+json
+                $webpageSchemaOption = [
+                    "title" => $viewPage->first()->title,
+                    "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug.'/'.$viewPage->first()->slug
+                ];
+
+                if ($viewPage->first()->general->meta_description == NULL || $viewPage->first()->general->meta_description == '') {
+                    $webpageSchemaOption['description'] = NULL;
+                }
+                else {
+                    $webpageSchemaOption['description'] = $viewPage->first()->general->meta_description;
+                }
+
+                $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+                $data['webpageSchema'] = $webpageSchema;
+
+                $breadcrumbList   = [
+                    0 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug,
+                        "name" => $viewParent->first()->title
+                    ],
+                    1 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug.'/'.$viewPage->first()->slug,
+                        "name" => $viewPage->first()->title
+                    ]
+                ];
+                $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+                $data['breadcrumbSchema'] = $breadcrumbSchema;
             }
             else {
                 $data['childPage'] = false;
+
+                // Generate Schema.org ld+json
+                $webpageSchemaOption = [
+                    "title" => $viewPage->first()->title,
+                    "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewPage->first()->slug
+                ];
+
+                if ($viewPage->first()->general->meta_description == NULL || $viewPage->first()->general->meta_description == '') {
+                    $webpageSchemaOption['description'] = NULL;
+                }
+                else {
+                    $webpageSchemaOption['description'] = $viewPage->first()->general->meta_description;
+                }
+
+                $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+                $data['webpageSchema'] = $webpageSchema;
+
+                $breadcrumbList   = [
+                    0 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewPage->first()->slug,
+                        "name" => $viewPage->first()->title
+                    ]
+                ];
+                $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+                $data['breadcrumbSchema'] = $breadcrumbSchema;
             }
 
             $this->set($data);
@@ -360,13 +431,13 @@ class PagesController extends AppController
     public function code()
     {
         if (empty($this->request->getParam('child'))) {
-            $slug = $this->request->getParam('page');
+            $slug     = $this->request->getParam('page');
             $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
         }
         else {
-            $slug     = $this->request->getParam('child');
-            $parent   = $this->request->getParam('page');
-            $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
+            $slug       = $this->request->getParam('child');
+            $parent     = $this->request->getParam('page');
+            $viewPage   = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug, 'Pages.status' => '1'])->limit(1);
             $viewParent = $this->Pages->find('all')->where(['Pages.slug' => $parent])->limit(1);
         }
         
@@ -386,13 +457,75 @@ class PagesController extends AppController
                 'viewPage'        => $file
             ];
 
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+
             if (!empty($this->request->getParam('child'))) {
                 $data['parentPageTitle'] = $viewParent->first()->title;
                 $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$viewPage->first()->title;
                 $data['childPage']       = true;
+
+                // Generate Schema.org ld+json
+                $webpageSchemaOption = [
+                    "title" => $viewPage->first()->title,
+                    "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewPage->first()->slug
+                ];
+
+                if ($viewPage->first()->meta_description == NULL || $viewPage->first()->meta_description == '') {
+                    $webpageSchemaOption['description'] = NULL;
+                }
+                else {
+                    $webpageSchemaOption['description'] = $viewPage->first()->meta_description;
+                }
+
+                $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+                $data['webpageSchema'] = $webpageSchema;
+
+                $breadcrumbList   = [
+                    0 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug,
+                        "name" => $viewParent->first()->title
+                    ],
+                    1 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug.'/'.$viewPage->first()->slug,
+                        "name" => $viewPage->first()->title
+                    ]
+                ];
+                $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+                $data['breadcrumbSchema'] = $breadcrumbSchema;
             }
             else {
                 $data['childPage'] = false;
+
+                // Generate Schema.org ld+json
+                $webpageSchemaOption = [
+                    "title" => $viewPage->first()->title,
+                    "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewPage->first()->slug
+                ];
+
+                if ($viewPage->first()->meta_description == NULL || $viewPage->first()->meta_description == '') {
+                    $webpageSchemaOption['description'] = NULL;
+                }
+                else {
+                    $webpageSchemaOption['description'] = $viewPage->first()->meta_description;
+                }
+
+                $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+                $data['webpageSchema'] = $webpageSchema;
+
+                $breadcrumbList   = [
+                    0 => [
+                        "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewPage->first()->slug,
+                        "name" => $viewPage->first()->title
+                    ]
+                ];
+                $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+                $data['breadcrumbSchema'] = $breadcrumbSchema;
             }
 
             $this->set($data);
@@ -434,13 +567,63 @@ class PagesController extends AppController
             'postsTotal'      => $blogs->count()
         ];
 
+        $purpleGlobal = new PurpleProjectGlobal();
+        $purpleSeo    = new PurpleProjectSeo();
+        $protocol     = $purpleGlobal->protocol();
+
         if (!empty($this->request->getParam('child'))) {
             $data['parentPageTitle'] = $viewParent->first()->title;
             $data['breadcrumb']      = 'Home::'.$viewParent->first()->title.'::'.$page->first()->title;
             $data['childPage']       = true;
+
+            // Generate Schema.org ld+json
+            $webpageSchemaOption = [
+                "title" => $page->first()->title,
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$page->first()->slug
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug,
+                    "name" => $viewParent->first()->title
+                ],
+                1 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$viewParent->first()->slug.'/'.$page->first()->slug,
+                    "name" => $page->first()->title
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
         }
         else {
             $data['childPage'] = false;
+
+            // Generate Schema.org ld+json
+            $webpageSchemaOption = [
+                "title" => $page->first()->title,
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot").$page->first()->slug
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+            
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$page->first()->slug,
+                    "name" => $page->first()->title
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
         }
 
         $this->paginate = [

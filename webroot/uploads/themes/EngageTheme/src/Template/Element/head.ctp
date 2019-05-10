@@ -67,6 +67,29 @@
     <?= $this->Html->script('https://www.google.com/recaptcha/api.js?render='.$recaptchaSitekey); ?>
     <?php endif; ?>
 
+    <!-- Schema.org ld+json -->
+    <?php
+        if ($this->request->getParam('action') == 'home') {
+            echo html_entity_decode($ldJsonWebsite);
+            echo html_entity_decode($ldJsonOrganization);
+        }
+
+        // WebPage
+        if (isset($webpageSchema)) {
+            echo html_entity_decode($webpageSchema);
+        }
+        
+        // BreadcrumbList
+        if (isset($breadcrumbSchema)) {
+            echo html_entity_decode($breadcrumbSchema);
+        }
+
+        // Article
+        if (isset($articleSchema)) {
+            echo html_entity_decode($articleSchema);
+        }
+    ?>
+
     <script type="text/javascript">
         var cakeDebug    = "<?= $cakeDebug ?>",
             formSecurity = "<?= $formSecurity ?>";

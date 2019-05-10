@@ -10,9 +10,11 @@ use Cake\Log\Log;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Form\SearchForm;
 use Carbon\Carbon;
+use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 
 class SearchController extends AppController
@@ -156,28 +158,46 @@ class SearchController extends AppController
             $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
             $this->set(compact('socials'));
 
+            // Generate Schema.org ld+json
+            $purpleSeo     = new PurpleProjectSeo();
+            $websiteSchema = $purpleSeo->schemaLdJson('website');
+            $orgSchema     = $purpleSeo->schemaLdJson('organization');
+
+            $webpageSchemaOption = [
+                "title" => "Search",
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot")."search"
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+
             $data = [
-                'siteName'        => $this->Settings->settingsSiteName(),
-                'tagLine'         => $this->Settings->settingsTagLine(),
-                'metaKeywords'    => $this->Settings->settingsMetaKeywords(),
-                'metaDescription' => $this->Settings->settingsMetaDescription(),
-                'googleAnalytics' => $this->Settings->settingsAnalyticscode(),
-                'metaOgType'      => 'website',
-                'metaImage'       => '',
-                'favicon'         => $this->Settings->settingsFavicon(),
-                'logo'            => $this->Settings->settingsLogo(),
-                'menus'           => $this->Menus->fetchPublishedMenus(),
-                'leftFooter'      => $this->Settings->settingsLeftFooter(),
-                'rightFooter'     => $this->Settings->settingsRightFooter(),
-                'dateFormat'      => $this->Settings->settingsDateFormat(),
-                'timeFormat'      => $this->Settings->settingsTimeFormat(),
-                'cakeDebug'       => $cakeDebug,
-                'formSecurity'    => $formSecurity,
-                'pageTitle'       => 'Search',
-                'breadcrumb'      => 'Home::Search',
-                'searchText'      => $this->request->getData('search'),
-                'searchResult'    => $blogs,
-                'sidebarSearch'   => $search
+                'siteName'           => $this->Settings->settingsSiteName(),
+                'tagLine'            => $this->Settings->settingsTagLine(),
+                'metaKeywords'       => $this->Settings->settingsMetaKeywords(),
+                'metaDescription'    => $this->Settings->settingsMetaDescription(),
+                'googleAnalytics'    => $this->Settings->settingsAnalyticscode(),
+                'metaOgType'         => 'website',
+                'metaImage'          => '',
+                'favicon'            => $this->Settings->settingsFavicon(),
+                'logo'               => $this->Settings->settingsLogo(),
+                'menus'              => $this->Menus->fetchPublishedMenus(),
+                'leftFooter'         => $this->Settings->settingsLeftFooter(),
+                'rightFooter'        => $this->Settings->settingsRightFooter(),
+                'dateFormat'         => $this->Settings->settingsDateFormat(),
+                'timeFormat'         => $this->Settings->settingsTimeFormat(),
+                'cakeDebug'          => $cakeDebug,
+                'formSecurity'       => $formSecurity,
+                'pageTitle'          => 'Search',
+                'breadcrumb'         => 'Home::Search',
+                'searchText'         => $this->request->getData('search'),
+                'searchResult'       => $blogs,
+                'sidebarSearch'      => $search,
+                'ldJsonWebsite'      => $websiteSchema,
+                'ldJsonOrganization' => $orgSchema,
+                'webpageSchema'      => $webpageSchema
             ];
 
             $this->set($data);

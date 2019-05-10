@@ -244,6 +244,55 @@ class AppearanceController extends AppController
 	        throw new NotFoundException(__('Page not found'));
 	    }
 	}
+	public function ajaxSaveWithoutCrop()
+	{
+        $this->viewBuilder()->enableAutoLayout(false);
+
+		if ($this->request->is('post') || $this->request->is('ajax')) {
+        	$session   = $this->getRequest()->getSession();
+            $sessionID = $session->read('Admin.id');
+
+			$fileImage = $this->request->getData('image');
+			$type      = $this->request->getData('type');
+
+			$fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
+			$fullSize 	   = Image::open($fullSizeImage . $fileImage)->save($fullSizeImage . $type . '.png', 'png');
+			
+			$this->loadModel('Settings');
+			$data = $this->Settings->get($this->request->getData('id'));
+			
+			$data->value = $type.'.png';
+            if ($this->Settings->save($data)) {
+            	/**
+                 * Save user activity to histories table
+                 * array $options => title, detail, admin_id
+                 */
+                
+                $options = [
+                    'title'    => 'Change of '.ucwords($type),
+                    'detail'   => ' change the '.$type.' of the website.',
+                    'admin_id' => $sessionID
+                ];
+
+                $this->loadModel('Histories');
+                $saveActivity   = $this->Histories->saveActivity($options);
+
+                if ($saveActivity == true) {
+                    $json = json_encode(['status' => 'ok', 'activity' => true]);
+                }
+                else {
+                    $json = json_encode(['status' => 'ok', 'activity' => false]);
+                }
+            }
+            else {
+                $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
+            }
+            $this->set(['json' => $json]);
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+	} 
     public function ajaxSave() 
     {
         $this->viewBuilder()->enableAutoLayout(false);

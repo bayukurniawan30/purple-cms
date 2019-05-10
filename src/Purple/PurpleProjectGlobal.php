@@ -194,6 +194,22 @@ class PurpleProjectGlobal
 
 	    return $isConn;
 	}
+	public function protocol() {
+		if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			$protocol = "https://";
+		}
+		else {
+			$protocol = "http://";
+		}
+
+		return $protocol;
+	}
+	public function reformatLdJson($schema) {
+		$output = str_replace(':\/\/', '://', htmlentities($schema));
+		$output = str_replace('\/', '/', $output);
+		
+		return $output;
+	}
 	public function shortenNumber($number, $precision = 2) 
 	{
 		if ($number < 1000) { 
@@ -213,6 +229,9 @@ class PurpleProjectGlobal
 	    }
 
 	    return $n_format;
+	}
+	public function truncateString($string, $limit = 1) {
+		return preg_replace('/((\w+\W*){'.($limit-1).'}(\w+))(.*)/', '${1}', $string);   
 	}
 	public function greetings() 
 	{

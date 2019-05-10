@@ -12,9 +12,11 @@ use Cake\ORM\TableRegistry;
 use App\Form\PostCommentForm;
 use App\Form\SearchForm;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
+use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 
 class BlogsController extends AppController
@@ -148,30 +150,37 @@ class BlogsController extends AppController
         $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
         $this->set(compact('socials'));
 
+        // Generate Schema.org ld+json
+        $purpleSeo     = new PurpleProjectSeo();
+        $websiteSchema = $purpleSeo->schemaLdJson('website');
+        $orgSchema     = $purpleSeo->schemaLdJson('organization');
+
         $data = [
-            'siteName'        => $this->Settings->settingsSiteName(),
-            'tagLine'         => $this->Settings->settingsTagLine(),
-            'metaKeywords'    => $this->Settings->settingsMetaKeywords(),
-            'metaDescription' => $this->Settings->settingsMetaDescription(),
-            'googleAnalytics' => $this->Settings->settingsAnalyticscode(),
-            'metaOgType'      => 'blog',
-            'metaImage'       => '',
-            'favicon'         => $this->Settings->settingsFavicon(),
-            'logo'            => $this->Settings->settingsLogo(),
-            'menus'           => $this->Menus->fetchPublishedMenus(),
-            'leftFooter'      => $this->Settings->settingsLeftFooter(),
-            'rightFooter'     => $this->Settings->settingsRightFooter(),
-            'dateFormat'      => $this->Settings->settingsDateFormat(),
-            'timeFormat'      => $this->Settings->settingsTimeFormat(),
-            'postsLimit'      => $this->Settings->settingsPostLimitPerPage(),
-            'socialShare'     => $this->Settings->settingsSocialShare(),
-            'socialTheme'     => $this->Settings->settingsSocialTheme(),
-            'socialFontSize'  => $this->Settings->settingsSocialFontSize(),
-            'socialLabel'     => $this->Settings->settingsSocialLabel(),
-            'socialCount'     => $this->Settings->settingsSocialCount(),
-            'cakeDebug'       => $cakeDebug,
-            'formSecurity'    => $formSecurity,
-            'sidebarSearch'   => $search
+            'siteName'           => $this->Settings->settingsSiteName(),
+            'tagLine'            => $this->Settings->settingsTagLine(),
+            'metaKeywords'       => $this->Settings->settingsMetaKeywords(),
+            'metaDescription'    => $this->Settings->settingsMetaDescription(),
+            'googleAnalytics'    => $this->Settings->settingsAnalyticscode(),
+            'metaOgType'         => 'blog',
+            'metaImage'          => '',
+            'favicon'            => $this->Settings->settingsFavicon(),
+            'logo'               => $this->Settings->settingsLogo(),
+            'menus'              => $this->Menus->fetchPublishedMenus(),
+            'leftFooter'         => $this->Settings->settingsLeftFooter(),
+            'rightFooter'        => $this->Settings->settingsRightFooter(),
+            'dateFormat'         => $this->Settings->settingsDateFormat(),
+            'timeFormat'         => $this->Settings->settingsTimeFormat(),
+            'postsLimit'         => $this->Settings->settingsPostLimitPerPage(),
+            'socialShare'        => $this->Settings->settingsSocialShare(),
+            'socialTheme'        => $this->Settings->settingsSocialTheme(),
+            'socialFontSize'     => $this->Settings->settingsSocialFontSize(),
+            'socialLabel'        => $this->Settings->settingsSocialLabel(),
+            'socialCount'        => $this->Settings->settingsSocialCount(),
+            'cakeDebug'          => $cakeDebug,
+            'formSecurity'       => $formSecurity,
+            'sidebarSearch'      => $search,
+            'ldJsonWebsite'      => $websiteSchema,
+            'ldJsonOrganization' => $orgSchema
         ];
         $this->set($data);
     }
@@ -254,6 +263,69 @@ class BlogsController extends AppController
                 $data['breadcrumb'] = 'Home::'.$viewParent->first()->title.'::'.$pageTitle;
             }
 
+            // Generate BreadcrumbList reSchema.org ld+json
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+            
+            $blogYear  = date('Y', strtotime($blog->created));
+            $blogMonth = date('m', strtotime($blog->created));
+            $blogDate  = date('d', strtotime($blog->created));
+
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").$blogYear.'/'.$blogMonth.'/'.$blogDate.'/'.$blog->slug,
+                    "name" => $blog->title
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
+
+            // Generate Article reSchema.org ld+json
+            $timezoneSchema = $purpleSettings->timezone('time');
+            if ($blog->modified == NULL) {
+                $modified = $blog->created->format('Y-m-d') . 'T' . $blog->created->format('H:i:s') . $timezoneSchema;
+            }
+            else {
+                $modified = $blog->modified->format('Y-m-d') . 'T' . $blog->modified->format('H:i:s') . $timezoneSchema;
+            }
+
+            if ($blog->featured == NULL || $blog->featured == '') {
+                $blogImage = NULL;
+            }
+            else {
+                if (strpos($blog->featured, ',') !== false) {
+                    $explodeBlogImage = explode(',', $blog->featured);
+                    $blogImage = $explodeBlogImage[0];
+                }
+                else {
+                    $blogImage = $blog->featured;
+                }
+
+                list($widthImage, $heightImage) = getimagesize(WWW_ROOT . 'uploads' . DS . 'images' . DS . 'original' . DS . $blogImage);
+            }
+
+            $articleJsonLd = [
+                "author"        => $blog->admin->display_name,
+                "datePublished" => $blog->created->format('Y-m-d') . 'T' . $blog->created->format('H:i:s') . $timezoneSchema,
+                "datemodified"  => $modified,
+                "headline"      => $blog->title,
+                "articleBody"   => strip_tags($blog->content)
+            ];
+
+            if ($blogImage != NULL) {
+                $articleJsonLd["image"] = [
+                    "@type"  => "imageObject",
+                    "url"    => $protocol.$this->request->host().$this->request->getAttribute("webroot").'uploads/images/original/'.$blogImage,
+                    "height" => $heightImage,
+                    "width"  => $widthImage
+                ];
+            }
+
+            $articleSchema = $purpleSeo->schemaLdJson('article', $articleJsonLd);
+            $data['articleSchema'] = $articleSchema;
+
             $this->set(compact('categories'));
             $this->set(compact('archives'));
             $this->set(compact('tagsSidebar'));
@@ -325,7 +397,33 @@ class BlogsController extends AppController
 	            'limit' => $this->Settings->settingsPostLimitPerPage(),
 	            'page'  => $paging
 	        ];
-	        $blogsList = $this->paginate($blogs);
+            $blogsList = $this->paginate($blogs);
+
+            // Generate Schema.org ld+json
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+
+            $webpageSchemaOption = [
+                "title" => $category->name.' - '.$pageTitle,
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot")."search"
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+            
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").'posts/'.$category->slug,
+                    "name" => $category->name
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
+            
 	        $this->set('blogs', $blogsList);
             $this->set(compact('categories'));
             $this->set(compact('archives'));
@@ -364,6 +462,32 @@ class BlogsController extends AppController
                 'page'  => $paging
             ];
             $blogsList = $this->paginate($blogs);
+
+            // Generate Schema.org ld+json
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+
+            $webpageSchemaOption = [
+                "title" => 'Tag - '.$tag->first()->title,
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot")."search"
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+            
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").'tag/'.$tag->first()->slug,
+                    "name" => $tag->first()->title
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
+
             $this->set('blogs', $blogsList);
             $this->set(compact('archives'));
             $this->set(compact('tagsSidebar'));
@@ -400,7 +524,33 @@ class BlogsController extends AppController
 	            'limit' => $this->Settings->settingsPostLimitPerPage(),
 	            'page'  => $paging
 	        ];
-	        $blogsList = $this->paginate($blogs);
+            $blogsList = $this->paginate($blogs);
+            
+            // Generate Schema.org ld+json
+            $purpleGlobal = new PurpleProjectGlobal();
+            $purpleSeo    = new PurpleProjectSeo();
+            $protocol     = $purpleGlobal->protocol();
+
+            $webpageSchemaOption = [
+                "title" => 'Archives '.$monthFormat.' '.$year,
+                "url"   => $protocol.$this->request->host().$this->request->getAttribute("webroot")."search"
+            ];
+
+            $webpageSchemaOption['description'] = NULL;
+            $webpageSchema = $purpleSeo->schemaLdJson('webpage', $webpageSchemaOption);
+
+            $data['webpageSchema'] = $webpageSchema;
+            
+            $breadcrumbList   = [
+                0 => [
+                    "@id"  => $protocol.$this->request->host().$this->request->getAttribute("webroot").'archives/'.$year.'/'.$month,
+                    "name" => 'Archives '.$monthFormat.' '.$year
+                ]
+            ];
+            $breadcrumbSchema = $purpleSeo->schemaLdJson('breadcrumblist', $breadcrumbList);
+
+            $data['breadcrumbSchema'] = $breadcrumbSchema;
+
 	        $this->set('blogs', $blogsList);
             $this->set(compact('archives'));
             $this->set(compact('tagsSidebar'));

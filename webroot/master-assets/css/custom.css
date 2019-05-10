@@ -487,3 +487,8 @@ select.form-control {
         overflow-x: hidden;
     }
 }
+
+/* ld+json Accordion */
+.jsonld-accordion .uk-accordion-title {
+    font-size: 1rem;
+}

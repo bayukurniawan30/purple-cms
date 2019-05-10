@@ -10,44 +10,47 @@
     <?= $this->Html->css('/master-assets/plugins/toast/jquery.toast.min.css') ?>
     <?= $this->Html->css('/master-assets/plugins/parsley/src/parsley.css') ?>
     <?php if ($this->request->getParam('controller') == 'Medias' || $this->request->getParam('controller') == 'Appearance'): ?>
-    <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/datatables/Responsive-2.2.3/css/responsive.dataTables.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/datatables/Responsive-2.2.3/css/responsive.dataTables.min.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Appearance' || ($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit'))): ?>
-    <?= $this->Html->css('/master-assets/plugins/croppie/croppie.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/croppie/croppie.css') ?>
     <?php endif; ?>
     <?php if (($this->request->getParam('controller') == 'Admins' && $this->request->getParam('action') == 'index') || $this->request->getParam('controller') == 'Pages' || $this->request->getParam('controller') == 'Blogs' || $this->request->getParam('controller') == 'Subscribers'): ?>
-    <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/datatables/Responsive-2.2.3/css/responsive.dataTables.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/datatables/Responsive-2.2.3/css/responsive.dataTables.min.css') ?>
     <?php endif; ?>
     <?php if (($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || $this->request->getParam('controller') == 'Themes'): ?>
-    <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages'): ?>
-    <?= $this->Html->css('/master-assets/plugins/leaflet/leaflet.css') ?>
-    <?php if ($this->request->getParam('type') == 'general'): ?>
-    <?= $this->Html->css('/master-assets/plugins/jstree/themes/default/style.css', ['id' => 'tree-css-path']) ?>
-    <?php endif; ?>
+        <?= $this->Html->css('/master-assets/plugins/leaflet/leaflet.css') ?>
+        <?php if ($this->request->getParam('type') == 'general'): ?>
+            <?= $this->Html->css('/master-assets/plugins/jstree/themes/default/style.css', ['id' => 'tree-css-path']) ?>
+        <?php endif; ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_editor.pkgd.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_style.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/themes/royal.min.css') ?>
-    <?= $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/plugins/code_view.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/font_awesome.min.css') ?>
-    <?= $this->Html->css('https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/image_tui.min.css') ?>
-    <?= $this->Html->css('/master-assets/plugins/tag-editor/jquery.tag-editor.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_editor.pkgd.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_style.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/themes/royal.min.css') ?>
+        <?= $this->Html->css('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/plugins/code_view.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/font_awesome.min.css') ?>
+        <?= $this->Html->css('https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/image_tui.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/tag-editor/jquery.tag-editor.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages' && $this->request->getParam('action') == 'detail'): ?>
-    <?= $this->Html->css('/master-assets/plugins/froala-blocks/css/froala_blocks.css') ?>
-    <?= $this->Html->css('https://fonts.googleapis.com/css?family=Quicksand:300,400,700') ?>
-    <?= $this->Html->css('/master-assets/css/bttn.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/froala-blocks/css/froala_blocks.css') ?>
+        <?= $this->Html->css('https://fonts.googleapis.com/css?family=Quicksand:300,400,700') ?>
+        <?= $this->Html->css('/master-assets/css/bttn.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Socials'): ?>
-    <?= $this->Html->css('/master-assets/plugins/jssocials/css/jssocials.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/jssocials/css/jssocials.css') ?>
+    <?php endif; ?>
+    <?php if ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo'): ?>
+        <?= $this->Html->css('/master-assets/plugins/prism/prism.css') ?>
     <?php endif; ?>
     <!-- endinject -->
     <!-- inject:css -->

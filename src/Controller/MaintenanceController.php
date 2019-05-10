@@ -10,9 +10,11 @@ use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use App\Form\MaintenanceForm;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
+use Melbahja\Seo\Factory;
 
 class MaintenanceController extends AppController
 {
@@ -56,19 +58,27 @@ class MaintenanceController extends AppController
     }
     public function index()
     {
+        $purpleGlobal = new PurpleProjectGlobal();
         $maintenance  = new MaintenanceForm();
 
         $this->loadModel('Socials');
         $this->loadModel('Settings');
 
     	$socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
-    	$this->set(compact('socials'));
+        $this->set(compact('socials'));
+        
+        // Generate Schema.org ld+json
+        $purpleSeo     = new PurpleProjectSeo();
+        $websiteSchema = $purpleSeo->schemaLdJson('website');
+        $orgSchema     = $purpleSeo->schemaLdJson('organization');
 
         $queryBackgroundComingSoon = $this->Settings->find()->where(['name' => 'backgroundmaintenance'])->first();
 
     	$data = [
-    		'notifyEmail' => $maintenance,
+    		'notifyEmail'         => $maintenance,
             'settingBgComingSoon' => $queryBackgroundComingSoon,
+            'ldJsonWebsite'       => $websiteSchema,
+            'ldJsonOrganization'  => $orgSchema
     	];
 
         $this->set($data);

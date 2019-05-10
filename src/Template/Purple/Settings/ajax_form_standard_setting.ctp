@@ -155,6 +155,20 @@
                     'value'                  => $value
                 ]);
             }
+            elseif ($name == 'ldjson') {
+                echo $this->Form->select(
+                    'value',
+                    [
+                        'enable'  => 'Enable', 
+                        'disable' => 'Disable' 
+                    ],
+                    [
+                        'empty'    => 'Select Value', 
+                        'class'    => 'form-control',
+                        'required' => 'required'
+                    ]
+                );
+            }
             elseif ($name == 'smtppassword') {
                 echo $this->Form->password('value', [
                     'class'                  => 'form-control', 
@@ -276,7 +290,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         <?php
-            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink'):
+            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink' || $name == 'ldjson'):
         ?>
         $('#form-update-setting').find('select[name=value] option[value="<?= $value ?>"]').attr("selected","selected");
         <?php

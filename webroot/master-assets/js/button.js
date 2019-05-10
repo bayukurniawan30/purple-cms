@@ -4,6 +4,14 @@ $(document).ready(function() {
      * Modal
      *
      */
+
+    $(".button-about-purple-cms").click(function() {
+        var btn       = $(this),
+            modal     = btn.data('purple-modal');
+
+        UIkit.modal(modal).show();
+        return false;
+    })
     
     $(".button-dashboard-date-range").click(function() {
         var modal = $(this).data('purple-modal');
@@ -284,6 +292,7 @@ $(document).ready(function() {
         return false;
     })
 
+    // Button Text
     var clipboard     = new ClipboardJS('.button-copy-permalink'),
         defaultButton = $('.button-copy-permalink').html();
 
@@ -302,6 +311,24 @@ $(document).ready(function() {
         }, 1000);
         var createToast = notifToast('Permalink', 'Error copy link', 'error', true);
     });
+
+    // Button Icon
+    var clipboardIcon = new ClipboardJS('.icon-copy-permalink');
+
+    clipboardIcon.on('success', function(e) {
+        var createToast = notifToast('Permalink', 'Link has been copied', 'success', true, 1500);
+        e.clearSelection();
+    });
+
+    clipboardIcon.on('error', function(e) {
+        var createToast = notifToast('Permalink', 'Error copy link', 'error', true);
+    });
+
+    $(".button-open-page").click(function() {
+        var target = $("#purple-permalink").val();
+        window.open(target);
+        return false;
+    })
 
     $(".button-test-email").click(function() {
         var btn       = $(this),

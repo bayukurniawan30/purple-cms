@@ -153,4 +153,9 @@ class SettingsTable extends Table
         $twilio = $this->find()->where(['name' => 'twiliotoken'])->first();
         return $twilio->value;
     }
+    public function settingsLdJson() 
+    {
+        $ldJson = $this->find()->where(['name' => 'ldjson'])->first();
+        return $ldJson->value;
+    }
 }

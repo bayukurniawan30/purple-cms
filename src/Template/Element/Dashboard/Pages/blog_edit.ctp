@@ -50,7 +50,11 @@
                 <h4 class="card-title uk-margin-remove-bottom">Permalink</h4> 
             </div>
             <div class="card-body">
-                <a class="button-copy-permalink" data-clipboard-target="#target-to-copy" href="#" uk-tooltip="title: Copy Permalink"><i class="mdi mdi-content-copy"></i></a> <a href="<?= $permalinkUrl ?>" target="_blank"><span id="target-to-copy" class="copy-permalink"><?= $permalinkUrl ?></span></a>
+                <div class="uk-inline" style="width: 100%">
+                    <a title="Copy Permalink" class="uk-form-icon uk-form-icon-flip icon-copy-permalink" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-permalink" uk-tooltip="title: Copy Permalink; pos: bottom"></a>
+                    <input id="purple-permalink" class="uk-input" type="text" value="<?= $permalinkUrl ?>" readonly>
+                </div>
+                <!-- <a class="button-copy-permalink" data-clipboard-target="#target-to-copy" href="#" uk-tooltip="title: Copy Permalink"><i class="mdi mdi-content-copy"></i></a> <a href="<?= $permalinkUrl ?>" target="_blank"><span id="target-to-copy" class="copy-permalink"><?= $permalinkUrl ?></span></a> -->
             </div>
         </div>
     </div>

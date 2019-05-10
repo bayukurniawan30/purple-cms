@@ -65,6 +65,9 @@
 <?php if ($this->request->getParam('controller') == 'Admins' && $this->request->getParam('action') == 'changePassword'): ?>
 	<?= $this->Html->script('/master-assets/plugins/password/password.min.js'); ?>
 <?php endif; ?>
+<?php if ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo'): ?>
+	<?= $this->Html->script('/master-assets/plugins/prism/prism.js'); ?>
+<?php endif; ?>
 
 <!-- endinject -->
 <!-- Plugin js for this page-->

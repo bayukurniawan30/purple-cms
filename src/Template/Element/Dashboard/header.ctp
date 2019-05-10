@@ -65,6 +65,10 @@
                         <i class="mdi mdi-cached mr-2 text-success"></i>
                         Activity Log
                     </a>
+                    <a class="dropdown-item button-about-purple-cms" href="#" data-purple-modal="#modal-about-purple-cms">
+                        <i class="mdi mdi-information-outline mr-2 text-success"></i>
+                        About
+                    </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?= $this->Url->build(['_name' => 'adminLogout']); ?>">
                         <i class="mdi mdi-logout mr-2 text-primary"></i>
@@ -104,3 +108,6 @@
         </button>
     </div>
 </nav>
+
+<!-- About Purple CMS -->
+<?= $this->element('Dashboard/Modal/about_purple_cms_modal') ?>

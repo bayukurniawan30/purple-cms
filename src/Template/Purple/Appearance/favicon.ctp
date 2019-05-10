@@ -48,7 +48,10 @@
                 <div id="croppie-editor" style="min-height: 300px; max-height: auto">
                 </div>
                 
-                <button id="button-crop-image" type="button" class="btn btn-primary" uk-tooltip="Crop Image">
+                <button id="button-without-crop-image" type="button" class="btn btn-primary" uk-tooltip="Save without Crop">
+                    <i class="mdi mdi-content-save"></i> Save without Crop
+                </button>
+                <button id="button-crop-image" type="button" class="btn btn-primary uk-margin-left" uk-tooltip="Crop Image">
                     <i class="mdi mdi-crop"></i> Crop Image
                 </button>
                 <button type="button" class="btn btn-inverse-primary btn-icon uk-margin-left image-rotate" data-deg="-90" uk-tooltip="Rotate Left">
@@ -263,6 +266,38 @@
                 $.danidemo.updateFileProgress(id, '100%');
 
                 console.log(console_response);
+
+                if (status == 'ok') {
+                    $("#button-without-crop-image").click(function () {
+                        var btn    = $(this),
+                            token  = <?= json_encode($this->request->getParam('_csrfToken')); ?>,
+                            id     = '<?= $favicon->id ?>',
+                            type   = 'favicon';
+
+                        $(this).attr('disabled','disabled');
+                        $("#button-crop-image").attr('disabled','disabled');
+                        $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Saving...');
+                        $(".image-rotate").attr('disabled','disabled');
+
+                        $.ajax({
+                            type: "POST",
+                            url: "<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxSaveWithoutCrop"]); ?>",
+                            headers : {
+                                'X-CSRF-Token': token
+                            },
+                            data: { id:id, image:image, type:type },
+                            cache: false,
+                            beforeSend: function(){ 
+                            },
+                            success: function(data){
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2000);
+                            }
+                        })
+                        return false;
+                    })
+                }
 
                 var createToast = notifToast('Preparing File', 'Upload Complete. Loading image to crop...', 'success', true);
 

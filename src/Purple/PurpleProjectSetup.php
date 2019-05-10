@@ -451,6 +451,10 @@ class PurpleProjectSetup
 			'value' => ''
 		]);
 		$this->conn->insert('settings', [
+			'name'  => 'ldjson',
+			'value' => 'enable'
+		]);
+		$this->conn->insert('settings', [
 			'name'  => 'contactheader',
 			'value' => ''
 		]);

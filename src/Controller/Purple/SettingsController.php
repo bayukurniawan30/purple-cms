@@ -14,6 +14,7 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
+use Melbahja\Seo\Factory;
 
 class SettingsController extends AppController
 {
@@ -196,17 +197,53 @@ class SettingsController extends AppController
 	}
     public function seo()
 	{
+        $this->loadModel('Socials');
+        $purpleGlobal = new PurpleProjectGlobal();
+        
         $queryMetaKeywords    = $this->Settings->find()->where(['name' => 'metakeywords'])->first();
         $queryMetaDescription = $this->Settings->find()->where(['name' => 'metadescription'])->first();
         $queryGoogleAnalytics = $this->Settings->find()->where(['name' => 'googleanalyticscode'])->first();
+        $queryLdJson          = $this->Settings->find()->where(['name' => 'ldjson'])->first();
+
+        $querySiteName        = $this->Settings->find()->where(['name' => 'sitename'])->first();
+		$logo                 = $this->Settings->find()->where(['name' => 'websitelogo'])->first();
+
+        // Generate Schema.org ld+json
+        $protocol = $purpleGlobal->protocol();
+        $socials  = $this->Socials->find('all')->select(['link'])->order(['ordering' => 'ASC'])->toArray();
+
+        $websiteSchema = Factory::schema('website')
+                    ->name($querySiteName->value)
+                    ->url($protocol.$this->request->host().$this->request->getAttribute("webroot"));
+        
+        $orgSchema     = Factory::schema('organization')
+                    ->url($protocol.$this->request->host().$this->request->getAttribute("webroot"))          
+                    ->name($querySiteName->value)
+                    ->description($queryMetaDescription->value);
+
+        if ($logo->value != '') {
+            $orgSchema->logo($protocol.$this->request->host().$this->request->getAttribute("webroot").'uploads/images/original/'.$logo->value);
+        } 
+
+        if (count($socials) > 0) {
+            $socialList = array();
+            foreach ($socials as $social) {
+                $socialList[] = $social['link'];
+            }
+            $websiteSchema->sameAs($socialList);
+            $orgSchema->sameAs($socialList);
+        }
 
 		$data = [
 			'pageTitle'              => 'Search Engine Optimization',
 			'pageBreadcrumb'         => 'Settings::SEO',
             'settingMetaKeywords'    => $queryMetaKeywords,
             'settingMetaDescription' => $queryMetaDescription,
-            'settingGoogleAnalytics' => $queryGoogleAnalytics
-
+            'settingGoogleAnalytics' => $queryGoogleAnalytics,
+            'settingLdJson'          => $queryLdJson,
+            'settingSiteName'        => $querySiteName,
+            'ldJsonWebsite'          => $purpleGlobal->reformatLdJson($websiteSchema),
+            'ldJsonOrganization'     => $purpleGlobal->reformatLdJson($orgSchema)
 		];
     	$this->set($data);
 	}
