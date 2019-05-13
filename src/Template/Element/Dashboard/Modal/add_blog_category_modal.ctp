@@ -8,7 +8,13 @@
                 'url'                   => ['controller' => 'BlogCategories', 'action' => 'ajax-add']
             ]);
 
-            echo $this->Form->hidden('page_id', ['value' => $pageId]);
+            if ($pageId == '') {
+                $pageTarget = 'NULL';
+            }
+            else {
+                $pageTarget = $pageId;
+            }
+            echo $this->Form->hidden('page_id', ['value' => $pageTarget]);
         ?>
         <div class="uk-modal-header">
             <h3 class="uk-modal-title">Add Category</h3>
