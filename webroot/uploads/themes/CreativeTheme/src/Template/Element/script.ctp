@@ -11,6 +11,8 @@
 <!-- Livestamp -->
 <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/livestamp/livestamp.min.js'); ?>
+<!-- Theme -->
+<?= $this->Html->script('front.js'); ?>
 <!-- Purple -->
 <?= $this->Html->script('/master-assets/js/ajax-front-end.js'); ?>
 <?= $this->Html->script('/master-assets/js/purple-front-end.js'); ?>
