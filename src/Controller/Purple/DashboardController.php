@@ -145,12 +145,20 @@ class DashboardController extends AppController
 				$precentageVisitor = $currentMonthVisitor * 100;
 			}
 
-			if($lastMonthVisitor > $currentMonthVisitor) 
-				$visitorsCard = 'Decreased by '.$precentageVisitor.'%'; 
-			elseif($lastMonthVisitor < $currentMonthVisitor) 
-				$visitorsCard = 'Increased by '.$precentageVisitor.'%'; 
-			elseif($lastMonthVisitor == $currentMonthVisitor) 
+			if($lastMonthVisitor > $currentMonthVisitor) {
+				$visitorsCard = 'Decreased by '.$precentageVisitor.'%';
+			} 
+			elseif($lastMonthVisitor < $currentMonthVisitor)  {
+				if ($precentageVisitor > 1000) {
+					$visitorsCard = 'Increased 10 times more than last month';
+				}
+				else {
+					$visitorsCard = 'Increased by '.$precentageVisitor.'%'; 
+				}
+			}
+			elseif($lastMonthVisitor == $currentMonthVisitor) {
 				$visitorsCard = 'Same as last month';
+			}
 
 			$monthLatinArray  = array();
 			for ($m = 1; $m <= 12; $m++) {
@@ -268,6 +276,7 @@ class DashboardController extends AppController
 				$totalVisitorsMac     = $this->Visitors->visitorsPlatform('OS X', $this->request->getData('month'), $this->request->getData('year'));
 				$totalVisitorsWindows = $this->Visitors->visitorsPlatform('Windows', $this->request->getData('month'), $this->request->getData('year'));
 				$totalVisitorsIos     = $this->Visitors->visitorsPlatform('iOS', $this->request->getData('month'), $this->request->getData('year'));
+				$totalVisitorsUnkOs   = $this->Visitors->visitorsPlatform('Unknown OS', $this->request->getData('month'), $this->request->getData('year'));
 
 				$visitorsPlatform = array();
 				array_push($visitorsPlatform, $totalVisitorsAndroid, $totalVisitorsLinux, $totalVisitorsMac, $totalVisitorsWindows, $totalVisitorsIos);
@@ -289,6 +298,7 @@ class DashboardController extends AppController
 					'visitorsMac'           => $totalVisitorsMac,
 					'visitorsWindows'       => $totalVisitorsWindows,
 					'visitorsIos'           => $totalVisitorsIos,
+					'visitorsUnkOs'         => $totalVisitorsUnkOs,
 					'totalVisitorsPlatform' => $totalVisitorsPlatform
 				];
 		    	$this->set($data);

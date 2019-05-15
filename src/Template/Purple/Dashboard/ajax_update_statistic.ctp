@@ -23,7 +23,7 @@
             	if ($visitorsWindows > 0):
             		$windowsPercent = round(($visitorsWindows / $sumNormal) * 100, 2);
             ?>
-            <p class="uk-margin-remove-bottom"><strong>Windows</strong> (<?= $windowsPercent ?>%)</p>
+            <p class="uk-margin-remove-bottom"><strong>Windows</strong> (<?= $windowsPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsWindows), ' visitor') ?></em></p>
             <div class="progress">
               	<div class="progress-bar bg-gradient-primary" role="progressbar" style="width: <?= $windowsPercent ?>%" aria-valuenow="<?= $windowsPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
@@ -35,7 +35,7 @@
             	if ($visitorsMac > 0):
             		$macPercent = round(($visitorsMac / $sumNormal) * 100, 2);
             ?>
-            <p class="uk-margin-remove-bottom"><strong>Mac OS</strong> (<?= $macPercent ?>%)</p>
+            <p class="uk-margin-remove-bottom"><strong>Mac OS</strong> (<?= $macPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsMac), ' visitor') ?></em></p>
             <div class="progress">
               	<div class="progress-bar bg-gradient-primary" role="progressbar" style="width: <?= $macPercent ?>%" aria-valuenow="<?= $macPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
@@ -47,9 +47,21 @@
             	if ($visitorsLinux > 0):
             		$linuxPercent = round(($visitorsLinux / $sumNormal) * 100, 2);
             ?>
-            <p class="uk-margin-remove-bottom"><strong>Linux</strong> (<?= $linuxPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsLinux), ' visitors') ?></em></p>
+            <p class="uk-margin-remove-bottom"><strong>Linux</strong> (<?= $linuxPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsLinux), ' visitor') ?></em></p>
             <div class="progress">
               	<div class="progress-bar bg-gradient-primary" role="progressbar" style="width: <?= $linuxPercent ?>%" aria-valuenow="<?= $linuxPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <?php
+            	endif;
+            ?>
+
+			<?php 
+            	if ($visitorsUnkOs > 0):
+            		$unknownPercent = round(($visitorsUnkOs / $sumNormal) * 100, 2);
+            ?>
+            <p class="uk-margin-remove-bottom"><strong>Unknown OS</strong> (<?= $unknownPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsUnkOs), ' visitor') ?></em></p>
+            <div class="progress">
+              	<div class="progress-bar bg-gradient-primary" role="progressbar" style="width: <?= $unknownPercent ?>%" aria-valuenow="<?= $unknownPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <?php
             	endif;
@@ -59,7 +71,7 @@
             	if ($visitorsAndroid > 0):
             		$androidPercent = round(($visitorsAndroid / $sumNormal) * 100, 2);
             ?>
-            <p class="uk-margin-remove-bottom"><strong>Android</strong> (<?= $androidPercent ?>%)</p>
+            <p class="uk-margin-remove-bottom"><strong>Android</strong> (<?= $androidPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsAndroid), ' visitor') ?></em></p>
             <div class="progress">
               	<div class="progress-bar bg-gradient-info" role="progressbar" style="width: <?= $androidPercent ?>%" aria-valuenow="<?= $androidPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
@@ -71,7 +83,7 @@
             	if ($visitorsIos > 0):
             		$iosPercent = round(($visitorsIos / $sumNormal) * 100, 2);
             ?>
-            <p class="uk-margin-remove-bottom"><strong>iOS</strong> (<?= $iosPercent ?>%)</p>
+            <p class="uk-margin-remove-bottom"><strong>iOS</strong> (<?= $iosPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsIos), ' visitor') ?></em></p>
             <div class="progress">
               	<div class="progress-bar bg-gradient-info" role="progressbar" style="width: <?= $iosPercent ?>%" aria-valuenow="<?= $iosPercent ?>" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
