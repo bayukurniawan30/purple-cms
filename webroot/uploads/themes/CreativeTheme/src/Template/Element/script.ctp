@@ -12,6 +12,10 @@
 <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/livestamp/livestamp.min.js'); ?>
 <!-- Theme -->
+<?= $this->Html->script('/vendor/owl.carousel/owl.carousel.min.js'); ?>
+<?= $this->Html->script('/vendor/popper.js/umd/popper.min.js'); ?>
+<?= $this->Html->script('/vendor/jquery.cookie/jquery.cookie.js'); ?>
+<?= $this->Html->script('/vendor/masonry-layout/masonry.pkgd.min.js'); ?>
 <?= $this->Html->script('front.js'); ?>
 <!-- Purple -->
 <?= $this->Html->script('/master-assets/js/ajax-front-end.js'); ?>
