@@ -57,6 +57,9 @@
     <?php if ($favicon != ''): ?>
     <!-- Favicon -->
     <link rel="icon" href="<?= $this->request->getAttribute("webroot").'uploads/images/original/' . $favicon ?>">
+    <?php else: ?>
+    <!-- Favicon -->
+    <link rel="icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
     <?php endif; ?>
 
     <!-- jQuery -->
