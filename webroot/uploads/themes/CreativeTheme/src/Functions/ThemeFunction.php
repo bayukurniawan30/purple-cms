@@ -7,6 +7,12 @@ use Cake\ORM\Query;
 
 class ThemeFunction
 {
+    private $themeSlug = 'engage_theme';
+
+    public function __construct($webroot) 
+    {
+        $this->webroot = $webroot;
+    }
     public function homeBlogs()
     {
 		$blogs = TableRegistry::get('Blogs')->find('all', [

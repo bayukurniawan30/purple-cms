@@ -144,7 +144,7 @@ class BlogsController extends AppController
          * Load Theme Global Function
          */
 
-        $themeFunction = new ThemeFunction(); 
+        $themeFunction = new ThemeFunction($this->request->getAttribute('webroot')); 
         $this->set('themeFunction', $themeFunction);
 
         $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
