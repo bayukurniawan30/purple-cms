@@ -523,7 +523,7 @@
         var categoryAdd = {
             form            : 'form-add-post-category',
             button          : 'button-add-post-category',
-            action          : 'ajax-load-post',
+            action          : 'ajax-load-post-categories',
             redirectType    : 'ajax',
             redirect        : '#load-blog-categories',
             btnNormal       : false,

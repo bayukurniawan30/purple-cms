@@ -390,8 +390,8 @@ $(document).ready(function() {
                     opt        = splitValue[0],
                     val        = splitValue[1];
 
-                    console.log(opt);
-                    console.log(val);
+                    // console.log(opt);
+                    // console.log(val);
 
                 $(modal).find("select[name="+opt+"]").val(val);
             });
@@ -445,8 +445,8 @@ $(document).ready(function() {
     }
 
     clickSliderCaptionButton = function(button, position, target) {
-        console.log(button);
-        console.log(position);
+        // console.log(button);
+        // console.log(position);
         var btn = $('.fdb-block-slider-caption-to-'+button+'-button');
         if (position == 'center') {
             btn.click(function() {
@@ -505,7 +505,7 @@ $(document).ready(function() {
                     appendRightBtn = '<div class="fdb-block-slider-caption-right-button">' +
                         '<a class="fdb-block-slider-caption-to-right-button" uk-tooltip="title: Move Right"><i class="mdi mdi-arrow-right-thick" id=""></i></a>' +
                         '<div>';
-                console.log(currentPos);
+                // console.log(currentPos);
 
                 target.addClass('fdb-block-selected-slider-caption');
                 target.append(appendLeftBtn);
@@ -653,7 +653,6 @@ $(document).ready(function() {
         })
 
         $("#modal-save-block").find("#button-save-block").off().one('click',function() {
-            console.log('klik button');
             var btn    = $(this),
                 target = btn.attr('data-purple-target'),
                 html   = $("#modal-save-block").find('input[name=html]').val(),
@@ -676,7 +675,7 @@ $(document).ready(function() {
                         btn.attr('disabled', 'disabled');
                     },
                     success: function(data) {
-                        console.log(data);
+                        // console.log(data);
                         var json    = $.parseJSON(data),
                             status  = (json.status);
 
@@ -748,7 +747,7 @@ $(document).ready(function() {
                 btn.attr('disabled', 'disabled');
             },
             success: function(data) {
-                console.log(data);
+                // console.log(data);
                 var json    = $.parseJSON(data),
                     status  = (json.status);
 
@@ -1263,7 +1262,7 @@ $(document).ready(function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
                                 modal = "#modal-browse-images";
-                                console.log(block);
+                                // console.log(block);
 
                             $(block).css('background', 'none');
                             $(block).css('background-image', 'none');
@@ -1284,7 +1283,7 @@ $(document).ready(function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
                                 modal = "#modal-browse-images";
-                                console.log(block);
+                                // console.log(block);
 
                             $(block).css('background', 'none');
                             $(block).css('background-image', 'none');
@@ -1320,12 +1319,12 @@ $(document).ready(function() {
             var reverseTarget = $('.purple-pagination .prev button');
         }
 
-        console.log(parent);
-        console.log(target);
+        // console.log(parent);
+        // console.log(target);
         
         target.click(function() {
             if (target.parent().hasClass('disabled')) {
-                console.log('disabled');
+                // console.log('disabled');
                 return false;
             }
             else {
@@ -1342,11 +1341,11 @@ $(document).ready(function() {
                     data      = {page: number, limit: limit, multiple: multiple, images: images},
                     token     = $('#csrf-ajax-token').val();
 
-                    console.log(data);
+                    // console.log(data);
 
                 if (number > 0) {
-                    console.log(number);
-                    console.log(totalPage);
+                    // console.log(number);
+                    // console.log(totalPage);
 
                     if (action == 'prev') {
                         var conditionChecker = function(){ return totalPage / number == totalPage };

@@ -24,7 +24,7 @@
                     ?>
                     <li class="uk-width-1-1 <?php //if ($this->request->getQuery('u') == 'purple-home-page-builder') echo 'uk-animation-shake' ?>">
                         <div class="uk-card uk-card-default uk-card-small uk-card-body ">
-                            <span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: home"></span>Home
+                            <span class="uk-margin-small-right" uk-icon="icon: home"></span>Home
                             <div class="uk-inline uk-align-right">
                                 <a href="#" class="uk-margin-small-right" uk-icon="icon: home" uk-tooltip="Your Homepage"></a>
                                 <a href="#" class="uk-margin-small-right" uk-icon="icon: cog" uk-tooltip="Genaral (Block Editor)"></a>
@@ -66,7 +66,7 @@
                         ?>
                         <li class="uk-width-1-1 <?php if ($this->request->getQuery('u') == $page->slug) echo 'uk-animation-shake' ?>">
                             <div class="uk-card uk-card-default uk-card-small uk-card-body" style="<?php if ($initPage == $pagesLimit) echo 'box-shadow: none' ?>">
-                                <span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: <?= $icon ?>"></span><?= $page->title ?>
+                                <span class="uk-margin-small-right" uk-icon="icon: <?= $icon ?>"></span><?= $page->title ?>
                                 <div class="uk-inline uk-align-right">
                                     <a href="#" class="uk-margin-small-right" uk-icon="icon: cog" uk-tooltip="<?= $page->page_template->name ?>"></a>
                                     <a href="#" class="uk-margin-small-right <?php if ($page->status == '0') echo 'text-secondary' ?>" uk-icon="icon: world" uk-tooltip="<?= $page->text_status ?>"></a>
