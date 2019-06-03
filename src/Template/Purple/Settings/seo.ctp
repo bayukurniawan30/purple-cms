@@ -140,6 +140,45 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Sitemap.xml and Robots.txt</h4>
+            </div>
+            <div class="card-body">
+                <div class="uk-overflow-auto">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                        <thead>
+                            <?php
+                                echo $this->Html->tableHeaders([
+                                    'Setting Name',
+                                    'Value',
+                                    ['Action' => ['class' => 'uk-width-small text-center']]
+                                ]);
+                            ?>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sitemap.xml</td>
+                                <td>Dynamically Generated</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm btn-fw" onclick="window.open('<?= $this->Url->build(["_name" => "websiteSitemap", "_ext" => 'xml']); ?>')"" uk-tooltip="Open sitemap.xml"><i class="mdi mdi-open-in-new"></i> Open</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Robots.txt</td>
+                                <td>Dynamically Generated</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link btn-sm btn-fw" onclick="window.open('<?= $this->Url->build(["_name" => "websiteRobots", "_ext" => 'txt']); ?>')"" uk-tooltip="Open robots.txt"><i class="mdi mdi-open-in-new"></i> Open</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="modal-edit-settings" class="uk-flex-top purple-modal" uk-modal>
