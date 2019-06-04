@@ -1,16 +1,37 @@
 <?php
     $checkStep = $this->request->getParam('action');
-    if ($checkStep == 'index'):
-        $currentStep = 'Database Information';
-        $currentLoad = 'Preparing setup for the first time...';
-        $currentDesc = "Provide your database information that you created earlier on your server. If you don't have permission to do that, please contact your hosting provider.";
-    elseif ($checkStep == 'administrative'):
-        $currentStep = 'Administrative Setup';
-        $currentLoad = 'Saving database and preparing administrative setup...';
-        $currentDesc = 'Create your account and site name for your website.';
-    elseif ($checkStep == 'finish'):
-        $currentStep = 'Finishing Setup';
-        $currentDesc = 'You are ready to go.';
+
+    if ($this->request->getParam('controller') == 'Setup'):
+        if ($checkStep == 'index'):
+            $currentStep = 'Database Information';
+            $currentLoad = 'Preparing setup for the first time...';
+            $currentDesc = "Provide your database information that you created earlier on your server. If you don't have permission to do that, please contact your hosting provider.";
+        elseif ($checkStep == 'administrative'):
+            $currentStep = 'Administrative Setup';
+            $currentLoad = 'Saving database and preparing administrative setup...';
+            $currentDesc = 'Create your account and site name for your website.';
+        elseif ($checkStep == 'finish'):
+            $currentStep = 'Finishing Setup';
+            $currentDesc = 'You are ready to go.';
+        elseif ($checkStep == 'databaseMigration'):
+            $currentStep = 'Database Migration';
+            $currentLoad = 'Preparing database form...';
+            $currentDesc = "Provide your production database information that you created earlier on your server. If you don't have permission to do that, please contact your hosting provider.";
+        endif;
+    elseif ($this->request->getParam('controller') == 'Production'):
+        if ($checkStep == 'userVerification'):
+            $currentStep = 'User Verification';
+            $currentLoad = 'Preparing User Verification...';
+            $currentDesc = "Provide your email and Purple CMS will sent a verification code to you.";
+        elseif ($checkStep == 'codeVerification'):
+            $currentStep = 'Verification Code';
+            $currentLoad = 'Preparing Code Verification...';
+            $currentDesc = "Insert the verification code.";
+        elseif ($checkStep == 'databaseMigration'):
+            $currentStep = 'Database Migration';
+            $currentLoad = 'Preparing Form...';
+            $currentDesc = "Provide your production database information that you created earlier on your server. If you don't have permission to do that, please contact your hosting provider.";
+        endif;
     endif;
 ?>
 
@@ -20,7 +41,7 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Purple CMS | Setup Page</title>
+        <title>Purple CMS | <?php if ($this->request->getParam('controller') == 'Production' && ($checkStep == 'userVerification' || $checkStep == 'codeVerification' || $checkStep == 'databaseMigration')) echo 'Database Migration'; else echo 'Setup Page' ?></title>
         <?= $this->Html->css('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css') ?>
         <!-- plugins:css -->
         <?= $this->Html->css('/master-assets/plugins/iconfonts/mdi/css/materialdesignicons.min.css') ?>
@@ -66,7 +87,7 @@
             <div class="container-fluid page-body-wrapper full-page-wrapper">
                 <div class="content-wrapper d-flex align-items-center auth text-center" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)">
                     <?php
-                        if ($checkStep == 'index' || $checkStep == 'administrative'):
+                        if ($checkStep == 'index' || $checkStep == 'administrative' || ($this->request->getParam('controller') == 'Production' && ($checkStep == 'userVerification' || $checkStep == 'codeVerification' || $checkStep == 'databaseMigration'))):
                     ?>
                     <div class="uk-overlay uk-position-center setup-loader">
                         <p><?= $currentLoad ?></p><br>
@@ -88,7 +109,7 @@
                             <h3 class="text-primary"><strong><?= $currentStep ?></strong></h3>
                             <p>
                                 <?= $currentDesc ?>
-                                <br><a href="http://doc.purple-cms.com/" target="_blank"><span class="mdi mdi-open-in-new"></span> Read full documentation</a>
+                                <br><a href="https://bayukurniawan30.github.io/purple-cms/#/" target="_blank"><span class="mdi mdi-open-in-new"></span> Read full documentation</a>
                             </p>
                         </div>
                     </div>
@@ -129,7 +150,7 @@
         <?= $this->Html->script('/master-assets/js/misc.js'); ?>
         <!-- endinject -->
         <?php
-            if ($checkStep == 'index' || $checkStep == 'administrative'):
+            if ($checkStep == 'index' || $checkStep == 'administrative' || ($this->request->getParam('controller') == 'Production' && ($checkStep == 'userVerification' || $checkStep == 'codeVerification' || $checkStep == 'databaseMigration'))):
         ?>
         <script>
             $(document).ready(function() {

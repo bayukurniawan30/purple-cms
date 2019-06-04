@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Form\SetupDatabaseForm;
 use App\Form\SetupAdministrativeForm;
+use App\Form\ProductionUserVerificationForm;
+use App\Form\ProductionVerifyCodeForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSetup;
 use App\Purple\PurpleProjectSettings;
@@ -151,7 +153,8 @@ class SetupController extends AppController
 		                $json = json_encode(['status' => 'error', 'error' => "Can't save database configuration."]);
 		            }
 		        }
-            } else {
+			} 
+			else {
             	$errors = $setupDatabase->errors();
                 $json = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
             }
@@ -263,5 +266,4 @@ class SetupController extends AppController
 	        throw new NotFoundException(__('Page not found'));
 	    }
 	}
-	
 }
