@@ -257,7 +257,7 @@
                     </span>
 
                     <span class="fdb-button-option-divider uk-margin-small-left">|</span>
-                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="general" data-purple-content="#bind-fdb-blocks" class="uk-margin-small-left"><i class="mdi mdi-content-save"></i> Save</a>
+                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="general" data-purple-content="#bind-fdb-blocks" class="button-save-block-html uk-margin-small-left"><i class="mdi mdi-content-save"></i> Save</a>
                 </div>
                 <span class="uk-align-right fdb-blocks-mode"><small>Tuning Mode</small></span>
             </div>

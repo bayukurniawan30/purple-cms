@@ -393,6 +393,16 @@ select.form-control {
 .updated-page {
     border-left: 5px solid var(--primary);
 }
+.button-save-block-html {
+    background-color: var(--primary);
+    color: #ffffff!important;
+    padding: 5px 8px;
+    border-radius: 3px;
+}
+.button-save-block-html:hover, button-save-block-html:focus {
+    opacity: .8;
+}
+
 
 /* Notifications */
 .btn-with-badge {

@@ -107,6 +107,6 @@
 			$("#dashboard-notifications").load('<?= $this->Url->build(['_name' => 'adminNotificationsAction', 'action' => 'ajaxLoadHeaderNotifications']) ?>');
 			$("#messages-with-counter").load('<?= $this->Url->build(['_name' => 'adminMessagesAction', 'action' => 'ajaxMessagesCounter']) ?>');
 		}
-		setInterval(function(){loadNotificationsAndMessagesCounter()}, 60000);
+		setInterval(function(){loadNotificationsAndMessagesCounter()}, 180000);
     })
 </script>

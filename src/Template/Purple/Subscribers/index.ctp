@@ -9,6 +9,14 @@
                     <i class="mdi mdi-pencil btn-icon-prepend"></i>
                     Add Subscriber
                 </button>
+                <?php
+                    if ($subscribers->count() > 0):
+                ?>
+                <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text button-export-subscribers uk-margin-small-left" data-purple-url="<?= $this->Url->build(['_name' => 'adminSubscribersAction', 'action' => 'ajaxExport']) ?>" data-purple-redirect="<?= $this->Url->build(['_name' => 'adminSubscribersAction', 'action' => 'download']) ?>">
+                    <i class="mdi mdi-file-document btn-icon-prepend"></i>
+                    Export Subscriber
+                </button>
+                <?php endif; ?>
             </div>
             <div class="card-body">
                 <?php

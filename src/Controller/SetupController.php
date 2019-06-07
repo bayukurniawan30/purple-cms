@@ -24,11 +24,13 @@ class SetupController extends AppController
 	{
 	    parent::initialize();
 	    // Temporary images folder
+	    $dir = new Folder(TMP . 'exports', true, 0777);
 	    $dir = new Folder(TMP . 'uploads', true, 0777);
 		$dir = new Folder(TMP . 'uploads' . DS . 'images', true, 0777);
 		$dir = new Folder(TMP . 'uploads' . DS . 'themes', true, 0777);
 
 		// Storing images and thumbnails
+		$dir = new Folder(WWW_ROOT . 'exports', true, 0777);
 		$dir = new Folder(WWW_ROOT . 'uploads', true, 0777);
 		$dir = new Folder(WWW_ROOT . 'uploads' . DS . 'images', true, 0777);
 		$dir = new Folder(WWW_ROOT . 'uploads' . DS . 'images' . DS .'thumbnails', true, 0777);

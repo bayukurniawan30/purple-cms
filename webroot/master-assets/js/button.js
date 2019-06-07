@@ -149,6 +149,52 @@ $(document).ready(function() {
         return false;
     })
 
+    $(".button-export-subscribers").click(function() {
+        var btn      = $(this),
+            btnHtml  = btn.html(),
+            url      = btn.data('purple-url'),
+            redirect = btn.data('purple-redirect'),
+            token    = $('#csrf-ajax-token').val(),
+            data     = { action:'export' };
+
+            $.ajax({
+                type: "POST",
+                url:  url,
+                headers : {
+                    'X-CSRF-Token': token
+                },
+                data: data,
+                cache: false,
+                beforeSend: function() {
+                    btn.html('<i class="mdi mdi-spin mdi-loading btn-icon-prepend"></i> Exporting data...')
+                    btn.attr('disabled', 'disabled');
+                },
+                success: function(data) {
+                    // console.log(data);
+                    var json    = $.parseJSON(data),
+                        status  = (json.status);
+                        error   = (json.error);
+
+                    if (status == 'ok') {
+                        url = (json.url);
+                        btn.removeAttr('disabled', 'disabled');
+                        setTimeout(function() {
+                            btn.html(btnHtml);
+                            window.open(redirect);
+                            // window.open(url);
+                        }, 2000);
+                    }
+                    else {
+                        btn.html(btnHtml);
+                        btn.removeAttr('disabled', 'disabled');
+                        alert(error) 
+                    }
+                }
+            })
+
+        return false;
+    })
+
     $(".button-edit-sfooter").click(function() {
         var btn         = $(this),
             modal       = btn.data('purple-modal');

@@ -667,7 +667,7 @@
             $("#button-save-page").click(function() {
                 return false;
             })
-            $("#button-save-page").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+            $("#button-save-page").html('<i class="mdi mdi-spin mdi-loading"></i> Fetching...');
 
             $.ajax({
                 type: "POST",

@@ -116,6 +116,33 @@ class SubscribersController extends AppController
     	$this->set(compact('subscribers'));
 		$this->set($data);
 	}
+	public function download()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$session = $this->getRequest()->getSession();
+		$sessionHost     = $session->read('Admin.host');
+		$sessionID       = $session->read('Admin.id');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+	        throw new NotFoundException(__('Page not found'));
+		}
+		else {
+			$subscribers = $this->Subscribers->find()->order(['id' => 'DESC']);
+
+			$content = '';
+			if ($subscribers->count() > 0) {
+				foreach ($subscribers as $subscriber) {
+					$content .= $subscriber->email . "\n";
+				}
+			}
+
+			$response = $this->response->withStringBody($content);
+			$response = $this->response->withFile(WWW_ROOT . 'exports' . DS . 'subscribers.txt' ,
+				array('download'=> true, 'name'=> 'subscribers.txt'));
+			return $response;
+		}
+	}
 	public function ajaxAdd()
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
@@ -305,5 +332,27 @@ class SubscribersController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
+	}
+	public function ajaxExport()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+			$file = new File(WWW_ROOT . 'exports' . DS . 'subscribers.txt', true);
+
+			$subscribers = $this->Subscribers->find()->order(['id' => 'DESC']);
+
+			if ($subscribers->count() > 0) {
+				$json = json_encode(['status' => 'ok', 'url' => $this->request->getAttribute('webroot').'exports/subscribers.txt']);
+			}
+			else {
+				$json = json_encode(['status' => 'error', 'error' => "Can't export subscribers data. Empty data."]);
+			}
+			
+            $this->set(['json' => $json]);
+		}
+		else {
+			throw new NotFoundException(__('Page not found'));
+		}
 	}
 }
