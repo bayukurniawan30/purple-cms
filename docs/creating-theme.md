@@ -170,6 +170,8 @@ To create a block, create a json file with lowercase name. For example <code>myb
  - **block** : HTML that will shown in block editor if your block contain custom functions.
  - **html** : HTML that will be generated in block editor. Must be wrapped in <code>&#x3C;section id=&#x27;fdb-{bind.id}&#x27; class=&#x27;fdb-block purple-theme-block-section remove-padding-in-real&#x27; data-fdb-id=&#x27;{bind.id}&#x27;&#x3E;&#x3C;div class=&#x27;purple-theme-block&#x27;&#x3E;Put your HTML here&#x3C;/div&#x3E;&#x3C;/section&#x3E;</code>.
 
+ Add <code>{theme.webroot}</code> to element that you want to include theme webroot url. For example, <code>&#x3C;img src="{theme.webroot}img/my-image.jpg"&#x3E;</code>. Purple will replace <code>{theme.webroot}</code> in your image tag with theme webroot url.
+
  If you want to add custom functions in block, add <code>{{function|functionName}}</code> in your HTML. Replace <code>functionName</code> with function name that you created in **ThemeFunction.php**. For now, it doesn't support parameters.
 
 Blocks have some class that can be added to the HTML tag. 

@@ -261,6 +261,7 @@
                 </div>
                 <span class="uk-align-right fdb-blocks-mode"><small>Tuning Mode</small></span>
             </div>
+            <div id="hidden-fdb-blocks" style="display: none"></div>
             <div id="bind-fdb-blocks" class="uk-card-body uk-padding-remove" uk-sortable="handle: .uk-sortable-handle">
                 <?php
                     if ($this->request->getParam('id') == 0 && $this->request->getParam('slug') == 'purple-home-page-builder'):

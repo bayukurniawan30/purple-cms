@@ -259,7 +259,7 @@
                 $("#button-toggle-tuning").removeClass('active');
                 $('.fdb-blocks-mode').html('<small>Editing Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').hide();
-                console.log('toggleEditing1');
+                // console.log('toggleEditing1');
                 $(this).one("click", toggleEditing2);
             }
 
@@ -271,7 +271,7 @@
                 $('body .fdb-editor').froalaEditor('destroy');
                 $('.fdb-blocks-mode').html('<small>Tuning Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').show();
-                console.log('toggleEditing2');
+                // console.log('toggleEditing2');
                 $(this).one("click", toggleEditing1);
 
                 treePanelContent();
@@ -292,7 +292,7 @@
                 $('body .fdb-editor').froalaEditor('destroy');
                 $('.fdb-blocks-mode').html('<small>Tuning Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').show();
-                console.log('toggleTuning1');
+                // console.log('toggleTuning1');
                 $(this).one("click", toggleTuning2);
 
                 treePanelContent();
@@ -305,7 +305,7 @@
                 $("#button-toggle-editing").addClass('active');
                 $('.fdb-blocks-mode').html('<small>Editing Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').hide();
-                console.log('toggleTuning2');
+                // console.log('toggleTuning2');
                 $(this).one("click", toggleTuning1);
             }
             $("#button-toggle-tuning").one("click", toggleTuning1);
@@ -362,8 +362,11 @@
 
         $("#button-toggle-code").click(function() {
             if(tuningMode() == 'yes') {
+                $("#hidden-fdb-blocks").html($("#bind-fdb-blocks").html());
+                $("#hidden-fdb-blocks").find('*').removeAttr('data-tree-id');
+
                 var modal     = $(this).data('purple-modal'),
-                    html      = $("#bind-fdb-blocks").html(),
+                    html      = $("#hidden-fdb-blocks").html(),
                     beautify  = formatFactory(html),
                     url       = $(this).data('purple-url'),
                     id        = $(this).data('purple-id'),
@@ -445,6 +448,10 @@
                             block = $('#fdb-'+idBtn);
 
                         block.remove();
+
+                        setTimeout(function() {
+                            treePanelContent();
+                        }, 1000);
 
                         return false;
                     })
@@ -578,6 +585,10 @@
                                 idBtn = btn.data('fdb-id');
 
                             copyBlock.remove();
+
+                            setTimeout(function() {
+                                treePanelContent();
+                            }, 1000);
 
                             return false;
                         })
@@ -746,6 +757,10 @@
                                                 block  = $('#fdb-'+idBtn);
 
                                             block.remove();
+                                            
+                                            setTimeout(function() {
+                                                treePanelContent();
+                                            }, 1000);
 
                                             return false;
                                         })
@@ -878,6 +893,11 @@
                                                 idBtn = btn.data('fdb-id');
 
                                             copyBlock.remove();
+
+                                            setTimeout(function() {
+                                                treePanelContent();
+                                            }, 1000);
+
                                             return false;
                                         })
                                     }
