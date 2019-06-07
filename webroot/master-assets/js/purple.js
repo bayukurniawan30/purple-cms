@@ -654,6 +654,7 @@
                 svId      = template.data('purple-id'),
                 url       = template.data('purple-url'),
                 urlReload = template.data('purple-urlreload'),
+                themeUrl  = template.data('purple-theme-webroot'),
                 token     = $('#csrf-ajax-token').val();
 
             template.find(".selected-overlay").remove();
@@ -693,6 +694,7 @@
                         template.find(".selected-overlay").remove();
                         $("#bind-fdb-blocks").find(".fdb-blocks-empty").remove();
                         var html = html.replace(/{bind.id}/g, id);
+                        var html = html.replace(/{theme.webroot}/g, themeUrl);
                         $("#bind-fdb-blocks").append(html);
 
                         $('html, body').animate({

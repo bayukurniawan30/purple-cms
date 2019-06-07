@@ -376,6 +376,7 @@ class PurpleProjectFroalaBlocks
     {
         $blocksFolder = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved'. DS);
         $blocks       = $blocksFolder->find('.*\.json', true);
+
         return $blocks;
     } 
     public function savedBlocksJson($file)
@@ -391,6 +392,7 @@ class PurpleProjectFroalaBlocks
     {
         $blocksFolder = new Folder(PLUGINS . $theme.'/webroot/blocks/');
         $blocks       = $blocksFolder->find('.*\.json', true);
+        
         return $blocks;
     } 
     public function themeBlocksJson($file, $theme = 'EngageTheme')

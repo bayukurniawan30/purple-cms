@@ -165,13 +165,18 @@
                     <?php 
                         if ($themeBlocks):
                             $themeNumber = 1;
+
+                            $themeWebroot = $this->Url->build(['prefix' => false, 'plugin' => 'EngageTheme', 'controller' => false, 'action' => false]);
+                            $themeUrl     = str_replace('detail', '', $themeWebroot);
+                            $themeUrl     = str_replace('engage-theme', 'engage_theme', $themeUrl);
+
                             foreach ($themeBlocks as $themeBlock): 
                                 $fileBlock   = file_get_contents(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'blocks' . DS . $themeBlock);
                                 $decodeBlock = json_decode($fileBlock, true);
 
                                 foreach($decodeBlock["options"] as $options):
                     ?>
-                        <div class="fdb-image-container uk-margin-small-bottom theme-blocks fdb-blocks" data-purple-number="<?= $themeNumber ?>" data-purple-filter="<?= $themeBlock ?>" data-purple-id="theme" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxThemeBlocks"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
+                        <div class="fdb-image-container uk-margin-small-bottom theme-blocks fdb-blocks" data-purple-number="<?= $themeNumber ?>" data-purple-filter="<?= $themeBlock ?>" data-purple-id="theme" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxThemeBlocks"]); ?>" data-purple-theme-webroot="<?= $themeUrl ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
                             <div class="uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white"><strong><?= $options['theme'] ?></strong> Theme Block<br><small><?= $options['name'] ?></small></div>
                         </div>
                     <?php 
