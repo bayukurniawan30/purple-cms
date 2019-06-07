@@ -113,40 +113,6 @@
             </div>
         </div>
     </div>
-
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title uk-margin-remove-bottom">Sitemap</h4>
-            </div>
-            <div class="card-body">
-                <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
-                        <thead>
-                            <?php
-                                $sitemapUrl = $this->Url->build(['_name' => 'home', '_full' => true]).'sitemap.xml';
-
-                                echo $this->Html->tableHeaders([
-                                    'Setting Name',
-                                    'Value',
-                                    ['Action' => ['class' => 'uk-width-small text-center']]
-                                ]);
-                            ?>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Sitemap</td>
-                                <td><?= $sitemapUrl ?></td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-link btn-sm btn-fw" uk-tooltip="Open sitemap.xml" onclick="window.open('<?= $sitemapUrl ?>')"><i class="mdi mdi-open-in-new"></i> Open Sitemap</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-     </div>
 </div>
 
 <div id="modal-edit-settings" class="uk-flex-top purple-modal" uk-modal>

@@ -9,11 +9,11 @@
                 <p class="card-description">
                     Upload image files with format .jpg, .jpeg, or .png
                 </p>
-                <div id="drag-and-drop-zone" class="dm-uploader text-center p-5">
+                <div id="drag-and-drop-zone" class="dm-uploader text-center p-5 purple-medias-dmuploader">
                     <h3 class="mb-5 mt-5 text-muted">Drag &amp; drop files here</h3>
 
                     <div class="btn btn-primary  mb-5">
-                        <span>Open the file Browser</span>
+                        <span>Open<span class="d-none d-sm-block d-sm-none d-md-block dm-uploader-browser-inline"> the file Browser</span></span>
                         <input type="file" title='Click to add Files' />
                     </div>
                 </div>

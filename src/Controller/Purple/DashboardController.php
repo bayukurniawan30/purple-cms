@@ -139,7 +139,7 @@ class DashboardController extends AppController
 			}
 
 			if ($lastMonthVisitor > 0) {
-			    $precentageVisitor = round(($currentMonthVisitor - $lastMonthVisitor) / $lastMonthVisitor * 100, 2);
+			    $precentageVisitor = round(abs($currentMonthVisitor - $lastMonthVisitor) / $lastMonthVisitor * 100, 2);
 			}
 			else {
 				$precentageVisitor = $currentMonthVisitor * 100;

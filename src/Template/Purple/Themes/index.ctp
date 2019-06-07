@@ -98,7 +98,7 @@
                     <h4 class="mb-4 mt-4 text-muted">Drag &amp; drop files here</h4>
 
                     <div class="btn btn-primary btn-sm mb-4">
-                        <span>Open the file Browser</span>
+                        <span>Open<span class="d-none d-sm-block d-sm-none d-md-block dm-uploader-browser-inline"> the file Browser</span></span>
                         <input type="file" title='Click to add Files' />
                     </div>
                 </div>

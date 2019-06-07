@@ -96,6 +96,11 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
         padding: 0.75rem!important;
     }
 }
+@media(min-width: 767px) {
+    .dm-uploader-browser-inline {
+        display: inline!important;
+    }
+}
 
 /* Debug console */
 .demo-panel-debug {
