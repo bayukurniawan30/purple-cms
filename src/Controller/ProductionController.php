@@ -90,39 +90,48 @@ class ProductionController extends AppController
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($userVerification->execute($this->request->getData())) {
 				$email = trim($this->request->getData('email'));
+				$key   = trim($this->request->getData('key'));
 
-                // Generate 6 digits code
-                $code = rand(100000, 999999);
+				$keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+				$content = $keyFile->read();
 
-                $session = $this->getRequest()->getSession();
-                $session->write([
-                    'User.Email'  => $email,
-                    'User.Status' => 0,
-                    'User.Code'   => $code
-                ]);
+				if ($key == $content) {
+					// Generate 6 digits code
+					$code = rand(100000, 999999);
 
-                // Send Email to User to Notify user
-                $hasher = new DefaultPasswordHasher();
-                $key    = $hasher->hash('public-purple is awesome');
-                $userData      = array(
-                    'sitename'    => 'Purple CMS',
-                    'email'       => $email,
-                    'code'        => $code
-                );
-                $senderData   = array(
-                    'domain' => $this->request->domain()
-                );
-            	$purpleApi = new PurpleProjectApi();
-                $notifyUser = $purpleApi->sendEmailUserVerification($key, json_encode($userData), json_encode($senderData));
+					$session = $this->getRequest()->getSession();
+					$session->write([
+						'User.Email'  => $email,
+						'User.Status' => 0,
+						'User.Code'   => $code
+					]);
 
-                if ($notifyUser == true) {
-                    $emailNotification = true;
-                }
-                else {
-                    $emailNotification = false;
-                }
+					// Send Email to User to Notify user
+					$hasher = new DefaultPasswordHasher();
+					$key    = $hasher->hash('public-purple is awesome');
+					$userData      = array(
+						'sitename'    => 'Purple CMS',
+						'email'       => $email,
+						'code'        => $code
+					);
+					$senderData   = array(
+						'domain' => $this->request->domain()
+					);
+					$purpleApi = new PurpleProjectApi();
+					$notifyUser = $purpleApi->sendEmailUserVerification($key, json_encode($userData), json_encode($senderData));
 
-                $json = json_encode(['status' => 'ok', 'email' => [$email => $emailNotification]]);
+					if ($notifyUser == true) {
+						$emailNotification = true;
+					}
+					else {
+						$emailNotification = false;
+					}
+
+					$json = json_encode(['status' => 'ok', 'email' => [$email => $emailNotification]]);
+				}
+				else {
+					$json = json_encode(['status' => 'error', 'error' => 'Wrong production key. Please use correct production key in the local machine.', 'error_type' => 'key']);
+				}
 			}
 			else {
 				$errors = $userVerification->errors();

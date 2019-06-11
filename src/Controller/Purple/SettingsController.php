@@ -6,6 +6,7 @@ use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\Time;
+use Cake\Filesystem\File;
 use Cake\Mailer\Email;
 use App\Form\Purple\SettingsStandardModalForm;
 use App\Form\Purple\SettingsTestEmailForm;
@@ -148,11 +149,16 @@ class SettingsController extends AppController
         $queryRecaptchaSitekey = $this->Settings->find()->where(['name' => 'recaptchasitekey'])->first();
         $queryRecaptchaSecret  = $this->Settings->find()->where(['name' => 'recaptchasecret'])->first();
 
+        $keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+        $content = $keyFile->read();
+        $key     = substr($content, 0, 20) . '...';
+
         $data = [
             'pageTitle'               => 'Security',
             'pageBreadcrumb'          => 'Settings::Security',
             'settingRecaptchaSitekey' => $queryRecaptchaSitekey,
             'settingRecaptchaSecret'  => $queryRecaptchaSecret,
+            'productionKey'           => $key
         ];
         $this->set($data);
     }
@@ -286,10 +292,17 @@ class SettingsController extends AppController
             $timezone       = $purpleSettings->timezone();
             $timezoneList   = $purpleSettings->generateTimezoneList();
 
-            $settingsTable = $this->Settings;
-            $setting       = $settingsTable->get($this->request->getData('id'));
-            $value         = $setting->value;
-            $name          = $setting->name;
+            if ($this->request->getData('title') == 'Production Key') {
+                $keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+                $value   = $keyFile->read();
+                $name    = 'productionkey';
+            }
+            else {
+                $settingsTable = $this->Settings;
+                $setting       = $settingsTable->get($this->request->getData('id'));
+                $value         = $setting->value;
+                $name          = $setting->name;
+            }
 
             $data = [
                 'settingsStandardModal' => $settingsStandardModal,

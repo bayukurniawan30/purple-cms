@@ -20,7 +20,7 @@
 <?php
 	echo $this->Form->create($setupAdministrative, [
 		'id'                    => 'form-sitename-admin-setup',
-		'class'                 => 'pt-3',
+		'class'                 => 'uk-grid pt-3',
 		'data-parsley-validate' => '',
 		'url' 					=> ['action' => 'ajax-administrative']
 	]);
@@ -30,10 +30,10 @@
 	echo $this->Form->hidden('foldername', ['value' => $this->Setup->checkSubfolder()]);
 	echo $this->Form->hidden('passwordscore', ['value' => '0', 'id' => 'password-score']);
 ?>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('sitename', [
-			'class'                  => 'form-control input-lg',
+			'class'                  => 'uk-input',
 			'placeholder'            => 'Site Name',
 			'data-parsley-minlength' => '1',
 			'data-parsley-maxlength' => '30',
@@ -43,10 +43,10 @@
 		]);
 	?>
 </div>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('username', [
-			'class'                  => 'form-control input-lg',
+			'class'                  => 'uk-input',
 			'placeholder'            => 'Username',
 			'data-parsley-type'      => 'alphanum',
 			'data-parsley-minlength' => '6',
@@ -56,63 +56,53 @@
 		]);
 	?>
 </div>
-<div class="row">
-	<div class="col-md-6">
-		<div class="form-group">
-			<div class="input-group">
-				<?php
-					echo $this->Form->password('password', [
-						'id'                     => 'same-password',
-						'class'                  => 'form-control input-lg',
-						'placeholder'            => 'Password',
-						'data-parsley-minlength' => '6',
-						'data-parsley-maxlength' => '20',
-						'uk-tooltip'			 => 'title: Required. 6-20 chars.; pos: bottom',
-						'autocomplete' 			 => 'off',
-						'required'               => 'required'
-					]);
-				?>
-				<div class="input-group-append">
-					<button id="button-generate-password" class="btn btn-gradient-success btn-sm" type="button" uk-tooltip="title: Generate password; pos: bottom"><i class="fa fa-key"></i></button>
-				</div>
-			</div>
-			<div class="pwstrength-viewport-progress"></div>
-		</div>
+<div class="uk-width-1-2 uk-margin-small">
+	<div class="uk-inline" style="width: 100%">
+		<a id="button-generate-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: file-edit" uk-tooltip="title: Generate password; pos: bottom-right"></a>
+		<?php
+			echo $this->Form->password('password', [
+				'id'                     => 'same-password',
+				'class'                  => 'uk-input',
+				'placeholder'            => 'Password',
+				'data-parsley-minlength' => '6',
+				'data-parsley-maxlength' => '20',
+				'uk-tooltip'			 => 'title: Required. 6-20 chars.; pos: bottom',
+				'autocomplete' 			 => 'off',
+				'required'               => 'required'
+			]);
+		?>
 	</div>
-	<div class="col-md-6">
-		<div class="form-group">
-			<div class="input-group">
-				<?php
-					echo $this->Form->password('repeatpassword', [
-						'class'                  => 'form-control input-lg',
-						'placeholder'            => 'Repeat Password',
-						'data-parsley-minlength' => '6',
-						'data-parsley-maxlength' => '20',
-						'uk-tooltip'			 => 'title: Required. Repeat Password. 6-20 chars.; pos: bottom',
-						'data-parsley-equalto'   => '#same-password',
-						'autocomplete' 			 => 'off',
-						'required'               => 'required'
-					]);
-				?>
-				<div class="input-group-append">
-					<button id="button-visible-password" class="btn btn-gradient-success btn-sm" type="button" uk-tooltip="title: Toggle visible password; pos: bottom"><i class="fa fa-eye"></i></button>
-				</div>
-			</div>
-		</div>
+	<div class="pwstrength-viewport-progress"></div>
+</div>
+<div class="uk-width-1-2 uk-margin-small">
+	<div class="uk-inline" style="width: 100%">
+		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
+		<?php
+			echo $this->Form->password('repeatpassword', [
+				'class'                  => 'uk-input',
+				'placeholder'            => 'Repeat Password',
+				'data-parsley-minlength' => '6',
+				'data-parsley-maxlength' => '20',
+				'uk-tooltip'			 => 'title: Required. Repeat Password. 6-20 chars.; pos: bottom',
+				'data-parsley-equalto'   => '#same-password',
+				'autocomplete' 			 => 'off',
+				'required'               => 'required'
+			]);
+		?>
 	</div>
 </div>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('email', [
 			'type'        => 'email',
-			'class'       => 'form-control input-lg',
+			'class'       => 'uk-input',
 			'placeholder' => 'Email',
 			'uk-tooltip'  => 'title: Required; pos: bottom',
 			'required'    => 'required'
 		]);
 	?>
 </div>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
     <?php
         $timezoneListing = array();
         foreach ($timezoneList as $list) {
@@ -124,17 +114,19 @@
             $timezoneListing,
             [
                 'empty' => 'Select Your Timezone',
-                'class' => 'form-control input-lg'
+                'class' => 'uk-select'
             ]
         );
     ?>
 </div>
+<div class="uk-width-1-1 uk-margin-small">
 <?php
 	echo $this->Form->button('Next', [
 		'id'    => 'button-sitename-admin-setup',
 		'class' => 'btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn'
 	]);
 ?>
+</div>
 <?php
 	echo $this->Form->end();
 ?>
@@ -170,16 +162,18 @@
 		})
 
 		function visiblePassword() {
-            function visiblePassword1() {
+			function visiblePassword1() {
 				$(this).one("click", visiblePassword2);
-				$(this).find('i').attr('class', 'fa fa-eye-slash');
+				$(this).attr('uk-icon', 'icon: unlock');
+				$(this).attr('uk-tooltip', 'title: Lock Password; pos: bottom-right');
 				$('input[name=password]').attr('type', 'text');
 				$('input[name=repeatpassword]').attr('type', 'text');
 			}
 
             function visiblePassword2() {
 				$(this).one("click", visiblePassword1);
-				$(this).find('i').attr('class', 'fa fa-eye');
+				$(this).attr('uk-icon', 'icon: lock');
+				$(this).attr('uk-tooltip', 'title: Unlock Password; pos: bottom-right');
 				$('input[name=password]').attr('type', 'password');
 				$('input[name=repeatpassword]').attr('type', 'password');
             }

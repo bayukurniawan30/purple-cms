@@ -12,15 +12,12 @@ The recommended way to upload your project to production is follow the [Cakephp 
 
 For example, if your host is **example.com**, upload and extract the archieve file to domain folder of **example.com**
 
-#### Uploading Database
+#### Going Live
 
-Database information (database name, user, and password) in Purple CMS is encrypted by [Dcrypt](https://github.com/mmeyer2k/dcrypt/tree/4.0.2). It's located in <code>config/database.php</code>. To upload your database, Follow these steps below : 
- - Export your database from local server.
- - Upload your project to hosting.
- - Replace content in <code>config/database.php</code> to "default" (without double quote).
- - Create database in your hosting.
- - Run [Purple CMS Setup](/).
- - Delete all table inside your new database.
- - Import exported database from local server to new database.
+If you installed Purple CMS in local server or localhost, you have to migrate to live server with 3 steps. After all of your website files uploaded to live server, follow the steps below to make your website live.
 
-Now your website is running like in the local server.  
+ - Open <code>http://&#x3C;hostname&#x3E;/production-site/user-verification</code>. Insert your email and production key. Production key is a unique key to migrate your database. You can find the key in the Purple CMS Settings Page. If the key is correct, Purple CMS will send an email with verification code.
+ - Insert the verification code to verify you provide a real email.
+ - Insert the new database information in live server, and you are done!
+
+Now your website is running live.  

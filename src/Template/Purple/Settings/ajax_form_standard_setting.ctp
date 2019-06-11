@@ -255,6 +255,14 @@
                     ]
                 );
             }
+            elseif ($name == 'productionkey') {
+                echo $this->Form->text('value', [
+                    'class'                  => 'form-control', 
+                    'placeholder'            => $title,
+                    'value'                  => $value,
+                    'readonly'               => 'readonly'
+                ]);
+            }
             else {
                 echo $this->Form->text('value', [
                     'class'                  => 'form-control', 
@@ -269,11 +277,13 @@
     </div> 
 </div>
 <div class="uk-modal-footer uk-text-right">
-    <?php   
-        echo $this->Form->button('Save', [
-            'id'    => 'button-update-setting',
-            'class' => 'btn btn-gradient-primary'
-        ]);
+    <?php 
+        if ($name != 'productionkey') {  
+            echo $this->Form->button('Save', [
+                'id'    => 'button-update-setting',
+                'class' => 'btn btn-gradient-primary'
+            ]);
+        }
     
         echo $this->Form->button('Cancel', [
             'id'           => 'button-close-modal',

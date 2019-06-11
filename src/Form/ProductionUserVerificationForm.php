@@ -16,7 +16,9 @@ class ProductionUserVerificationForm extends Form
                             'rule'    => 'email',
                             'message' => 'Email must be in valid format',
                         ]
-                    ]);
+                    ])
+                  ->requirePresence('key')
+                  ->notEmpty('key', 'Please fill this field');
 
         return $validator;
     }

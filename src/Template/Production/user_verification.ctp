@@ -1,28 +1,40 @@
 <?php
 	echo $this->Form->create($userVerification, [
 		'id'                    => 'form-user-verification',
-		'class'                 => 'pt-3',
+		'class'                 => 'uk-grid pt-3',
 		'data-parsley-validate' => '',
 		'url' 					=> ['_name' => 'productionSiteAction', 'action' => 'ajax-user-verification']
 	]);
 ?>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('email', [
 			'type'        => 'email',
-			'class'       => 'form-control input-lg',
+			'class'       => 'uk-input',
 			'placeholder' => 'Email',
-			'uk-tooltip'  => 'title: Required; pos: bottom',
+			'uk-tooltip'  => 'title: Required; pos: bottom-left',
 			'required'    => 'required'
 		]);
 	?>
 </div>
+<div class="uk-width-1-1 uk-margin-small">
+	<?php
+		echo $this->Form->text('key', [
+			'class'       => 'uk-input',
+			'placeholder' => 'Production Key',
+			'uk-tooltip'  => 'title: Required. Insert production key from Admin page in your local machine.; pos: bottom-left',
+			'required'    => 'required'
+		]);
+	?>
+</div>
+<div class="uk-width-1-1 uk-margin-small">
 <?php
 	echo $this->Form->button('Verify Email', [
 		'id'    => 'button-user-verification',
 		'class' => 'btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn'
 	]);
 ?>
+</div>
 <?php
 	echo $this->Form->end();
 ?>

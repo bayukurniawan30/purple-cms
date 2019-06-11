@@ -175,6 +175,8 @@ class SetupController extends AppController
                 $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
 
                 if ($verifyEmail == true) {
+					
+
 	            	$connection = ConnectionManager::get('default');
 	                
 	                $purpleSetup = new PurpleProjectSetup();
@@ -225,6 +227,11 @@ class SetupController extends AppController
 
 						TableRegistry::get('BlogCategories')->save($blogCategory);
 
+						// Write production key
+						$keyFile  = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+						$productionKey = $hasher->hash(time());
+						$writeKey      = $keyFile->write($productionKey);
+
 						// Send Email to User to Notify user
                         $key    = TableRegistry::get('Settings')->settingsPublicApiKey();
                         $dashboardLink = $this->request->getData('ds');
@@ -234,7 +241,8 @@ class SetupController extends AppController
                             'password'    => trim($this->request->getData('password')),
                             'email'       => $admin->email,
                             'displayName' => $admin->display_name,
-                            'level'       => $admin->level
+                            'level'       => $admin->level,
+                            'key'         => $productionKey
                         );
                         $senderData   = array(
                             'domain' => $this->request->domain()

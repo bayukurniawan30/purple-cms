@@ -1,57 +1,81 @@
 <?php
 	echo $this->Form->create($setupDatabase, [
 		'id'                    => 'form-database-setup',
-		'class'                 => 'pt-3',
+		'class'                 => 'uk-grid pt-3',
 		'data-parsley-validate' => '',
 		'url' 					=> ['action' => 'ajax-database']
 	]);
 ?>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('name', [
-			'class'                  => 'form-control input-lg',
+			'class'                  => 'uk-input',
 			'placeholder'            => 'Database Name',
 			'data-parsley-maxlength' => '30',
-			'uk-tooltip'			 => 'title: Required. Alpha Numeric. Max 30 chars.; pos: bottom',
+			'uk-tooltip'			 => 'title: Required. Alpha Numeric. Max 30 chars.; pos: bottom-left',
             'autofocus'              => 'autofocus',
 			'required'               => 'required'
 		]);
 	?>
 </div>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
+		
 		echo $this->Form->text('username', [
-			'class'        => 'form-control input-lg',
+			'class'        => 'uk-input',
 			'placeholder'  => 'Username',
-			'uk-tooltip'   => 'title: Required.; pos: bottom',
+			'uk-tooltip'   => 'title: Required. Mostly "root" for local machine.; pos: bottom-left',
 			'autocomplete' => 'username',
 			'required'     => 'required'
 		]);
 	?>
 </div>
-<div class="form-group">
-	<?php
-		echo $this->Form->password('password', [
-			'class'        => 'form-control input-lg',
-			'placeholder'  => 'Password',
-			'uk-tooltip'   => 'title: Optional. Leave empty if your database not requiring password.; pos: bottom',
-			'autocomplete' => 'current-password'
-		]);
-	?>
+<div class="uk-width-1-1 uk-margin-small">
+	<div class="uk-inline" style="width: 100%">
+		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
+		<?php
+			echo $this->Form->password('password', [
+				'class'        => 'uk-input',
+				'placeholder'  => 'Password',
+				'uk-tooltip'   => 'title: Optional. Leave empty if your database not requiring password.; pos: bottom-left',
+				'autocomplete' => 'current-password'
+			]);
+		?>
+	</div>
 </div>
-
+<div class="uk-width-1-1 uk-margin-small">
 <?php
 	echo $this->Form->button('Next', [
 		'id'    => 'button-database-setup',
 		'class' => 'btn btn-gradient-primary btn-block btn-lg font-weight-medium auth-form-btn'
 	]);
 ?>
+</div>
 <?php
 	echo $this->Form->end();
 ?>
 
 <script>
 	$(document).ready(function() {
+		function visiblePassword() {
+            function visiblePassword1() {
+				$(this).one("click", visiblePassword2);
+				$(this).attr('uk-icon', 'icon: unlock');
+				$(this).attr('uk-tooltip', 'title: Lock Password; pos: bottom-right');
+				$('input[name=password]').attr('type', 'text');
+			}
+
+            function visiblePassword2() {
+				$(this).one("click", visiblePassword1);
+				$(this).attr('uk-icon', 'icon: lock');
+				$(this).attr('uk-tooltip', 'title: Unlock Password; pos: bottom-right');
+				$('input[name=password]').attr('type', 'password');
+            }
+            $("#button-visible-password").one("click", visiblePassword1);
+        };
+
+		visiblePassword();
+		
 		var databaseSetup;
     	var countClick = 0;
 		$("#form-database-setup").submit(function(event){

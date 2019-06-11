@@ -1,29 +1,31 @@
 <?php
 	echo $this->Form->create($codeVerification, [
 		'id'                    => 'form-code-verification',
-		'class'                 => 'pt-3',
+		'class'                 => 'uk-grid pt-3',
 		'data-parsley-validate' => '',
 		'url' 					=> ['_name' => 'productionSiteAction', 'action' => 'ajax-code-verification']
 	]);
 ?>
-<div class="form-group">
+<div class="uk-width-1-1 uk-margin-small">
 	<?php
 		echo $this->Form->text('code', [
-			'class'                  => 'form-control input-lg',
+			'class'                  => 'uk-input',
 			'placeholder'            => 'Verification Code',
-			'uk-tooltip'             => 'title: Required; pos: bottom',
+			'uk-tooltip'             => 'title: Required; pos: bottom-left',
 			'data-parsley-minlength' => '6',
 			'data-parsley-maxlength' => '6',
 			'required'               => 'required'
 		]);
 	?>
 </div>
+<div class="uk-width-1-1 uk-margin-small">
 <?php
 	echo $this->Form->button('Verify Code', [
 		'id'    => 'button-code-verification',
 		'class' => 'btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn'
 	]);
 ?>
+</div>
 <?php
 	echo $this->Form->end();
 ?>
