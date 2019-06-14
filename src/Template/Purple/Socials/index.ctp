@@ -15,7 +15,7 @@
                     Add Social Media
                 </button>
             </div>
-            <div class="card-body <?php if ($socials->count() > 0) echo 'uk-padding-remove' ?>">
+            <div class="card-body uk-padding-remove">
                 <?php
                     if ($socials->count() > 0):
                 ?>
@@ -57,7 +57,7 @@
                 <?php
                     else:
                 ?>
-                <div class="uk-alert-danger" uk-alert>
+                <div class="uk-alert-danger <?php if ($socials->count() == 0) echo 'uk-margin-remove-bottom'; ?>" uk-alert>
                     <p>Can't find social media for your website. You can add a new social media <a href="#" class="button-add-purple" data-purple-modal="#modal-add-social">here</a>.</p>
                 </div>
                 <?php endif; ?>

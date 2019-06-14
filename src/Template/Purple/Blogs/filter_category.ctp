@@ -34,9 +34,9 @@
                 <div class="uk-inline uk-align-right" style="margin-bottom: 0">
                     <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text button-add-purple uk-margin-small-left">
                         <i class="mdi mdi-filter btn-icon-prepend"></i>
-                            <?= $this->request->getParam('category') ?>
+                            <?= $selectedBlogCategories->name ?>
                     </button>
-                    <div uk-dropdown>
+                    <div uk-dropdown="pos: bottom-right; mode: click">
                         <ul class="uk-nav uk-dropdown-nav text-right">
                             <li><a href="<?= $this->Url->build(['_name' => 'adminBlogs']) ?>">All Categories</a></li>
                             <?php
@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body <?php if ($blogs->count() == 0) echo 'uk-padding-remove'; ?>">
             	<?php
 	            	if ($blogs->count() > 0):
 	            ?>
@@ -150,7 +150,7 @@
 	            <?php
 				    else:
 				?>  
-				<div class="uk-alert-danger" uk-alert>
+				<div class="uk-alert-danger <?php if ($blogs->count() == 0) echo 'uk-margin-remove-bottom'; ?>" uk-alert>
 				    <p>Can't find post for this page. You can add a new post <a href="<?= $newPostUrl ?>" class="">here</a>.</p>
 				</div>
 				<?php
@@ -217,7 +217,7 @@
         });
 
         dataTable.on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
-            $(".button-delete-purple").click(function() {
+            $(".button-delete-purple").on("click", function() {
                 var btn         = $(this),
                     id          = btn.data('purple-id'),
                     title       = btn.data('purple-name'),

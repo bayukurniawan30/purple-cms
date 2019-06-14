@@ -250,7 +250,7 @@
 
         $('#page-detail-card').find('.card-header').after(btnEditPage + btnNew + btnManage + btnFilterCategory);
 
-        $(".button-edit-page-blog").click(function() {
+        $(".button-edit-page-blog").on("click", function() {
             var btn = $(this),
                 modal = btn.data('purple-modal');
 
@@ -285,7 +285,7 @@
         });
 
         dataTable.on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
-            $(".button-delete-purple").click(function() {
+            $(".button-delete-purple").on("click", function() {
                 var btn         = $(this),
                     id          = btn.data('purple-id'),
                     title       = btn.data('purple-name'),

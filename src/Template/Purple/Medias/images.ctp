@@ -301,7 +301,8 @@
                     var img = $('#demo-files').find('.demo-image-preview').eq(0);
 
                     reader.onload = function(e) {
-                        img.attr('src', e.target.result);
+                        // img.attr('src', e.target.result);
+                        img.attr('src', '<?= $this->Url->image('/master-assets/img/icons/icon-image.png') ?>');
                     }
 
                     reader.readAsDataURL(file);

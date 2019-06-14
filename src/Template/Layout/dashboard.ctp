@@ -3,7 +3,7 @@
 	<!-- Head Element -->
 	<?= $this->element('Dashboard/head') ?>
 
-	<body class="<?php if (($this->request->getParam('controller') == 'Pages' && $this->request->getParam('action') == 'detail') || ($this->request->getParam('controller') == 'Blogs' && $this->request->getParam('action') == 'index')) echo 'sidebar-icon-only' ?>">
+	<body class="<?php if (($this->request->getParam('controller') == 'Pages' && $this->request->getParam('action') == 'detail') || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'index' || $this->request->getParam('action') == 'filterCategory'))) echo 'sidebar-icon-only' ?>">
 
 		<!--CSRF Token-->
 		<input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>

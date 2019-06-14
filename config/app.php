@@ -354,6 +354,14 @@ return [
             'url' => env('LOG_QUERIES_URL', null),
             'scopes' => ['queriesLog'],
         ],
+
+        'purple' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path'      => LOGS,
+            'file'      => 'purple',
+            'levels'    => ['info'],
+            'scopes'    => ['purple']
+        ],
     ],
 
     /**

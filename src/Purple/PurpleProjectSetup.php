@@ -634,5 +634,13 @@ class PurpleProjectSetup
 			'name'  => 'twiliotoken',
 			'value' => ''
 		]);
+		$this->conn->insert('settings', [
+			'name'  => 'mailchimpapikey',
+			'value' => ''
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'mailchimplistid',
+			'value' => ''
+		]);
 	}
 }

@@ -5,7 +5,7 @@ $(document).ready(function() {
      *
      */
 
-    $(".button-about-purple-cms").click(function() {
+    $(".button-about-purple-cms").on("click", function() {
         var btn       = $(this),
             modal     = btn.data('purple-modal');
 
@@ -13,13 +13,13 @@ $(document).ready(function() {
         return false;
     })
     
-    $(".button-dashboard-date-range").click(function() {
+    $(".button-dashboard-date-range").on("click", function() {
         var modal = $(this).data('purple-modal');
         UIkit.modal(modal).show();
         return false;
     })
 
-    $("#button-save-page").click(function() {
+    $("#button-save-page").on("click", function() {
         var btn             = $(this),
             modal           = $(this).data('purple-modal'),
             pageTitle       = $("#form-input-title").val(),
@@ -47,7 +47,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-change-page-status").click(function() {
+    $(".button-change-page-status").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             name        = btn.data('purple-name'),
@@ -63,7 +63,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-navigation").click(function() {
+    $(".button-edit-navigation").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             navtype     = btn.data('purple-navtype'),
@@ -111,7 +111,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-page-blog").click(function() {
+    $(".button-edit-page-blog").on("click", function() {
         var btn = $(this),
             modal = btn.data('purple-modal');
 
@@ -119,7 +119,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-category").click(function() {
+    $(".button-edit-category").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             name        = btn.data('purple-name'),
@@ -135,7 +135,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-subscriber").click(function() {
+    $(".button-edit-subscriber").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             email       = btn.data('purple-email'),
@@ -149,7 +149,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-export-subscribers").click(function() {
+    $(".button-export-subscribers").on("click", function() {
         var btn      = $(this),
             btnHtml  = btn.html(),
             url      = btn.data('purple-url'),
@@ -195,7 +195,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-sfooter").click(function() {
+    $(".button-edit-sfooter").on("click", function() {
         var btn         = $(this),
             modal       = btn.data('purple-modal');
 
@@ -203,7 +203,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-edit-social").click(function() {
+    $(".button-edit-social").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             name        = btn.data('purple-name'),
@@ -223,7 +223,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $("#button-new-post-category").click(function() {
+    $("#button-new-post-category").on("click", function() {
         var btn         = $(this),
             modal = btn.data('purple-modal');
 
@@ -233,7 +233,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-modal-status-comment").click(function() {
+    $(".button-modal-status-comment").on("click", function() {
         var modal  = $(this).data('purple-modal'),
             status = $(this).data('purple-status'),
             id     = $(this).data('purple-id');
@@ -245,7 +245,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-modal-reply-comment").click(function() {
+    $(".button-modal-reply-comment").on("click", function() {
         var modal = $(this).data('purple-modal'),
             from  = $(this).data('purple-name');
 
@@ -255,13 +255,13 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-modal-status-comment").click(function() {
+    $(".button-modal-status-comment").on("click", function() {
         var modal = $(this).data('purple-modal');
         UIkit.modal(modal).show();
         return false;
     })
 
-    $(".button-apply-theme").click(function() {
+    $(".button-apply-theme").on("click", function() {
         var modal  = $(this).data('purple-modal'),
             folder = $(this).data('purple-folder'),
             name   = $(this).data('purple-name')
@@ -274,13 +274,13 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-add-purple").click(function() {
+    $(".button-add-purple").on("click", function() {
         var modal = $(this).data('purple-modal');
         UIkit.modal(modal).show();
         return false;
     })
 
-    $(".button-delete-purple").click(function() {
+    $(".button-delete-purple").on("click", function() {
         var btn         = $(this),
             id          = btn.data('purple-id'),
             title       = btn.data('purple-name'),
@@ -320,13 +320,13 @@ $(document).ready(function() {
         return false;
     })
 
-    $(".button-disallowed-delete").click(function() {
+    $(".button-disallowed-delete").on("click", function() {
         var modal = $(this).data('purple-modal');
         UIkit.modal(modal).show();
         return false;
     })
 
-    $(".button-get-permalink").click(function() {
+    $(".button-get-permalink").on("click", function() {
         var btn    = $(this),
             link   = btn.data('purple-link'),
             modal  = btn.data('purple-modal'),
@@ -370,13 +370,13 @@ $(document).ready(function() {
         var createToast = notifToast('Permalink', 'Error copy link', 'error', true);
     });
 
-    $(".button-open-page").click(function() {
+    $(".button-open-page").on("click", function() {
         var target = $("#purple-permalink").val();
         window.open(target);
         return false;
     })
 
-    $(".button-test-email").click(function() {
+    $(".button-test-email").on("click", function() {
         var btn       = $(this),
             modal     = btn.data('purple-modal'),
             showModal = $(modal);
@@ -392,7 +392,7 @@ $(document).ready(function() {
      */
 
     modifyElementProperties = function() {
-        $('#button-element-properties').click(function() {
+        $('#button-element-properties').on("click", function() {
             var btn     = $(this),
                 modal   = $('#modal-element-properties'),
                 idEl    = modal.find('input[name=element-id]').val(),
@@ -422,7 +422,7 @@ $(document).ready(function() {
      */
     
     changeUikitSliderOption = function() {
-        $(".fdb-block-menu-button-slidertuning").click(function() {
+        $(".fdb-block-menu-button-slidertuning").on("click", function() {
             var btn      = $(this),
                 target   = btn.attr('data-fdb-id'),
                 modal    = "#modal-uikit-slider-tuning",
@@ -445,7 +445,7 @@ $(document).ready(function() {
             return false;
         })
 
-        $("#modal-uikit-slider-tuning").find("#button-change-slidertuning").click(function() {
+        $("#modal-uikit-slider-tuning").find("#button-change-slidertuning").on("click", function() {
             var btn    = $(this),
                 target = btn.attr('data-purple-target'),
                 block  = $("#fdb-"+target + "> div"),
@@ -495,7 +495,7 @@ $(document).ready(function() {
         // console.log(position);
         var btn = $('.fdb-block-slider-caption-to-'+button+'-button');
         if (position == 'center') {
-            btn.click(function() {
+            btn.on("click", function() {
                 if (button == 'left') {
                     target.addClass('uk-position-center-left');
                     target.removeClass('uk-position-center');
@@ -511,7 +511,7 @@ $(document).ready(function() {
             })
         }
         else if (position == 'center-left') {
-            btn.click(function() {
+            btn.on("click", function() {
                 if (button == 'left') {
                     return false;
                 }
@@ -525,7 +525,7 @@ $(document).ready(function() {
             })
         }
         else if (position == 'center-right') {
-            btn.click(function() {
+            btn.on("click", function() {
                 if (button == 'left') {
                     target.addClass('uk-position-center');
                     target.removeClass('uk-position-center-right');
@@ -583,7 +583,7 @@ $(document).ready(function() {
      */
     
     changeBackgroundColor = function() {
-        $(".fdb-block-menu-button-bgcolor").click(function() {
+        $(".fdb-block-menu-button-bgcolor").on("click", function() {
             var btn    = $(this),
                 target = btn.attr('data-fdb-id'),
                 bg     = btn.attr('data-fdb-bg'),
@@ -609,7 +609,7 @@ $(document).ready(function() {
                     $("#modal-change-bgcolor").find(".gradient-selector").show();
                     $("#modal-change-bgcolor").find(".solid-selector").hide();
 
-                    $(".gradient-container").click(function() {
+                    $(".gradient-container").on("click", function() {
                         var gradient  = $(this),
                             container = $("#modal-change-bgcolor").find(".gradient-selector"),
                             color     = gradient.data('purple-gradient');
@@ -628,7 +628,7 @@ $(document).ready(function() {
                     })
                 }
 
-                $("#modal-change-bgcolor").find("#button-change-bgcolor").click(function() {
+                $("#modal-change-bgcolor").find("#button-change-bgcolor").on("click", function() {
                     var btn    = $(this),
                         target = btn.attr('data-purple-target'),
                         bg     = btn.attr('data-purple-bg'),
@@ -669,7 +669,7 @@ $(document).ready(function() {
             }
             else {
                 $("#modal-change-bgcolor").find("#button-change-bgcolor").attr('disabled','disabled');
-                $("#modal-change-bgcolor").find("#button-change-bgcolor").click(function() {
+                $("#modal-change-bgcolor").find("#button-change-bgcolor").on("click", function() {
                     return false;
                 })
             }
@@ -683,7 +683,7 @@ $(document).ready(function() {
      */
     
     saveBlockToFile = function() {
-        $(".fdb-block-menu-button-saveblock").click(function() {
+        $(".fdb-block-menu-button-saveblock").on("click", function() {
             $('.fdb-block-menu-button').remove();
 
             var btn    = $(this),
@@ -756,7 +756,7 @@ $(document).ready(function() {
      * 
      */
     
-    $(".button-delete-saved-block").click(function() {
+    $(".button-delete-saved-block").on("click", function() {
         var btn    = $(this),
             modal  = "#modal-delete-saved-block",
             target = btn.data('purple-target'),
@@ -771,7 +771,7 @@ $(document).ready(function() {
         return false;
     })
 
-    $("#button-delete-saved-block").click(function() {
+    $("#button-delete-saved-block").on("click", function() {
         var btn   = $(this),
             file  = $('#modal-delete-saved-block').find('input[name=file]').val(),
             cls   = $('#modal-delete-saved-block').find('input[name=class]').val(),
@@ -826,7 +826,7 @@ $(document).ready(function() {
      */
     
     setUikitFilterId = function() {
-        $(".fdb-block-uk-filter-list-button").click(function() {
+        $(".fdb-block-uk-filter-list-button").on("click", function() {
             var btn     = $(this),
                 target  = btn.closest('li').attr('data-filter-id'),
                 current = btn.attr('data-current-filter'),
@@ -839,7 +839,7 @@ $(document).ready(function() {
             return false;
         })
 
-        $("#modal-uikit-set-filter-id").find("#button-uikit-set-filter-id").click(function() {
+        $("#modal-uikit-set-filter-id").find("#button-uikit-set-filter-id").on("click", function() {
             var btn      = $(this),
                 target   = btn.attr('data-purple-target'),
                 category = $("#modal-uikit-set-filter-id").find('input[name=category]').val();
@@ -858,7 +858,7 @@ $(document).ready(function() {
     }
     
     setUikitFilterCategory = function() {
-        $(".fdb-block-uk-filter-item-button").click(function() {
+        $(".fdb-block-uk-filter-item-button").on("click", function() {
             var btn     = $(this),
                 target  = btn.closest('li').attr('data-filter-item'),
                 current = btn.attr('data-current-filter'),
@@ -888,7 +888,7 @@ $(document).ready(function() {
             return false;
         })
 
-        $("#modal-uikit-set-filter-category").find("#button-uikit-set-filter-category").click(function() {
+        $("#modal-uikit-set-filter-category").find("#button-uikit-set-filter-category").on("click", function() {
             var btn      = $(this),
                 target   = btn.attr('data-purple-target'),
                 category = $("#modal-uikit-set-filter-category").find('select[name=category]').val();
@@ -907,7 +907,7 @@ $(document).ready(function() {
      */
     
     addUikitAnimationBlock = function() {
-        $(".fdb-block-menu-button-animation").click(function() {
+        $(".fdb-block-menu-button-animation").on("click", function() {
             var btn    = $(this),
                 target = btn.attr('data-fdb-id'),
                 modal  = "#modal-uikit-add-animation";
@@ -917,7 +917,7 @@ $(document).ready(function() {
             return false;
         })
 
-        $("#modal-uikit-add-animation").find("#button-uikit-add-animation").click(function() {
+        $("#modal-uikit-add-animation").find("#button-uikit-add-animation").on("click", function() {
             var btn    = $(this),
                 target = btn.attr('data-purple-target'),
                 block  = $("#fdb-"+target),
@@ -965,7 +965,7 @@ $(document).ready(function() {
                     $(this).attr('data-purple-identifier', identifier);
                     selectBtn.attr('data-purple-identifier', identifier);
 
-                $(".fdb-block-font-awesome-button").click(function() {
+                $(".fdb-block-font-awesome-button").on("click", function() {
                     UIkit.modal(modal).show();
 
                     $("#modal-font-awesome-icon-body").animate({
@@ -981,7 +981,7 @@ $(document).ready(function() {
                 modal.find(".fa-" + faValue).closest('.purple-font-awesome-icon').addClass('selected');
                 modal.find(".font-awesome-color").val(faColor);
 
-                modal.find(".purple-font-awesome-icon").click(function() {
+                modal.find(".purple-font-awesome-icon").on("click", function() {
                     var value = $(this).attr('value');
                     modal.find(".purple-font-awesome-icon").removeClass('selected');
                     $(this).addClass('selected');
@@ -990,7 +990,7 @@ $(document).ready(function() {
                     selectBtn.attr('data-purple-icon', value);
                 })
 
-                selectBtn.click(function() {
+                selectBtn.on("click", function() {
                     var source    = $(this).attr('data-purple-source'),
                         iconColor = modal.find(".font-awesome-color").val(),
                         onlyColor = iconColor.replace('#',''),
@@ -1084,13 +1084,13 @@ $(document).ready(function() {
                     modal.find('select[name=icon-position] option[value="'+crIconPos+'"]').attr("selected","selected");
                 }
 
-                target.click(function() {
+                target.on("click", function() {
                     $('.font-awesome-color-container').hide();
                     UIkit.modal(modal).show();
                     return false;
                 })
 
-                $('#browse-icon-for-button').click(function() {
+                $('#browse-icon-for-button').on("click", function() {
                     var source  = $(this).attr('data-purple-source'),
                         modalFa = $('#modal-font-awesome-icon');
 
@@ -1102,7 +1102,7 @@ $(document).ready(function() {
 
                 var modalFa = $('#modal-font-awesome-icon');
 
-                modalFa.find(".purple-font-awesome-icon").click(function() {
+                modalFa.find(".purple-font-awesome-icon").on("click", function() {
                     var value = $(this).attr('value');
                     modalFa.find(".purple-font-awesome-icon").removeClass('selected');
                     $(this).addClass('selected');
@@ -1111,7 +1111,7 @@ $(document).ready(function() {
                     modalFa.find('.button-select-icon').attr('data-purple-icon', value);
                 })
 
-                modalFa.find('.button-select-icon').click(function() {
+                modalFa.find('.button-select-icon').on("click", function() {
                     var source    = $(this).attr('data-purple-source'),
                         iconColor = modalFa.find(".font-awesome-color").val(),
                         onlyColor = iconColor.replace('#',''),
@@ -1134,7 +1134,7 @@ $(document).ready(function() {
                     return false;
                 })
 
-                selectBtn.click(function() {
+                selectBtn.on("click", function() {
                     if ($('#modal-bttns-customizing').find('input[name=text]').val().length > 0) {
                         var bttnsStyle    = modal.find('select[name=style]').val(),
                             bttnsSize     = modal.find('select[name=size]').val(),
@@ -1267,7 +1267,7 @@ $(document).ready(function() {
      */
 
     browseImageButton = function() {
-        $(".button-browse-images").click(function() {
+        $(".button-browse-images").on("click", function() {
             var btn       = $(this),
                 btnTxt    = btn.html(),
                 action    = btn.data('purple-browse-action'),
@@ -1304,7 +1304,7 @@ $(document).ready(function() {
                     if (modal.find(".button-remove-background").length < 1) {
                         modal.find(".uk-modal-footer").find(".uk-text-right").prepend('<button class="btn btn btn-outline-danger uk-margin-right button-remove-background" data-purple-id="'+sectionId+'" data-purple-froala-block="#fdb-'+sectionId+'">Remove Background</button>');
 
-                        $(".button-remove-background").click(function() {
+                        $(".button-remove-background").on("click", function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
                                 modal = "#modal-browse-images";
@@ -1325,7 +1325,7 @@ $(document).ready(function() {
                     if (modal.find(".button-remove-background").length < 1) {
                         modal.find(".uk-modal-footer").find(".uk-text-right").prepend('<button class="btn btn btn-outline-danger uk-margin-right button-remove-background" data-purple-id="'+sectionId+'" data-purple-froala-block="#fdb-'+sectionId+'">Remove Background</button>');
 
-                        $(".button-remove-background").click(function() {
+                        $(".button-remove-background").on("click", function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
                                 modal = "#modal-browse-images";
@@ -1368,7 +1368,7 @@ $(document).ready(function() {
         // console.log(parent);
         // console.log(target);
         
-        target.click(function() {
+        target.on("click", function() {
             if (target.parent().hasClass('disabled')) {
                 // console.log('disabled');
                 return false;
@@ -1445,7 +1445,7 @@ $(document).ready(function() {
 
                                 parent.addClass('disabled');
                                 parent.hide();
-                                target.click(function() {
+                                target.on("click", function() {
                                     return false;
                                 })
                             }
@@ -1477,7 +1477,7 @@ $(document).ready(function() {
      */
 
     deleteButton = function(something) {
-        $(".button-delete-" + something).click(function() {
+        $(".button-delete-" + something).on("click", function() {
             var btn         = $(this),
                 id          = btn.data('purple-id'),
                 title       = btn.data('purple-name'),

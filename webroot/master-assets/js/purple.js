@@ -188,12 +188,12 @@
                 $(".preview-screen-modifier").show();
                 $("html").css('overflow', 'hidden');
 
-                $("#button-toggle-desktop-screen").click(function() {
+                $("#button-toggle-desktop-screen").on("click", function() {
                     $("#bind-fdb-blocks").animate({width: "100%"});
                     return false;
                 })
 
-                $("#button-toggle-tablet-screen").click(function() {
+                $("#button-toggle-tablet-screen").on("click", function() {
                     UIkit.modal('#modal-device-screen').hide();
 
                     var html       = $("#bind-fdb-blocks").html();
@@ -210,7 +210,7 @@
                     return false;
                 })
 
-                $("#button-toggle-phone-screen").click(function() {
+                $("#button-toggle-phone-screen").on("click", function() {
                     UIkit.modal('#modal-device-screen').hide();
 
                     var html       = $("#bind-fdb-blocks").html();
@@ -360,7 +360,7 @@
             return parse(html.replace(/(\r\n|\n|\r)/gm," ").replace(/ +(?= )/g,''));
         };
 
-        $("#button-toggle-code").click(function() {
+        $("#button-toggle-code").on("click", function() {
             if(tuningMode() == 'yes') {
                 $("#hidden-fdb-blocks").html($("#bind-fdb-blocks").html());
                 $("#hidden-fdb-blocks").find('*').removeAttr('data-tree-id');
@@ -442,7 +442,7 @@
                     var buttonsCustomizingBtn = buttonsCustomizing();
                     var saveBlockToFileBtn    = saveBlockToFile();
 
-                    $('.fdb-block-menu-button-delete').click(function() {
+                    $('.fdb-block-menu-button-delete').on("click", function() {
                         var btn = $(this),
                             idBtn  = btn.data('fdb-id'),
                             block = $('#fdb-'+idBtn);
@@ -565,7 +565,7 @@
                         var setUikitFilterIdBtn       = setUikitFilterId();
                         var setUikitFilterCategoryBtn = setUikitFilterCategory();
 
-                        $('.fdb-block-menu-button-copy').click(function() {
+                        $('.fdb-block-menu-button-copy').on("click", function() {
                             var btn    = $(this),
                                 idBtn  = btn.data('fdb-id'),
                                 parent = copyBlock.parent();
@@ -580,7 +580,7 @@
                             return false;
                         })
 
-                        $('.fdb-block-menu-button-delete-block').click(function() {
+                        $('.fdb-block-menu-button-delete-block').on("click", function() {
                             var btn   = $(this),
                                 idBtn = btn.data('fdb-id');
 
@@ -658,7 +658,7 @@
 
         froalaEditorInitial();
 
-        $(".fdb-blocks").click(function() {
+        $(".fdb-blocks").on("click", function() {
             var template  = $(this),
                 number    = template.data('purple-number'),
                 filter    = template.data('purple-filter'),
@@ -675,7 +675,7 @@
                 '</div>' +
              '</div>');
 
-            $("#button-save-page").click(function() {
+            $("#button-save-page").on("click", function() {
                 return false;
             })
             $("#button-save-page").html('<i class="mdi mdi-spin mdi-loading"></i> Fetching...');
@@ -692,7 +692,7 @@
                 },
                 success: function(msg) {
                     $("#button-save-page").html('<i class="mdi mdi-content-save"></i> Save');
-                    $("#button-save-page").click(function() {
+                    $("#button-save-page").on("click", function() {
                         return true;
                     })
                     
@@ -751,7 +751,7 @@
                                         var buttonsCustomizingBtn = buttonsCustomizing();
                                         var saveBlockToFileBtn    = saveBlockToFile();
 
-                                        $('.fdb-block-menu-button-delete').click(function() {
+                                        $('.fdb-block-menu-button-delete').on("click", function() {
                                             var btn    = $(this),
                                                 idBtn  = btn.data('fdb-id'),
                                                 block  = $('#fdb-'+idBtn);
@@ -873,7 +873,7 @@
                                         var setUikitFilterIdBtn       = setUikitFilterId();
                                         var setUikitFilterCategoryBtn = setUikitFilterCategory();
 
-                                        $('.fdb-block-menu-button-copy').click(function() {
+                                        $('.fdb-block-menu-button-copy').on("click", function() {
                                             var btn    = $(this),
                                                 idBtn  = btn.data('fdb-id'),
                                                 parent = copyBlock.parent();
@@ -888,7 +888,7 @@
                                             return false;
                                         })
 
-                                        $('.fdb-block-menu-button-delete-block').click(function() {
+                                        $('.fdb-block-menu-button-delete-block').on("click", function() {
                                             var btn   = $(this),
                                                 idBtn = btn.data('fdb-id');
 
@@ -998,7 +998,7 @@
                                         });
                                     }
                                     else {
-                                        $(this).click(function() {
+                                        $(this).on("click", function() {
                                             return false;
                                         })
                                     }
@@ -1017,7 +1017,7 @@
             return false;
         })
 
-        $("#button-toggle-blocks").click(function() {
+        $("#button-toggle-blocks").on("click", function() {
             if($('#purple-fdb-blocks:visible').length) {
                 $('#purple-fdb-blocks').hide();
                 $('#purple-fdb-blocks-preview').removeClass('uk-width-2-3');
@@ -1103,7 +1103,7 @@
             });
 
 
-            modal.find("form .button-delete-media-image").click(function() {
+            modal.find("form .button-delete-media-image").on("click", function() {
                 UIkit.modal('#modal-full-content').hide();
                 setTimeout(function() {
                     var deleteModal = $("#modal-delete-media"),
@@ -1169,7 +1169,7 @@
             return false;
         });
 
-        $(".button-delete-media").click(function() {
+        $(".button-delete-media").on("click", function() {
             var btn         = $(this),
                 id          = btn.data('purple-id'),
                 title       = btn.data('purple-name'),

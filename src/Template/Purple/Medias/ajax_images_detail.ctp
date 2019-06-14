@@ -9,11 +9,11 @@
         </ul>
     </div>
 </div> -->
-<div id="bind-media-load" class="js-filter row" style="margin-left: 0; margin-right: 0;">
+<div id="bind-media-load" class="js-filter row">
     <?php foreach ($medias as $media): ?>
     <?php
             $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
-            $fullImage   = $this->request->webroot . 'uploads/images/original/' . $media->name;
+            $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
     ?>
     <div class="col-6 col-md-2 grid-margin" data-date="<?= date('Y-m-d H:i', strtotime($media->created)) ?>">
         <div>
@@ -120,7 +120,9 @@
                 console.info('Text:', e.text);
                 console.info('Trigger:', e.trigger);
                 modal.find("form label[for=path]").html(targetLabel + ' <span class="text-primary">Copied</span>');
-
+                setTimeout(function() {
+                    modal.find("form label[for=path]").html('URL');
+                }, 2500);
                 e.clearSelection();
             });
 
@@ -128,11 +130,12 @@
                 console.error('Action:', e.action);
                 console.error('Trigger:', e.trigger);
                 modal.find("form label[for=path]").html(targetLabel + ' <span class="text-danger">Error. Text is not copied</span>');
-
+                setTimeout(function() {
+                    modal.find("form label[for=path]").html('URL');
+                }, 2500);
             });
             
-            
-            modal.find("form .button-delete-media-image").click(function() {
+            modal.find("form .button-delete-media-image").on("click", function() {
                 UIkit.modal('#modal-full-content').hide();
                 setTimeout(function() {
                     var deleteModal = $("#modal-delete-media"),

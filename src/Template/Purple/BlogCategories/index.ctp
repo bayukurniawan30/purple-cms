@@ -28,7 +28,7 @@
                     Add Category
                 </button>
             </div>
-            <div class="card-body <?php if ($blogCategories->count() > 0) echo 'uk-padding-remove' ?>">
+            <div class="card-body uk-padding-remove">
                 <?php
                     if ($blogCategories->count() > 0):
                 ?>
@@ -84,7 +84,7 @@
                 <?php
                     else:
                 ?>
-                <div class="uk-alert-danger" uk-alert>
+                <div class="uk-alert-danger <?php if ($blogCategories->count() == 0) echo 'uk-margin-remove-bottom'; ?>" uk-alert>
                     <p>Can't find post category. You can add a new category <a href="#" class="button-add-purple" data-purple-modal="#modal-add-post-category">here</a>.</p>
                 </div>
                 <?php endif; ?>

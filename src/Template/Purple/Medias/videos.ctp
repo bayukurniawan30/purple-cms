@@ -57,11 +57,11 @@
                             <?php
                                 $i = 1;
                                 foreach ($videos as $video):
-                                    $filePath = $this->request->webroot . 'uploads/videos/' . $video->name;
+                                    $filePath = $this->request->getAttribute("webroot") . 'uploads/videos/' . $video->name;
                             ?>
                             <tr>
                                 <td><?= $i ?></td>
-                                <td><span uk-tooltip="<?= $video->name ?>"><?= $video->title ?></span></td>
+                                <td uk-lightbox><a title="<?= $video->name ?>" href="<?= $filePath ?>" data-type="video" uk-tooltip="<?= $video->name ?>"><?= $video->title ?></a></td>
                                 <td><?= $this->Purple->readableFileSize($video->size) ?></td>
                                 <td><?= ucwords($video->admin->display_name) ?></td>
                                 <td class="text-center">

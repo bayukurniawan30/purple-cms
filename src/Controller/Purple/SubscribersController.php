@@ -10,10 +10,13 @@ use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\SubscriberAddForm;
 use App\Form\Purple\SubscriberEditForm;
 use App\Form\Purple\SubscriberDeleteForm;
+use App\Form\Purple\SubscriberMailchimpSettingsForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
+use \DrewM\MailChimp\MailChimp;
+use \DrewM\MailChimp\Batch;
 
 class SubscribersController extends AppController
 {
@@ -101,16 +104,39 @@ class SubscribersController extends AppController
 	}
 	public function index()
 	{
-		$subscriberAdd    = new SubscriberAddForm();
-		$subscriberEdit   = new SubscriberEditForm();
-		$subscriberDelete = new SubscriberDeleteForm();
+		$this->loadModel('Settings');
+
+		$subscriberAdd     = new SubscriberAddForm();
+		$subscriberEdit    = new SubscriberEditForm();
+		$subscriberDelete  = new SubscriberDeleteForm();
+		$mailchimpSettings = new SubscriberMailchimpSettingsForm();
 
 		$subscribers = $this->Subscribers->find()->order(['id' => 'DESC']);
 
+		$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
+		$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+
+		if ($mailchimpApiId->value != '' && $mailchimpListId->value != '') {
+			$mailchimp       = new MailChimp($mailchimpApiId->value);
+			$mailchimpList   = $mailchimp->get('/lists/'.$mailchimpListId->value.'/members');
+
+			$members = [];
+			foreach ($mailchimpList['members'] as $member) {
+				$members[] = $member['email_address'];
+			}
+		}
+		else {
+			$members = false;
+		}
+
 		$data = [
-			'subscriberAdd'    => $subscriberAdd,
-			'subscriberEdit'   => $subscriberEdit,
-			'subscriberDelete' => $subscriberDelete,
+			'subscriberAdd'     => $subscriberAdd,
+			'subscriberEdit'    => $subscriberEdit,
+			'subscriberDelete'  => $subscriberDelete,
+			'mailchimpSettings' => $mailchimpSettings,
+			'mailchimpApiId'    => $mailchimpApiId,
+			'mailchimpListId'   => $mailchimpListId,
+			'mailchimpList'     => $members
 		];
 
     	$this->set(compact('subscribers'));
@@ -297,6 +323,36 @@ class SubscribersController extends AppController
 				$result = $this->Subscribers->delete($subscriber);
 
                 if ($result) {
+					// If also delete email in Mailchimp Account
+					$this->loadModel('Settings');
+					$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
+					$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+
+					$mailchimp = new MailChimp($mailchimpApiId->value);
+
+					$mailchimpList   = $mailchimp->get('/lists/'.$mailchimpListId->value.'/members');
+
+					$members = [];
+					foreach ($mailchimpList['members'] as $member) {
+						$members[] = $member['email_address'];
+					}
+
+					if (in_array($email, $members)) {
+						$subscriberHash = $mailchimp->subscriberHash($email);
+
+						$deleteEmailMailchimp = $mailchimp->delete("lists/$mailchimpListId->value/members/$subscriberHash");
+
+						if ($mailchimp->success()) {
+							$checkDeletedMailchimp = true;
+						}
+						else {
+							$checkDeletedMailchimp = $mailchimp->getLastError();
+						}
+					}
+					else {
+						$checkDeletedMailchimp = false;
+					}
+					
                     /**
                      * Save user activity to histories table
                      * array $options => title, detail, admin_id
@@ -312,10 +368,10 @@ class SubscribersController extends AppController
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
+                        $json = json_encode(['status' => 'ok', 'activity' => true, 'mailchimp' => $checkDeletedMailchimp]);
                     }
                     else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
+                        $json = json_encode(['status' => 'ok', 'activity' => false, 'mailchimp' => $checkDeletedMailchimp]);
                     }
                 }
                 else {
@@ -354,5 +410,118 @@ class SubscribersController extends AppController
 		else {
 			throw new NotFoundException(__('Page not found'));
 		}
+	}
+	public function ajaxUpdateMailchimpSettings() 
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$mailchimpSettings = new SubscriberMailchimpSettingsForm();
+        if ($this->request->is('ajax')) {
+            if ($mailchimpSettings->execute($this->request->getData())) {
+				$apiKey = trim($this->request->getData('key'));
+				$listId = trim($this->request->getData('list'));
+
+				$this->loadModel('Settings');
+				$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
+				$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+
+				$mailchimpApi = $this->Settings->get($mailchimpApiId->id);
+				$mailchimpApi->value = $apiKey;
+
+				$mailchimpList = $this->Settings->get($mailchimpListId->id);
+				$mailchimpList->value = $listId;
+
+				if ($this->Settings->save($mailchimpApi) && $this->Settings->save($mailchimpList)) {
+					/**
+                     * Save user activity to histories table
+                     * array $options => title, detail, admin_id
+                     */
+                    
+                    $options = [
+                        'title'    => 'Addition of Mailchimp API Key and Audience ID',
+                        'detail'   => ' add Mailchimp API key and Audience ID.',
+                        'admin_id' => $sessionID
+                    ];
+
+                    $this->loadModel('Histories');
+                    $saveActivity   = $this->Histories->saveActivity($options);
+
+                    if ($saveActivity == true) {
+                        $json = json_encode(['status' => 'ok', 'activity' => true]);
+                    }
+                    else {
+                        $json = json_encode(['status' => 'ok', 'activity' => false]);
+                    }
+				}
+			}
+			else {
+            	$errors = $mailchimpSettings->errors();
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+	}
+	public function ajaxExportToMailchimp()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax')) {
+			$this->loadModel('Settings');
+
+			$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
+			$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+
+			if ($mailchimpApiId->value == '' || $mailchimpListId->value == '') {
+                $json = json_encode(['status' => 'error', 'error' => 'Please provide Mailchimp API Key and Audience ID.']);
+			}
+			else {
+				$subscribers = $this->Subscribers->find()->order(['id' => 'DESC']);
+
+				if ($subscribers->count() > 0) {
+					$mailchimp = new MailChimp($mailchimpApiId->value);
+					$batch 	   = $mailchimp->new_batch();
+
+					$mailchimpList   = $mailchimp->get('/lists/'.$mailchimpListId->value.'/members');
+
+					$members = [];
+					foreach ($mailchimpList['members'] as $member) {
+						$members[] = $member['email_address'];
+					}
+
+					$i = 1;
+					foreach ($subscribers as $subscriber) {
+						if (!in_array($subscriber->email, $members)) {
+							$batch->post("op" . $i, "lists/$mailchimpListId->value/members", [
+								'email_address' => $subscriber->email,
+								'status'        => 'subscribed'
+							]);
+						}
+
+						$i++;
+					}
+
+					$result = $batch->execute();
+
+					if ($result) {
+						$json = json_encode(['status' => 'ok']);
+					}
+					else {
+						$json = json_encode(['status' => 'error', 'error' => "Can't add subscribers to Mailchimp. Please try again."]);
+					}
+				}
+				else {
+					$json = json_encode(['status' => 'error', 'error' => 'Subscriber data is empty.']);
+				}
+			}
+
+			$this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
 	}
 }

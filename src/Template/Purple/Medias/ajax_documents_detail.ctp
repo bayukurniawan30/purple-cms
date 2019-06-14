@@ -15,7 +15,7 @@
                 <?php
                     $i = 1;
                     foreach ($docs as $doc):
-                        $filePath = $this->request->webroot . 'uploads/documents/' . $doc->name;
+                        $filePath = $this->request->getAttribute("webroot") . 'uploads/documents/' . $doc->name;
                 ?>
                 <tr>
                     <td><?= $i ?></td>
@@ -95,7 +95,7 @@
             return false;
         });
         
-        $(".button-delete-media").click(function() {
+        $(".button-delete-media").on("click", function() {
             var btn         = $(this),
                 id          = btn.data('purple-id'),
                 title       = btn.data('purple-name'),

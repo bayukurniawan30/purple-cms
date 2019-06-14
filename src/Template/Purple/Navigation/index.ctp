@@ -13,7 +13,7 @@
                     Add Menu
                 </button>
             </div>
-            <div class="card-body <?php if ($menus->count() > 0) echo 'uk-padding-remove' ?>">
+            <div class="card-body uk-padding-remove">
                 <?php
                     if ($menus->count() > 0):
                 ?>
@@ -79,7 +79,7 @@
                 <?php
                     else:
                 ?>
-                <div class="uk-alert-danger" uk-alert>
+                <div class="uk-alert-danger <?php if ($menus->count() == 0) echo 'uk-margin-remove-bottom'; ?>" uk-alert>
                     <p>Can't find menu for your website. You can add a new menu <a href="#" class="button-add-purple" data-purple-modal="#modal-add-navigation">here</a>.</p>
                 </div>
                 <?php endif; ?>

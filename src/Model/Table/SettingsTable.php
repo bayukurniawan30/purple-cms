@@ -158,4 +158,14 @@ class SettingsTable extends Table
         $ldJson = $this->find()->where(['name' => 'ldjson'])->first();
         return $ldJson->value;
     }
+    public function settingsMailchimpApi() 
+    {
+        $api = $this->find()->where(['name' => 'mailchimpapikey'])->first();
+        return $api->value;
+    }
+    public function settingsMailchimpListId() 
+    {
+        $list = $this->find()->where(['name' => 'mailchimplistid'])->first();
+        return $list->value;
+    }
 }

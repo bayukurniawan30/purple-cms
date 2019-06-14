@@ -123,8 +123,9 @@
                     ]);
 
                     echo $this->Form->button('Cancel', [
-                        'class'        => 'btn btn-outline-primary uk-margin-left',
-                        'type'         => 'button'
+                        'class'   => 'btn btn-outline-primary uk-margin-left',
+                        'type'    => 'button',
+                        'onclick' => 'location.href = \''.$submitRedirect.'\''
                     ]);
                 ?>
             </div>

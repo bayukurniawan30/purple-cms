@@ -15,11 +15,11 @@
                 <?php
                     $i = 1;
                     foreach ($videos as $video):
-                        $filePath = $this->request->webroot . 'uploads/videos/' . $video->name;
+                        $filePath = $this->request->getAttribute("webroot") . 'uploads/videos/' . $video->name;
                 ?>
                 <tr>
                     <td><?= $i ?></td>
-                    <td><span uk-tooltip="<?= $video->name ?>"><?= $video->title ?></span></td>
+                    <td uk-lightbox><a title="<?= $video->name ?>" href="<?= $filePath ?>" data-type="video" uk-tooltip="<?= $video->name ?>"><?= $video->title ?></a></td>
                     <td><?= $this->Purple->readableFileSize($video->size) ?></td>
                     <td class="text-center">
                         <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon button-edit-media" data-purple-id="<?= $video->id ?>" data-purple-by="<?= ucwords($video->admin->display_name) ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-file="<?= $filePath ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($video->created)) ?>" data-purple-title="<?= $video->title ?>" data-purple-description="<?= $video->description ?>" uk-tooltip="Edit">
@@ -95,7 +95,7 @@
             return false;
         });
         
-        $(".button-delete-media").click(function() {
+        $(".button-delete-media").on("click", function() {
             var btn         = $(this),
                 id          = btn.data('purple-id'),
                 title       = btn.data('purple-name'),

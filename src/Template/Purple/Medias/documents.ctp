@@ -57,7 +57,7 @@
                             <?php
                                 $i = 1;
                                 foreach ($docs as $doc):
-                                    $filePath = $this->request->webroot . 'uploads/documents/' . $doc->name;
+                                    $filePath = $this->request->getAttribute("webroot") . 'uploads/documents/' . $doc->name;
                             ?>
                             <tr>
                                 <td><?= $i ?></td>
