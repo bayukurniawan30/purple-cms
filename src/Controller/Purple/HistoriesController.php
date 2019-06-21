@@ -10,6 +10,7 @@ use App\Form\Purple\HistoryFilterForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
+use App\Purple\PurpleProjectPlugins;
 
 class HistoriesController extends AppController
 {
@@ -59,7 +60,12 @@ class HistoriesController extends AppController
 			if ($rowCount > 0) {
 				$adminData = $queryAdmin->first();
 
-                $dashboardSearch = new SearchForm();
+				$dashboardSearch = new SearchForm();
+				
+				// Plugins List
+				$purplePlugins 	= new PurpleProjectPlugins();
+				$plugins		= $purplePlugins->purplePlugins();
+	        	$this->set('plugins', $plugins);
 
 				$data = [
 					'sessionHost'       => $sessionHost,

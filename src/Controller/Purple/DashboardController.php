@@ -9,6 +9,7 @@ use App\Form\Purple\AdminLoginForm;
 use App\Form\Purple\DashboardMonthOfVisitForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectPlugins;
 
 class DashboardController extends AppController
 {
@@ -58,7 +59,12 @@ class DashboardController extends AppController
 
 				$adminData = $queryAdmin->first();
 
-		        $dashboardSearch = new SearchForm();
+				$dashboardSearch = new SearchForm();
+				
+				// Plugins List
+				$purplePlugins 	= new PurpleProjectPlugins();
+				$plugins		= $purplePlugins->purplePlugins();
+	        	$this->set('plugins', $plugins);
 
 				$data = [
 					'sessionHost'       => $sessionHost,

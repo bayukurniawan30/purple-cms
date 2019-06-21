@@ -13,6 +13,7 @@ use App\Form\Purple\SearchForm;
 use Cake\I18n\Time;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
+use App\Purple\PurpleProjectPlugins;
 
 class NavigationController extends AppController
 {
@@ -60,7 +61,12 @@ class NavigationController extends AppController
 			if ($rowCount > 0) {
 				$adminData = $queryAdmin->first();
 
-                $dashboardSearch = new SearchForm();
+				$dashboardSearch = new SearchForm();
+				
+				// Plugins List
+				$purplePlugins 	= new PurpleProjectPlugins();
+				$plugins		= $purplePlugins->purplePlugins();
+	        	$this->set('plugins', $plugins);
 
                 if ($adminData->level == 1) {
 					$data = [

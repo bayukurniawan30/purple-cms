@@ -8,13 +8,13 @@
 		<!--CSRF Token-->
 		<input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
         <!--Froala Manager URL-->
-        <input id="froala-load-url" type="hidden" name="froalaLoadURL" value="<?= $this->Url->build(["controller" => "Froala", "action" => "froalaManagerLoadUrl"]); ?>">
+        <input id="froala-load-url" type="hidden" name="froalaLoadURL" value="<?= $this->Url->build(["_name" => "adminFroalaAction", "action" => "froalaManagerLoadUrl"]); ?>">
         <!--Froala Image Upload URL-->
-        <input id="froala-image-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["controller" => "Froala", "action" => "froalaImageUploadUrl"]); ?>">
+        <input id="froala-image-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["_name" => "adminFroalaAction", "action" => "froalaImageUploadUrl"]); ?>">
         <!--Froala File Upload URL-->
-        <input id="froala-file-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["controller" => "Froala", "action" => "froalaFileUploadUrl"]); ?>">
+        <input id="froala-file-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["_name" => "adminFroalaAction", "action" => "froalaFileUploadUrl"]); ?>">
         <!--Froala Video Upload URL-->
-        <input id="froala-video-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["controller" => "Froala", "action" => "froalaVideoUploadUrl"]); ?>">
+        <input id="froala-video-upload-url" type="hidden" name="froalaImageURL" value="<?= $this->Url->build(["_name" => "adminFroalaAction", "action" => "froalaVideoUploadUrl"]); ?>">
 
 	  	<div class="container-scroller">
 			<!-- Header Element -->

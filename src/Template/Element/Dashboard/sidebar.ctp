@@ -93,6 +93,14 @@
         </li>
         <?php
             if ($adminLevel == 1):
+
+                foreach ($plugins as $plugin):
+                    if ($plugin['yes'] == true) {
+                        $pluginNamespace = $plugin['namespace'];
+                        $pluginSidebar   = $plugin['dashboard_sidebar']['name'];
+                        echo $this->element($pluginNamespace . '.' . $pluginSidebar);
+                    }
+                endforeach;
         ?>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#purple-socials" aria-expanded="false" aria-controls="purple-socials">

@@ -15,6 +15,7 @@ use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
+use App\Purple\PurpleProjectPlugins;
 use \DrewM\MailChimp\MailChimp;
 use \DrewM\MailChimp\Batch;
 
@@ -65,7 +66,12 @@ class SubscribersController extends AppController
 			if ($rowCount > 0) {
 				$adminData = $queryAdmin->first();
 				
-                $dashboardSearch = new SearchForm();
+				$dashboardSearch = new SearchForm();
+				
+				// Plugins List
+				$purplePlugins 	= new PurpleProjectPlugins();
+				$plugins		= $purplePlugins->purplePlugins();
+	        	$this->set('plugins', $plugins);
                 
                 if ($adminData->level == 1) {
 					$data = [

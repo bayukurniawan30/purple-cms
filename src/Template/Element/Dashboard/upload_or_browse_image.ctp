@@ -69,7 +69,7 @@
         var browseImageBtn = browseImageButton();
 
         $('#drag-and-drop-zone').dmUploader({
-            url: '<?= $this->Url->build(["controller" => 'Medias', "action" => "ajaxUploadImages"]); ?>',
+            url: '<?= $this->Url->build(["_name" => 'adminMediasAction', "action" => "ajaxUploadImages"]); ?>',
             maxFileSize: 3000000,
             multiple: <?php if ($multiple == true): ?>true<?php else: ?>false<?php endif; ?>,
             extFilter: ['jpg', 'jpeg', 'png'],
@@ -101,7 +101,8 @@
                     var img = $('.upload-image-progress').find('.demo-image-preview').eq(0);
 
                     reader.onload = function(e) {
-                        img.attr('src', e.target.result);
+                        // img.attr('src', e.target.result);
+                        img.attr('src', '<?= $this->Url->image('/master-assets/img/icons/icon-image.png') ?>');
                     }
 
                     reader.readAsDataURL(file);

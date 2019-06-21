@@ -21,6 +21,7 @@ use App\Form\Purple\SearchForm;
 use App\Form\PageContactForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectFroalaBlocks;
+use App\Purple\PurpleProjectPlugins;
 use \Gumlet\ImageResize;
 
 class PagesController extends AppController
@@ -78,6 +79,11 @@ class PagesController extends AppController
                 $adminData = $queryAdmin->first();
 
                 $dashboardSearch = new SearchForm();
+
+                // Plugins List
+				$purplePlugins 	= new PurpleProjectPlugins();
+				$plugins		= $purplePlugins->purplePlugins();
+	        	$this->set('plugins', $plugins);
                 
                 $data = [
                     'sessionHost'        => $sessionHost,
