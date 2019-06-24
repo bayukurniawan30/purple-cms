@@ -22,6 +22,8 @@
                 })
 
                 $("#bind-fdb-blocks").find('style').removeAttr('data-tree-id');
+                $("#bind-fdb-blocks").find('svg').removeAttr('data-tree-id');
+                $("#bind-fdb-blocks").find('polyline').removeAttr('data-tree-id');
 
                 var blockHtml = $('#bind-fdb-blocks').html();
                 

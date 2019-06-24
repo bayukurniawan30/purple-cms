@@ -372,9 +372,18 @@ class PagesController extends AppController
                     // Trim empty style tag
                     $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
                     $trimContent = str_replace('<style class="" style="display: none;"></style>', '', $trimContent);
+                    $trimContent = str_replace('<style class="" style="display: none;">', '<style>', $trimContent);
+
+                    // Cut generated slider arrow by UIKit
+                    $trimContent = str_replace('<svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">', '', $trimContent);
+                    $trimContent = str_replace('<polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>', '', $trimContent);
+                    $trimContent = str_replace('<polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 "></polyline>', '', $trimContent);
+
+                    // Cut style tag and its content
+                    $trimContent = preg_replace('~<style(.*?)</style>~Usi', "", $trimContent);
 
                     $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$trimContent));
-
+                    
                     if ($settingsTable->save($setting)) {
                         /**
                          * Save user activity to histories table
@@ -419,6 +428,16 @@ class PagesController extends AppController
                             // Trim empty style tag
                             $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
                             $trimContent = str_replace('<style class="" style="display: none;"></style>', '', $trimContent);
+                            $trimContent = str_replace('<style class="" style="display: none;">', '<style>', $trimContent);
+
+                            // Cut generated slider arrow by UIKit
+                            $trimContent = str_replace('<svg width="14" height="24" viewBox="0 0 14 24" xmlns="http://www.w3.org/2000/svg">', '', $trimContent);
+                            $trimContent = str_replace('<polyline fill="none" stroke="#000" stroke-width="1.4" points="12.775,1 1.225,12 12.775,23 "></polyline>', '', $trimContent);
+                            $trimContent = str_replace('<polyline fill="none" stroke="#000" stroke-width="1.4" points="1.225,23 12.775,12 1.225,1 "></polyline>', '', $trimContent);
+
+                            // Cut style tag and its content
+                            $trimContent = preg_replace('~<style(.*?)</style>~Usi', "", $trimContent);
+                            // $trimContent = preg_replace('~<svg width="14" height="24"(.*?)</svg>~Usi', "", $trimContent);
 
                             $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$trimContent);
                             $general->meta_keywords    = $this->request->getData('meta_keywords');
