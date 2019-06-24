@@ -31,6 +31,7 @@ $(document).ready(function() {
         }
         else if (btn.data('purple-page') == 'general') {
             var html  = $(btn.data('purple-content')).html();
+            var css   = $(btn.data('purple-content')).find('style').html();
         }
 
         if (pageTitle.length == 0) {
@@ -41,6 +42,7 @@ $(document).ready(function() {
             $(modal).find('input[name=meta_keywords]').val(metaKeywords);
             $(modal).find('input[name=meta_description]').val(metaDescription);
             $(modal).find('input[name=content]').val(html);
+            $(modal).find('input[name=css-content]').val(css);
 
             UIkit.modal(modal).show();
         }

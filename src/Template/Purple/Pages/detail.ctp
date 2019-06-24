@@ -49,6 +49,7 @@
             echo $this->Form->hidden('id', ['value' => $pageId]);
             echo $this->Form->hidden('title', ['required', 'required']);
             echo $this->Form->hidden('content');
+            echo $this->Form->hidden('css-content');
             echo $this->Form->hidden('meta_keywords');
             echo $this->Form->hidden('meta_description');
         ?>
