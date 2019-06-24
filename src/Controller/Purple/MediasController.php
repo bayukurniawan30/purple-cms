@@ -75,6 +75,9 @@ class MediasController extends AppController
 				$adminData = $queryAdmin->first();
 				
 				$dashboardSearch = new SearchForm();
+
+				$purpleGlobal = new PurpleProjectGlobal();
+				$protocol     = $purpleGlobal->protocol();
 				
 				// Plugins List
 				$purplePlugins 	= new PurpleProjectPlugins();
@@ -98,7 +101,8 @@ class MediasController extends AppController
 					'pageBreadcrumb'     => 'Media',
 					'appearanceFavicon'  => $queryFavicon,
 					'settingsDateFormat' => $queryDateFormat->value,
-					'settingsTimeFormat' => $queryTimeFormat->value
+					'settingsTimeFormat' => $queryTimeFormat->value,
+					'protocol' 			 => $protocol
 		    	];
 	        	$this->set($data);
 			}

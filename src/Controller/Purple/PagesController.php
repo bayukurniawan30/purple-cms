@@ -1009,7 +1009,7 @@ class PagesController extends AppController
             $json = json_encode($content);
 
             $jsonFile   = $fileName.'_'.$random.'.json';
-            $writeJson  = new File(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved' . DS . $jsonFile);
+            $writeJson  = new File(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved' . DS . $jsonFile, true);
             
             if ($writeJson->write($json)) {
                 $json = json_encode(['status' => 'ok', 'json' => $jsonFile]);

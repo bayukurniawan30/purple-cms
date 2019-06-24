@@ -65,7 +65,7 @@
                                 <td><?= $this->Purple->readableFileSize($doc->size) ?></td>
                                 <td><?= ucwords($doc->admin->display_name) ?></td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon button-edit-media" data-purple-id="<?= $doc->id ?>" data-purple-by="<?= $doc->admin->get('display_name') ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-file="<?= $filePath ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($doc->created)) ?>" data-purple-title="<?= $doc->title ?>" data-purple-description="<?= $doc->description ?>" uk-tooltip="Edit">
+                                    <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon button-edit-media" data-purple-id="<?= $doc->id ?>" data-purple-by="<?= $doc->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-file="<?= $filePath ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($doc->created)) ?>" data-purple-title="<?= $doc->title ?>" data-purple-description="<?= $doc->description ?>" uk-tooltip="Edit">
                                         <i class="mdi mdi-pencil"></i>
                                     </button>
                                     <button type="button" class="btn btn-inverse-success btn-rounded btn-icon button-download-media" data-purple-url="<?= $this->Url->build('/uploads/documents/'.$doc->name, true) ?>" data-purple-name="<?= $doc->name ?>" uk-tooltip="Download">

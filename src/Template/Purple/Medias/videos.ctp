@@ -65,7 +65,7 @@
                                 <td><?= $this->Purple->readableFileSize($video->size) ?></td>
                                 <td><?= ucwords($video->admin->display_name) ?></td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon button-edit-media" data-purple-id="<?= $video->id ?>" data-purple-by="<?= $video->admin->get('display_name') ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-file="<?= $filePath ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($video->created)) ?>" data-purple-title="<?= $video->title ?>" data-purple-description="<?= $video->description ?>" uk-tooltip="Edit">
+                                    <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon button-edit-media" data-purple-id="<?= $video->id ?>" data-purple-by="<?= $video->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-file="<?= $filePath ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($video->created)) ?>" data-purple-title="<?= $video->title ?>" data-purple-description="<?= $video->description ?>" uk-tooltip="Edit">
                                         <i class="mdi mdi-pencil"></i>
                                     </button>
                                     <button type="button" class="btn btn-inverse-success btn-rounded btn-icon button-download-media" data-purple-url="<?= $this->Url->build('/uploads/videos/'.$video->name, true) ?>" data-purple-name="<?= $video->name ?>" uk-tooltip="Download">
