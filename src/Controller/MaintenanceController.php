@@ -88,7 +88,7 @@ class MaintenanceController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
         
         $maintenance  = new MaintenanceForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($maintenance->execute($this->request->getData())) {
                 $purpleApi = new PurpleProjectApi();
                 $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));

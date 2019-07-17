@@ -57,6 +57,11 @@ class BlogsController extends AppController
         $this->loadModel('Menus');
         $this->loadModel('Visitors');
         $this->loadModel('Socials');
+        $this->loadModel('Pages');
+        $this->loadModel('BlogCategories');
+        $this->loadModel('BlogVisitors');
+        $this->loadModel('Comments');
+        $this->loadModel('Tags');
 
         $purpleSettings = new PurpleProjectSettings();
         $timezone       = $purpleSettings->timezone();
@@ -186,13 +191,6 @@ class BlogsController extends AppController
     }
     public function detail($post)
     {
-        $this->loadModel('Pages');
-        $this->loadModel('BlogCategories');
-        $this->loadModel('BlogVisitors');
-        $this->loadModel('Comments');
-        $this->loadModel('Tags');
-        $this->loadModel('Settings');
-
         $postComment = new PostCommentForm();
 
         $blogs = $this->Blogs->find('all', [
@@ -339,10 +337,6 @@ class BlogsController extends AppController
     public function postsInCategory($category, $paging = 1)
     {
         $this->loadComponent('Paginator');
-    	$this->loadModel('Pages');
-        $this->loadModel('BlogCategories');
-        $this->loadModel('Tags');
-        $this->loadModel('Settings');
 
         $categories = $this->BlogCategories->find()->where(['slug' => $category]);
         if ($categories->count() > 0) {
@@ -438,8 +432,6 @@ class BlogsController extends AppController
     public function tag($tag, $paging = 1)
     {
         $this->loadComponent('Paginator');
-        $this->loadModel('Tags');
-        $this->loadModel('Settings');
 
         $tag = $this->Tags->find()->where(['slug' => $tag]);
 
@@ -501,9 +493,6 @@ class BlogsController extends AppController
     public function archives($year, $month, $paging = 1)
     {
     	$this->loadComponent('Paginator');
-    	$this->loadModel('Pages');
-        $this->loadModel('Tags');
-        $this->loadModel('Settings');
 
         $monthFormat = date('F', strtotime($year.'-'.$month.'-14'));
 
@@ -574,11 +563,6 @@ class BlogsController extends AppController
                 if ($verifyEmail == true) {
                     $purpleGlobal = new PurpleProjectGlobal();
                     if ($purpleGlobal->isRecaptchaPass($this->request->getData('status'), $this->request->getData('score')) == true) {
-                        $this->loadModel('Blogs');
-                        $this->loadModel('Admins');
-        		    	$this->loadModel('Comments');
-                        $this->loadModel('Settings');
-
                         $comment = $this->Comments->newEntity();
                         $comment = $this->Comments->patchEntity($comment, $this->request->getData());
                         $comment->status = '0';

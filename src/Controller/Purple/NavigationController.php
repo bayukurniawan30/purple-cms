@@ -45,7 +45,11 @@ class NavigationController extends AppController
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
-            $this->loadModel('Settings');
+			$this->loadModel('Menus');
+			$this->loadModel('Submenus');
+			$this->loadModel('Pages');
+			$this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -115,11 +119,9 @@ class NavigationController extends AppController
             'menuDelete'          => $menuDelete
 		];
 
-        $this->loadModel('Menus');
         $menus = $this->Menus->find('all', ['contain' => ['Admins', 'Pages']])->order(['Menus.ordering' => 'ASC']);
     	$this->set(compact('menus'));
 
-		$this->loadModel('Submenus');
         $submenus = $this->Submenus->find('all', ['contain' => ['Admins', 'Pages']])->where(['Submenus.menu_id' => $parent])->order(['Submenus.ordering' => 'ASC']);
     	$this->set(compact('submenus'));
 
@@ -128,7 +130,6 @@ class NavigationController extends AppController
 			$this->set('activeParent', $activeParent);
 		}
 
-        $this->loadModel('Pages');
         $pages = $this->Pages->find('all', ['contain' => ['PageTemplates']])->order(['Pages.id' => 'DESC']);
     	$this->set(compact('pages'));
 
@@ -139,13 +140,12 @@ class NavigationController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		$menuAdd = new MenuAddForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
 			if ($menuAdd->execute($this->request->getData())) {
 				$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
 
 				if (empty($this->request->getData('parent'))) {
-					$this->loadModel('Menus');
 					$menu = $this->Menus->newEntity();
 	                $menu = $this->Menus->patchEntity($menu, $this->request->getData());
 	                $menu->admin_id = $sessionID;
@@ -176,7 +176,6 @@ class NavigationController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 						if ($saveActivity == true) {
@@ -191,7 +190,6 @@ class NavigationController extends AppController
 	                }
 				}
 				else {
-					$this->loadModel('Submenus');
 					$submenu = $this->Submenus->newEntity();
 	                $submenu = $this->Submenus->patchEntity($submenu, $this->request->getData());
 					$submenu->menu_id  = $this->request->getData('parent');
@@ -209,12 +207,11 @@ class NavigationController extends AppController
 
 						$submenu = $this->Submenus->get($record_id);
 		                $submenu->ordering = $record_id;
-						$result = $this->Submenus->save($submenu);
+						$result  = $this->Submenus->save($submenu);
 
-						$this->loadModel('Menus');
 						$menu = $this->Menus->get($this->request->getData('parent'));
 		                $menu->has_sub = '1';
-						$result = $this->Menus->save($menu);
+						$result  = $this->Menus->save($menu);
 						$submenu = $this->Submenus->get($record_id);
 
 						/**
@@ -229,7 +226,6 @@ class NavigationController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 	                    if ($saveActivity == true) {
@@ -260,7 +256,7 @@ class NavigationController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		$menuEdit = new MenuEditForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
         	if ($menuEdit->execute($this->request->getData())) {
 				$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -327,7 +323,7 @@ class NavigationController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $menuDelete = new MenuDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($menuDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -416,7 +412,6 @@ class NavigationController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 	                    if ($saveActivity == true) {
@@ -447,7 +442,6 @@ class NavigationController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
-			$this->loadModel('Menus');
 			$order = $this->request->getData('order');
 			$explodeOrder = explode(',', $order);
 
@@ -471,7 +465,6 @@ class NavigationController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
-			$this->loadModel('Submenus');
 			$order = $this->request->getData('order');
 			$explodeOrder = explode(',', $order);
 

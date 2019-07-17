@@ -227,8 +227,6 @@ class PagesController extends AppController
         $detail       = $themeFolder->read();
         $decodeDetail = json_decode($detail, true);
 
-        $this->loadModel('Settings');
-
         if ($decodeDetail['homepage']['use'] == 'default') {
             $homepage = html_entity_decode($this->Settings->settingsHomepage());
 
@@ -549,7 +547,6 @@ class PagesController extends AppController
 
         $this->loadModel('Blogs');
         $this->loadModel('BlogCategories');
-        $this->loadModel('Settings');
 
         $blogs = $this->Blogs->find('all', [
                 'order' => ['Blogs.created' => 'DESC']])->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id' => $page->first()->id, 'Blogs.status' => '1']);
@@ -648,9 +645,7 @@ class PagesController extends AppController
                 $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
                 
                 if ($verifyEmail == true) {
-                    $this->loadModel('Admins');
                     $this->loadModel('Messages');
-                    $this->loadModel('Settings');
 
                     $message = $this->Messages->newEntity();
                     $message = $this->Messages->patchEntity($message, $this->request->getData());
@@ -752,7 +747,6 @@ class PagesController extends AppController
                 $newAction .= ucwords($act);
             }
 
-            $this->loadModel('Settings');
             $sitekey = $this->Settings->settingsRecaptchaSitekey();
             $secret  = $this->Settings->settingsRecaptchaSecret();
 

@@ -46,8 +46,10 @@ class AppearanceController extends AppController
 		}
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
+			$this->loadModel('Admins');
+			$this->loadModel('Medias');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -106,7 +108,6 @@ class AppearanceController extends AppController
     public function favicon() {
         $appearanceDelete  = new AppearanceDeleteForm();
         
-        $this->loadModel('Settings');
 		$favicon       = $this->Settings->find()->where(['name' => 'favicon'])->first();
         
         $data = [
@@ -121,7 +122,6 @@ class AppearanceController extends AppController
     public function logo() {
         $appearanceDelete  = new AppearanceDeleteForm();
         
-        $this->loadModel('Settings');
 		$logo          = $this->Settings->find()->where(['name' => 'websitelogo'])->first();
         
         $data = [
@@ -136,7 +136,6 @@ class AppearanceController extends AppController
     public function footer() {
         $sfooterEdit    = new FooterEditForm();
 
-        $this->loadModel('Settings');
 		$sfooter        = $this->Settings->find()->where(['name' => 'secondaryfooter'])->first();
 		$explodeSfooter = explode('::', $sfooter->value);
         
@@ -215,7 +214,6 @@ class AppearanceController extends AppController
 											    ->zoomCrop(480, 270)
 											    ->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);
                            
-					        $this->loadModel('Medias');
 							$media           = $this->Medias->newEntity();
 
 							$media->name     = $generatedName;
@@ -264,7 +262,6 @@ class AppearanceController extends AppController
 			$fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
 			$fullSize 	   = Image::open($fullSizeImage . $fileImage)->save($fullSizeImage . $type . '.png', 'png');
 			
-			$this->loadModel('Settings');
 			$data = $this->Settings->get($this->request->getData('id'));
 			
 			$data->value = $type.'.png';
@@ -280,7 +277,6 @@ class AppearanceController extends AppController
                     'admin_id' => $sessionID
                 ];
 
-                $this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 
                 if ($saveActivity == true) {
@@ -303,7 +299,7 @@ class AppearanceController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
         
-        if ($this->request->is('post') || $this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
         	$session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
 
@@ -317,12 +313,21 @@ class AppearanceController extends AppController
                 $sanitizeString = str_replace('data:image/jpeg;base64,', '', $base64);
             }
             
-	        $this->loadModel('Settings');
             $data = $this->Settings->get($this->request->getData('id'));
             
-            $fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
-            $image = ImageResize::createFromString(base64_decode($sanitizeString));
-            $image->save($fullSizeImage . $type.'.png', IMAGETYPE_PNG);
+			$fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
+			
+            list($type, $base64) = explode(';', $base64);
+            list(, $base64)      = explode(',', $base64);
+			$base64 = base64_decode($base64);
+			file_put_contents($fullSizeImage . $type.'.png', $base64);
+			
+			 /**
+             * Old style, cropping with ImageResize, but quality is bad
+             * 
+            	$image = ImageResize::createFromString(base64_decode($sanitizeString));
+				$image->save($fullSizeImage . $type.'.png', IMAGETYPE_PNG);
+			 */
 
             $data->value = $type.'.png';
             if ($this->Settings->save($data)) {
@@ -337,7 +342,6 @@ class AppearanceController extends AppController
                     'admin_id' => $sessionID
                 ];
 
-                $this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 
                 if ($saveActivity == true) {
@@ -361,13 +365,12 @@ class AppearanceController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
         
         $appearanceDelete  = new AppearanceDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($appearanceDelete->execute($this->request->getData())) {
 				$session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
 	            $type      = $this->request->getData('type');
 
-		        $this->loadModel('Settings');
 	            $data          = $this->Settings->get($this->request->getData('id'));
 	            $filePath      = $data->value;
 	            
@@ -391,7 +394,6 @@ class AppearanceController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
 	                $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -421,13 +423,12 @@ class AppearanceController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $sfooterEdit    = new FooterEditForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($sfooterEdit->execute($this->request->getData())) {
 	            $session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
 	            
-		        $this->loadModel('Settings');
-	            $setting       = $this->Settings->get($this->request->getData('id'));
+	            $setting        = $this->Settings->get($this->request->getData('id'));
 
 	            $leftFooter     = htmlentities(strip_tags($this->request->getData('left'), '<span><a><strong><em>'));
 	            $rightFooter    = htmlentities(strip_tags($this->request->getData('right'), '<span><a><strong><em>'));
@@ -447,7 +448,6 @@ class AppearanceController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
 	                $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {

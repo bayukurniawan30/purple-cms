@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Http\ServerRequest;
 use Cake\Log\Log;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
@@ -30,6 +31,17 @@ class HistoriesTable extends Table
 			$entity->modified = $date;
 		}
 	}
+	protected function _getCreated($created)
+    {
+        $serverRequest   = new ServerRequest();
+        $session         = $serverRequest->getSession();
+        $timezone        = $session->read('Purple.timezone');
+        $settingTimezone = $session->read('Purple.settingTimezone');
+
+        $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
+        $date->setTimezone(new \DateTimeZone($timezone));
+        return $date->format('Y-m-d H:i:s');
+    }
 	public function saveActivity($options) 
 	{
 		$purpleSettings = new PurpleProjectSettings();

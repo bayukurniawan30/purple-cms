@@ -32,6 +32,10 @@ class AuthenticateController extends AppController
 	{
 		parent::initialize();
 
+		$this->loadModel('Admins');
+		$this->loadModel('Settings');
+		$this->loadModel('Histories');
+
 		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
 		  	$cakeDebug = 'on';
 		} 
@@ -49,8 +53,6 @@ class AuthenticateController extends AppController
 	public function login() 
 	{
         if ($this->request->is('get')) {
-            $this->loadModel('Settings');
-
 			$adminLogin     = new AdminLoginForm();
 			$forgotPassword = new ForgotPasswordForm();
 
@@ -88,7 +90,6 @@ class AuthenticateController extends AppController
                 'admin_id' => $sessionID
             ];
 
-            $this->loadModel('Histories');
             $saveActivity   = $this->Histories->saveActivity($options);
         }
         return $this->setAction('login');
@@ -98,7 +99,7 @@ class AuthenticateController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		$adminLogin   = new AdminLoginForm();
-        if ($this->request->is('ajax')) { 
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminLogin->execute($this->request->getData())) {
 				$purpleGlobal    = new PurpleProjectGlobal();
 				$operatingSystem = $purpleGlobal->detectOS();
@@ -116,7 +117,6 @@ class AuthenticateController extends AppController
 				$detectBrowser = $purpleGlobal->detectBrowser();
 				$detectDevice  = $purpleGlobal->detectDevice();
 
-	            $this->loadModel('Admins');
 				$admin       = $this->Admins->find()->where(['username' => $username])->first();
 				
 				$getPassword   = $admin->password;
@@ -148,7 +148,6 @@ class AuthenticateController extends AppController
 		                    'admin_id' => $sessionID
 		                ];
 
-		                $this->loadModel('Histories');
 			            $saveActivity   = $this->Histories->saveActivity($options);
 
 		                if ($saveActivity == true) {
@@ -182,10 +181,8 @@ class AuthenticateController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		$forgotPassword = new ForgotPasswordForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($forgotPassword->execute($this->request->getData())) {
-	            $this->loadModel('Admins');
-	            $this->loadModel('Settings');
 	            $checkEmail = $this->Admins->find()->where(['email' => $this->request->getData('email')])->limit(1);
 	            if ($checkEmail->count() > 0) {
 					$id    = $checkEmail->first()->id;
@@ -243,7 +240,6 @@ class AuthenticateController extends AppController
     	$this->viewBuilder()->setLayout('password');
     	$token = $this->request->getParam('token');
     	if (!empty($token)) {
-            $this->loadModel('Admins');
             $checkUserl = $this->Admins->find()->where(['token' => $token])->limit(1);
             if ($checkUserl->count() > 0) {
 				$user  = $checkUserl->first();
@@ -275,10 +271,8 @@ class AuthenticateController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		$newPassword = new NewPasswordForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($newPassword->execute($this->request->getData())) {
-            	$this->loadModel('Admins');
-	            $this->loadModel('Settings');
 
 	            $checkUser = $this->Admins->find()->where(['id' => $this->request->getData('id'), 'token' => $this->request->getData('token')])->limit(1);
 	            if ($checkUser->count() > 0) {
@@ -332,7 +326,7 @@ class AuthenticateController extends AppController
             }
             else {
 	        	$errors = $newPassword->errors();
-                $json = json_encode(['status' => 'error', 'error' => $errors]);
+                $json  = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
 
             $this->set(['json' => $json]);

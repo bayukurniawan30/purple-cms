@@ -49,6 +49,7 @@ class AdminsController extends AppController
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Settings');
+            $this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -71,7 +72,7 @@ class AdminsController extends AppController
                 // Plugins List
 				$purplePlugins 	= new PurpleProjectPlugins();
 				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
+                $this->set('plugins', $plugins);
 
 				$data = [
 					'sessionHost'        => $sessionHost,
@@ -175,7 +176,7 @@ class AdminsController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
         
-        if ($this->request->is('post') || $this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $base64 = $this->request->getData('base64');
 
             if (strpos($base64, 'png') !== false) {
@@ -206,7 +207,7 @@ class AdminsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $adminAdd = new AdminAddForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminAdd->execute($this->request->getData())) {
                 $purpleApi = new PurpleProjectApi();
                 $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
@@ -246,7 +247,6 @@ class AdminsController extends AppController
                                     'admin_id' => $sessionID
                                 ];
 
-                                $this->loadModel('Histories');
                                 $saveActivity   = $this->Histories->saveActivity($options);
 
                                 // Send Email to User to Notify author
@@ -306,7 +306,7 @@ class AdminsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $adminEdit = new AdminEditForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminEdit->execute($this->request->getData())) {
                 $admin = $this->Admins->get($this->request->getData('id'));
                 if ($this->request->getData('email') == $admin->email) {
@@ -348,7 +348,6 @@ class AdminsController extends AppController
                                     'admin_id' => $sessionID
                                 ];
 
-                                $this->loadModel('Histories');
                                 $saveActivity   = $this->Histories->saveActivity($options);
 
                                 if ($saveActivity == true) {
@@ -384,7 +383,7 @@ class AdminsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $adminEditPassword = new AdminEditPasswordForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminEditPassword->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -404,7 +403,6 @@ class AdminsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -435,7 +433,7 @@ class AdminsController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $adminDelete = new AdminDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminDelete->execute($this->request->getData())) {
                 $session    = $this->getRequest()->getSession();
                 $sessionID  = $session->read('Admin.id');
@@ -458,7 +456,6 @@ class AdminsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     // Send Email to User to Notify user

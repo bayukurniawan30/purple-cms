@@ -45,6 +45,7 @@ class MessagesController extends AppController
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -192,7 +193,6 @@ class MessagesController extends AppController
 					'admin_id' => $sessionID
 				];
 
-				$this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 
 				if ($saveActivity == true) {
@@ -244,7 +244,6 @@ class MessagesController extends AppController
 						'admin_id' => $sessionID
 					];
 
-					$this->loadModel('Histories');
 	                $saveActivity   = $this->Histories->saveActivity($options);
 
 					if ($saveActivity == true) {

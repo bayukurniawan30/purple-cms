@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
@@ -29,4 +30,15 @@ class MessagesTable extends Table
 
 		$entity->type = 'contact';	
 	}
+	protected function _getCreated($created)
+    {
+        $serverRequest   = new ServerRequest();
+        $session         = $serverRequest->getSession();
+        $timezone        = $session->read('Purple.timezone');
+        $settingTimezone = $session->read('Purple.settingTimezone');
+
+        $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
+        $date->setTimezone(new \DateTimeZone($timezone));
+        return $date->format('Y-m-d H:i:s');
+    }
 }

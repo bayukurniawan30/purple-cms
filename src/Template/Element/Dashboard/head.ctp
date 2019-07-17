@@ -53,6 +53,27 @@
         <?= $this->Html->css('/master-assets/plugins/prism/prism.css') ?>
     <?php endif; ?>
     <!-- endinject -->
+
+    <!-- Purple CMS Plugins Script -->
+    <?php
+        foreach ($plugins as $plugin):
+            if ($plugin['yes'] == true) {
+                $pluginNamespace = $plugin['namespace'];
+                $pluginAssets    = $plugin['dashboard_assets'];
+                
+                foreach ($pluginAssets as $asset):
+                    $assetType  = $asset['type'];
+                    $assetValue = $asset['value'];
+
+                    if ($assetType == 'head' && $assetValue == 'yes') {
+                        $assetElement = $asset['name'];
+                        echo $this->element($pluginNamespace . '.' . $assetElement);
+                    }
+                endforeach;
+            }
+        endforeach;
+    ?>
+
     <!-- inject:css -->
     <?= $this->Html->css('/master-assets/css/style.css') ?>
     <?= $this->Html->css('/master-assets/plugins/uikit/css/uikit.css') ?>
@@ -73,6 +94,16 @@
     <?= $this->Html->script('/master-assets/plugins/html2json/html2json.js'); ?>
     <?php endif; ?>
 
+    <!-- Purple Timezone Check -->
+    <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
+    <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone.js'); ?>
+    <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone-with-data.js'); ?>
+    <?= $this->Html->script('/master-assets/js/purple-timezone.js'); ?>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            clientTimezone('<?= $timeZone ?>');
+        })
+    </script>
 
     <script type="text/javascript">
         var cakeDebug = "<?= $cakeDebug ?>";

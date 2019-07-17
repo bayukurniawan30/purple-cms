@@ -47,7 +47,9 @@ class CommentsController extends AppController
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
-            $this->loadModel('Settings');
+			$this->loadModel('Blogs');
+			$this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -151,7 +153,6 @@ class CommentsController extends AppController
 					'admin_id' => $sessionID
 				];
 
-				$this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 			}
         }
@@ -210,7 +211,6 @@ class CommentsController extends AppController
 						'admin_id' => $sessionID
 					];
 
-					$this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 					if ($saveActivity == true) {
@@ -242,7 +242,6 @@ class CommentsController extends AppController
 		$commentReply = new CommentReplyForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			if ($commentReply->execute($this->request->getData())) {
-		    	$this->loadModel('Blogs');
 
 				$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -271,7 +270,6 @@ class CommentsController extends AppController
 						'admin_id' => $sessionID
 					];
 
-					$this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 					if ($saveActivity == true) {
@@ -301,7 +299,7 @@ class CommentsController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
 		$commentDelete = new CommentDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($commentDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -339,7 +337,6 @@ class CommentsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {

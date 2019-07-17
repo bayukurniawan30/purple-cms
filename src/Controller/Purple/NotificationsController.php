@@ -44,6 +44,7 @@ class NotificationsController extends AppController
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -138,7 +139,7 @@ class NotificationsController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
         	$unreadNotifications = $this->Notifications->find()->where(['is_read' => '0'])->order(['id' => 'DESC']);
 
 	        $data = [
@@ -181,7 +182,6 @@ class NotificationsController extends AppController
 					'admin_id' => $sessionID
 				];
 
-				$this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 
 				if ($saveActivity == true) {

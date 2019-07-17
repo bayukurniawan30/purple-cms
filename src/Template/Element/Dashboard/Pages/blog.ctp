@@ -222,7 +222,7 @@
                     '<i class="mdi mdi-filter btn-icon-prepend"></i>' +
                     'All Categories' +
                 '</button>' +
-                '<div uk-dropdown="pos: bottom-right">' +
+                '<div uk-dropdown="pos: bottom-right; mode: click">' +
                     '<ul class="uk-nav uk-dropdown-nav text-right">' +
                         '<li class="uk-active"><a href="<?= $this->Url->build(['_name' => 'adminBlogs']) ?>">All Categories</a></li>' +
                         <?php

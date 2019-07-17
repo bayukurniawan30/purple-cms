@@ -5,7 +5,6 @@
 <?= $this->Html->script('/master-assets/plugins/initial/initial.min.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/clipboardjs/clipboard.min.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/js-cookie/js.cookie.js'); ?>
-<?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/livestamp/livestamp.min.js'); ?>
 
 <?php if ($this->request->getParam('controller') == 'Medias' || $this->request->getParam('controller') == 'Appearance'): ?>
@@ -68,8 +67,28 @@
 <?php if ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo'): ?>
 	<?= $this->Html->script('/master-assets/plugins/prism/prism.js'); ?>
 <?php endif; ?>
-
 <!-- endinject -->
+
+<!-- Purple CMS Plugins Script -->
+<?php
+	foreach ($plugins as $plugin):
+		if ($plugin['yes'] == true) {
+			$pluginNamespace = $plugin['namespace'];
+			$pluginAssets    = $plugin['dashboard_assets'];
+			
+			foreach ($pluginAssets as $asset):
+				$assetType  = $asset['type'];
+				$assetValue = $asset['value'];
+
+				if ($assetType == 'script' && $assetValue == 'yes') {
+					$assetElement = $asset['name'];
+					echo $this->element($pluginNamespace . '.' . $assetElement);
+				}
+			endforeach;
+		}
+	endforeach;
+?>
+
 <!-- Plugin js for this page-->
 <!-- End plugin js for this page-->
 <!-- inject:js -->

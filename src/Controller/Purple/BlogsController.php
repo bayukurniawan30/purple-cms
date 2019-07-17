@@ -12,7 +12,6 @@ use App\Form\Purple\BlogCategoryAddForm;
 use App\Form\Purple\SearchForm;
 use Cake\Utility\Text;
 use Cake\I18n\Time;
-use Cake\Log\Log;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
@@ -49,8 +48,13 @@ class BlogsController extends AppController
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
-            $this->loadModel('Settings');
-            $this->loadModel('Medias');
+			$this->loadModel('BlogCategories');
+			$this->loadModel('Tags');
+			$this->loadModel('BlogsTags');
+			$this->loadModel('BlogVisitors');
+			$this->loadModel('Medias');
+			$this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -118,7 +122,6 @@ class BlogsController extends AppController
 	{
 		$blogDelete = new BlogDeleteForm();
 
-		$this->loadModel('BlogCategories');
 		if ($this->request->getParam('id') == NULL) {
             $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL])->order(['BlogCategories.ordering' => 'ASC']);
 	        $blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL]);
@@ -140,8 +143,6 @@ class BlogsController extends AppController
 		$blogAdd         = new BlogAddForm();
 		$blogCategoryAdd = new BlogCategoryAddForm();
 			
-		$this->loadModel('BlogCategories');
-		$this->loadModel('Tags');
 
 		$blogCategoriesArray = $this->BlogCategories->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
     	$this->set(compact('blogCategoriesArray'));
@@ -162,10 +163,6 @@ class BlogsController extends AppController
 		$blogEdit        = new BlogEditForm();
 		$blogCategoryAdd = new BlogCategoryAddForm();
 			
-		$this->loadModel('BlogCategories');
-		$this->loadModel('BlogVisitors');
-		$this->loadModel('Tags');
-
 		$blogCategoriesArray = $this->BlogCategories->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
     	$this->set(compact('blogCategoriesArray'));
 
@@ -200,7 +197,6 @@ class BlogsController extends AppController
 
 		$blogDelete = new BlogDeleteForm();
 
-		$this->loadModel('BlogCategories');
 		if ($this->request->getParam('id') == NULL) {
             $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL])->order(['BlogCategories.ordering' => 'ASC']);
 	        $blogs 			= $this->Blogs->find('all')->contain('BlogCategories')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL, 'BlogCategories.slug' => $category]);
@@ -251,8 +247,6 @@ class BlogsController extends AppController
 
 						// Save Tags
 		                if(!empty($this->request->getData('tags'))) {
-							$this->loadModel('Tags');
-							$this->loadModel('BlogsTags');
 		                	$explodeTags = explode(',', $this->request->getData('tags'));
 		                	foreach ($explodeTags as $addedTag) {
 								$checkTag       = $this->Tags->checkExists($addedTag);
@@ -288,7 +282,6 @@ class BlogsController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 						if ($saveActivity == true) {
@@ -346,8 +339,6 @@ class BlogsController extends AppController
 
 						// Save Tags
 		                if(!empty($this->request->getData('tags'))) {
-							$this->loadModel('Tags');
-							$this->loadModel('BlogsTags');
 		                	$explodeTags = explode(',', $this->request->getData('tags'));
 		                	$tagsSlug = [];
 		                	foreach ($explodeTags as $addedTag) {
@@ -383,7 +374,6 @@ class BlogsController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 						if ($saveActivity == true) {
@@ -414,7 +404,7 @@ class BlogsController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $blogDelete = new BlogDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($blogDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -436,7 +426,6 @@ class BlogsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -465,12 +454,10 @@ class BlogsController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
 			$blogId  = $this->request->getData('id');
 			$tagSlug = Text::slug(strtolower($this->request->getData('slug')));
 
-			$this->loadModel('Tags');
-			$this->loadModel('BlogsTags');
 			$findTag = $this->Tags->find()->where(['slug' => $tagSlug])->limit(1);
 
 			if ($findTag->count() > 0) {

@@ -54,6 +54,7 @@ class SettingsController extends AppController
             $this->loadModel('Admins');
             $this->loadModel('Settings');
             $this->loadModel('Medias');
+            $this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -291,7 +292,7 @@ class SettingsController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('post') || $this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $settingsStandardModal  = new SettingsStandardModalForm();
 
             $purpleSettings = new PurpleProjectSettings();
@@ -329,7 +330,7 @@ class SettingsController extends AppController
 	{
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
             
@@ -396,7 +397,6 @@ class SettingsController extends AppController
                     'admin_id' => $sessionID
                 ];
 
-                $this->loadModel('Histories');
                 $saveActivity   = $this->Histories->saveActivity($options);
 
                 if ($saveActivity == true) {
@@ -420,7 +420,7 @@ class SettingsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $settingsTestEmail = new SettingsTestEmailForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($settingsTestEmail->execute($this->request->getData())) {
                 $querySmtpHost     = $this->Settings->find()->where(['name' => 'smtphost'])->first();
                 $querySmtpAuth     = $this->Settings->find()->where(['name' => 'smtpauth'])->first();

@@ -46,6 +46,7 @@ class ThemesController extends AppController
 	    	$this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Admins');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -195,7 +196,7 @@ class ThemesController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 		
         $themeApply = new ThemeApplyForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($themeApply->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
@@ -263,7 +264,6 @@ class ThemesController extends AppController
 						'admin_id' => $sessionID
 					];
 
-					$this->loadModel('Histories');
 	                $saveActivity   = $this->Histories->saveActivity($options);
 
 					if ($saveActivity == true) {
@@ -332,7 +332,6 @@ class ThemesController extends AppController
 		                        'admin_id' => $sessionID
 		                    ];
 
-		                    $this->loadModel('Histories');
 		                    $saveActivity   = $this->Histories->saveActivity($options);
 
 		                    if ($saveActivity == true) {
@@ -369,7 +368,7 @@ class ThemesController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
 		$themeDelete = new ThemeDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($themeDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -388,7 +387,6 @@ class ThemesController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {

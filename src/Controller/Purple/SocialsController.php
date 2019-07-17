@@ -47,6 +47,7 @@ class SocialsController extends AppController
 	    	$this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Admins');
             $this->loadModel('Settings');
+            $this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -109,7 +110,6 @@ class SocialsController extends AppController
         $socialDelete  = new SocialDeleteForm();
         $socialButtons = new SocialSharingButtonsForm();
 
-        $this->loadModel('Settings');
         $querySocialButtonsShare    = $this->Settings->find()->where(['name' => 'socialshare'])->first();
         $querySocialButtonsTheme    = $this->Settings->find()->where(['name' => 'socialtheme'])->first();
         $querySocialButtonsFontSize = $this->Settings->find()->where(['name' => 'socialfontsize'])->first();
@@ -138,7 +138,7 @@ class SocialsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $socialAdd = new SocialAddForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialAdd->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -164,7 +164,6 @@ class SocialsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -194,7 +193,7 @@ class SocialsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $socialEdit = new SocialEditForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialEdit->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -214,7 +213,6 @@ class SocialsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -244,7 +242,7 @@ class SocialsController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $socialDelete = new SocialDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -266,7 +264,6 @@ class SocialsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -329,7 +326,6 @@ class SocialsController extends AppController
                 $label    = $this->request->getData('label');
                 $count    = $this->request->getData('count');
 
-                $this->loadModel('Settings');
                 $querySocialButtonsTheme    = $this->Settings->find()->where(['name' => 'socialtheme'])->first();
                 $querySocialButtonsFontSize = $this->Settings->find()->where(['name' => 'socialfontsize'])->first();
                 $querySocialButtonsLabel    = $this->Settings->find()->where(['name' => 'sociallabel'])->first();
@@ -359,7 +355,6 @@ class SocialsController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {

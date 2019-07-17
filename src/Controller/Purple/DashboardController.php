@@ -39,8 +39,12 @@ class DashboardController extends AppController
 		}
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
-	    	$this->loadModel('Admins');
+			$this->loadModel('Admins');
+			$this->loadModel('Comments');
+    		$this->loadModel('Blogs');
+	        $this->loadModel('Visitors');
             $this->loadModel('Settings');
+	        $this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -105,9 +109,7 @@ class DashboardController extends AppController
 	        );
 		}
 		else {
-    		$this->loadModel('Admins');
-    		$this->loadModel('Comments');
-    		$this->loadModel('Blogs');
+    		
 
 			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->first();
 			$loggedInAdmin = [
@@ -125,7 +127,6 @@ class DashboardController extends AppController
 
 			$purpleGlobal  = new PurpleProjectGlobal();
 
-	        $this->loadModel('Visitors');
 
 			$currentMonthVisitor    = $this->Visitors->countVisitorsInMonth();
 			$lastMonthVisitor       = $this->Visitors->countVisitorsInMonth($lastMonthYear, $lastMonthName);
@@ -209,7 +210,6 @@ class DashboardController extends AppController
 			];
 	    	$this->set($data);
 
-	        $this->loadModel('Histories');
 	        if ($loggedInAdmin['level'] == 1) {
 		    	$histories = $this->Histories->find('all', ['contain' => ['Admins']])->order(['Histories.id' => 'DESC'])->limit(6);
 	    	}
@@ -224,9 +224,8 @@ class DashboardController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $dashboardMonthOfVisit  = new DashboardMonthOfVisitForm();
-		if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($dashboardMonthOfVisit->execute($this->request->getData())) {
-		        $this->loadModel('Visitors');
 
             	$totalDays = cal_days_in_month(CAL_GREGORIAN, $this->request->getData('month'), $this->request->getData('year'));
 	            $nvArray  = '';

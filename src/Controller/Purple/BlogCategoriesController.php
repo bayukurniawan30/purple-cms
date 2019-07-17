@@ -45,7 +45,9 @@ class BlogCategoriesController extends AppController
 		else {
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
-            $this->loadModel('Settings');
+			$this->loadModel('Blogs');
+			$this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -99,7 +101,6 @@ class BlogCategoriesController extends AppController
 		$blogCategoryAdd     = new BlogCategoryAddForm();
         $blogCategoryEdit    = new BlogCategoryEditForm();
         $blogCategoryDelete  = new BlogCategoryDeleteForm();
-        $this->loadModel('Blogs');
 
 		if ($this->request->getParam('id') == NULL) {
             $blogCategories = $this->BlogCategories->find('all')->contain('Admins')->where(['BlogCategories.page_id IS' => NULL])->order(['BlogCategories.ordering' => 'ASC']);
@@ -179,7 +180,6 @@ class BlogCategoriesController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 						if ($saveActivity == true) {
@@ -242,7 +242,6 @@ class BlogCategoriesController extends AppController
 							'admin_id' => $sessionID
 						];
 
-						$this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 						if ($saveActivity == true) {
@@ -273,7 +272,7 @@ class BlogCategoriesController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $blogCategoryDelete  = new BlogCategoryDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($blogCategoryDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -295,7 +294,6 @@ class BlogCategoriesController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {

@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Http\ServerRequest;
 use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
@@ -40,7 +41,18 @@ class CommentsTable extends Table
 			$entity->created  = $date;
 			$entity->content = trim(htmlentities(nl2br($entity->content)));
 		}
-	}
+    }
+    protected function _getCreated($created)
+    {
+        $serverRequest   = new ServerRequest();
+        $session         = $serverRequest->getSession();
+        $timezone        = $session->read('Purple.timezone');
+        $settingTimezone = $session->read('Purple.settingTimezone');
+
+        $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
+        $date->setTimezone(new \DateTimeZone($timezone));
+        return $date->format('Y-m-d H:i:s');
+    }
     public function dashboardStatistic($read = 'all')
     {
         $query = $this->find('all')->contain(['Admins']);

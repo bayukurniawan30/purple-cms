@@ -46,6 +46,13 @@ use Cake\Routing\Route\DashedRoute;
  */
 Router::defaultRouteClass(DashedRoute::class);
 
+Router::scope('/set-client-timezone', function ($routes) {
+	$routes->connect('/',
+			['controller' => 'App', 'action' => 'setClientTimezone'],
+			['_name' => 'setClientTimezone']
+	);
+});
+
 Router::scope('/sitemap', function ($routes) {
 	$routes->setExtensions(['xml']);
 	$routes->connect('/',

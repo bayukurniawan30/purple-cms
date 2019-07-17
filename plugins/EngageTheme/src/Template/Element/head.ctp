@@ -93,6 +93,17 @@
         }
     ?>
 
+    <!-- Purple Timezone -->
+    <?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
+    <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone.js'); ?>
+    <?= $this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone-with-data.js'); ?>
+    <?= $this->Html->script('/master-assets/js/purple-timezone.js'); ?>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            clientTimezone('<?= $timeZone ?>');
+        })
+    </script>
+
     <script type="text/javascript">
         var cakeDebug    = "<?= $cakeDebug ?>",
             formSecurity = "<?= $formSecurity ?>";

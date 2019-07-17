@@ -4,7 +4,6 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\ORM\TableRegistry;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
@@ -57,7 +56,12 @@ class PagesController extends AppController
         else {
             $this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Admins');
+            $this->loadModel('PageTemplates');
+            $this->loadModel('Generals');
+            $this->loadModel('CustomPages');
+            $this->loadModel('Medias');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -71,7 +75,7 @@ class PagesController extends AppController
             $queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
             $queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
 
-            $browseMedias  = TableRegistry::get('Medias')->find('all', [
+            $browseMedias  = $this->Medias->find('all', [
                 'order' => ['Medias.id' => 'DESC']])->contain('Admins');
 
             $rowCount = $queryAdmin->count();
@@ -140,8 +144,7 @@ class PagesController extends AppController
             'pagesLimit'        => $this->pagesLimit
         ];
 
-        $pageTemplatesTable  = TableRegistry::get('PageTemplates');
-        $pageTemplates = $pageTemplatesTable->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
+        $pageTemplates = $this->PageTemplates->find('list')->select(['id','name'])->order(['id' => 'ASC'])->toArray();
         $this->set(compact('pageTemplates'));
 
         $this->paginate = [
@@ -270,8 +273,7 @@ class PagesController extends AppController
         }
 
         if ($id == 0 && $slug == 'purple-home-page-builder') {
-            $settingsTable  = TableRegistry::get('Settings');
-            $queryHomepage  = $settingsTable->find()->where(['name' => 'homepagestyle'])->first();
+            $queryHomepage  = $this->Settings->find()->where(['name' => 'homepagestyle'])->first();
 
             $generatedTempFile->write(html_entity_decode($queryHomepage->value));
 
@@ -313,7 +315,7 @@ class PagesController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         $pageAdd = new PageAddForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageAdd->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -365,9 +367,8 @@ class PagesController extends AppController
                 $sessionID = $session->read('Admin.id');
 
                 if ($this->request->getData('id') == 0) {
-                    $settingsTable  = TableRegistry::get('Settings');
-                    $queryHomepage  = $settingsTable->find()->where(['name' => 'homepagestyle'])->first();
-                    $setting        = $settingsTable->get($queryHomepage->id);
+                    $queryHomepage  = $this->Settings->find()->where(['name' => 'homepagestyle'])->first();
+                    $setting        = $this->Settings->get($queryHomepage->id);
 
                     // Trim empty style tag
                     $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
@@ -384,7 +385,7 @@ class PagesController extends AppController
 
                     $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$trimContent));
                     
-                    if ($settingsTable->save($setting)) {
+                    if ($this->Settings->save($setting)) {
                         /**
                          * Save user activity to histories table
                          * array $options => title, detail, admin_id
@@ -396,8 +397,7 @@ class PagesController extends AppController
                             'admin_id' => $sessionID
                         ];
 
-                        $historiesTable = TableRegistry::get('Histories');
-                        $saveActivity   = $historiesTable->saveActivity($options);
+                        $saveActivity   = $this->Histories->saveActivity($options);
 
                         if ($saveActivity == true) {
                             $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -419,11 +419,10 @@ class PagesController extends AppController
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
                     }
                     else {
-                        $generalsTable  = TableRegistry::get('Generals');
-                        $generals = $generalsTable->find()->where(['page_id' => $this->request->getData('id')]);
+                        $generals = $this->Generals->find()->where(['page_id' => $this->request->getData('id')]);
 
                         if ($generals->count() < 1) {
-                            $general = $generalsTable->newEntity();
+                            $general = $this->Generals->newEntity();
 
                             // Trim empty style tag
                             $trimContent = str_replace('<style></style>', '', $this->request->getData('content'));
@@ -448,7 +447,7 @@ class PagesController extends AppController
                             $page = $this->Pages->get($this->request->getData('id'));
                             $page->title = $this->request->getData('title');
 
-                            if ($generalsTable->save($general) && $this->Pages->save($page)) {
+                            if ($this->Generals->save($general) && $this->Pages->save($page)) {
                                 $record_id = $page->id;
                                 $page      = $this->Pages->get($record_id);
                                 $title     = $page->title;
@@ -463,8 +462,7 @@ class PagesController extends AppController
                                     'admin_id' => $sessionID
                                 ];
 
-                                $historiesTable = TableRegistry::get('Histories');
-                                $saveActivity   = $historiesTable->saveActivity($options);
+                                $saveActivity   = $this->Histories->saveActivity($options);
 
                                 if ($saveActivity == true) {
                                     $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -478,8 +476,8 @@ class PagesController extends AppController
                             }
                         }
                         else {
-                            $generals = $generalsTable->find()->where(['page_id' => $this->request->getData('id')])->first();
-                            $general  = $generalsTable->get($generals->id);
+                            $generals = $this->Generals->find()->where(['page_id' => $this->request->getData('id')])->first();
+                            $general  = $this->Generals->get($generals->id);
 
                             $general->content          = trim('<style>'.$this->request->getData('css-content').'</style>'.$this->request->getData('content'));
                             $general->meta_keywords    = $this->request->getData('meta_keywords');
@@ -495,7 +493,7 @@ class PagesController extends AppController
                                 $page = $this->Pages->get($this->request->getData('id'));
                                 $page->title = $this->request->getData('title');
 
-                                if ($generalsTable->save($general) && $this->Pages->save($page)) {
+                                if ($this->Generals->save($general) && $this->Pages->save($page)) {
                                     $record_id = $page->id;
                                     $page      = $this->Pages->get($record_id);
                                     $title     = $page->title;
@@ -510,8 +508,7 @@ class PagesController extends AppController
                                         'admin_id' => $sessionID
                                     ];
 
-                                    $historiesTable = TableRegistry::get('Histories');
-                                    $saveActivity   = $historiesTable->saveActivity($options);
+                                    $saveActivity   = $this->Histories->saveActivity($options);
 
                                     if ($saveActivity == true) {
                                         $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -572,8 +569,7 @@ class PagesController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $historiesTable = TableRegistry::get('Histories');
-                    $saveActivity   = $historiesTable->saveActivity($options);
+                    $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
                         $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -635,8 +631,7 @@ class PagesController extends AppController
                             'admin_id' => $sessionID
                         ];
 
-                        $historiesTable = TableRegistry::get('Histories');
-                        $saveActivity   = $historiesTable->saveActivity($options);
+                        $saveActivity   = $this->Histories->saveActivity($options);
 
                         if ($saveActivity == true) {
                             $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -679,12 +674,11 @@ class PagesController extends AppController
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
                 }
                 else {
-                    $customPagesTable = TableRegistry::get('CustomPages');
-                    $customPages      = $customPagesTable->find()->where(['page_id' => $this->request->getData('id')]);
+                    $customPages = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')]);
 
                     if ($customPages->count() < 1) {
                         $fileName   = Text::slug(strtolower($this->request->getData('title'))) . '-' . time() . '.php';
-                        $customPage = $customPagesTable->newEntity();
+                        $customPage = $this->CustomPages->newEntity();
 
                         $customPage->file_name        = $fileName;
                         $customPage->meta_keywords    = $this->request->getData('meta_keywords');
@@ -700,7 +694,7 @@ class PagesController extends AppController
                         $page = $this->Pages->get($this->request->getData('id'));
                         $page->title = $this->request->getData('title');
 
-                        if ($customPagesTable->save($customPage) && $this->Pages->save($page)) {
+                        if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
                             $record_id = $page->id;
                             $page      = $this->Pages->get($record_id);
                             $title     = $page->title;
@@ -715,8 +709,7 @@ class PagesController extends AppController
                                 'admin_id' => $sessionID
                             ];
 
-                            $historiesTable = TableRegistry::get('Histories');
-                            $saveActivity   = $historiesTable->saveActivity($options);
+                            $saveActivity   = $this->Histories->saveActivity($options);
 
                             if ($saveActivity == true) {
                                 $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -730,8 +723,8 @@ class PagesController extends AppController
                         }
                     }
                     else {
-                        $customPages = $customPagesTable->find()->where(['page_id' => $this->request->getData('id')])->first();
-                        $customPage  = $customPagesTable->get($customPages->id);
+                        $customPages = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->first();
+                        $customPage  = $this->CustomPages->get($customPages->id);
 
                         $fileName                     = $customPage->file_name;
                         $customPage->meta_keywords    = $this->request->getData('meta_keywords');
@@ -751,7 +744,7 @@ class PagesController extends AppController
                             $page = $this->Pages->get($this->request->getData('id'));
                             $page->title = $this->request->getData('title');
 
-                            if ($customPagesTable->save($customPage) && $this->Pages->save($page)) {
+                            if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
                                 $record_id = $page->id;
                                 $page      = $this->Pages->get($record_id);
                                 $title     = $page->title;
@@ -766,8 +759,7 @@ class PagesController extends AppController
                                     'admin_id' => $sessionID
                                 ];
 
-                                $historiesTable = TableRegistry::get('Histories');
-                                $saveActivity   = $historiesTable->saveActivity($options);
+                                $saveActivity   = $this->Histories->saveActivity($options);
 
                                 if ($saveActivity == true) {
                                     $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -809,11 +801,10 @@ class PagesController extends AppController
 
                 // Delete custom php file if page type is custom
                 if ($this->request->getData('page_type') == 'custom') {
-                    $customPagesTable = TableRegistry::get('CustomPages');
-                    $checkCustom      = $customPagesTable->find()->where(['page_id' => $this->request->getData('id')])->count();
+                    $checkCustom = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->count();
 
                     if ($checkCustom > 0) {
-                        $customPage = $customPagesTable->find()->where(['page_id' => $this->request->getData('id')])->first();
+                        $customPage = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->first();
                         $fileName   = $customPage->file_name;
                         $customFile = WWW_ROOT . 'uploads' . DS .'custom-pages' . DS . $fileName;
 
@@ -834,8 +825,7 @@ class PagesController extends AppController
                                 'admin_id' => $sessionID
                             ];
 
-                            $historiesTable = TableRegistry::get('Histories');
-                            $saveActivity   = $historiesTable->saveActivity($options);
+                            $saveActivity   = $this->Histories->saveActivity($options);
 
                             if ($saveActivity == true) {
                                 $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -861,8 +851,7 @@ class PagesController extends AppController
                                 'admin_id' => $sessionID
                             ];
 
-                            $historiesTable = TableRegistry::get('Histories');
-                            $saveActivity   = $historiesTable->saveActivity($options);
+                            $saveActivity   = $this->Histories->saveActivity($options);
 
                             if ($saveActivity == true) {
                                 $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -889,8 +878,7 @@ class PagesController extends AppController
                             'admin_id' => $sessionID
                         ];
 
-                        $historiesTable = TableRegistry::get('Histories');
-                        $saveActivity   = $historiesTable->saveActivity($options);
+                        $saveActivity   = $this->Histories->saveActivity($options);
 
                         if ($saveActivity == true) {
                             $json = json_encode(['status' => 'ok', 'activity' => true]);
@@ -919,7 +907,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
 
             $number  = $this->request->getData('number');
@@ -940,7 +928,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
 
             $number  = $this->request->getData('number');
@@ -961,7 +949,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
 
             $number  = $this->request->getData('number');
@@ -990,7 +978,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $name   = $this->request->getData('name');
             $html   = $this->request->getData('html');
             $target = $this->request->getData('target');
@@ -1028,7 +1016,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $file     = $this->request->getData('file');
             $class    = $this->request->getData('class');
             $fileJson = new File(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'saved' . DS . $file);
@@ -1050,7 +1038,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $id          = $this->request->getData('id');
             $url         = $this->request->getData('url');
             $redirect    = $this->request->getData('redirect');
@@ -1076,7 +1064,7 @@ class PagesController extends AppController
     {
         $this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             $cssPath    = $this->request->getData('css');
             $jsPath     = $this->request->getData('js');
             $html       = $this->request->getData('htmldata');

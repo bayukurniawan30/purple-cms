@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 
@@ -15,15 +16,19 @@ class VisitorsTable extends Table
     }
     public function beforeSave($event, $entity, $options)
     {
-        $purpleSettings = new PurpleProjectSettings();
-        $timezone       = $purpleSettings->timezone();
-        $date           = Carbon::now($timezone);
-        $dateCreated    = date('Y-m-d', strtotime($date));
-        $timeCreated    = date('H:i:s', strtotime($date));
+        $serverRequest   = new ServerRequest();
+        $session         = $serverRequest->getSession();
+        $timezone        = $session->read('Purple.timezone');
+        $settingTimezone = $session->read('Purple.settingTimezone');
+
+        $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
+        $date->setTimezone(new \DateTimeZone($timezone));
+        $formattedDate = $date->format('Y-m-d');
+        $formattedTime = $date->format('H:i:s');
 
         if ($entity->isNew()) {
-            $entity->date_created = $dateCreated;
-            $entity->time_created = $timeCreated;
+            $entity->date_created = $formattedDate;
+            $entity->time_created = $formattedTime;
         }
     }
     public function totalAllVisitors() 

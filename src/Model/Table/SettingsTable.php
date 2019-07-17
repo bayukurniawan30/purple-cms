@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use App\Purple\PurpleProjectSettings;
 
 class SettingsTable extends Table
 {
@@ -97,6 +98,12 @@ class SettingsTable extends Table
     {
         $format = $this->find()->where(['name' => 'timeformat'])->first();
         return $format->value;
+    }
+    public function settingsTimeZone() 
+    {
+        $purpleSettings = new PurpleProjectSettings();
+		$timezone       = $purpleSettings->timezone();
+        return $timezone;
     }
     public function settingsRecaptchaSitekey() 
     {

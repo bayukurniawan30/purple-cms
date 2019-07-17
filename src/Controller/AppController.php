@@ -45,10 +45,37 @@ class AppController extends Controller
         ]);
         $this->loadComponent('Flash');
 
+        // Timezone
+        $this->loadModel('Settings');
+        $this->set('timeZone', $this->Settings->settingsTimeZone());
+
         /*
          * Enable the following component for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html
          */
-        //$this->loadComponent('Security');
+        // $this->loadComponent('Security');
+    }
+    public function setClientTimezone()
+    {
+    	$this->viewBuilder()->enableAutoLayout(false);
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            $this->loadModel('Settings');
+            $session  = $this->getRequest()->getSession();
+            $settingTimezone = $this->Settings->settingsTimeZone();
+            $session->write('Purple.settingTimezone', $settingTimezone);
+
+            $timezone = trim($this->request->getData('timezone'));
+            $session->write('Purple.timezone', $timezone);
+            if ($session->check('Purple.timezone')) {
+                $json = json_encode(['status' => 'ok', 'timezone' => $timezone]);
+            }
+            else {
+                $json = json_encode(['status' => 'error']);
+            }
+			$this->set(['json' => $json]);
+        }
+    	else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
     }
 }

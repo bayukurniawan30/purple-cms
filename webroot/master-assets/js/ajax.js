@@ -202,6 +202,17 @@ $(document).ready(function() {
                                     var createToast = notifToast('Form Submiting', join, 'error', true);
                                 }
                             }
+                            else if (typeof error === 'object') {
+                                $.each (error, function (index) {
+                                    var validation = error[index];
+                                    var validationText = '';
+                                    $.each (validation, function (indexValidation) {
+                                        validationText += validation[indexValidation]+". ";
+                                    })
+
+                                    var createToast = notifToast('Form Submiting', validationText, 'error', true);
+                                });
+                            }
     						else {
                                 if (action == 'login' || action == 'confirm-email') {
                                     $error.html(errorTemplate);

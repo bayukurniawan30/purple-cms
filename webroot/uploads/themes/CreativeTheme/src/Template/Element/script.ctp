@@ -9,7 +9,6 @@
 <!-- Initial -->
 <?= $this->Html->script('/master-assets/plugins/initial/initial.min.js'); ?>
 <!-- Livestamp -->
-<?= $this->Html->script('/master-assets/plugins/moment/moment.js'); ?>
 <?= $this->Html->script('/master-assets/plugins/livestamp/livestamp.min.js'); ?>
 <!-- Theme -->
 <?= $this->Html->script('/vendor/owl.carousel/owl.carousel.min.js'); ?>

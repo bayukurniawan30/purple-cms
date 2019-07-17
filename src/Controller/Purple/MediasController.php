@@ -56,7 +56,10 @@ class MediasController extends AppController
 
 	    	$this->viewBuilder()->setLayout('dashboard');
 	    	$this->loadModel('Admins');
-            $this->loadModel('Settings');
+			$this->loadModel('MediaDocs');
+			$this->loadModel('MediaVideos');
+			$this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -125,7 +128,6 @@ class MediasController extends AppController
             'mediaDocumentDelete' => $mediaDocumentDelete
 		];
 
-    	$this->loadModel('MediaDocs');
         $docs = $this->MediaDocs->find('all', ['contain' => ['Admins']])->order(['MediaDocs.id' => 'DESC']);
     	$this->set(compact('docs'));
         $this->set($data);
@@ -168,7 +170,6 @@ class MediasController extends AppController
             'mediaVideoDelete'  => $mediaVideoDelete
 		];
 
-    	$this->loadModel('MediaVideos');
         $videos = $this->MediaVideos->find('all', ['contain' => ['Admins']])->order(['MediaVideos.id' => 'DESC']);
     	$this->set(compact('videos'));
     	$this->set($data);
@@ -301,7 +302,6 @@ class MediasController extends AppController
 				                    'admin_id' => $sessionID
 				                ];
 
-				                $this->loadModel('Histories');
 			                    $saveActivity   = $this->Histories->saveActivity($options);
 
 				                if ($saveActivity == true) {
@@ -334,7 +334,7 @@ class MediasController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-		if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
 			$medias = $this->Medias->find('all', [
                 'order' => ['Medias.id' => 'DESC']])->contain('Admins');
 
@@ -362,7 +362,7 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaImageModal  = new MediaImageModalForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaImageModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -386,7 +386,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -416,7 +415,7 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaImageDelete = new MediaImageDeleteForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaImageDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -447,7 +446,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -498,7 +496,6 @@ class MediasController extends AppController
                     $readDocumentFile = new File($uploadFile);
                     $fileSize         = $readDocumentFile->size();
 
-			    	$this->loadModel('MediaDocs');
                     $doc       = $this->MediaDocs->newEntity();
 
                     $doc->name     = $generatedName;
@@ -518,7 +515,6 @@ class MediasController extends AppController
 		                    'admin_id' => $sessionID
 		                ];
 
-		                $this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 		                if ($saveActivity == true) {
@@ -549,8 +545,7 @@ class MediasController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-		if ($this->request->is('ajax')) {
-	    	$this->loadModel('MediaDocs');
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             $docs = $this->MediaDocs->find('all', ['contain' => ['Admins']])->order(['MediaDocs.id' => 'DESC']);
             $this->set(compact('docs'));
 			$this->render();
@@ -564,12 +559,11 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaDocumentModal  = new MediaDocumentModalForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaDocumentModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
 
-		    	$this->loadModel('MediaDocs');
                 $doc       = $this->MediaDocs->get($this->request->getData('id'));
 
                 $doc->title       = $this->request->getData('title');
@@ -589,7 +583,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -619,12 +612,11 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaDocumentDelete = new MediaDocumentDeleteForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaDocumentDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
 
-		    	$this->loadModel('MediaDocs');
                 $doc       = $this->MediaDocs->get($this->request->getData('id'));
                 $filePath  = $doc->name;
 
@@ -649,7 +641,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -700,7 +691,6 @@ class MediasController extends AppController
                     $readVideoFile = new File($uploadFile);
                     $fileSize      = $readVideoFile->size();
 
-			    	$this->loadModel('MediaVideos');
                     $video       = $this->MediaVideos->newEntity();
 
                     $video->name     = $generatedName;
@@ -720,7 +710,6 @@ class MediasController extends AppController
 		                    'admin_id' => $sessionID
 		                ];
 
-		                $this->loadModel('Histories');
 	                    $saveActivity   = $this->Histories->saveActivity($options);
 
 		                if ($saveActivity == true) {
@@ -751,9 +740,8 @@ class MediasController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-		if ($this->request->is('ajax')) {
-	    	$this->loadModel('MediaVideos');
-            $videos      = $this->MediaVideos->find('all', ['contain' => ['Admins']])->order(['MediaVideos.id' => 'DESC']);
+		if ($this->request->is('ajax') || $this->request->is('post')) {
+            $videos = $this->MediaVideos->find('all', ['contain' => ['Admins']])->order(['MediaVideos.id' => 'DESC']);
             $this->set(compact('videos'));
 			$this->render();
 		}
@@ -766,13 +754,12 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaVideoModal  = new MediaVideoModalForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaVideoModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
 
-		    	$this->loadModel('MediaVideos');
-                $video       = $this->MediaVideos->get($this->request->getData('id'));
+                $video = $this->MediaVideos->get($this->request->getData('id'));
 
                 $video->title       = $this->request->getData('title');
                 $video->description = $this->request->getData('description');
@@ -791,7 +778,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {
@@ -821,16 +807,14 @@ class MediasController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         $mediaVideoDelete = new MediaVideoDeleteForm();
-        if ($this->request->is('ajax')) {
+		if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mediaVideoDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
 
-		    	$this->loadModel('MediaVideos');
-                $video       = $this->MediaVideos->get($this->request->getData('id'));
-                $filePath    = $video->name;
-
-                $fullPath  = WWW_ROOT . 'uploads' . DS .'videos' . DS . $filePath;
+                $video    = $this->MediaVideos->get($this->request->getData('id'));
+                $filePath = $video->name;
+                $fullPath = WWW_ROOT . 'uploads' . DS .'videos' . DS . $filePath;
 
                 $readVideoFile = new File($fullPath);
 
@@ -852,7 +836,6 @@ class MediasController extends AppController
 	                    'admin_id' => $sessionID
 	                ];
 
-	                $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
 	                if ($saveActivity == true) {

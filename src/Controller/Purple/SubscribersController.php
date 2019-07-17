@@ -49,6 +49,7 @@ class SubscribersController extends AppController
 	    	$this->viewBuilder()->setLayout('dashboard');
             $this->loadModel('Admins');
             $this->loadModel('Settings');
+			$this->loadModel('Histories');
 
             if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
                 $cakeDebug = 'on';
@@ -110,8 +111,6 @@ class SubscribersController extends AppController
 	}
 	public function index()
 	{
-		$this->loadModel('Settings');
-
 		$subscriberAdd     = new SubscriberAddForm();
 		$subscriberEdit    = new SubscriberEditForm();
 		$subscriberDelete  = new SubscriberDeleteForm();
@@ -180,7 +179,7 @@ class SubscribersController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
 		$subscriberAdd = new SubscriberAddForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($subscriberAdd->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -214,7 +213,6 @@ class SubscribersController extends AppController
 								'admin_id' => $sessionID
 							];
 
-							$this->loadModel('Histories');
 		                    $saveActivity   = $this->Histories->saveActivity($options);
 
 							if ($saveActivity == true) {
@@ -283,7 +281,6 @@ class SubscribersController extends AppController
 								'admin_id' => $sessionID
 							];
 
-							$this->loadModel('Histories');
 		                    $saveActivity   = $this->Histories->saveActivity($options);
 
 							if ($saveActivity == true) {
@@ -318,7 +315,7 @@ class SubscribersController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
 		$subscriberDelete = new SubscriberDeleteForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($subscriberDelete->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
@@ -330,7 +327,6 @@ class SubscribersController extends AppController
 
                 if ($result) {
 					// If also delete email in Mailchimp Account
-					$this->loadModel('Settings');
 					$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
 					$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
 
@@ -370,7 +366,6 @@ class SubscribersController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -399,7 +394,7 @@ class SubscribersController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
 			$file = new File(WWW_ROOT . 'exports' . DS . 'subscribers.txt', true);
 
 			$subscribers = $this->Subscribers->find()->order(['id' => 'DESC']);
@@ -422,12 +417,11 @@ class SubscribersController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
 		$mailchimpSettings = new SubscriberMailchimpSettingsForm();
-        if ($this->request->is('ajax')) {
+        if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mailchimpSettings->execute($this->request->getData())) {
 				$apiKey = trim($this->request->getData('key'));
 				$listId = trim($this->request->getData('list'));
 
-				$this->loadModel('Settings');
 				$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
 				$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
 
@@ -449,7 +443,6 @@ class SubscribersController extends AppController
                         'admin_id' => $sessionID
                     ];
 
-                    $this->loadModel('Histories');
                     $saveActivity   = $this->Histories->saveActivity($options);
 
                     if ($saveActivity == true) {
@@ -475,8 +468,7 @@ class SubscribersController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
 
-        if ($this->request->is('ajax')) {
-			$this->loadModel('Settings');
+        if ($this->request->is('ajax') || $this->request->is('post')) {
 
 			$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
 			$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
