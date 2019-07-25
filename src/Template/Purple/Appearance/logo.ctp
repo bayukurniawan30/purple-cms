@@ -200,6 +200,7 @@
                                                 $("#croppie-editor").hide();
                                                 $(".image-rotate").hide();
                                                 $(".uk-alert-primary").hide();
+                                                $("#button-without-crop-image").hide();
                                                 btn.html('Result');
                                                 btn.hide();
                                                 $(".bind-new-result-title").html('Result');

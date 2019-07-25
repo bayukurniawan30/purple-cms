@@ -51,7 +51,7 @@
                 <button id="button-without-crop-image" type="button" class="btn btn-primary" uk-tooltip="Save without Crop">
                     <i class="mdi mdi-content-save"></i> Save without Crop
                 </button>
-                <button id="button-crop-image" type="button" class="btn btn-primary uk-margin-left" uk-tooltip="Crop Image">
+                <button id="button-crop-image" type="button" class="btn btn-success uk-margin-left" uk-tooltip="Crop Image">
                     <i class="mdi mdi-crop"></i> Crop Image
                 </button>
                 <button type="button" class="btn btn-inverse-primary btn-icon uk-margin-left image-rotate" data-deg="-90" uk-tooltip="Rotate Left">
@@ -200,6 +200,7 @@
                                                 $("#croppie-editor").hide();
                                                 $(".image-rotate").hide();
                                                 $(".uk-alert-primary").hide();
+                                                $("#button-without-crop-image").hide();
                                                 btn.html('Result');
                                                 btn.hide();
                                                 $(".bind-new-result-title").html('Result');
@@ -267,6 +268,10 @@
                 $.danidemo.updateFileProgress(id, '100%');
 
                 console.log(console_response);
+
+                var json    = $.parseJSON(data),
+                    status  = (json.status),
+                    image   = (json.name);
 
                 if (status == 'ok') {
                     $("#button-without-crop-image").click(function () {

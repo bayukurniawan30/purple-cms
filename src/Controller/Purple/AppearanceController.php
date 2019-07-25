@@ -303,8 +303,8 @@ class AppearanceController extends AppController
         	$session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
 
-            $base64 = $this->request->getData('base64');
-            $type   = $this->request->getData('type');
+            $base64   = $this->request->getData('base64');
+            $saveType = $this->request->getData('type');
 
             if (strpos($base64, 'png') !== false) {
                 $sanitizeString = str_replace('data:image/png;base64,', '', $base64);
@@ -319,8 +319,8 @@ class AppearanceController extends AppController
 			
             list($type, $base64) = explode(';', $base64);
             list(, $base64)      = explode(',', $base64);
-			$base64 = base64_decode($base64);
-			file_put_contents($fullSizeImage . $type.'.png', $base64);
+			$base64Decode		 = base64_decode($base64);
+			file_put_contents($fullSizeImage . $saveType.'.png', $base64Decode);
 			
 			 /**
              * Old style, cropping with ImageResize, but quality is bad
@@ -329,7 +329,7 @@ class AppearanceController extends AppController
 				$image->save($fullSizeImage . $type.'.png', IMAGETYPE_PNG);
 			 */
 
-            $data->value = $type.'.png';
+            $data->value = $saveType.'.png';
             if ($this->Settings->save($data)) {
             	/**
                  * Save user activity to histories table
