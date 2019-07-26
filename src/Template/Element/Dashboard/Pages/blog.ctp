@@ -274,6 +274,12 @@
         })
         
         <?php
+            if ($blogs->count() == 0):
+        ?>
+        $(".uk-alert-danger").addClass('uk-margin-remove-bottom').closest('.card-body').addClass('uk-padding-remove');
+        <?php
+            endif;
+
             if ($blogs->count() > 0):
         ?>
         var dataTable = $('.purple-datatable').DataTable({

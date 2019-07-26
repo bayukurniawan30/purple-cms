@@ -1063,15 +1063,19 @@
         })
 
         $(".media-link-to-image").click(function () {
-            var id      = $(this).data('purple-id'),
-                image   = $(this).data('purple-image'),
-                host    = $(this).data('purple-host'),
-                by      = $(this).data('purple-by'),
-                created = $(this).data('purple-created'),
-                desc    = $(this).data('purple-description'),
-                title   = $(this).attr('title'),
-                modal   = $("#modal-full-content");
+            var id       = $(this).data('purple-id'),
+                image    = $(this).data('purple-image'),
+                host     = $(this).data('purple-host'),
+                by       = $(this).data('purple-by'),
+                created  = $(this).data('purple-created'),
+                desc     = $(this).data('purple-description'),
+                title    = $(this).attr('title'),
+                nextUrl  = $(this).attr('data-purple-next-url'),
+                prevUrl  = $(this).attr('data-purple-previous-url'),
+                modal    = $("#modal-full-content");
             modal.find(".uk-background-contain").css('background-image', 'url(' + image + ')');
+            modal.find("#media-image-next-url").attr('href', nextUrl);
+            modal.find("#media-image-previous-url").attr('href', prevUrl);
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
             modal.find("form textarea[name=description]").val(desc);

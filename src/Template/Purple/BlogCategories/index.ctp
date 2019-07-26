@@ -69,7 +69,7 @@
                                         <?php
                                             else:
                                         ?>
-                                        <li><a class="button-delete-purple" href="#" data-purple-id="<?= $blogCategory->id ?>" data-purple-name="<?= $blogCategory->name ?>" data-purple-modal="#modal-delete-post-category">Delete</a></li>
+                                        <li><a class="button-delete-purple text-danger" href="#" data-purple-id="<?= $blogCategory->id ?>" data-purple-name="<?= $blogCategory->name ?>" data-purple-modal="#modal-delete-post-category">Delete</a></li>
                                         <?php endif; ?>
                                     </ul>
                                 </div>

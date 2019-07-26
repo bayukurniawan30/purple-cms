@@ -55,12 +55,28 @@
             <?php
                     $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
                     $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
+                    $previousId  = $this->cell('Medias::previousId', [$media->id]);
+                    $nextId      = $this->cell('Medias::nextId', [$media->id]);
+
+                    if ($previousId == '0') {
+                        $previousUrl = '#';
+                    }
+                    else {
+                        $previousUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $previousId;
+                    }
+
+                    if ($nextId == '0') {
+                        $nextUrl = '#';
+                    }
+                    else {
+                        $nextUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextId;
+                    }
                 ?>
                 <div class="col-6 col-md-2 grid-margin" data-date="<?= date($settingsDateFormat.' '.$settingsTimeFormat, strtotime($media->created)) ?>">
                     <div>
                         <div class="uk-card uk-card-default">
                             <div class="uk-card-media-top">
-                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
+                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
                             </div>
                         </div>
                     </div>
@@ -128,7 +144,14 @@
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-            <div class="uk-background-contain uk-animation-slide-left" style="" uk-height-viewport></div>
+            <div class="uk-background-contain uk-animation-slide-left" style="" uk-height-viewport>
+                <a href="#" id="media-image-previous-url">
+                    <div class="uk-position-center-left uk-overlay uk-overlay-default"><span uk-icon="chevron-left"></span></div>
+                </a>
+                <a href="#" id="media-image-next-url">
+                    <div class="uk-position-center-right uk-overlay uk-overlay-default"><span uk-icon="chevron-right"></span></div>
+                </a>
+            </div>
             <div class="uk-padding-large uk-animation-slide-right">
                 <ul class="uk-breadcrumb">
                     <li class="uk-disabled"><a class="bind-by"></a></li>
@@ -219,6 +242,199 @@
         </div>
     </div>
 </div>
+
+<?php
+    if ($this->request->getQuery('id') !== NULL):
+        if ($detail !== NULL):
+            $fullImageDetail   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $detail->name;
+            $previousIdDetail  = $this->cell('Medias::previousId', [$detail->id]);
+            $nextIdDetail      = $this->cell('Medias::nextId', [$detail->id]);
+
+            if ($previousIdDetail == '0') {
+                $previousUrlDetail = '#';
+            }
+            else {
+                $previousUrlDetail = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $previousIdDetail;
+            }
+
+            if ($nextIdDetail == '0') {
+                $nextUrlDetail = '#';
+            }
+            else {
+                $nextUrlDetail = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextIdDetail;
+            }
+?>
+<div id="modal-full-content-initial" class="uk-modal-full purple-modal" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+        <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
+            <div class="uk-background-contain uk-animation-slide-left" style="background-image: url(<?= $fullImageDetail ?>)" uk-height-viewport>
+                <a href="<?= $previousUrlDetail ?>" id="media-image-previous-url">
+                    <div class="uk-position-center-left uk-overlay uk-overlay-default"><span uk-icon="chevron-left"></span></div>
+                </a>
+                <a href="<?= $nextUrlDetail ?>" id="media-image-next-url">
+                    <div class="uk-position-center-right uk-overlay uk-overlay-default"><span uk-icon="chevron-right"></span></div>
+                </a>
+            </div>
+            <div class="uk-padding-large uk-animation-slide-right">
+                <ul class="uk-breadcrumb">
+                    <li class="uk-disabled"><a class="bind-by">Uploaded by <?= $detail->admin->get('display_name') ?></a></li>
+                    <li class="uk-disabled purple-mobile-media-breadcrumb"><a class="bind-created">Uploaded at <?= date('F d, Y H:i', strtotime($media->created)) ?></a></li>
+                </ul>
+                <?php
+                    echo $this->Form->create($mediaImageModal, [
+                        'id'                    => 'form-image-detail-initial', 
+                        'class'                 => 'pt-3', 
+                        'data-parsley-validate' => '',
+                        'url'                   => ['action' => 'ajax-update-images']
+                    ]);
+
+                    echo $this->Form->hidden('id', ['value' => $detail->id]);
+                ?>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->label('title', 'Title');
+                        echo $this->Form->text('title', [
+                            'class'                  => 'form-control', 
+                            'placeholder'            => 'Title',
+                            'data-parsley-minlength' => '1',
+                            'data-parsley-maxlength' => '100',
+                            'required'               => 'required',
+                            'value'                  => $detail->title
+                        ]);
+                    ?>
+                </div>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->label('path', 'URL');
+                    ?>
+                    <div class="input-group">
+                    <?php
+                        echo $this->Form->text('path', [
+                            'id'          => 'target-to-copy-detail',
+                            'class'       => 'form-control', 
+                            'placeholder' => 'URL',
+                            'readonly'    => 'readonly',
+                            'value'       => $protocol . $this->request->host() . $fullImageDetail
+                            
+                        ]);
+                    ?>
+                        <div class="input-group-append">
+                            <?php
+                                echo $this->Form->button('<i class="mdi mdi-content-copy"></i>', [
+                                    'id'                    => 'button-clipboard-js-detail',
+                                    'class'                 => 'btn btn-sm btn-gradient-primary',
+                                    'type'                  => 'button',
+                                    'data-clipboard-target' => '#target-to-copy-detail'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->label('description', 'Description');
+                        echo $this->Form->textarea('description', [
+                            'class'                  => 'form-control', 
+                            'placeholder'            => 'Description',
+                            'data-parsley-maxlength' => '200',
+                            'value'                  => $detail->description
+                        ]);
+                    ?>
+                </div>
+                <div class="form-group purple-media-buttons">
+                <?php   
+                    echo $this->Form->button('Save', [
+                        'id'    => 'button-image-detail-initial',
+                        'class' => 'btn btn-gradient-primary'
+                    ]);
+                
+                    echo $this->Form->button('Cancel', [
+                        'id'           => 'button-close-modal',
+                        'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
+                        'type'         => 'button',
+                        'data-target'  => '.purple-modal'
+                    ]);
+                
+                    echo $this->Form->button('Delete', [
+                        'class'        => 'btn btn-outline-danger uk-margin-left button-delete-media-image',
+                        'type'         => 'button',
+                        'data-id'      => ''
+                    ]);
+                
+                    echo $this->Form->end();
+                ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var modal = $('#modal-full-content-initial');
+        UIkit.modal('#modal-full-content-initial').show();
+
+        var clipboard   = new ClipboardJS('#button-clipboard-js-detail'),
+            targetLabel = modal.find("form label[for=path]").html();
+
+        clipboard.on('success', function(e) {
+            console.info('Action:', e.action);
+            console.info('Text:', e.text);
+            console.info('Trigger:', e.trigger);
+            modal.find("form label[for=path]").html('URL <span class="text-primary">Copied</span>');
+            setTimeout(function() {
+                modal.find("form label[for=path]").html('URL');
+            }, 2500);
+            e.clearSelection();
+        });
+
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+            modal.find("form label[for=path]").html('URL <span class="text-danger">Error. Text is not copied</span>');
+            setTimeout(function() {
+                modal.find("form label[for=path]").html('URL');
+            }, 2500);
+        });
+
+
+        modal.find("form .button-delete-media-image").on("click", function() {
+            UIkit.modal('#modal-full-content').hide();
+            setTimeout(function() {
+                var deleteModal = $("#modal-delete-media"),
+                    deleteForm  = deleteModal.find("form"),
+                    deleteID    = deleteForm.find("input[name=id]"),
+                    deleteTitle = deleteForm.find(".bind-title");
+
+                deleteID.val('<?= $detail->id ?>');
+                deleteTitle.html('<?= $detail->title ?>');
+
+                UIkit.modal('#modal-delete-media').show();
+            }, 500);
+            return false;
+        });
+
+        var mediaUpdateDetail = {
+            form            : 'form-image-detail-initial', 
+            button          : 'button-image-detail-initial',
+            action          : 'edit', 
+            redirectType    : 'redirect', 
+            redirect        : '<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]); ?>', 
+            btnNormal       : false, 
+            btnLoading      : false 
+        };
+        
+        var targetButton = $("#"+mediaUpdateDetail.button);
+        targetButton.one('click',function() {
+            ajaxSubmit(mediaUpdateDetail.form, mediaUpdateDetail.action, mediaUpdateDetail.redirectType, mediaUpdateDetail.redirect, mediaUpdateDetail.btnNormal, mediaUpdateDetail.btnLoading);
+        });
+    })
+</script>
+<?php
+        endif;
+    endif;
+?>
 
 <div id="modal-delete-media" class="uk-flex-top purple-modal" uk-modal="bg-close: false">
     <div class="uk-modal-dialog uk-margin-auto-vertical">

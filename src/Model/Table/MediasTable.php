@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectSettings;
@@ -60,5 +61,25 @@ class MediasTable extends Table
             $date->setTimezone(new \DateTimeZone($timezone));
             return $date->format('Y-m-d H:i:s');
         }
-	}
+    }
+    public function findPreviousRow(Query $query, array $options)
+    {
+        $check = $query->where(['id >' => $options['id']])->order(['id' => 'DESC']);
+        if ($check->count() > 0) {
+            return $check->first();
+        }
+        else {
+            return false;
+        }
+    }
+    public function findNextRow(Query $query, array $options)
+    {
+        $check = $query->where(['id <' => $options['id']])->order(['id' => 'DESC']);
+        if ($check->count() > 0) {
+            return $check->first();
+        }
+        else {
+            return false;
+        }
+    }
 }

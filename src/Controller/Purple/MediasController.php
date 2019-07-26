@@ -155,7 +155,19 @@ class MediasController extends AppController
 		];
 		$mediasList = $this->paginate($medias);
 	    $this->set('medias', $mediasList);
-        // $this->set(compact('medias'));
+		// $this->set(compact('medias'));
+		
+		if ($this->request->getQuery('id') !== NULL) {
+			$detail = $this->Medias->find('all', [
+				'order' => ['Medias.id' => 'DESC']])->contain('Admins')->where(['Medias.id' => $this->request->getQuery('id')]);
+			if ($detail->count() > 0) {
+				$this->set('detail', $detail->first());
+			}
+			else {
+				$this->set('detail', NULL);
+			}
+		}
+
     	$this->set($data);
 	}
 	public function videos()
