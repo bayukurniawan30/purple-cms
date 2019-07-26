@@ -176,6 +176,7 @@ To create a block, create a json file with lowercase name. For example <code>myb
 
 Blocks have some class that can be added to the HTML tag. 
  - **fdb-editor** : class to make content editable in Block Editor. Can be added in text, image, link, button, or add it at parent tag to make whole childs editable.
+ - **fdb-block-copy** : class to make element copy-able. This class add Copy Button to element. Remember to add <code>data-fdb-id</code> attribute with <code>{bind.id}</code> value to targeted element.
  - **non-uikit** : if your element classes are conflict with UIkit stylesheet, add this class to the element. 
  - **remove-padding-in-real** : class to make element has no padding in front-end website.
  - **bttn-to-customize** : special class to edit button or a tag.
