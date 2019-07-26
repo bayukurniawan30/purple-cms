@@ -34,6 +34,18 @@ class PurpleProjectGlobal
 			return $databaseInfo;
 		}
 	}
+	public function productionKeyInfo() 
+	{
+		$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+		$content = $file->read();
+		
+		if ($content == '') {
+			return 'empty';
+		}
+		else {
+			return 'filled';
+		}
+	}
 	public function detectOS() 
 	{
 		$mobileDetect = new MobileDetect();

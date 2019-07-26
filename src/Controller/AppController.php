@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use App\Purple\PurpleProjectGlobal;
 
 /**
  * Application Controller
@@ -46,8 +47,12 @@ class AppController extends Controller
         $this->loadComponent('Flash');
 
         // Timezone
-        $this->loadModel('Settings');
-        $this->set('timeZone', $this->Settings->settingsTimeZone());
+        $purpleGlobal      = new PurpleProjectGlobal();
+        $productionKeyInfo = $purpleGlobal->productionKeyInfo();
+        if ($productionKeyInfo == 'filled') {
+            $this->loadModel('Settings');
+            $this->set('timeZone', $this->Settings->settingsTimeZone());
+        }
 
         /*
          * Enable the following component for recommended CakePHP security settings.

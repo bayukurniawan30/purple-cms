@@ -175,8 +175,6 @@ class SetupController extends AppController
                 $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
 
                 if ($verifyEmail == true) {
-					
-
 	            	$connection = ConnectionManager::get('default');
 	                
 	                $purpleSetup = new PurpleProjectSetup();
