@@ -1,9 +1,10 @@
 $(document).ready(function() {
 	ajaxSubmit = function(form, action, redirectType, redirect, customButtonNormal, customButtonLoading, developerMode = false, debug = false) {
         var ajaxFormSubmit,
-            $ajaxForm    = $("#"+form),
-            $ajaxButton  = $ajaxForm.find('button[type=submit]'),
-            countClick   = 0;
+            $ajaxForm     = $("#"+form),
+            $ajaxButton   = $ajaxForm.find('button[type=submit]'),
+            customErrCont = $ajaxButton.attr('data-purple-error-container'),
+            countClick    = 0;
 
 		if(action == 'contact') {
 			if(customButtonLoading == false)
@@ -56,8 +57,14 @@ $(document).ready(function() {
                     ajaxFormSubmit.abort();
                 }
                 var $inputs        = $ajaxForm.find("input, button"),
-                    $error         = $ajaxForm.find("#form-error-alert"),
-                    errorContainer = $('#error-result');
+                    $error         = $ajaxForm.find("#form-error-alert");
+                if (typeof customErrCont !== undefined && customErrCont !== false) {
+                    var errorContainer = $(customErrCont);
+                }
+                else {
+                    var errorContainer = $('#error-result');
+                }
+
                 if (action == 'contact') {
                     var serializedData = $ajaxForm.serialize() + "&token=" + $ajaxForm.find('input[name=token]').val();
                 }
@@ -72,6 +79,7 @@ $(document).ready(function() {
                         $inputs.prop("disabled", true);
                         $ajaxButton.html(ajaxButtonLoadingState);
                         $ajaxButton.attr('disabled','disabled');
+                        errorContainer.html('');
                     },
                     data: new FormData(this),
                     contentType: false,
@@ -93,8 +101,7 @@ $(document).ready(function() {
                         templateClose = '</div>';
 
 					if (status == 'error') {
-						var error      = (json.error),
-                            validation = (json.validation); 
+						var error      = (json.error);
 					}
 
 			        if (status == 'ok') {
@@ -137,7 +144,7 @@ $(document).ready(function() {
                                 errorContainer.html("Error! Please fill the form with the correct value");
                             }
                             else {
-    							errorContainer.html('<div class="alert alert-danger" role="alert"><strong>Error!</strong> Please fill the red form with the correct value.</div>' + validation);
+    							errorContainer.html('<div class="alert alert-danger" role="alert"><strong>Error!</strong> ' + error + '</div>');
                             }
 						}
 			        }

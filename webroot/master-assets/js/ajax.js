@@ -1,9 +1,10 @@
 $(document).ready(function() {
     ajaxSubmit = function(form, action, redirectType, redirect, customButtonNormal, customButtonLoading, developerMode = false, debug = false, toast = true) {
         var ajaxFormSubmit,
-            $ajaxForm    = $("#"+form),
-            $ajaxButton  = $ajaxForm.find('button[type=submit]'),
-            countClick   = 0;
+            $ajaxForm     = $("#"+form),
+            $ajaxButton   = $ajaxForm.find('button[type=submit]'),
+            customErrCont = $ajaxButton.attr('data-purple-error-container'),
+            countClick    = 0;
 
 		if (action == 'add' || action == 'edit' || action == 'update' || action == 'ajax-load-post-categories') {
 			if (customButtonLoading == false)
