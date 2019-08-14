@@ -6,6 +6,11 @@ Content Management System Base on CakePHP 3
 
 [Read Full Documentaion](https://bayukurniawan30.github.io/purple-cms/)
 
+### Introducing Purple CMS API v1
+This API is used for external application like mobile app. Not all action in Purple CMS web based available in this API, some action can only be done from web based.
+
+[API Documentation](https://documenter.getpostman.com/view/8358374/SVYwLcJs)
+
 ### Tentang Purple CMS
 Purple CMS adalah sebuah Content Management System yang dibuat dengan framework CakePHP 3. Tujuannya adalah untuk memudahkan developer dalam membuat suatu website, baik yang sederhana ataupun kompleks.
 
