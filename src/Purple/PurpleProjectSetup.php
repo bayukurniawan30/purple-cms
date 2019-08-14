@@ -4,6 +4,8 @@ namespace App\Purple;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\Utility\Text;
+use Cake\Utility\Security;
 use Carbon\Carbon;
 use DateTimeZone;
 use DateTime;
@@ -50,13 +52,29 @@ class PurpleProjectSetup
             $timezone_list[$timezone] = "(${pretty_offset}) $timezone";
         }
         return $timezone_list;
-    }
+	}
+	public function apiKeyGenerator($length = 32)
+	{
+		$key = '';
+		list($usec, $sec) = explode(' ', microtime());
+		mt_srand((float) $sec + ((float) $usec * 100000));
+		
+		$inputs = array_merge(range('z','a'),range(0,9),range('A','Z'));
+
+		for ($i = 0; $i < $length; $i++)
+		{
+			$key .= $inputs{mt_rand(0,61)};
+		}
+		return $key;
+	}
 	public function createTable()
 	{
 		$this->conn->execute('CREATE table admins(
 			    id INT AUTO_INCREMENT PRIMARY KEY,
 			    username VARCHAR( 50 ) NOT NULL,
 			    password VARCHAR( 255 ) NOT NULL,
+			    api_key_plain VARCHAR( 255 ) NOT NULL,
+			    api_key VARCHAR( 255 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    photo VARCHAR( 200 ) NULL,
 			    created DATETIME NOT NULL,
@@ -370,15 +388,27 @@ class PurpleProjectSetup
 		/**
 		 * Insert Core admin for debugging
 		 */
+
+		$hasher = new DefaultPasswordHasher();
+
+		// Generate an API 'token'
+		$apiKeyPlain = Security::hash(Security::randomBytes(32), 'sha256', false);
+
+		// Bcrypt the token so BasicAuthenticate can check
+		// it during login.
+		$apiKey = $hasher->hash($apiKeyPlain);
+
 		$this->conn->insert('admins', [
-			'username'     => 'creatifycore',
-			'password'     => $this->hashPassword('altair'),
-			'email'        => 'creatifycms@gmail.com',
-			'photo'        => NULL,
-			'display_name' => 'Core',
-			'level'        => '1',
-			'first_login'  => 'yes',
-			'created'      => Carbon::now('Asia/Makassar')
+			'username'      => 'creatifycore',
+			'password'      => $this->hashPassword('altair'),
+			'api_key_plain' => $apiKeyPlain,
+			'api_key'       => $apiKey,
+			'email'         => 'creatifycms@gmail.com',
+			'photo'         => NULL,
+			'display_name'  => 'Core',
+			'level'         => '1',
+			'first_login'   => 'yes',
+			'created'       => Carbon::now('Asia/Makassar')
 		]);
 
 		/**
@@ -625,6 +655,10 @@ class PurpleProjectSetup
 		$this->conn->insert('settings', [
 			'name'  => 'purpleapipublic',
 			'value' => $this->hashPassword('public-purple is awesome')
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'apiaccesskey',
+			'value' => $this->apiKeyGenerator()
 		]);
 		$this->conn->insert('settings', [
 			'name'  => 'twiliosid',

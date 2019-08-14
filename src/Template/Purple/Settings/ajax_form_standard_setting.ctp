@@ -44,13 +44,13 @@
             }
             elseif ($name == 'postlimitperpage') {
                 echo $this->Form->text('value', [
-                    'type'                   => 'number',
-                    'class'                  => 'form-control', 
-                    'placeholder'            => $title,
-                    'data-parsley-type'      => 'integer',
-                    'min'                    => '1',
-                    'autofocus'              => 'autofocus',
-                    'value'                  => $value
+                    'type'              => 'number',
+                    'class'             => 'form-control', 
+                    'placeholder'       => $title,
+                    'data-parsley-type' => 'integer',
+                    'min'               => '1',
+                    'autofocus'         => 'autofocus',
+                    'value'             => $value
                 ]);
             }
             elseif ($name == 'postpermalink') {
@@ -171,11 +171,11 @@
             }
             elseif ($name == 'smtppassword') {
                 echo $this->Form->password('value', [
-                    'class'                  => 'form-control', 
-                    'placeholder'            => $title,
-                    'required'               => 'required',
-                    'autofocus'              => 'autofocus',
-                    'value'                  => $value
+                    'class'       => 'form-control', 
+                    'placeholder' => $title,
+                    'required'    => 'required',
+                    'autofocus'   => 'autofocus',
+                    'value'       => $value
 
                 ]);
             }
@@ -233,12 +233,12 @@
             }
             elseif ($name == 'googleanalyticscode') {
                 echo $this->Form->textarea('value', [
-                    'id'                     => 'fdb-code-editor-ace',
-                    'class'                  => 'form-control uk-height-medium', 
-                    'placeholder'            => 'Place your Google Analytics Code here',
-                    'rows'                   => '5',
-                    'autofocus'              => 'autofocus',
-                    'value'                  => $value
+                    'id'          => 'fdb-code-editor-ace',
+                    'class'       => 'form-control uk-height-medium', 
+                    'placeholder' => 'Place your Google Analytics Code here',
+                    'rows'        => '5',
+                    'autofocus'   => 'autofocus',
+                    'value'       => $value
 
                 ]);
             }
@@ -256,12 +256,37 @@
                 );
             }
             elseif ($name == 'productionkey') {
+                echo '<div class="uk-inline" style="width: 100%"><a title="Copy Production Key" class="uk-form-icon uk-form-icon-flip icon-copy-key" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-key"></a>';
                 echo $this->Form->text('value', [
-                    'class'                  => 'form-control', 
-                    'placeholder'            => $title,
-                    'value'                  => $value,
-                    'readonly'               => 'readonly'
+                    'id'          => 'purple-key',
+                    'class'       => 'uk-input', 
+                    'placeholder' => $title,
+                    'value'       => $value,
+                    'readonly'    => 'readonly'
                 ]);
+                echo '</div>';
+            }
+            elseif ($name == 'apiaccesskey') {
+                echo '<div class="uk-inline" style="width: 100%"><a title="Copy API Access Key" class="uk-form-icon uk-form-icon-flip icon-copy-key" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-key"></a>';
+                echo $this->Form->text('value', [
+                    'id'          => 'purple-key',
+                    'class'       => 'uk-input', 
+                    'placeholder' => $title,
+                    'value'       => $value,
+                    'readonly'    => 'readonly'
+                ]);
+                echo '</div>';
+            }
+            elseif ($name == 'apisecretkey') {
+                echo '<div class="uk-inline" style="width: 100%"><a title="Copy API Secret Key" class="uk-form-icon uk-form-icon-flip icon-copy-key" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-key"></a>';
+                echo $this->Form->text('value', [
+                    'id'          => 'purple-key',
+                    'class'       => 'uk-input', 
+                    'placeholder' => $title,
+                    'value'       => $value,
+                    'readonly'    => 'readonly'
+                ]);
+                echo '</div>';
             }
             else {
                 echo $this->Form->text('value', [
@@ -286,10 +311,10 @@
         }
     
         echo $this->Form->button('Cancel', [
-            'id'           => 'button-close-modal',
-            'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-            'type'         => 'button',
-            'data-target'  => '.purple-modal'
+            'id'          => 'button-close-modal',
+            'class'       => 'btn btn-outline-primary uk-margin-left uk-modal-close',
+            'type'        => 'button',
+            'data-target' => '.purple-modal'
         ]);
     ?>
 </div>

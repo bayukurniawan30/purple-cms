@@ -21,7 +21,7 @@ class VisitorsTable extends Table
         $timezone        = $session->read('Purple.timezone');
         $settingTimezone = $session->read('Purple.settingTimezone');
 
-        $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
+        $date = new \DateTime(date('Y-m-d H:i:s'), new \DateTimeZone($settingTimezone));
         $date->setTimezone(new \DateTimeZone($timezone));
         $formattedDate = $date->format('Y-m-d');
         $formattedTime = $date->format('H:i:s');

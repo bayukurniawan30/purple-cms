@@ -4,6 +4,9 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
+use Cake\Auth\DefaultPasswordHasher;
+use Cake\Utility\Text;
+use Cake\Utility\Security;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 
@@ -43,7 +46,16 @@ class AdminsTable extends Table
 		$entity->email        = trim(strtolower($entity->email));
 
 		if ($entity->isNew()) {
-			$entity->created  = $date;
+            $entity->created  = $date;
+            
+            $hasher = new DefaultPasswordHasher();
+
+            // Generate an API 'token'
+            $entity->api_key_plain = Security::hash(Security::randomBytes(32), 'sha256', false);
+
+            // Bcrypt the token so BasicAuthenticate can check
+            // it during login.
+            $entity->api_key = $hasher->hash($entity->api_key_plain);
 		}
 		else {
 			$entity->modified = $date;
@@ -54,7 +66,7 @@ class AdminsTable extends Table
             else {
                 $entity->photo = trim($entity->photo);
             }
-		}
+        }
 	}
 	protected function _getCreated($created)
     {
@@ -103,5 +115,22 @@ class AdminsTable extends Table
 	{
 		$admin = $this->find()->all()->last();
 		return $admin;
-	}
+    }
+    public function checkUserKey($key)
+    {
+        $admins = $this->find();
+        $array  = []; 
+        foreach ($admins as $admin) {
+            $email    = $admin->email;
+            $password = $admin->password;
+            $array[md5($email.'::'.$password)] = $admin;
+        }
+
+        if (array_key_exists($key, $array)) {
+            return $array[$key];
+        }
+        else {
+            return false;
+        }
+    }
 }

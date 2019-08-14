@@ -136,6 +136,7 @@
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'maintenance']); ?>">Maintenance</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'personalize']); ?>">Personalize</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'security']); ?>">Security</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'api']); ?>">API</a></li>
                 </ul>
             </div>
         </li>

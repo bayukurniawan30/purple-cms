@@ -14,7 +14,7 @@ class CommentStatusForm extends Form
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
-                            'message' => 'Post id must be an integer value'
+                            'message' => 'Comment id must be an integer value'
                         ]
                     ])
                   ->requirePresence('status')

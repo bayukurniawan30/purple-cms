@@ -7,6 +7,7 @@ use Cake\Core\Configure;
 use Cake\ORM\Query;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Http\Exception\UnauthorizedException;
 use App\Form\Purple\AdminLoginForm;
 use App\Form\Purple\ForgotPasswordForm;
 use App\Form\Purple\NewPasswordForm;
@@ -93,6 +94,16 @@ class AuthenticateController extends AppController
             $saveActivity   = $this->Histories->saveActivity($options);
         }
         return $this->setAction('login');
+	}
+	public function loginApi()
+	{
+		$user = $this->Auth->identify();
+		if ($user && $user['level'] == '1') {
+			$this->Auth->setUser($user);
+		} 
+		else {
+	        throw new UnauthorizedException(__('Unauthorized'));
+        }
 	}
 	public function ajaxLogin() 
 	{

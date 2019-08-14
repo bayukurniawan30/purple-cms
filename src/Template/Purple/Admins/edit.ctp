@@ -111,40 +111,61 @@
     </div>
 
     <div class="col-md-5 grid-margin">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title uk-margin-remove-bottom">Profile Picture</h4>
-            </div>
-            <div class="card-body">
-                <?php if ($adminData->photo != NULL): ?>
-                <!-- <p class="card-description">
-                    Current photo
-                </p> -->
-
-                <div class="existing-profile-picture" style="width: 100%">
-                    <img src="<?= $this->request->webroot . 'uploads/images/original/' . $adminData->photo ?>">
-                </div>
-                <?php endif; ?>
-
-                <p class="card-description">
-                    Or upload image files with format .jpg, .jpeg, or .png
-                </p>
-
-                <div id="drag-and-drop-zone" class="dm-uploader text-center">
-                    <h3 class="mb-5 mt-5 text-muted">Drag &amp; drop files here</h3>
-
-                    <div class="btn btn-primary  mb-5">
-                        <span>Open the file Browser</span>
-                        <input type="file" title='Click to add Files' />
+        <div class="row">
+            <div class="col-md-12 grid-margin">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title uk-margin-remove-bottom">User Key</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="uk-alert-primary" uk-alert>
+                            <p>User key is used for API request from external application.</p>
+                        </div>
+                        <div class="uk-inline" style="width: 100%">
+                            <a title="Copy User Key" class="uk-form-icon uk-form-icon-flip icon-copy-key" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-user-key" uk-tooltip="title: Copy User Key; pos: bottom"></a>
+                            <input id="purple-user-key" class="uk-input" type="text" value="<?= $adminData->api_key_plain ?>" readonly>
+                        </div>
                     </div>
                 </div>
-                <!-- /uploader -->
-                <p id="show-progress-button" class="">
-                    <button id="button-toggle-progress" type="button" class="btn btn-gradient-primary btn-icon-text btn-sm" data-toggle="collapse" href="#collapse-uploader-result" role="button" aria-expanded="false" aria-controls="collapse-uploader-result">
-                        <i class="mdi mdi-format-list-bulleted-type btn-icon-prepend"></i>
-                        Show Progress
-                    </button>
-                </p>
+            </div>
+
+            <div class="col-md-12 grid-margin">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title uk-margin-remove-bottom">Profile Picture</h4>
+                    </div>
+                    <div class="card-body">
+                        <?php if ($adminData->photo != NULL): ?>
+                        <!-- <p class="card-description">
+                            Current photo
+                        </p> -->
+
+                        <div class="existing-profile-picture" style="width: 100%">
+                            <img src="<?= $this->request->webroot . 'uploads/images/original/' . $adminData->photo ?>">
+                        </div>
+                        <?php endif; ?>
+
+                        <p class="card-description">
+                            Or upload image files with format .jpg, .jpeg, or .png
+                        </p>
+
+                        <div id="drag-and-drop-zone" class="dm-uploader text-center">
+                            <h3 class="mb-5 mt-5 text-muted">Drag &amp; drop files here</h3>
+
+                            <div class="btn btn-primary  mb-5">
+                                <span>Open the file Browser</span>
+                                <input type="file" title='Click to add Files' />
+                            </div>
+                        </div>
+                        <!-- /uploader -->
+                        <p id="show-progress-button" class="">
+                            <button id="button-toggle-progress" type="button" class="btn btn-gradient-primary btn-icon-text btn-sm" data-toggle="collapse" href="#collapse-uploader-result" role="button" aria-expanded="false" aria-controls="collapse-uploader-result">
+                                <i class="mdi mdi-format-list-bulleted-type btn-icon-prepend"></i>
+                                Show Progress
+                            </button>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

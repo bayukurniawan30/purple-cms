@@ -12,6 +12,8 @@ use App\Purple\PurpleProjectApi;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\Utility\Text;
+use Cake\Utility\Security;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
@@ -187,15 +189,24 @@ class SetupController extends AppController
 	                
 	                $hasher        = new DefaultPasswordHasher();
 	                $passwordInput = trim($this->request->getData('password'));
-	                $hashPassword  = $hasher->hash(trim($this->request->getData('password')));
+					$hashPassword  = $hasher->hash(trim($this->request->getData('password')));
+					
+					// Generate an API 'token'
+					$apiKeyPlain = Security::hash(Security::randomBytes(32), 'sha256', false);
 
-					$admin->username     = trim($this->request->getData('username'));
-					$admin->password     = $passwordInput;
-					$admin->email        = trim($this->request->getData('email'));
-					$admin->level        = '1';
-					$admin->created      = Carbon::now($timezone);
-					$admin->display_name = trim($this->request->getData('username'));
-					$admin->first_login  = 'yes';
+					// Bcrypt the token so BasicAuthenticate can check
+					// it during login.
+					$apiKey = $hasher->hash($apiKeyPlain);
+
+					$admin->username      = trim($this->request->getData('username'));
+					$admin->password      = $passwordInput;
+					$admin->api_key_plain = $apiKeyPlain;
+					$admin->api_key       = $apiKey;
+					$admin->email         = trim($this->request->getData('email'));
+					$admin->level         = '1';
+					$admin->created       = Carbon::now($timezone);
+					$admin->display_name  = trim($this->request->getData('username'));
+					$admin->first_login   = 'yes';
 
 					$updateSitename = $connection->update('settings', ['value' => trim($this->request->getData('sitename'))], ['name' => 'sitename']);
 					$updateSiteurl  = $connection->update('settings', ['value' => $this->request->getData('siteurl')], ['name' => 'siteurl']);

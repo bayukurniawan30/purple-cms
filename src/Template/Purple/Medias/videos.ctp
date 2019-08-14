@@ -97,7 +97,7 @@
                 'id'                    => 'form-edit-media', 
                 'class'                 => 'pt-3', 
                 'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-videos-update']
+                'url'                   => ['action' => 'ajax-update-videos']
             ]);
 
             echo $this->Form->hidden('id');

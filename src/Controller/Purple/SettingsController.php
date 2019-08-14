@@ -169,6 +169,19 @@ class SettingsController extends AppController
         ];
         $this->set($data);
     }
+    public function api()
+    {
+        $queryApiAccessKey = $this->Settings->find()->where(['name' => 'apiaccesskey'])->first();
+        $queryApiSecretKey = $this->Settings->find()->where(['name' => 'apisecretkey'])->first();
+
+        $data = [
+            'pageTitle'           => 'API',
+            'pageBreadcrumb'      => 'Settings::API',
+            'settingApiAccessKey' => $queryApiAccessKey,
+            'settingApiSecretKey' => $queryApiSecretKey
+        ];
+        $this->set($data);
+    }
     public function posts()
     {
         $queryPostLimit     = $this->Settings->find()->where(['name' => 'postlimitperpage'])->first();

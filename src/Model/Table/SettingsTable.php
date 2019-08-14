@@ -150,6 +150,11 @@ class SettingsTable extends Table
         $apikey = $this->find()->where(['name' => 'purpleapipublic'])->first();
         return $apikey->value;
     }
+    public function settingsApiAccessKey() 
+    {
+        $apikey = $this->find()->where(['name' => 'apiaccesskey'])->first();
+        return $apikey->value;
+    }
     public function settingsTwilioSid() 
     {
         $twilio = $this->find()->where(['name' => 'twiliosid'])->first();

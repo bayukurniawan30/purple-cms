@@ -67,10 +67,15 @@ class MenusTable extends Table
             return $date->format('Y-m-d H:i:s');
         }
 	}
-	public function fetchPublishedMenus() 
+	public function fetchPublishedMenus($id = NULL) 
 	{
-		$menus = $this->find('all')->contain('Pages')->where(['Menus.status' => 1])->order(['Menus.ordering' => 'ASC']);
-		
+		if ($id == NULL) {
+			$menus = $this->find('all')->contain('Pages')->where(['Menus.status' => 1])->order(['Menus.ordering' => 'ASC']);
+		}
+		else {
+			$menus = $this->find('all')->contain('Pages')->where(['Menus.status' => 1, 'Menus.id' => $id])->order(['Menus.ordering' => 'ASC'])->limit(1);
+		}
+
 		if ($menus->count() > 0) {
 			$json  = [];
 			$i = 0;

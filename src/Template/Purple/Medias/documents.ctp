@@ -97,7 +97,7 @@
                 'id'                    => 'form-edit-media', 
                 'class'                 => 'pt-3', 
                 'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-documents-update']
+                'url'                   => ['action' => 'ajax-update-documents']
             ]);
 
             echo $this->Form->hidden('id');
@@ -185,7 +185,7 @@
                 'id'                    => 'form-delete-media', 
                 'class'                 => 'pt-3', 
                 'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-documents-delete']
+                'url'                   => ['action' => 'ajax-delete-documents']
             ]);
 
             echo $this->Form->hidden('id');
@@ -218,7 +218,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         <?php
-            if (count($docs) > 0):
+            if ($docs->count() > 0):
         ?>
         $('.purple-datatable').DataTable({
             "columnDefs": [{

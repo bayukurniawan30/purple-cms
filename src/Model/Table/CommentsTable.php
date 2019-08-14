@@ -91,7 +91,9 @@ class CommentsTable extends Table
 	}
 	public function publishedComments($blogId, $type = 'fetch')
 	{
-        $query = $this->find('all')->contain(['Admins']);
+        $query = $this->find('all', [
+            'order' => ['Comments.created' => 'DESC']
+        ])->contain(['Admins']);
         if ($type == 'fetch') {
         	return $query->where(['Comments.status <>' => '0', 'Comments.blog_id' => $blogId, 'Comments.admin_id IS' => NULL]);
         }

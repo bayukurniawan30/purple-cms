@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;

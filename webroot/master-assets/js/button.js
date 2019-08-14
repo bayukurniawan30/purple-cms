@@ -372,6 +372,17 @@ $(document).ready(function() {
         var createToast = notifToast('Permalink', 'Error copy link', 'error', true);
     });
 
+    var clipboardIconKey = new ClipboardJS('.icon-copy-key');
+
+    clipboardIconKey.on('success', function(e) {
+        var createToast = notifToast('Key', 'key has been copied', 'success', true, 1500);
+        e.clearSelection();
+    });
+
+    clipboardIconKey.on('error', function(e) {
+        var createToast = notifToast('Key', 'Error copy key', 'error', true);
+    });
+
     $(".button-open-page").on("click", function() {
         var target = $("#purple-permalink").val();
         window.open(target);

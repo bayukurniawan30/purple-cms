@@ -306,6 +306,9 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/', 
 			['controller' => 'Authenticate', 'action' => 'login'], 
 			['_name' => 'adminLogin']);
+	$routes->connect('/', 
+			['controller' => 'Authenticate', 'action' => 'loginApi'], 
+			['_name' => 'adminLoginApi']);
 	$routes->connect('/reset-password/token/:token', 
 			['controller' => 'Authenticate', 'action' => 'reset-password'], 
 			['_name' => 'adminResetPassword'])
@@ -642,4 +645,378 @@ Router::prefix('purple', function ($routes) {
 		->setPass(['search'])
 		->setMethods(['POST']
 	);
+});
+
+/**
+ *  API route
+ */
+
+Router::prefix('api', function ($routes) {
+	$apiVersion     = 'v1';
+	$apiVersionName = 'Version1';
+	$routeName  	= 'api' . $apiVersion;
+
+	/**
+	 * Posts Routes
+	 */
+
+	// Fetch All Posts Without Page
+	/**
+	 * Query String
+	 * order_by => title, created
+	 * order    => asc, desc
+	 * paging
+	 * limit
+	 */
+	$routes->connect('/' . $apiVersion . '/posts/view', 
+			['controller' => 'Posts', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewPosts'])
+		->setMethods(['GET']);
+
+	// Fetch All Posts in Specific Page
+	/**
+	 * Query String
+	 * order_by => title, created
+	 * order    => asc, desc
+	 * paging
+	 * limit
+	 */
+	$routes->connect('/' . $apiVersion . '/posts/view/in/:page', 
+			['controller' => 'Posts', 'action' => 'viewInPage'], 
+			['_name' => $routeName . 'ViewPostsInPage'])
+		->setPass(['page'])
+		->setMethods(['GET']);
+
+	// Fetch All Posts in Specific Category
+	/**
+	 * Query String
+	 * order_by => title, created
+	 * order    => asc, desc
+	 * paging
+	 * limit
+	 */
+	$routes->connect('/' . $apiVersion . '/posts/:category/view', 
+			['controller' => 'Posts', 'action' => 'viewByCategory'], 
+			['_name' => $routeName . 'ViewPostsByCategory'])
+		->setPass(['category'])
+		->setMethods(['GET']);
+
+	// Fetch Post Detail
+	$routes->connect('/' . $apiVersion . '/posts/detail/:slug', 
+			['controller' => 'Posts', 'action' => 'detail'], 
+			['_name' => $routeName . 'PostDetail'])
+		->setPass(['slug'])
+		->setMethods(['GET']);
+
+	/**
+	 * Add, Update, and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Post A New Post
+	$routes->connect('/' . $apiVersion . '/posts/add', 
+			['controller' => 'Posts', 'action' => 'add'], 
+			['_name' => $routeName . 'AddPost'])
+		->setMethods(['POST']);
+
+	// Update a Post
+	$routes->connect('/' . $apiVersion . '/posts/update', 
+			['controller' => 'Posts', 'action' => 'update'], 
+			['_name' => $routeName . 'UpdatePost'])
+		->setMethods(['PUT', 'POST']);
+
+	// Delete a Post
+	$routes->connect('/' . $apiVersion . '/posts/delete', 
+			['controller' => 'Posts', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeletePost'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Post Categories Routes
+	 */
+
+	// Fetch All Post Categories
+	$routes->connect('/' . $apiVersion . '/post-categories/view', 
+			['controller' => 'PostCategories', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewPostCategories'])
+		->setMethods(['GET']);
+
+	// Fetch All Post Categories in Specific Page
+	$routes->connect('/' . $apiVersion . '/post-categories/view/in/:page', 
+			['controller' => 'PostCategories', 'action' => 'viewInPage'], 
+			['_name' => $routeName . 'ViewPostCategoriesInPage'])
+		->setPass(['page'])
+		->setMethods(['GET']);
+
+	// Fetch Post Category Detail
+	$routes->connect('/' . $apiVersion . '/post-categories/detail/:slug', 
+			['controller' => 'PostCategories', 'action' => 'detail'], 
+			['_name' => $routeName . 'PostCategoryDetail'])
+		->setPass(['slug'])
+		->setMethods(['GET']);
+
+	// Get Total Posts in a Post Category
+	$routes->connect('/' . $apiVersion . '/post-categories/total-post/:slug', 
+			['controller' => 'PostCategories', 'action' => 'totalPost'], 
+			['_name' => $routeName . 'PostCategoryTotalPost'])
+		->setPass(['slug'])
+		->setMethods(['GET']);
+
+	/**
+	 * Add, Update, and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Create a New Post Category
+	$routes->connect('/' . $apiVersion . '/post-categories/add', 
+			['controller' => 'PostCategories', 'action' => 'add'], 
+			['_name' => $routeName . 'AddPostCategory'])
+		->setMethods(['POST']);
+
+	// Update a Post Category
+	$routes->connect('/' . $apiVersion . '/post-categories/update', 
+			['controller' => 'PostCategories', 'action' => 'update'], 
+			['_name' => $routeName . 'UpdatePostCategory'])
+		->setMethods(['PUT', 'POST']);
+
+	// Delete a Post Category
+	$routes->connect('/' . $apiVersion . '/post-categories/delete', 
+			['controller' => 'PostCategories', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeletePostCategory'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Post Comments Routes
+	 */
+
+	// Fetch All Comments in Specific Post
+	$routes->connect('/' . $apiVersion . '/post-comments/:blogId/view', 
+			['controller' => 'PostComments', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewPostComments'])
+		->setPass(['blogId'])
+		->setMethods(['GET']);
+
+	// Send a Comment to Post 
+	$routes->connect('/' . $apiVersion . '/post-comments/send', 
+			['controller' => 'PostComments', 'action' => 'send'], 
+			['_name' => $routeName . 'AddPostComment'])
+		->setMethods(['POST']);
+
+	/**
+	 * changeStatus and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Change Status of a Comment
+	$routes->connect('/' . $apiVersion . '/post-comments/change-status', 
+			['controller' => 'PostComments', 'action' => 'changeStatus'], 
+			['_name' => $routeName . 'changeStatusPostComment'])
+		->setMethods(['PATCH', 'POST']);
+
+	// Delete a Comment
+	$routes->connect('/' . $apiVersion . '/post-comments/delete', 
+			['controller' => 'PostComments', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeletePostComment'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Social Account Routes
+	 */
+
+	// Fetch All Social Accounts
+	$routes->connect('/' . $apiVersion . '/social-accounts/view', 
+			['controller' => 'SocialAccounts', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewSocialAccounts'])
+		->setMethods(['GET']);
+
+	// Fetch Social Account Detail
+	$routes->connect('/' . $apiVersion . '/social-accounts/detail/:account', 
+			['controller' => 'SocialAccounts', 'action' => 'detail'], 
+			['_name' => $routeName . 'SocialAccountDetail'])
+		->setPass(['account'])
+		->setMethods(['GET']);
+
+	/**
+	 * Add, Update, and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Create a New Social Account
+	$routes->connect('/' . $apiVersion . '/social-accounts/add', 
+			['controller' => 'SocialAccounts', 'action' => 'add'], 
+			['_name' => $routeName . 'AddSocialAccount'])
+		->setMethods(['POST']);
+
+	// Update a Social Account
+	$routes->connect('/' . $apiVersion . '/social-accounts/update', 
+			['controller' => 'SocialAccounts', 'action' => 'update'], 
+			['_name' => $routeName . 'UpdateSocialAccount'])
+		->setMethods(['PATCH', 'POST']);
+
+	// Delete a Social Account
+	$routes->connect('/' . $apiVersion . '/social-accounts/delete', 
+			['controller' => 'SocialAccounts', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeleteSocialAccount'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Subscriber Routes
+	 */
+
+	// Fetch All Subscribers
+	$routes->connect('/' . $apiVersion . '/subscribers/view', 
+			['controller' => 'Subscribers', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewSubscribers'])
+		->setMethods(['GET']);
+
+	// Fetch Subscriber Detail
+	$routes->connect('/' . $apiVersion . '/subscribers/detail/:id', 
+			['controller' => 'Subscribers', 'action' => 'detail'], 
+			['_name' => $routeName . 'SubscriberDetail'])
+		->setPass(['id'])
+		->setPatterns(['id' => '\d+'])
+		->setMethods(['GET']);
+
+	/**
+	 * Add and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Add a New Subscriber
+	$routes->connect('/' . $apiVersion . '/subscribers/add', 
+			['controller' => 'Subscribers', 'action' => 'add'], 
+			['_name' => $routeName . 'AddSubscriber'])
+		->setMethods(['POST']);
+
+	// Delete a Subscriber
+	$routes->connect('/' . $apiVersion . '/subscribers/delete', 
+			['controller' => 'Subscribers', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeleteSubscriber'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Navigations Routes
+	 */
+
+	// Fetch All Navigations
+	$routes->connect('/' . $apiVersion . '/navigations/view', 
+			['controller' => 'Navigations', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewNavigations'])
+		->setMethods(['GET']);
+
+	// Fetch Navigation Detail
+	$routes->connect('/' . $apiVersion . '/navigations/detail/:id', 
+			['controller' => 'Navigations', 'action' => 'detail'], 
+			['_name' => $routeName . 'NavigationDetail'])
+		->setPass(['id'])
+		->setPatterns(['id' => '\d+'])
+		->setMethods(['GET']);
+
+	/**
+	 * Pages Routes
+	 */
+
+	// Fetch All Pages
+	$routes->connect('/' . $apiVersion . '/pages/view', 
+			['controller' => 'Pages', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewPages'])
+		->setMethods(['GET']);
+
+	// Fetch Page Detail
+	$routes->connect('/' . $apiVersion . '/pages/detail/:idOrSlug', 
+			['controller' => 'Pages', 'action' => 'detail'], 
+			['_name' => $routeName . 'PageDetail'])
+		->setPass(['idOrSlug'])
+		->setMethods(['GET']);
+
+	/**
+	 * Settings Routes
+	 */
+
+	// Fetch Setting Value
+	$routes->connect('/' . $apiVersion . '/settings/:name', 
+			['controller' => 'Settings', 'action' => 'detail'], 
+			['_name' => $routeName . 'SettingDetail'])
+		->setPass(['name'])
+		->setMethods(['GET']);
+
+	/**
+	 * Update
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+		
+	// Update a Setting
+	// $routes->connect('/' . $apiVersion . '/settings/update', 
+	// 		['controller' => 'Settings', 'action' => 'update'], 
+	// 		['_name' => $routeName . 'UpdateSetting'])
+	// 	->setMethods(['PATCH', 'POST']);
+
+	/**
+	 * Medias Routes
+	 * Type => images, videos, or documents
+	 */
+
+	// Fetch All Medias from Specific Type
+	$routes->connect('/' . $apiVersion . '/medias/:type/view', 
+			['controller' => 'Medias', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewMedias'])
+		->setPass(['type'])
+		->setMethods(['GET']);
+
+	// Fetch Media Detail
+	$routes->connect('/' . $apiVersion . '/medias/:type/detail/:id', 
+			['controller' => 'Medias', 'action' => 'detail'], 
+			['_name' => $routeName . 'MediaDetail'])
+		->setPass(['type', 'id'])
+		->setPatterns(['id' => '\d+'])
+		->setMethods(['GET']);
+
+	/**
+	 * Add, Update, and Delete
+	 * Need auth (Basic Auth)
+	 * username => Your Purple Username
+	 * password => Purple User Key
+	 */
+
+	// Upload a New Media
+	$routes->connect('/' . $apiVersion . '/medias/:type/add', 
+			['controller' => 'Medias', 'action' => 'add'], 
+			['_name' => $routeName . 'AddMedia'])
+		->setPass(['type'])
+		->setMethods(['POST']);
+
+	// Update a Media
+	// $routes->connect('/' . $apiVersion . '/medias/:type/update', 
+	// 		['controller' => 'Medias', 'action' => 'update'], 
+	// 		['_name' => $routeName . 'UpdateMedia'])
+	// 	->setPass(['type'])
+	// 	->setMethods(['PATCH', 'POST']);
+
+	// Delete a Media
+	$routes->connect('/' . $apiVersion . '/medias/:type/delete', 
+			['controller' => 'Medias', 'action' => 'delete'], 
+			['_name' => $routeName . 'DeleteMedia'])
+		->setPass(['type'])
+		->setMethods(['DELETE']);
+
+	/**
+	 * Visitors Routes
+	 */
+	// Fetch Total Visitors
+	$routes->connect('/' . $apiVersion . '/visitors/view', 
+			['controller' => 'Visitors', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewVisitors'])
+		->setMethods(['GET']);
 });
