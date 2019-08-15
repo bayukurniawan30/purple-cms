@@ -96,9 +96,10 @@
 
                 foreach ($plugins as $plugin):
                     if ($plugin['yes'] == true) {
-                        $pluginNamespace = $plugin['namespace'];
-                        $pluginSidebar   = $plugin['dashboard_sidebar']['name'];
-                        echo $this->element($pluginNamespace . '.' . $pluginSidebar);
+                        $pluginNamespace   = $plugin['namespace'];
+                        $pluginRoutePrefix = $plugin['route_prefix'];
+                        $pluginSidebar     = $plugin['dashboard_sidebar']['name'];
+                        echo $this->element($pluginNamespace . '.' . $pluginSidebar, ['routePrefix' => $pluginRoutePrefix]);
                     }
                 endforeach;
         ?>

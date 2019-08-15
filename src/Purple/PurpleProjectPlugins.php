@@ -25,6 +25,7 @@ class PurpleProjectPlugins
                 $plugins[$pluginStart]['name']              = $decodeJson['name'];
                 $plugins[$pluginStart]['namespace']       	= $decodeJson['namespace'];
                 $plugins[$pluginStart]['author']            = $decodeJson['author'];
+                $plugins[$pluginStart]['route_prefix']      = $decodeJson['route_prefix'];
                 $plugins[$pluginStart]['version']           = $decodeJson['version'];
                 $plugins[$pluginStart]['image']             = $decodeJson['image'];
                 $plugins[$pluginStart]['preview']           = $decodeJson['preview'];
