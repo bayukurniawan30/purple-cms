@@ -702,7 +702,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Post Detail
-	$routes->connect('/' . $apiVersion . '/posts/detail/:slug', 
+	$routes->connect('/' . $apiVersion . '/post/detail/:slug', 
 			['controller' => 'Posts', 'action' => 'detail'], 
 			['_name' => $routeName . 'PostDetail'])
 		->setPass(['slug'])
@@ -751,7 +751,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Post Category Detail
-	$routes->connect('/' . $apiVersion . '/post-categories/detail/:slug', 
+	$routes->connect('/' . $apiVersion . '/post-category/detail/:slug', 
 			['controller' => 'PostCategories', 'action' => 'detail'], 
 			['_name' => $routeName . 'PostCategoryDetail'])
 		->setPass(['slug'])
@@ -836,7 +836,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Social Account Detail
-	$routes->connect('/' . $apiVersion . '/social-accounts/detail/:account', 
+	$routes->connect('/' . $apiVersion . '/social-account/detail/:account', 
 			['controller' => 'SocialAccounts', 'action' => 'detail'], 
 			['_name' => $routeName . 'SocialAccountDetail'])
 		->setPass(['account'])
@@ -878,7 +878,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Subscriber Detail
-	$routes->connect('/' . $apiVersion . '/subscribers/detail/:id', 
+	$routes->connect('/' . $apiVersion . '/subscriber/detail/:id', 
 			['controller' => 'Subscribers', 'action' => 'detail'], 
 			['_name' => $routeName . 'SubscriberDetail'])
 		->setPass(['id'])
@@ -915,7 +915,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Navigation Detail
-	$routes->connect('/' . $apiVersion . '/navigations/detail/:id', 
+	$routes->connect('/' . $apiVersion . '/navigation/detail/:id', 
 			['controller' => 'Navigations', 'action' => 'detail'], 
 			['_name' => $routeName . 'NavigationDetail'])
 		->setPass(['id'])
@@ -933,7 +933,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Page Detail
-	$routes->connect('/' . $apiVersion . '/pages/detail/:idOrSlug', 
+	$routes->connect('/' . $apiVersion . '/page/detail/:idOrSlug', 
 			['controller' => 'Pages', 'action' => 'detail'], 
 			['_name' => $routeName . 'PageDetail'])
 		->setPass(['idOrSlug'])
@@ -944,7 +944,7 @@ Router::prefix('api', function ($routes) {
 	 */
 
 	// Fetch Setting Value
-	$routes->connect('/' . $apiVersion . '/settings/:name', 
+	$routes->connect('/' . $apiVersion . '/setting/:name', 
 			['controller' => 'Settings', 'action' => 'detail'], 
 			['_name' => $routeName . 'SettingDetail'])
 		->setPass(['name'])
@@ -976,7 +976,7 @@ Router::prefix('api', function ($routes) {
 		->setMethods(['GET']);
 
 	// Fetch Media Detail
-	$routes->connect('/' . $apiVersion . '/medias/:type/detail/:id', 
+	$routes->connect('/' . $apiVersion . '/media/:type/detail/:id', 
 			['controller' => 'Medias', 'action' => 'detail'], 
 			['_name' => $routeName . 'MediaDetail'])
 		->setPass(['type', 'id'])
