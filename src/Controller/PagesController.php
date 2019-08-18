@@ -52,6 +52,8 @@ class PagesController extends AppController
     }
     public function initialize()
     {
+        parent::initialize();
+
         $this->loadModel('Settings');
         $this->loadModel('Admins');
         $this->loadModel('Menus');

@@ -48,6 +48,10 @@ class SearchController extends AppController
         $this->viewBuilder()->setTheme('EngageTheme');
         $this->viewBuilder()->setLayout('EngageTheme.default');
     }
+    public function initialize()
+    {
+        parent::initialize();
+    }
     public function index()
     {
         if ($this->request->is('post')) {

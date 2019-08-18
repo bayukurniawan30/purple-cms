@@ -6,6 +6,7 @@ use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
+use Cake\Log\Log;
 
 class VisitorsTable extends Table
 {
@@ -22,7 +23,12 @@ class VisitorsTable extends Table
         $settingTimezone = $session->read('Purple.settingTimezone');
 
         $date = new \DateTime(date('Y-m-d H:i:s'), new \DateTimeZone($settingTimezone));
-        $date->setTimezone(new \DateTimeZone($timezone));
+        if ($session->check('Purple.timezone')) {
+            $date->setTimezone(new \DateTimeZone($timezone));
+        }
+        else {
+            $date->setTimezone(new \DateTimeZone($settingTimezone));
+        }
         $formattedDate = $date->format('Y-m-d');
         $formattedTime = $date->format('H:i:s');
 

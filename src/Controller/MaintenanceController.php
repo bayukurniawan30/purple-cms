@@ -35,6 +35,8 @@ class MaintenanceController extends AppController
     }
     public function initialize()
     {
+        parent::initialize();
+
         if ($this->request->getEnv('HTTP_HOST') == 'localhost') {
             $cakeDebug    = 'on';
             $formSecurity = 'off';
