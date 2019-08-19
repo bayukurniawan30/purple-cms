@@ -52,6 +52,13 @@ class AppController extends Controller
         if ($productionKeyInfo == 'filled') {
             $this->loadModel('Settings');
             $this->set('timeZone', $this->Settings->settingsTimeZone());
+            if (!$session->check('Purple.timezone')) {
+                $session->write('Purple.timezone', $this->Settings->settingsTimeZone());
+            }
+
+            if (!$session->check('Purple.settingTimezone')) {
+                $session->write('Purple.settingTimezone', $this->Settings->settingsTimeZone());
+            }
         }
 
         /*
