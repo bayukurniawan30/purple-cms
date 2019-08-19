@@ -10,6 +10,8 @@ use Carbon\Carbon;
 
 class PurpleProjectGlobal 
 {
+	public $apiDomain = 'https://api.purple-cms.com';
+
 	public function databaseInfo() 
 	{
 		$key     = CIPHER;

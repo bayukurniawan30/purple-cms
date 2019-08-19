@@ -8,6 +8,12 @@ use App\Purple\PurpleProjectGlobal;
 
 class PurpleProjectApi 
 {
+	private function apiPath() 
+	{
+		$purpleGlobal = new PurpleProjectGlobal();
+		$apiPath      = $purpleGlobal->apiDomain;
+		return $apiPath;
+	} 
 	public function verifyEmail($email)
 	{
 		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -18,7 +24,7 @@ class PurpleProjectApi
 				$http         = new Client();
 
 		        // Check email is valid or not
-		        $response     = $http->get('https://api.purple-cms.com/verify/email/'.$email.'.json');
+		        $response     = $http->get($this->apiPath() . '/verify/email/'.$email.'.json');
 		        $verifyResult = $response->body();
 		        $decodeResult = json_decode($verifyResult, true);
 
@@ -44,7 +50,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/administrative-setup', 
+			$response     = $http->post($this->apiPath() . '/action/administrative-setup', 
 								[
 									'key'			=> $key,
 									'dashboardLink' => $dashboardLink,
@@ -75,7 +81,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/forgot-password', 
+			$response     = $http->post($this->apiPath() . '/action/forgot-password', 
 								[
 									'key'        => $key,
 									'resetLink'  => $resetLink,
@@ -106,7 +112,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/new-password', 
+			$response     = $http->post($this->apiPath() . '/action/new-password', 
 								[
 									'key'           => $key,
 									'dashboardLink' => $dashboardLink,
@@ -137,7 +143,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/new-user', 
+			$response     = $http->post($this->apiPath() . '/action/new-user', 
 								[
 									'key'			=> $key,
 									'dashboardLink' => $dashboardLink,
@@ -168,7 +174,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/delete-user', 
+			$response     = $http->post($this->apiPath() . '/action/delete-user', 
 								[
 									'key'			=> $key,
 									'userData'      => $userData,
@@ -198,7 +204,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/post-comment', 
+			$response     = $http->post($this->apiPath() . '/action/post-comment', 
 								[
 									'key'			=> $key,
 									'dashboardLink' => $dashboardLink,
@@ -230,7 +236,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/contact', 
+			$response     = $http->post($this->apiPath() . '/action/contact', 
 								[
 									'key'			=> $key,
 									'dashboardLink' => $dashboardLink,
@@ -261,7 +267,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/online-website', 
+			$response     = $http->post($this->apiPath() . '/action/online-website', 
 								[
 									'key'			=> $key,
 									'userData'      => $userData,
@@ -291,7 +297,7 @@ class PurpleProjectApi
 
 		if ($checkConnection == true) {
 			$http         = new Client();
-			$response     = $http->post('https://api.purple-cms.com/action/user-verification', 
+			$response     = $http->post($this->apiPath() . '/action/user-verification', 
 								[
 									'key'			=> $key,
 									'userData'      => $userData,

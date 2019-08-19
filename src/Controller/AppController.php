@@ -50,6 +50,8 @@ class AppController extends Controller
         $purpleGlobal      = new PurpleProjectGlobal();
         $productionKeyInfo = $purpleGlobal->productionKeyInfo();
         if ($productionKeyInfo == 'filled') {
+            $session  = $this->getRequest()->getSession();
+
             $this->loadModel('Settings');
             $this->set('timeZone', $this->Settings->settingsTimeZone());
             if (!$session->check('Purple.timezone')) {
