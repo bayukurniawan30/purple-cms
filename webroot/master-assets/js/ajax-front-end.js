@@ -58,7 +58,7 @@ $(document).ready(function() {
                 }
                 var $inputs        = $ajaxForm.find("input, button"),
                     $error         = $ajaxForm.find("#form-error-alert");
-                if (typeof customErrCont !== undefined && customErrCont !== false) {
+                if (customErrCont) {
                     var errorContainer = $(customErrCont);
                 }
                 else {
