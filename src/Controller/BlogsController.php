@@ -165,6 +165,7 @@ class BlogsController extends AppController
         $data = [
             'siteName'           => $this->Settings->settingsSiteName(),
             'tagLine'            => $this->Settings->settingsTagLine(),
+            'childPage'          => false,
             'metaKeywords'       => $this->Settings->settingsMetaKeywords(),
             'metaDescription'    => $this->Settings->settingsMetaDescription(),
             'googleAnalytics'    => $this->Settings->settingsAnalyticscode(),
@@ -257,6 +258,7 @@ class BlogsController extends AppController
             ];
 
             if ($pageParent == NULL || $pageParent == '0') {
+                $data['childPage'] = false;
             }
             else {
                 $viewParent = $this->Pages->find('all')->where(['Pages.id' => $pageParent])->limit(1);
@@ -383,6 +385,7 @@ class BlogsController extends AppController
             ];
 
             if ($pageParent == NULL || $pageParent == '0') {
+                $data['childPage'] = false;
             }
             else {
                 $viewParent = $this->Pages->find('all')->where(['Pages.id' => $pageParent])->limit(1);
