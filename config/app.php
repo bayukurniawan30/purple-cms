@@ -405,5 +405,9 @@ return [
      */
     'Session' => [
         'defaults' => 'php',
+        // 'timeout'  => 1440,
+        // 'ini'      => [
+        //     'session.cookie_lifetime' => 1440
+        // ]
     ],
 ];

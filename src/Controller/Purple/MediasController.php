@@ -20,7 +20,7 @@ use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
-use \Gumlet\ImageResize;
+use Particle\Filter\Filter;
 
 class MediasController extends AppController
 {
@@ -28,7 +28,12 @@ class MediasController extends AppController
 
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -36,85 +41,91 @@ class MediasController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
 		parent::initialize();
 
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
+		$this->loadComponent('Paginator');
+
+		$this->viewBuilder()->setLayout('dashboard');
+		$this->loadModel('Admins');
+		$this->loadModel('MediaDocs');
+		$this->loadModel('MediaVideos');
+		$this->loadModel('Settings');
+
+		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+			$cakeDebug = 'on';
+		} 
+		else {
+			$cakeDebug = 'off';
+		}
+
+		$queryAdmin      = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon    = $this->Settings->fetch('favicon');
+		$queryDateFormat = $this->Settings->fetch('dateformat');
+		$queryTimeFormat = $this->Settings->fetch('timeformat');
+
+		$rowCount = $queryAdmin->count();
+		if ($rowCount > 0) {
+			$adminData = $queryAdmin->first();
+			
+			$dashboardSearch = new SearchForm();
+
+			$purpleGlobal = new PurpleProjectGlobal();
+			$protocol     = $purpleGlobal->protocol();
+			
+			// Plugins List
+			$purplePlugins 	= new PurpleProjectPlugins();
+			$plugins		= $purplePlugins->purplePlugins();
+			$this->set('plugins', $plugins);
+			
+			$data = [
+				'sessionHost'        => $sessionHost,
+				'sessionID'          => $sessionID,
+				'sessionPassword'    => $sessionPassword,
+				'cakeDebug'          => $cakeDebug,
+				'adminName'          => ucwords($adminData->display_name),
+				'adminLevel'         => $adminData->level,
+				'adminEmail'         => $adminData->email,
+				'adminPhoto'         => $adminData->photo,
+				'greeting'           => '',
+				'dashboardSearch'    => $dashboardSearch,
+				'title'              => 'Medias | Purple CMS',
+				'pageTitle'          => 'Medias',
+				'pageTitleIcon'      => 'mdi-folder-image',
+				'pageBreadcrumb'     => 'Media',
+				'appearanceFavicon'  => $queryFavicon,
+				'settingsDateFormat' => $queryDateFormat->value,
+				'settingsTimeFormat' => $queryTimeFormat->value,
+				'protocol' 			 => $protocol
+			];
+			$this->set($data);
 		}
 		else {
-			$this->loadComponent('Paginator');
-
-	    	$this->viewBuilder()->setLayout('dashboard');
-	    	$this->loadModel('Admins');
-			$this->loadModel('MediaDocs');
-			$this->loadModel('MediaVideos');
-			$this->loadModel('Settings');
-			$this->loadModel('Histories');
-
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
-
-			$queryAdmin      = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-			$queryFavicon    = $this->Settings->find()->where(['name' => 'favicon'])->first();
-			$queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
-			$queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
-				
-				$dashboardSearch = new SearchForm();
-
-				$purpleGlobal = new PurpleProjectGlobal();
-				$protocol     = $purpleGlobal->protocol();
-				
-				// Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-				
-				$data = [
-					'sessionHost'        => $sessionHost,
-					'sessionID'          => $sessionID,
-					'sessionPassword'    => $sessionPassword,
-                    'cakeDebug'          => $cakeDebug,
-					'adminName'          => ucwords($adminData->display_name),
-					'adminLevel'         => $adminData->level,
-					'adminEmail'         => $adminData->email,
-					'adminPhoto'         => $adminData->photo,
-                    'greeting'           => '',
-					'dashboardSearch'    => $dashboardSearch,
-					'title'              => 'Medias | Purple CMS',
-					'pageTitle'          => 'Medias',
-					'pageTitleIcon'      => 'mdi-folder-image',
-					'pageBreadcrumb'     => 'Media',
-					'appearanceFavicon'  => $queryFavicon,
-					'settingsDateFormat' => $queryDateFormat->value,
-					'settingsTimeFormat' => $queryTimeFormat->value,
-					'protocol' 			 => $protocol
-		    	];
-	        	$this->set($data);
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
+			return $this->redirect(
+				['controller' => 'Authenticate', 'action' => 'login']
+			);
+		}
 	}
 	public function documents()
 	{
@@ -236,6 +247,7 @@ class MediasController extends AppController
 			if (!empty($this->request->getData('file'))) {
 				$session   = $this->getRequest()->getSession();
 				$sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
 			    $purpleSettings = new PurpleProjectSettings();
 			    $timezone       = $purpleSettings->timezone();
@@ -264,33 +276,13 @@ class MediasController extends AppController
 						if (file_exists($image->getFullPath())) {
 							$readImageFile   = new File($image->getFullPath());
 							$imageSize       = $readImageFile->size();
-							/**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$fullSize        = new ImageResize($image->getFullPath());
-								$fullSize->save($fullSizeImage . $generatedName);
-							 */
-							$fullSize = Image::open($image->getFullPath())->save($fullSizeImage . $generatedName, 'guess', 90);
-							/**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$thumbnailSquare = new ImageResize($image->getFullPath());
-								$thumbnailSquare->crop(300, 300);
-								$thumbnailSquare->save($uploadedThumbnailSquare . $generatedName);
-							 */
-							$thumbnailSquare = Image::open($image->getFullPath())
-											    ->zoomCrop(300, 300)
-											    ->save($uploadedThumbnailSquare . $generatedName, 'guess', 90);
-						    /**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$thumbnailLandscape = new ImageResize($image->getFullPath());
-								$thumbnailLandscape->crop(480, 270);
-								$thumbnailLandscape->save($uploadedThumbnailLandscape . $generatedName);
-							 */
+							$fullSize 			= Image::open($image->getFullPath())->save($fullSizeImage . $generatedName, 'guess', 90);
+							$thumbnailSquare 	= Image::open($image->getFullPath())
+											    	->zoomCrop(300, 300)
+											    	->save($uploadedThumbnailSquare . $generatedName, 'guess', 90);
 						    $thumbnailLandscape = Image::open($image->getFullPath())
-											    ->zoomCrop(480, 270)
-											    ->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);
+											    	->zoomCrop(480, 270)
+											    	->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);
 
 							$media = $this->Medias->newEntity();
 
@@ -303,25 +295,11 @@ class MediasController extends AppController
 								$readImageFile   = new File($image->getFullPath());
 								$deleteImage     = $readImageFile->delete();
 
-								/**
-				                 * Save user activity to histories table
-				                 * array $options => title, detail, admin_id
-				                 */
-				                
-				                $options = [
-				                    'title'    => 'Addition of New Media Image',
-				                    'detail'   => ' add '.$generatedName.' to media images.',
-				                    'admin_id' => $sessionID
-				                ];
+								// Tell system for new event
+								$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'image', 'save' => 'new']);
+								$this->getEventManager()->dispatch($event);
 
-			                    $saveActivity   = $this->Histories->saveActivity($options);
-
-				                if ($saveActivity == true) {
-								    $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $imageSize, 'activity' => true]);
-				                }
-				                else {
-								    $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $imageSize, 'activity' => false]);
-				                }
+								$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $imageSize, 'activity' => $event->getResult()]);
 							}
 							else {
 								$json = json_encode(['status' => 'error', 'error' => "Can't save image file. Please try again."]);
@@ -378,6 +356,7 @@ class MediasController extends AppController
             if ($mediaImageModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
                 
                 $media = $this->Medias->get($this->request->getData('id'));
 
@@ -385,27 +364,11 @@ class MediasController extends AppController
                 $media->description = $this->request->getData('description');
 
                 if ($this->Medias->save($media)) {
-                    /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $media = $this->Medias->get($this->request->getData('id'));
+					// Tell system for new event
+					$event = new Event('Model.Media.afterSave', $this, ['media' => $media->name, 'admin' => $admin, 'type' => 'image', 'save' => 'update']);
+					$this->getEventManager()->dispatch($event);
 
-	                $options = [
-	                    'title'    => 'Data Change of a Media Image',
-	                    'detail'   => ' change '.$media->name.' data from media images.',
-	                    'admin_id' => $sessionID
-	                ];
-
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -431,6 +394,7 @@ class MediasController extends AppController
             if ($mediaImageDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $media      = $this->Medias->get($this->request->getData('id'));
                 $imagePath  = $media->name;
@@ -447,25 +411,11 @@ class MediasController extends AppController
                 $result = $this->Medias->delete($entity);
 
                 if ($result && $readImageFile->delete() && $readImageSquare->delete() && $readImageLandscape->delete()) {
-                    /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $options = [
-	                    'title'    => 'Deletion of a Media Image',
-	                    'detail'   => ' delete '.$imagePath.' from media images.',
-	                    'admin_id' => $sessionID
-	                ];
+					// Tell system for new event
+					$event = new Event('Model.Media.afterDelete', $this, ['media' => $imagePath, 'admin' => $admin, 'type' => 'image']);
+					$this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -489,6 +439,7 @@ class MediasController extends AppController
 		if ($this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
+			$admin     = $this->Admins->get($sessionID);
 
             $purpleSettings = new PurpleProjectSettings();
             $timezone       = $purpleSettings->timezone();
@@ -516,25 +467,11 @@ class MediasController extends AppController
                     $doc->admin_id = $sessionID;
 
                     if ($this->MediaDocs->save($doc)) {
-                    	/**
-		                 * Save user activity to histories table
-		                 * array $options => title, detail, admin_id
-		                 */
-		                
-		                $options = [
-		                    'title'    => 'Addition of New Media Document',
-		                    'detail'   => ' add '.$generatedName.' to media documents.',
-		                    'admin_id' => $sessionID
-		                ];
+						// Tell system for new event
+						$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'document', 'save' => 'new']);
+						$this->getEventManager()->dispatch($event);
 
-	                    $saveActivity   = $this->Histories->saveActivity($options);
-
-		                if ($saveActivity == true) {
-	                        $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => true]);
-		                }
-		                else {
-	                        $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => false]);
-		                }
+						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save document file. Please try again."]);
@@ -575,6 +512,7 @@ class MediasController extends AppController
             if ($mediaDocumentModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $doc       = $this->MediaDocs->get($this->request->getData('id'));
 
@@ -582,27 +520,11 @@ class MediasController extends AppController
                 $doc->description = $this->request->getData('description');
 
                 if ($this->MediaDocs->save($doc)) {
-                    /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $doc = $this->MediaDocs->get($this->request->getData('id'));
+					// Tell system for new event
+					$event = new Event('Model.Media.afterSave', $this, ['media' => $doc->name, 'admin' => $admin, 'type' => 'document', 'save' => 'update']);
+					$this->getEventManager()->dispatch($event);
 
-	                $options = [
-	                    'title'    => 'Data Change of a Media Document',
-	                    'detail'   => ' change '.$doc->name.' data from media documents.',
-	                    'admin_id' => $sessionID
-	                ];
-
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -628,6 +550,7 @@ class MediasController extends AppController
             if ($mediaDocumentDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $doc       = $this->MediaDocs->get($this->request->getData('id'));
                 $filePath  = $doc->name;
@@ -642,25 +565,11 @@ class MediasController extends AppController
                 $result = $query->execute();
 
                 if ($result && $readDocumentFile->delete()) {
-                    /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $options = [
-	                    'title'    => 'Deletion of a Media Document',
-	                    'detail'   => ' delete '.$filePath.' from media documents.',
-	                    'admin_id' => $sessionID
-	                ];
+					// Tell system for new event
+					$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'document']);
+					$this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -684,6 +593,7 @@ class MediasController extends AppController
 		if ($this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
+			$admin     = $this->Admins->get($sessionID);
 
             $purpleSettings = new PurpleProjectSettings();
             $timezone       = $purpleSettings->timezone();
@@ -711,25 +621,11 @@ class MediasController extends AppController
                     $video->admin_id = $sessionID;
 
                     if ($this->MediaVideos->save($video)) {
-                        /**
-		                 * Save user activity to histories table
-		                 * array $options => title, detail, admin_id
-		                 */
-		                
-		                $options = [
-		                    'title'    => 'Addition of New Media Video',
-		                    'detail'   => ' add '.$generatedName.' to media videos.',
-		                    'admin_id' => $sessionID
-		                ];
+						// Tell system for new event
+						$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'video', 'save' => 'new']);
+						$this->getEventManager()->dispatch($event);
 
-	                    $saveActivity   = $this->Histories->saveActivity($options);
-
-		                if ($saveActivity == true) {
-	                        $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => true]);
-		                }
-		                else {
-	                        $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => false]);
-		                }
+						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save video file. Please try again."]);
@@ -770,6 +666,7 @@ class MediasController extends AppController
             if ($mediaVideoModal->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $video = $this->MediaVideos->get($this->request->getData('id'));
 
@@ -777,27 +674,11 @@ class MediasController extends AppController
                 $video->description = $this->request->getData('description');
 
                 if ($this->MediaVideos->save($video)) {
-                	/**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $video = $this->MediaVideos->get($this->request->getData('id'));
+					// Tell system for new event
+					$event = new Event('Model.Media.afterSave', $this, ['media' => $video->name, 'admin' => $admin, 'type' => 'video', 'save' => 'update']);
+					$this->getEventManager()->dispatch($event);
 
-	                $options = [
-	                    'title'    => 'Data Change of a Media Video',
-	                    'detail'   => ' change '.$video->name.' data from media videos.',
-	                    'admin_id' => $sessionID
-	                ];
-
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -823,6 +704,7 @@ class MediasController extends AppController
             if ($mediaVideoDelete->execute($this->request->getData())) {
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $video    = $this->MediaVideos->get($this->request->getData('id'));
                 $filePath = $video->name;
@@ -836,26 +718,11 @@ class MediasController extends AppController
                 $result = $query->execute();
 
                 if ($result && $readVideoFile->delete()) {
-                    $json = json_encode(['status' => 'ok']);
-                    /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $options = [
-	                    'title'    => 'Deletion of a Media Video',
-	                    'detail'   => ' delete '.$filePath.' from media videos.',
-	                    'admin_id' => $sessionID
-	                ];
+					// Tell system for new event
+					$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'video']);
+					$this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

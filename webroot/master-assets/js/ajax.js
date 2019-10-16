@@ -61,6 +61,17 @@ $(document).ready(function() {
             else
                 ajaxButtonNormalState  = customButtonNormal;
         }
+        else if(action == 'fetch') {
+            if (customButtonLoading == false)
+                var ajaxButtonLoadingState = '<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Data...';
+            else
+                ajaxButtonLoadingState = customButtonLoading;
+
+            if (customButtonNormal == false)
+                var ajaxButtonNormalState  = $ajaxButton.html();
+            else
+                ajaxButtonNormalState  = customButtonNormal;
+        }
         else {
             var ajaxButtonLoadingState = customButtonLoading;
             var ajaxButtonNormalState  = customButtonNormal;
@@ -244,10 +255,10 @@ $(document).ready(function() {
                     $ajaxButton.html(ajaxButtonNormalState);
                     if (action == 'login' || action == 'confirm-email') {
                         $error.html(errorTemplate);
-                        $error.find('.alert').append('Error. Please refresh the page and try again.');
+                        $error.find('.alert').append(jqXHR.statusText + '. Please refresh the page and try again.');
                     }
                     else {
-                        var createToast = notifToast('Form Submiting', 'Error. Please refresh the page and try again.', 'error', true);
+                        var createToast = notifToast(jqXHR.statusText, 'Error. Please refresh the page and try again.', 'error', true);
                     }
                 });
                 ajaxFormSubmit.always(function () {
@@ -294,7 +305,7 @@ $(document).ready(function() {
 
             }
 
-            $.ajax({
+            var ajaxProcessing = $.ajax({
                 type: ajaxType,
                 url:  url,
                 headers : {
@@ -307,62 +318,73 @@ $(document).ready(function() {
                         btn.html(ajaxButtonLoadingState);
                         btn.attr('disabled','disabled');
                     }
-                },
-                success: function(msg){
-                    if (debug == true || cakeDebug == 'on') {
-                        console.log(msg);
+                }
+            });
+            ajaxProcessing.done(function(msg) {
+                if (debug == true || cakeDebug == 'on') {
+                    console.log(msg);
+                }
+
+                var json    = $.parseJSON(msg),
+                    status  = (json.status),
+                    content = (json.content);
+
+                if (status == 'error') {
+                    var error = (json.error);
+                }
+
+                if (status == 'ok') {
+                    if (toast == true) {
+                        var createToast = notifToast('Awesome Thing', 'Success ' + action + ' data', 'success', true, 1500);
                     }
 
-					var json    = $.parseJSON(msg),
-				        status  = (json.status),
-                        content = (json.content);
-
-					if (status == 'error') {
-						var error = (json.error);
-					}
-
-			        if (status == 'ok') {
-                        if (toast == true) {
-                            var createToast = notifToast('Awesome Thing', 'Success ' + action + ' data', 'success', true, 1500);
-                        }
-
-                        if (redirectType == 'redirect') {
-                            setTimeout(function() {
-                                window.location=redirect;
-                            }, 1500);
-                        }
-                        else {
-                            $(redirect).html(content);
-                            if (action != 'link') {
-                                btn.removeAttr('disabled');
-                                btn.html(ajaxButtonNormalState);
-                            }
-                        }
-                    }
-                    else if (status == 'error') {
-                        if(action != 'link') {
-                            btn.removeAttr('disabled');
-                            btn.html(ajaxButtonNormalState);
-                        }
-
-                        if ($.isArray(error)) {
-							var join = error.join('. ');
-                            var createToast = notifToast('Awesome Thing', join, 'error', true);
-                        }
-                        else {
-                            var createToast = notifToast('Awesome Thing', error, 'error', true);
-                        }
+                    if (redirectType == 'redirect') {
+                        setTimeout(function() {
+                            window.location=redirect;
+                        }, 1500);
                     }
                     else {
+                        $(redirect).html(content);
                         if (action != 'link') {
                             btn.removeAttr('disabled');
                             btn.html(ajaxButtonNormalState);
                         }
-
-                        var createToast = notifToast('Awesome Thing', 'There is an error with Purple. Please try again', 'error', true);
                     }
                 }
+                else if (status == 'error') {
+                    if(action != 'link') {
+                        btn.removeAttr('disabled');
+                        btn.html(ajaxButtonNormalState);
+                    }
+
+                    if ($.isArray(error)) {
+                        var join = error.join('. ');
+                        var createToast = notifToast('Awesome Thing', join, 'error', true);
+                    }
+                    else {
+                        var createToast = notifToast('Awesome Thing', error, 'error', true);
+                    }
+                }
+                else {
+                    if (action != 'link') {
+                        btn.removeAttr('disabled');
+                        btn.html(ajaxButtonNormalState);
+                    }
+
+                    var createToast = notifToast('Awesome Thing', 'There is an error with Purple. Please try again', 'error', true);
+                }
             })
+            .fail(function(jqXHR, textStatus) {
+                if(action != 'link') {
+                    btn.removeAttr('disabled');
+                    btn.html(ajaxButtonNormalState);
+                }
+
+                var createToast = notifToast(jqXHR.statusText, 'There is an error with Purple. Please try again', 'error', true);
+            })
+            .always(function () {
+                btn.prop("disabled", false);
+            });
 
             return false;
         })

@@ -18,12 +18,18 @@ use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
 use \DrewM\MailChimp\MailChimp;
 use \DrewM\MailChimp\Batch;
+use Particle\Filter\Filter;
 
 class SubscribersController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -31,83 +37,91 @@ class SubscribersController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
 		parent::initialize();
+
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
+		$this->viewBuilder()->setLayout('dashboard');
+		$this->loadModel('Admins');
+		$this->loadModel('Settings');
+		$this->loadModel('Histories');
+
+		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+			$cakeDebug = 'on';
+		} 
 		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
-            $this->loadModel('Settings');
-			$this->loadModel('Histories');
+			$cakeDebug = 'off';
+		}
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
+		$queryAdmin      = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon    = $this->Settings->fetch('favicon');
+		$queryDateFormat = $this->Settings->fetch('dateformat');
+		$queryTimeFormat = $this->Settings->fetch('timeformat');
 
-			$queryAdmin      = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-			$queryFavicon    = $this->Settings->find()->where(['name' => 'favicon'])->first();
-			$queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
-			$queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
-				
-				$dashboardSearch = new SearchForm();
-				
-				// Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-                
-                if ($adminData->level == 1) {
-					$data = [
-						'sessionHost'        => $sessionHost,
-						'sessionID'          => $sessionID,
-						'sessionPassword'    => $sessionPassword,
-						'cakeDebug'          => $cakeDebug,
-						'adminName'          => ucwords($adminData->display_name),
-						'adminLevel'         => $adminData->level,
-						'adminEmail'         => $adminData->email,
-						'adminPhoto'         => $adminData->photo,
-						'greeting'           => '',
-						'dashboardSearch'    => $dashboardSearch,
-						'title'              => 'Subscibers | Purple CMS',
-						'pageTitle'          => 'Subscibers',
-						'pageTitleIcon'      => 'mdi-book-open',
-						'pageBreadcrumb'     => 'Socials::Subscibers',
-						'appearanceFavicon'  => $queryFavicon,
-						'settingsDateFormat' => $queryDateFormat->value,
-						'settingsTimeFormat' => $queryTimeFormat->value,
-			    	];
-		        	$this->set($data);
-		        }
-                else {
-                    return $this->redirect(
-                        ['controller' => 'Dashboard', 'action' => 'index']
-                    );
-                }
+		$rowCount = $queryAdmin->count();
+		if ($rowCount > 0) {
+			$adminData = $queryAdmin->first();
+			
+			$dashboardSearch = new SearchForm();
+			
+			// Plugins List
+			$purplePlugins 	= new PurpleProjectPlugins();
+			$plugins		= $purplePlugins->purplePlugins();
+			$this->set('plugins', $plugins);
+			
+			if ($adminData->level == 1) {
+				$data = [
+					'sessionHost'        => $sessionHost,
+					'sessionID'          => $sessionID,
+					'sessionPassword'    => $sessionPassword,
+					'cakeDebug'          => $cakeDebug,
+					'adminName'          => ucwords($adminData->display_name),
+					'adminLevel'         => $adminData->level,
+					'adminEmail'         => $adminData->email,
+					'adminPhoto'         => $adminData->photo,
+					'greeting'           => '',
+					'dashboardSearch'    => $dashboardSearch,
+					'title'              => 'Subscibers | Purple CMS',
+					'pageTitle'          => 'Subscibers',
+					'pageTitleIcon'      => 'mdi-book-open',
+					'pageBreadcrumb'     => 'Socials::Subscibers',
+					'appearanceFavicon'  => $queryFavicon,
+					'settingsDateFormat' => $queryDateFormat->value,
+					'settingsTimeFormat' => $queryTimeFormat->value,
+				];
+				$this->set($data);
 			}
 			else {
 				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
+					['controller' => 'Dashboard', 'action' => 'index']
+				);
 			}
-	    }
+		}
+		else {
+			return $this->redirect(
+				['controller' => 'Authenticate', 'action' => 'login']
+			);
+		}
 	}
 	public function index()
 	{
@@ -181,46 +195,41 @@ class SubscribersController extends AppController
 		$subscriberAdd = new SubscriberAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($subscriberAdd->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+				$requestArray = json_decode(json_encode($filterResult), TRUE);
+				
             	$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                $verifyEmail = $purpleApi->verifyEmail($requestData->email);
 
                 if ($verifyEmail == true) {
-                	$findDuplicate = $this->Subscribers->find()->where(['email' => $this->request->getData('email')]);
+                	$findDuplicate = $this->Subscribers->find()->where(['email' => $requestData->email]);
 
                     if ($findDuplicate->count() >= 1) {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another email."]);
                     }
                     else {
                     	$subscriber = $this->Subscribers->newEntity();
-                        $subscriber = $this->Subscribers->patchEntity($subscriber, $this->request->getData());
+                        $subscriber = $this->Subscribers->patchEntity($subscriber, $requestArray);
                         $subscriber->status = 'active';
     				
     	                if ($this->Subscribers->save($subscriber)) {
-    	                	$record_id = $subscriber->id;
+    	                	$recordId = $subscriber->id;
 
-							$subscriber = $this->Subscribers->get($record_id);
-    	                	/**
-							 * Save user activity to histories table
-							 * array $options => title, detail, admin_id
-							 */
+							$subscriber = $this->Subscribers->get($recordId);
 
-							$options = [
-								'title'    => 'Addition of New Subscriber',
-								'detail'   => ' add '.$subscriber->email.' as a new subscriber.',
-								'admin_id' => $sessionID
-							];
-
-		                    $saveActivity   = $this->Histories->saveActivity($options);
-
-							if ($saveActivity == true) {
-			                    $json = json_encode(['status' => 'ok', 'id' => $record_id, 'activity' => true]);
-			                }
-			                else {
-			                    $json = json_encode(['status' => 'ok', 'id' => $record_id, 'activity' => false]);
-			                }
+							// Tell system for new event
+							$event = new Event('Model.Subscriber.afterSave', $this, ['subscriber' => $subscriber->email, 'admin' => $admin, 'save' => 'new']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'id' => $recordId, 'activity' => $event->getResult()]);
     	                }
 		                else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -249,46 +258,41 @@ class SubscribersController extends AppController
 		$subscriberEdit = new SubscriberEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			if ($subscriberEdit->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email'])->trim()->stripHtml();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+				$requestArray = json_decode(json_encode($filterResult), TRUE);
+
 				$session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                $verifyEmail = $purpleApi->verifyEmail($requestData->email);
 
                 if ($verifyEmail == true) {
-	                $findDuplicate = $this->Subscribers->find()->where(['email' => $this->request->getData('email')]);
+	                $findDuplicate = $this->Subscribers->find()->where(['email' => $requestData->email]);
 
 	                if ($findDuplicate->count() >= 1) {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another email."]);
 	                }
 	                else {
-		                $subscriber = $this->Subscribers->get($this->request->getData('id'));
-						$this->Subscribers->patchEntity($subscriber, $this->request->getData());
+		                $subscriber = $this->Subscribers->get($requestData->id);
+						$this->Subscribers->patchEntity($subscriber, $requestArray);
 
 						if ($this->Subscribers->save($subscriber)) {
-							$record_id = $subscriber->id;
+							$recordId = $subscriber->id;
 
-							$subscriber = $this->Subscribers->get($record_id);
+							$subscriber = $this->Subscribers->get($recordId);
 
-							/**
-							 * Save user activity to histories table
-							 * array $options => title, detail, admin_id
-							 */
-
-							$options = [
-								'title'    => 'Data Change of a Subscriber',
-								'detail'   => ' update '.$subscriber->email.' data from subscriber.',
-								'admin_id' => $sessionID
-							];
-
-		                    $saveActivity   = $this->Histories->saveActivity($options);
-
-							if ($saveActivity == true) {
-			                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-			                }
-			                else {
-			                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-			                }
+							// Tell system for new event
+							$event = new Event('Model.Subscriber.afterSave', $this, ['subscriber' => $subscriber->email, 'admin' => $admin, 'save' => 'update']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 		                }
 		                else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -317,63 +321,61 @@ class SubscribersController extends AppController
 		$subscriberDelete = new SubscriberDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($subscriberDelete->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
                 
-				$subscriber = $this->Subscribers->get($this->request->getData('id'));
+				$subscriber = $this->Subscribers->get($requestData->id);
 				$email      = $subscriber->email;
 
 				$result = $this->Subscribers->delete($subscriber);
 
                 if ($result) {
 					// If also delete email in Mailchimp Account
-					$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
-					$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+					$mailchimpApiId  = $this->Settings->fetch('mailchimpapikey');
+					$mailchimpListId = $this->Settings->fetch('mailchimplistid');
 
-					$mailchimp = new MailChimp($mailchimpApiId->value);
+					if ($mailchimpApiId->value != '' && $mailchimpListId->value != '') {
+						$mailchimp = new MailChimp($mailchimpApiId->value);
 
-					$mailchimpList   = $mailchimp->get('/lists/'.$mailchimpListId->value.'/members');
+						$mailchimpList   = $mailchimp->get('/lists/'.$mailchimpListId->value.'/members');
 
-					$members = [];
-					foreach ($mailchimpList['members'] as $member) {
-						$members[] = $member['email_address'];
-					}
+						$members = [];
+						foreach ($mailchimpList['members'] as $member) {
+							$members[] = $member['email_address'];
+						}
 
-					if (in_array($email, $members)) {
-						$subscriberHash = $mailchimp->subscriberHash($email);
+						if (in_array($email, $members)) {
+							$subscriberHash = $mailchimp->subscriberHash($email);
 
-						$deleteEmailMailchimp = $mailchimp->delete("lists/$mailchimpListId->value/members/$subscriberHash");
+							$deleteEmailMailchimp = $mailchimp->delete("lists/$mailchimpListId->value/members/$subscriberHash");
 
-						if ($mailchimp->success()) {
-							$checkDeletedMailchimp = true;
+							if ($mailchimp->success()) {
+								$checkDeletedMailchimp = true;
+							}
+							else {
+								$checkDeletedMailchimp = $mailchimp->getLastError();
+							}
 						}
 						else {
-							$checkDeletedMailchimp = $mailchimp->getLastError();
+							$checkDeletedMailchimp = false;
 						}
 					}
 					else {
 						$checkDeletedMailchimp = false;
 					}
-					
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Deletion of a Subscriber',
-                        'detail'   => ' delete '.$email.' from subscriber.',
-                        'admin_id' => $sessionID
-                    ];
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
+					// Tell system for new event
+					$event = new Event('Model.Subscriber.afterDelete', $this, ['subscriber' => $email, 'admin' => $admin]);
+					$this->getEventManager()->dispatch($event);
 
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true, 'mailchimp' => $checkDeletedMailchimp]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false, 'mailchimp' => $checkDeletedMailchimp]);
-                    }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult(), 'mailchimp' => $checkDeletedMailchimp]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -419,11 +421,21 @@ class SubscribersController extends AppController
 		$mailchimpSettings = new SubscriberMailchimpSettingsForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($mailchimpSettings->execute($this->request->getData())) {
-				$apiKey = trim($this->request->getData('key'));
-				$listId = trim($this->request->getData('list'));
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['key', 'list'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
 
-				$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
-				$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
+				$session   = $this->getRequest()->getSession();
+                $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
+
+				$apiKey = $requestData->key;
+				$listId = $requestData->list;
+
+				$mailchimpApiId  = $this->Settings->fetch('mailchimpapikey');
+				$mailchimpListId = $this->Settings->fetch('mailchimplistid');
 
 				$mailchimpApi = $this->Settings->get($mailchimpApiId->id);
 				$mailchimpApi->value = $apiKey;
@@ -432,25 +444,11 @@ class SubscribersController extends AppController
 				$mailchimpList->value = $listId;
 
 				if ($this->Settings->save($mailchimpApi) && $this->Settings->save($mailchimpList)) {
-					/**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Addition of Mailchimp API Key and Audience ID',
-                        'detail'   => ' add Mailchimp API key and Audience ID.',
-                        'admin_id' => $sessionID
-                    ];
+					// Tell system for new event
+					$event = new Event('Model.Subscriber.afterUpdateMailchimpSettings', $this, ['admin' => $admin]);
+					$this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 				}
 			}
 			else {
@@ -469,10 +467,9 @@ class SubscribersController extends AppController
 		$this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
-
-			$mailchimpApiId  = $this->Settings->find()->where(['name' => 'mailchimpapikey'])->first();
-			$mailchimpListId = $this->Settings->find()->where(['name' => 'mailchimplistid'])->first();
-
+			$mailchimpApiId  = $this->Settings->fetch('mailchimpapikey');
+			$mailchimpListId = $this->Settings->fetch('mailchimplistid');
+			
 			if ($mailchimpApiId->value == '' || $mailchimpListId->value == '') {
                 $json = json_encode(['status' => 'error', 'error' => 'Please provide Mailchimp API Key and Audience ID.']);
 			}

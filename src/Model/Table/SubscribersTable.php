@@ -4,7 +4,6 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
-use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 

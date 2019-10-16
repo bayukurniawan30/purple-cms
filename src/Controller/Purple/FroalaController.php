@@ -12,7 +12,6 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 use Gregwar\Image\Image;
-use \Gumlet\ImageResize;
 
 class FroalaController extends AppController
 {
@@ -67,30 +66,10 @@ class FroalaController extends AppController
                     if (move_uploaded_file($this->request->getData('file.tmp_name'), $uploadFile)) {
                         $readImageFile   = new File($uploadFile);
                         $imageSize       = $readImageFile->size();
-                        /**
-                         * Old style, cropping with ImageResize, but quality is bad
-                         * 
-                            $fullSize        = new ImageResize($uploadFile);
-                            $fullSize->save($fullSizeImage . $generatedName);
-                         */
-                        $fullSize = Image::open($uploadFile)->save($fullSizeImage . $generatedName, 'guess', 90);
-                        /**
-                         * Old style, cropping with ImageResize, but quality is bad
-                         * 
-                            $thumbnailSquare = new ImageResize($uploadFile);
-                            $thumbnailSquare->crop(300, 300);
-                            $thumbnailSquare->save($uploadedThumbnailSquare . $generatedName);
-                         */
-                        $thumbnailSquare = Image::open($uploadFile)
+                        $fullSize           = Image::open($uploadFile)->save($fullSizeImage . $generatedName, 'guess', 90);
+                        $thumbnailSquare    = Image::open($uploadFile)
                                                 ->zoomCrop(300, 300)
                                                 ->save($uploadedThumbnailSquare . $generatedName, 'guess', 90);
-                        /**
-                         * Old style, cropping with ImageResize, but quality is bad
-                         * 
-                            $thumbnailLandscape = new ImageResize($uploadFile);
-                            $thumbnailLandscape->crop(480, 270);
-                            $thumbnailLandscape->save($uploadedThumbnailLandscape . $generatedName);
-                         */
                         $thumbnailLandscape = Image::open($uploadFile)
                                                 ->zoomCrop(480, 270)
                                                 ->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);

@@ -8,7 +8,7 @@
 </style>
 
 <div class="row">
-    <div class="col-md-12 grid-margin">
+    <div class="col-md-6 grid-margin">
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title uk-margin-remove-bottom">User Password</h4>
@@ -28,12 +28,13 @@
             ?>
             <div class="card-body">
                 <div class="form-group">
+                    <?= $this->Form->label('password', 'Password'); ?>
                     <div class="input-group">
                         <?php
                             echo $this->Form->password('password', [
                                 'id'                     => 'same-password',
                                 'class'                  => 'form-control',
-                                'placeholder'            => 'Password',
+                                'placeholder'            => 'Password. 6-20 chars',
                                 'data-parsley-minlength' => '6',
                                 'data-parsley-maxlength' => '20',
                                 'uk-tooltip'             => 'title: Rquired. 6-20 chars.; pos: bottom',
@@ -48,6 +49,7 @@
                     <div class="pwstrength-viewport-progress"></div>
                 </div>
                 <div class="form-group">
+                    <?= $this->Form->label('repeatpassword', 'Repeat Password'); ?>
                     <div class="input-group">
                         <?php
                             echo $this->Form->password('repeatpassword', [
@@ -74,9 +76,9 @@
                     ]);
 
                     echo $this->Form->button('Cancel', [
-                        'id'           => 'button-close-modal',
-                        'class'        => 'btn btn-outline-primary uk-margin-left',
-                        'type'         => 'button'
+                        'class'   => 'btn btn-outline-primary uk-margin-left',
+                        'type'    => 'button',
+                        'onclick' => 'location.href = \''.$this->Url->build(['_name' => 'adminUsers']).'\''
                     ]);
                 ?>
              </div>

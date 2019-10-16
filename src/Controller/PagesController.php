@@ -18,6 +18,7 @@ use App\Form\SearchForm;
 use Carbon\Carbon;
 use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
+use Particle\Filter\Filter;
 
 class PagesController extends AppController
 {
@@ -88,6 +89,7 @@ class PagesController extends AppController
             $totalAllVisitors = $this->Visitors->totalAllVisitors();
 
             // Send Email to User to Notify user
+            $purpleApi = new PurpleProjectApi();
             $users     = $this->Admins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
             $totalUser = $users->count();
 
@@ -102,7 +104,7 @@ class PagesController extends AppController
                     'level'       => $user->level
                 );
                 $senderData   = array(
-                    'total'   => $totalAllVisitors,
+                    'total'   => $purpleGlobal->shortenNumber($totalAllVisitors),
                     'domain'  => $this->request->domain()
                 );
                 $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));
@@ -643,78 +645,57 @@ class PagesController extends AppController
         $pageContact = new PageContactForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageContact->execute($this->request->getData())) {
+                // Sanitize user input
+                $filter = new Filter();
+                if ($this->request->getEnv('HTTP_HOST') == 'localhost') {
+                    $filter->values(['status'])->defaults('success');
+                    $filter->values(['score'])->defaults('0.9');
+                }
+                $filter->value('content')->trim()->stripHtml()->replace("\n", '<br>');
+				$filter->values(['name', 'email', 'subject', 'ds', 'status', 'score'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+
                 $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                $verifyEmail = $purpleApi->verifyEmail($requestData->email);
                 
                 if ($verifyEmail == true) {
-                    $this->loadModel('Messages');
+                    $purpleGlobal = new PurpleProjectGlobal();
+                    if ($purpleGlobal->isRecaptchaPass($requestData->status, $requestData->score) == true) {
+                        $this->loadModel('Messages');
 
-                    $message = $this->Messages->newEntity();
-                    $message = $this->Messages->patchEntity($message, $this->request->getData());
-                    $message->is_read = '0';
-                    $message->folder  = 'inbox';
-                    $message->replied = '0';
+                        $message = $this->Messages->newEntity();
+                        $message = $this->Messages->patchEntity($message, $requestArray);
+                        $message->is_read = '0';
+                        $message->folder  = 'inbox';
+                        $message->replied = '0';
 
-                    if ($this->Messages->save($message)) {
-                        $record_id = $message->id;
+                        if ($this->Messages->save($message)) {
+                            $recordId = $message->id;
 
-                        /**
-                         * Save data to Notifications Table
-                         */
-                        $this->loadModel('Notifications');
-                        $notification = $this->Notifications->newEntity();
-                        $notification->type       = 'message';
-                        $notification->content    = $this->request->getData('name').' sent a message to you. Click to view the message.';
-                        $notification->message_id = $record_id;
+                            // Tell system for new event
+                            // Notification Event
+                            $notificationEvent = new Event('Model.Notification.afterSaveContactMessage', $this, ['data' => ['message_id' => $recordId, 'name' => $requestData->name]]);
+                            $this->getEventManager()->dispatch($notificationEvent);
 
-                        // Send Email to User to Notify user
-                        $users     = $this->Admins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
-                        $totalUser = $users->count();
+                            // Send Email Event
+                            $contactEvent = new Event('Model.Page.afterSentContactMessage', $this, ['data' => ['subject' => $requestData->subject, 'name' => $requestData->name, 'email' => $requestData->email, 'link' => $requestData->ds, 'domain' => $this->request->domain()]]);
+                            $this->getEventManager()->dispatch($contactEvent);
 
-                        $emailStatus = [];
-                        $counter = 0;
-                        foreach ($users as $user) {
-                            $key           = $this->Settings->settingsPublicApiKey();
-                            $dashboardLink = $this->request->getData('ds');
-                            $userData      = array(
-                                'sitename'    => $this->Settings->settingsSiteName(),
-                                'email'       => $user->email,
-                                'displayName' => $user->display_name,
-                                'level'       => $user->level
-                            );
-                            $senderData   = array(
-                                'subject' => $this->request->getData('subject'),
-                                'name'    => $this->request->getData('name'),
-                                'email'   => $this->request->getData('email'),
-                                'domain'  => $this->request->domain()
-                            );
-                            $notifyUser = $purpleApi->sendEmailContactMessage($key, $dashboardLink, json_encode($userData), json_encode($senderData));
-
-                            if ($notifyUser == true) {
-                                $counter++;
-                                $emailStatus[$user->email] = true; 
+                            if ($notificationEvent->getResult()) {
+                                $json = json_encode(['status' => 'ok', 'notification' => $notificationEvent->getResult(), 'email' => $contactEvent->getResult(), 'content' => '<strong>Success</strong> Your message has been sent. We will reply your message as soon as possible. Thank you.']);
                             }
                             else {
-                                $emailStatus[$user->email] = false; 
+                                $json = json_encode(['status' => 'ok', 'email' => $contactEvent->getResult(), 'content' => '<strong>Success</strong> Your message has been sent. We will reply your message as soon as possible. Thank you.']);
                             }
                         }
-
-                        if ($totalUser == $counter) {
-                            $emailNotification = true;
-                        }
                         else {
-                            $emailNotification = false;
-                        }
-
-                        if ($this->Notifications->save($notification)) {
-                            $json = json_encode(['status' => 'ok', 'notification' => true, 'email' => $emailStatus, 'content' => '<strong>Success</strong> Your message has been sent. We will reply your message as soon as possible. Thank you.']);
-                        }
-                        else {
-                            $json = json_encode(['status' => 'ok', 'email' => $emailStatus, 'content' => '<strong>Success</strong> Your message has been sent. We will reply your message as soon as possible. Thank you.']);
+                            $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
                         }
                     }
                     else {
-                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                        $json = json_encode(['status' => 'error', 'error' => "Can't prove you are a human. Please try again."]);
                     }
                 }
                 else {

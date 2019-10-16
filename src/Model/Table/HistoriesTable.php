@@ -41,7 +41,18 @@ class HistoriesTable extends Table
         $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
         $date->setTimezone(new \DateTimeZone($timezone));
         return $date->format('Y-m-d H:i:s');
-    }
+	}
+	public function recentActivity($userId = NULL)
+	{
+		if ($userId == NULL) {
+			$histories = $this->find('all', ['contain' => ['Admins']])->order(['Histories.id' => 'DESC'])->limit(6);
+		}
+		else {
+			$histories = $this->find('all', ['contain' => ['Admins']])->where(['Admins.id' => $userId])->order(['Histories.id' => 'DESC'])->limit(6);
+		}
+
+		return $histories;
+	}
 	public function saveActivity($options) 
 	{
 		$purpleSettings = new PurpleProjectSettings();

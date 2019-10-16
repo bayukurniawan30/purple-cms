@@ -428,6 +428,11 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/blog-categories', 
 			['controller' => 'BlogCategories'], 
 			['_name' => 'adminBlogCategories']);
+	$routes->connect('/blog-categories/page/:id', 
+			['controller' => 'BlogCategories', 'action' => 'index'], 
+			['_name' => 'adminBlogCategoriesPagination'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['id']);
 	$routes->connect('/blog-categories/:action', 
 			['controller' => 'BlogCategories'], 
 			['_name' => 'adminBlogCategoriesAction']);

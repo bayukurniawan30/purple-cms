@@ -39,6 +39,14 @@
                 <div class="col"><div class="gradient-container" style="background-image: linear-gradient(to right, #43e97b 0%, #38f9d7 100%);" data-purple-gradient="linear-gradient(to right, #43e97b 0%, #38f9d7 100%)"></div></div>
                 <div class="col"><div class="gradient-container" style="background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);" data-purple-gradient="linear-gradient(to right, #fa709a 0%, #fee140 100%)"></div></div>
                 <div class="col"><div class="gradient-container" style="background-image: linear-gradient(to top, #30cfd0 0%, #330867 100%);" data-purple-gradient="linear-gradient(to top, #30cfd0 0%, #330867 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #3D4E81 0%, #5753C9 48%, #6E7FF3 100%);" data-purple-gradient="linear-gradient(-225deg, #3D4E81 0%, #5753C9 48%, #6E7FF3 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #FF057C 0%, #7C64D5 48%, #4CC3FF 100%);" data-purple-gradient="linear-gradient(-225deg, #FF057C 0%, #7C64D5 48%, #4CC3FF 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #FF057C 0%, #8D0B93 50%, #321575 100%);" data-purple-gradient="linear-gradient(-225deg, #FF057C 0%, #8D0B93 50%, #321575 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #7742B2 0%, #F180FF 52%, #FD8BD9 100%);" data-purple-gradient="linear-gradient(-225deg, #7742B2 0%, #F180FF 52%, #FD8BD9 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #A445B2 0%, #D41872 52%, #FF0066 100%);" data-purple-gradient="linear-gradient(-225deg, #A445B2 0%, #D41872 52%, #FF0066 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #473B7B 0%, #3584A7 51%, #30D2BE 100%);" data-purple-gradient="linear-gradient(-225deg, #473B7B 0%, #3584A7 51%, #30D2BE 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #9EFBD3 0%, #57E9F2 48%, #45D4FB 100%);" data-purple-gradient="linear-gradient(-225deg, #9EFBD3 0%, #57E9F2 48%, #45D4FB 100%)"></div></div>
+                <div class="col"><div class="gradient-container" style="background-image: linear-gradient(-225deg, #D4FFEC 0%, #57F2CC 48%, #4596FB 100%);" data-purple-gradient="linear-gradient(-225deg, #D4FFEC 0%, #57F2CC 48%, #4596FB 100%)"></div></div>
                 <!-- <div class="col"><div class="gradient-container" style="" data-purple-gradient=""></div></div> -->
             </div>
         </div>

@@ -4,7 +4,6 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\ORM\Query;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\UnauthorizedException;
@@ -13,7 +12,7 @@ use App\Form\Purple\ForgotPasswordForm;
 use App\Form\Purple\NewPasswordForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
+use Particle\Filter\Filter;
 use Carbon\Carbon;
 
 class AuthenticateController extends AppController
@@ -33,10 +32,12 @@ class AuthenticateController extends AppController
 	{
 		parent::initialize();
 
+		// Load other models
 		$this->loadModel('Admins');
 		$this->loadModel('Settings');
 		$this->loadModel('Histories');
 
+		// Check debug is on or off
 		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
 		  	$cakeDebug = 'on';
 		} 
@@ -54,11 +55,15 @@ class AuthenticateController extends AppController
 	public function login() 
 	{
         if ($this->request->is('get')) {
+			// Set layout
+			$this->viewBuilder()->setLayout('login');
+
+			// Load required forms
 			$adminLogin     = new AdminLoginForm();
 			$forgotPassword = new ForgotPasswordForm();
 
-            $queryDefaultBackgroundLogin = $this->Settings->find()->where(['name' => 'defaultbackgroundlogin'])->first();
-            $queryBackgroundLogin        = $this->Settings->find()->where(['name' => 'backgroundlogin'])->first();
+			$queryDefaultBackgroundLogin = $this->Settings->fetch('defaultbackgroundlogin');
+            $queryBackgroundLogin        = $this->Settings->fetch('backgroundlogin');
             
             $data = [
 				'adminLogin'            => $adminLogin,
@@ -66,7 +71,6 @@ class AuthenticateController extends AppController
 				'settingDefaultBgLogin' => $queryDefaultBackgroundLogin,
                 'settingBgLogin'        => $queryBackgroundLogin,
             ];
-	    	$this->viewBuilder()->setLayout('login');
         	$this->set($data);
         }
 	}
@@ -74,24 +78,16 @@ class AuthenticateController extends AppController
 	{
 		$session = $this->getRequest()->getSession();
         if ($this->request->getEnv('HTTP_HOST') == $session->read('Admin.host')) {
+			$admin = $this->Admins->get($session->read('Admin.id'));
+
+			// Delete registered Admin sessions
             $session->delete('Admin.host');
             $session->delete('Admin.id');
             $session->delete('Admin.password');
 
-            $sessionID = $session->read('Admin.id');
-
-            /**
-             * Save user activity to histories table
-             * array $options => title, detail, admin_id
-             */
-            
-            $options = [
-                'title'    => 'User Logout',
-                'detail'   => ' logout from Purple.',
-                'admin_id' => $sessionID
-            ];
-
-            $saveActivity   = $this->Histories->saveActivity($options);
+			// Tell system for new event
+			$event = new Event('Model.Admin.afterSignOut', $this, ['admin' => $admin]);
+			$this->getEventManager()->dispatch($event);
         }
         return $this->setAction('login');
 	}
@@ -112,6 +108,12 @@ class AuthenticateController extends AppController
 		$adminLogin   = new AdminLoginForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminLogin->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->all()->trim();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
 				$purpleGlobal    = new PurpleProjectGlobal();
 				$operatingSystem = $purpleGlobal->detectOS();
 				$deviceType      = $purpleGlobal->detectDevice();
@@ -120,15 +122,15 @@ class AuthenticateController extends AppController
             	$purpleSettings = new PurpleProjectSettings();
 			    $timezone       = $purpleSettings->timezone();
 
-				$username = trim($this->request->getData('username'));
-				$password = trim($this->request->getData('password'));
+				$username = $requestData->username;
+				$password = $requestData->password;
 
 				$detectIP      = $this->request->clientIp();
 				$detectOS      = $purpleGlobal->detectOS();
 				$detectBrowser = $purpleGlobal->detectBrowser();
 				$detectDevice  = $purpleGlobal->detectDevice();
 
-				$admin       = $this->Admins->find()->where(['username' => $username])->first();
+				$admin = $this->Admins->find()->where(['username' => $username])->first();
 				
 				$getPassword   = $admin->password;
 				$checkPassword = (new DefaultPasswordHasher())->check($password, $getPassword);
@@ -146,27 +148,11 @@ class AuthenticateController extends AppController
 					$admin->login_os      = $operatingSystem;
 					$admin->login_browser = $clientBrowser;
 					if ($this->Admins->save($admin)) {
-						/**
-		                 * Save user activity to histories table
-		                 * array $options => title, detail, admin_id
-		                 */
+						// Tell system for new event
+						$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
+						$this->getEventManager()->dispatch($event);
 		                
-		                $sessionID = $session->read('Admin.id');
-
-		                $options = [
-		                    'title'    => 'User Login',
-		                    'detail'   => ' login to Purple.',
-		                    'admin_id' => $sessionID
-		                ];
-
-			            $saveActivity   = $this->Histories->saveActivity($options);
-
-		                if ($saveActivity == true) {
-		                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-		                }
-		                else {
-		                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-		                }
+						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 		            }
 		            else {
 		            	$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
@@ -194,38 +180,30 @@ class AuthenticateController extends AppController
 		$forgotPassword = new ForgotPasswordForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($forgotPassword->execute($this->request->getData())) {
-	            $checkEmail = $this->Admins->find()->where(['email' => $this->request->getData('email')])->limit(1);
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->all()->trim();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
+	            $checkEmail = $this->Admins->find()->where(['email' => $requestData->email])->limit(1);
 	            if ($checkEmail->count() > 0) {
 					$id    = $checkEmail->first()->id;
 					$admin = $checkEmail->first();
-					$admin->token = md5(trim($this->request->getData('email')));
+					$admin->token = md5($requestData->email);
 					if ($this->Admins->save($admin)) {
 						// Send Email to User to Notify author
-						$key       = $this->Settings->settingsPublicApiKey();
-						$resetLink = $this->request->getData('ds').'/reset-password/token/'.md5(trim($this->request->getData('email')));
-                        $userData      = array(
-                            'sitename'    => $this->Settings->settingsSiteName(),
-                            'username'    => $admin->username,
-                            'email'       => $admin->email,
-                            'displayName' => $admin->display_name,
-                            'level'       => $admin->level
-                        );
-                        $senderData   = array(
-                            'name'   => $admin->display_name,
-                            'domain' => $this->request->domain()
-                        );
+						// Tell system for new event
+						$event = new Event('Model.Admin.sendEmailForgotPassword', $this, [
+							'admin' => $admin, 
+							'data'  => [
+								'link' 	 => $this->request->getData('ds'),
+								'domain' => $this->request->domain()
+							]
+						]);
+						$this->getEventManager()->dispatch($event);
 
-						$purpleApi  = new PurpleProjectApi();
-						$notifyUser = $purpleApi->sendEmailForgotPassword($key, $resetLink, json_encode($userData), json_encode($senderData));
-
-                        if ($notifyUser == true) {
-                            $emailNotification = true;
-                        }
-                        else {
-                            $emailNotification = false;
-                        }
-
-                        $json = json_encode(['status' => 'ok', 'email' => [$admin->email => $emailNotification], 'content' => '<div class="alert alert-success" role="alert" style="margin-top: 15px">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
+                        $json = json_encode(['status' => 'ok', 'email' => $event->getResult(), 'content' => '<div class="alert alert-success" role="alert" style="margin-top: 15px">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
 					}
 		            else {
 		            	$json = json_encode(['status' => 'error', 'error' => "Cannot reset your password. Please try again."]);
@@ -248,7 +226,9 @@ class AuthenticateController extends AppController
     }
     public function resetPassword()
     {
-    	$this->viewBuilder()->setLayout('password');
+		// Set layout
+		$this->viewBuilder()->setLayout('password');
+		
     	$token = $this->request->getParam('token');
     	if (!empty($token)) {
             $checkUserl = $this->Admins->find()->where(['token' => $token])->limit(1);
@@ -284,56 +264,52 @@ class AuthenticateController extends AppController
 		$newPassword = new NewPasswordForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($newPassword->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['token', 'password', 'repeatpassword', 'ds'])->trim();
+				$filter->values(['id', 'passwordscore'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
 
-	            $checkUser = $this->Admins->find()->where(['id' => $this->request->getData('id'), 'token' => $this->request->getData('token')])->limit(1);
-	            if ($checkUser->count() > 0) {
-					$admin         = $checkUser->first();
-					$oldPassword   = $admin->password;
-					$checkPassword = (new DefaultPasswordHasher())->check($this->request->getData('password'), $oldPassword);
+				if ($requestData->password == $requestData->repeatpassword) {
+					$checkUser = $this->Admins->find()->where(['id' => $requestData->id, 'token' => $requestData->token])->limit(1);
+					if ($checkUser->count() > 0) {
+						$admin         = $checkUser->first();
+						$oldPassword   = $admin->password;
+						$checkPassword = (new DefaultPasswordHasher())->check($requestData->password, $oldPassword);
 
-					if ($checkPassword) {
-		            	$json = json_encode(['status' => 'error', 'error' => "Do not use the old password. Please use another password."]);
+						if ($checkPassword) {
+							$json = json_encode(['status' => 'error', 'error' => "Do not use the old password. Please use another password."]);
+						}
+						else {
+							$admin->password = $this->request->getData('password');
+							$admin->token    = '';
+							if ($this->Admins->save($admin)) {
+								// Send Email to User to Notify author
+								// Tell system for new event
+								$event = new Event('Model.Admin.sendEmailResetPassword', $this, [
+									'admin' => $admin, 
+									'data'  => [
+										'link' 	   => $this->request->getData('ds'),
+										'password' => trim($this->request->getData('password')),
+										'domain'   => $this->request->domain()
+									]
+								]);
+
+								$json = json_encode(['status' => 'ok', 'email' => $event->getResult(), 'content' => '<div class="alert alert-success" role="alert">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
+							}
+							else {
+								$json = json_encode(['status' => 'error', 'error' => "Cannot reset your password. Please try again."]);
+							}
+						}
 					}
 					else {
-						$admin->password = $this->request->getData('password');
-						$admin->token    = '';
-						if ($this->Admins->save($admin)) {
-							// Send Email to User to Notify author
-							$key       = $this->Settings->settingsPublicApiKey();
-							$dashboardLink = $this->request->getData('ds');
-	                        $userData      = array(
-	                            'sitename'    => $this->Settings->settingsSiteName(),
-	                            'username'    => $admin->username,
-	                            'password'    => $this->request->getData('password'),
-	                            'email'       => $admin->email,
-	                            'displayName' => $admin->display_name,
-	                            'level'       => $admin->level
-	                        );
-	                        $senderData   = array(
-	                            'name'   => $admin->display_name,
-	                            'domain' => $this->request->domain()
-	                        );
-
-							$purpleApi  = new PurpleProjectApi();
-							$notifyUser = $purpleApi->sendEmailNewPassword($key, $dashboardLink, json_encode($userData), json_encode($senderData));
-
-	                        if ($notifyUser == true) {
-	                            $emailNotification = true;
-	                        }
-	                        else {
-	                            $emailNotification = false;
-	                        }
-
-	                        $json = json_encode(['status' => 'ok', 'email' => [$admin->email => $emailNotification], 'content' => '<div class="alert alert-success" role="alert">Your password has been reseted. Please check your inbox or spam folder in your email.</div>']);
-	                    }
-	                    else {
-			            	$json = json_encode(['status' => 'error', 'error' => "Cannot reset your password. Please try again."]);
-			            }
+						$json = json_encode(['status' => 'error', 'error' => "User not found. You are not part of Purple CMS."]);
 					}
-	            }
-	            else {
-	            	$json = json_encode(['status' => 'error', 'error' => "User not found. You are not part of Purple CMS."]);
-	            }
+				}
+				else {
+					$json = json_encode(['status' => 'error', 'error' => "Password and repeat password must be equal."]);
+				}
             }
             else {
 	        	$errors = $newPassword->errors();

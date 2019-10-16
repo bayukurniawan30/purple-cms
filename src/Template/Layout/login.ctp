@@ -54,13 +54,13 @@
 		}
 		/* Login Form */
 		@media(max-width: 767px) {
-				.login-background .row {
-						margin-right: 0;
-						margin-left: 0;
-				}
-				.content-wrapper {
-						padding: 2rem .5rem!important;
-				}
+			.login-background .row {
+					margin-right: 0;
+					margin-left: 0;
+			}
+			.content-wrapper {
+					padding: 2rem .5rem!important;
+			}
 		}
 		<?php if ($settingDefaultBgLogin->value != 'no'): ?>
 		.content-wrapper {
@@ -82,7 +82,7 @@
 					<div class="col-lg-4 mx-auto">
 						<div class="auth-form-light text-left p-5">
 							<div class="brand-logo">
-								<?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Purple CMS', 'data-id' => 'login-cover-image', 'width' => '100%']) ?>
+								<?= $this->Html->image('/master-assets/img/logo-animated.svg', ['alt' => 'Purple CMS', 'data-id' => 'login-cover-image', 'width' => '100%']) ?>
 							</div>
 							<h4>Sign In to feel the Purple</h4>
 							<h6 class="font-weight-light">Purple is Awesome</h6>

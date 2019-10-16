@@ -1,7 +1,7 @@
 <div id="modal-about-purple-cms" class="uk-flex-top purple-modal" uk-modal style="z-index: 99999999">
     <div class="uk-modal-dialog uk-margin-auto-vertical">
         <div class=" uk-modal-body uk-text-center">
-            <?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Purple CMS', 'width' => '75%']) ?>
+            <?= $this->Html->image('/master-assets/img/logo-animated.svg', ['alt' => 'Purple CMS', 'width' => '75%']) ?>
             <h4>Content Management System Based on CakePHP 3</h4>
             <p style="font-size: 0.85rem">
             Purple is flexible, user-friendly, and customizable Content Management System.<br>

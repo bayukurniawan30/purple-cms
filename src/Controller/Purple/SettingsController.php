@@ -24,7 +24,12 @@ class SettingsController extends AppController
 
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -32,95 +37,101 @@ class SettingsController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
-		parent::initialize();
-        $this->loadComponent('RequestHandler');
+        parent::initialize();
+        
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
-		else {
-            $this->loadComponent('Paginator');
+        $this->loadComponent('Paginator');
 
-	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
-            $this->loadModel('Settings');
-            $this->loadModel('Medias');
-            $this->loadModel('Histories');
+        $this->viewBuilder()->setLayout('dashboard');
+        $this->loadModel('Admins');
+        $this->loadModel('Settings');
+        $this->loadModel('Medias');
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
+        if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+            $cakeDebug = 'on';
+        } 
+        else {
+            $cakeDebug = 'off';
+        }
+
+        $queryAdmin   = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon = $this->Settings->fetch('favicon');
+        $medias       = $this->Medias->find('all', [
+            'order' => ['Medias.id' => 'DESC']])->contain('Admins');
+
+        $rowCount = $queryAdmin->count();
+        if ($rowCount > 0) {
+            $adminData = $queryAdmin->first();
+
+            $dashboardSearch = new SearchForm();
+
+            // Plugins List
+            $purplePlugins 	= new PurpleProjectPlugins();
+            $plugins		= $purplePlugins->purplePlugins();
+            $this->set('plugins', $plugins);
+            
+            if ($adminData->level == 1) {
+                $data = [
+                    'sessionHost'       => $sessionHost,
+                    'sessionID'         => $sessionID,
+                    'sessionPassword'   => $sessionPassword,
+                    'cakeDebug'         => $cakeDebug,
+                    'adminName'         => ucwords($adminData->display_name),
+                    'adminLevel'        => $adminData->level,
+                    'adminEmail'        => $adminData->email,
+                    'adminPhoto'        => $adminData->photo,
+                    'greeting'          => '',
+                    'dashboardSearch'   => $dashboardSearch,
+                    'title'             => 'Settings | Purple CMS',
+                    'pageTitle'         => 'Settings',
+                    'pageTitleIcon'     => 'mdi-settings',
+                    'pageBreadcrumb'    => 'Settings',
+                    'appearanceFavicon' => $queryFavicon,
+                    'mediaImageTotal'   => $medias->count(),
+                    'mediaImageLimit'   => $this->imagesLimit
+                ];
+                $this->set($data);
+
+                $this->paginate = [
+                    'limit' => $this->imagesLimit,
+                    'page'  => 1
+                ];
+                $browseMedias = $this->paginate($medias);
+                $this->set('browseMedias', $browseMedias);
+                // $this->set(compact('browseMedias'));
             }
-
-			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-            $queryFavicon = $this->Settings->find()->where(['name' => 'favicon'])->first();
-            $medias       = $this->Medias->find('all', [
-                'order' => ['Medias.id' => 'DESC']])->contain('Admins');
-
-			$rowCount = $queryAdmin->count();
-            if ($rowCount > 0) {
-                $adminData = $queryAdmin->first();
-
-                $dashboardSearch = new SearchForm();
-
-                // Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-                
-                if ($adminData->level == 1) {
-                    $data = [
-                        'sessionHost'       => $sessionHost,
-                        'sessionID'         => $sessionID,
-                        'sessionPassword'   => $sessionPassword,
-                        'cakeDebug'         => $cakeDebug,
-                        'adminName'         => ucwords($adminData->display_name),
-                        'adminLevel'        => $adminData->level,
-                        'adminEmail'        => $adminData->email,
-                        'adminPhoto'        => $adminData->photo,
-                        'greeting'          => '',
-                        'dashboardSearch'   => $dashboardSearch,
-    					'title'             => 'Settings | Purple CMS',
-    					'pageTitle'         => 'Settings',
-    					'pageTitleIcon'     => 'mdi-settings',
-    					'pageBreadcrumb'    => 'Settings',
-                        'appearanceFavicon' => $queryFavicon,
-                        'mediaImageTotal'   => $medias->count(),
-                        'mediaImageLimit'   => $this->imagesLimit
-    		    	];
-    	        	$this->set($data);
-
-                    $this->paginate = [
-                        'limit' => $this->imagesLimit,
-                        'page'  => 1
-                    ];
-                    $browseMedias = $this->paginate($medias);
-                    $this->set('browseMedias', $browseMedias);
-                    // $this->set(compact('browseMedias'));
-                }
-                else {
-                    return $this->redirect(
-                        ['controller' => 'Dashboard', 'action' => 'index']
-                    );
-                }
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
+            else {
+                return $this->redirect(
+                    ['controller' => 'Dashboard', 'action' => 'index']
+                );
+            }
+        }
+        else {
+            return $this->redirect(
+                ['controller' => 'Authenticate', 'action' => 'login']
+            );
+        }
 	}
 	public function general()
 	{
@@ -346,6 +357,7 @@ class SettingsController extends AppController
         if ($this->request->is('ajax') || $this->request->is('post')) {
             $session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
+            $admin     = $this->Admins->get($sessionID);
             
             $settingsTable = $this->Settings;
             $setting       = $settingsTable->get($this->request->getData('id'));
@@ -397,27 +409,11 @@ class SettingsController extends AppController
                     $emailStatus = false;
                 }
 
-                /**
-                 * Save user activity to histories table
-                 * array $options => title, detail, admin_id
-                 */
-                
-                $setting = $settingsTable->get($this->request->getData('id'));
+                // Tell system for new event
+                $event = new Event('Model.Setting.afterSave', $this, ['setting' => $setting, 'admin' => $admin]);
+                $this->getEventManager()->dispatch($event);
 
-                $options = [
-                    'title'    => 'Change of Setting',
-                    'detail'   => ' change '.$setting->name.' setting.',
-                    'admin_id' => $sessionID
-                ];
-
-                $saveActivity   = $this->Histories->saveActivity($options);
-
-                if ($saveActivity == true) {
-                    $json = json_encode(['status' => 'ok', 'activity' => true, 'notification' => $emailStatus]);
-                }
-                else {
-                    $json = json_encode(['status' => 'ok', 'activity' => false, 'notification' => $emailStatus]);
-                }
+                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult(), 'notification' => $emailStatus]);
             }
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);

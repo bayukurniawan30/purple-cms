@@ -44,7 +44,6 @@ class AppController extends Controller
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
         ]);
-        $this->loadComponent('Flash');
 
         if ($this->request->getParam('controller') == 'Setup' || $this->request->getParam('controller') == 'Production') {
 

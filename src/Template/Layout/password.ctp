@@ -31,6 +31,9 @@
             .setup-loader p {
                 font-size: 1rem;
             }
+            .purple-check-req-step, .purple-check-mbstring, .purple-check-intl {
+                display: none;
+            }
             .setup-information {
                 position: relative;
             }
@@ -43,7 +46,7 @@
     <body>
         <div class="container-scroller">
             <div class="container-fluid page-body-wrapper full-page-wrapper">
-                <div class="content-wrapper d-flex align-items-center auth bg-primary text-center">
+                <div class="content-wrapper d-flex align-items-center auth text-center" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)">
                     <div class="uk-overlay uk-position-center setup-loader">
                         <p>Loading form...</p><br>
                         <div uk-spinner="ratio: 2"></div>
@@ -58,23 +61,27 @@
         <div id="modal-setup-purple" class="uk-modal-full" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-grid-collapse uk-flex-middle" uk-grid>
-                    <div class="uk-width-2-3@m uk-hidden@xl uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
-                        <div class="uk-overlay uk-overlay-default uk-position-bottom">
-                            <h3 class="text-primary"><strong>Reset Your Password</strong></h3>
-                            <p>
-                                Please keep your password save and do not use old password.
-                            </p>
+                    <div class="uk-width-1-2@m uk-hidden@xl uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
+                        <div class="uk-overlay uk-overlay-default" uk-height-viewport>
+                            <?= $this->Html->image('/master-assets/img/setup-administrative.svg') ?>
+                            <div class="uk-position-bottom uk-padding">
+                                <h3 class="text-primary"><strong>Reset Your Password</strong></h3>
+                                <p class="uk-margin-remove-bottom">
+                                    Please keep your password save and do not use old password
+                                    <br><a href="https://bayukurniawan30.github.io/purple-cms/#/" target="_blank"><span class="mdi mdi-open-in-new"></span> Read full documentation</a>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="uk-width-1-3@m uk-width-1-1@s uk-padding">
+                    <div class="uk-width-1-2@m uk-width-1-1@s uk-padding">
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="auth-form-light text-left">
                                         <div class="brand-logo">
-                                            <?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Setup Page', 'data-id' => 'login-cover-image', 'width' => '300']) ?>
+                                            <?= $this->Html->image('/master-assets/img/logo-animated.svg', ['alt' => 'Setup Page', 'data-id' => 'login-cover-image', 'width' => '250']) ?>
                                         </div>
-                                       <!-- <div class="uk-margin-small">&nbsp;</div> -->
+                                        <h4 class="uk-margin-small">Enter Your New Password</h4>
                                         <?= $this->fetch('content') ?>
                                     </div>
                                 </div>

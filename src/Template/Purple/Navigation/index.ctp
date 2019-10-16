@@ -93,302 +93,15 @@
     ?>
 </div>
 
-<div id="modal-add-navigation" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($menuAdd, [
-                'id'                    => 'form-add-navigation',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url' 					=> ['action' => 'ajax-add']
-            ]);
-        ?>
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Add Navigation</h3>
-        </div>
-        <div class=" uk-modal-body">
-            <div class="uk-alert-primary" uk-alert>
-                <p>Some themes might not support nested navigation, that makes making a child navigation useless.</p>
-            </div>
-
-            <div class="form-group">
-                <?php
-                    echo $this->Form->text('title', [
-                        'class'                  => 'form-control',
-                        'placeholder'            => 'Navigation Title',
-                        'data-parsley-maxlength' => '100',
-                        'autofocus'              => 'autofocus',
-                        'required'               => 'required'
-                    ]);
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    if ($menus->count() > 0):
-                        $menuListing = array();
-                        foreach ($menus as $parent) {
-                            $menuListing[$parent->id] = $parent->title;
-                        }
-
-                        echo $this->Form->select(
-                            'parent',
-                            $menuListing,
-                            [
-                                'empty'    => 'Select Parent',
-                                'class'    => 'form-control'
-                            ]
-                        );
-                    else:
-                        echo $this->Form->select(
-                            'parent',
-                            [],
-                            [
-                                'empty'    => 'Select Parent',
-                                'class'    => 'form-control'
-                            ]
-                        );
-                    endif;
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'status',
-                        [
-                            '0'    => 'Draft',
-                            '1'  => 'Publish',
-                        ],
-                        [
-                            'empty'    => 'Select Status',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'point',
-                        [
-                            'pages'      => 'Page',
-                            'customlink' => 'Custom Link',
-                        ],
-                        [
-                            'empty'    => 'Select Point',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group bind-target-form"></div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-        <?php
-            echo $this->Form->button('Save', [
-                'id'    => 'button-add-navigation',
-                'class' => 'btn btn-gradient-primary'
-            ]);
-
-            echo $this->Form->button('Cancel', [
-                'id'           => 'button-close-modal',
-                'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-                'type'         => 'button',
-                'data-target'  => '.purple-modal'
-            ]);
-        ?>
-        </div>
-    </div>
-    <?php
-        echo $this->Form->end();
-    ?>
-</div>
+<?= $this->element('Dashboard/Modal/Navigation/add_modal'); ?>
 
 <?php
-    if ($menus->count() > 0):
+    if ($menus->count() > 0) {
+        echo $this->element('Dashboard/Modal/Navigation/edit_modal');
+        echo $this->element('Dashboard/Modal/Navigation/delete_modal');
+        echo $this->element('Dashboard/Modal/permalink_modal');
+    }
 ?>
-<div id="modal-edit-navigation" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($menuEdit, [
-                'id'                    => 'form-edit-navigation',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url' 					=> ['action' => 'ajax-update']
-            ]);
-
-            echo $this->Form->hidden('id');
-            echo $this->Form->hidden('navtype');
-        ?>
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Edit Navigation</h3>
-        </div>
-        <div class=" uk-modal-body">
-            <div class="uk-alert-primary" uk-alert>
-                <p>If your navigation has sub navigation(s), targeting navigation to Page or Custom Link is not used.</p>
-            </div>
-
-            <div class="form-group">
-                <?php
-                    echo $this->Form->text('title', [
-                        'class'                  => 'form-control',
-                        'placeholder'            => 'Navigation Title',
-                        'data-parsley-maxlength' => '100',
-                        'autofocus'              => 'autofocus',
-                        'required'               => 'required'
-                    ]);
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'status',
-                        [
-                            '0'    => 'Draft',
-                            '1'  => 'Publish',
-                        ],
-                        [
-                            'empty'    => 'Select Status',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'point',
-                        [
-                            'pages'      => 'Page',
-                            'customlink' => 'Custom Link',
-                        ],
-                        [
-                            'empty'    => 'Select Point',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group bind-target-form">
-                <?php
-                    if ($pages->count() > 0):
-                        $pageListing = array();
-                        foreach ($pages as $page) {
-                            $pageListing[$page->id] = $page->title;
-                        }
-
-                        echo $this->Form->select(
-                            'target',
-                            $pageListing,
-                            [
-                                'id'       => 'select-target-form',
-                                'empty'    => 'Select Page',
-                                'class'    => 'form-control',
-                                'required' => 'required'
-                            ]
-                        );
-                    else:
-                        echo $this->Form->select(
-                            'target',
-                            [],
-                            [
-                                'id'       => 'select-target-form',
-                                'empty'    => 'Select Page',
-                                'class'    => 'form-control',
-                                'required' => 'required'
-                            ]
-                        );
-                    endif;
-
-                    echo $this->Form->text('target', [
-                        'id'                     => 'input-target-form',
-                        'class'                  => 'form-control',
-                        'placeholder'            => 'Custom Link',
-                        'data-parsley-maxlength' => '150',
-                        'required'               => 'required'
-                    ]);
-                ?>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-        <?php
-            echo $this->Form->button('Save', [
-                'id'    => 'button-edit-navigation',
-                'class' => 'btn btn-gradient-primary'
-            ]);
-
-            echo $this->Form->button('Cancel', [
-                'id'           => 'button-close-modal',
-                'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-                'type'         => 'button',
-                'data-target'  => '.purple-modal'
-            ]);
-        ?>
-        </div>
-    </div>
-    <?php
-        echo $this->Form->end();
-    ?>
-</div>
-
-<div id="modal-delete-navigation" class="uk-flex-top purple-modal" uk-modal="bg-close: false">
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($menuDelete, [
-                'id'                    => 'form-delete-navigation',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-delete']
-            ]);
-
-            echo $this->Form->hidden('id');
-            echo $this->Form->hidden('navtype');
-        ?>
-        <div class=" uk-modal-body">
-            <p>Are you sure want to delete <span class="bind-title"></span>?</p>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <?php
-                echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-modal-close',
-                    'type'         => 'button',
-                    'data-target'  => '.purple-modal'
-                ]);
-
-                echo $this->Form->button('Yes, Delete it', [
-                    'id'    => 'button-delete-navigation',
-                    'class' => 'btn btn-gradient-danger uk-margin-left'
-                ]);
-            ?>
-        </div>
-        <?php
-
-            echo $this->Form->end();
-        ?>
-    </div>
-</div>
-
-<div id="modal-show-permalink" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Permalink</h3>
-        </div>
-        <div class="uk-modal-body">
-            <div class="form-group">
-                <input id="purple-permalink" class="form-control" type="text" value="" readonly>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <button class="btn btn-gradient-primary button-copy-permalink" type="button" data-clipboard-target="#purple-permalink">Copy</button>
-            <button class="btn btn-outline-primary uk-margin-left uk-modal-close" type="button">Close</button>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
 
 <script>
     $(document).ready(function() {
@@ -494,7 +207,7 @@
                     url   = $("#sortable-items").data('purple-url');
                     token = $('#csrf-ajax-token').val();
 
-                $.ajax({
+                var ajaxProcessing = $.ajax({
                     type: "POST",
                     url:  url,
                     headers : {
@@ -503,14 +216,34 @@
                     data: data,
                     cache: false,
                     beforeSend: function() {
+                        $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-items>li .sortable-remover").show();
-                    },
-                    success: function(data) {
+                    }
+                });
+                ajaxProcessing.done(function(msg) {
+                    if (cakeDebug == 'on') {
+                        console.log(msg);
+                    }
+
+                    var json    = $.parseJSON(msg),
+                        status  = (json.status);
+
+                    if (status == 'ok') {
                         $("#sortable-items>li .sortable-remover").hide();
                         $("#sortable-items>li .uk-sortable-handle").html('<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="2" y="4" width="16" height="1"></rect> <rect x="2" y="9" width="16" height="1"></rect> <rect x="2" y="14" width="16" height="1"></rect></svg>');
+                        var createToast = notifToast('Reordering Menus', 'Success reordering menus', 'success', true);
                     }
-                })
+                    else {
+                        var createToast = notifToast('Reordering Menus', 'There is an error with Purple. Please try again', 'error', true);
+                    }
+                });
+                ajaxProcessing.fail(function(jqXHR, textStatus) {
+                    var createToast = notifToast(jqXHR.statusText, 'There is an error with Purple. Please try again', 'error', true);
+                });
+                ajaxProcessing.always(function () {
+                    $('input, button, textarea, select').prop("disabled", false);
+                });
             });
         <?php endif; ?>
 
@@ -520,14 +253,15 @@
         ?>
             UIkit.util.on('#sortable-child-items', 'stop', function () {
                 var h = [];
+                var parent = <?= $this->request->getParam('parent') ?>;
                 $("#sortable-child-items>li").each(function() {
                     h.push($(this).attr('id').substr(9));
                 });
-                var data  = {order: h + ""},
+                var data  = {parent:parent, order: h + ""},
                     url   = $("#sortable-child-items").data('purple-url');
                     token = $('#csrf-ajax-token').val();
 
-                $.ajax({
+                var ajaxProcessing = $.ajax({
                     type: "POST",
                     url:  url,
                     headers : {
@@ -536,14 +270,34 @@
                     data: data,
                     cache: false,
                     beforeSend: function() {
+                        $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-child-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-child-items>li .sortable-remover").show();
-                    },
-                    success: function(data) {
+                    }
+                });
+                ajaxProcessing.done(function(msg) {
+                    if (cakeDebug == 'on') {
+                        console.log(msg);
+                    }
+
+                    var json    = $.parseJSON(msg),
+                        status  = (json.status);
+
+                    if (status == 'ok') {
                         $("#sortable-child-items>li .sortable-remover").hide();
                         $("#sortable-child-items>li .uk-sortable-handle").html('<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="2" y="4" width="16" height="1"></rect> <rect x="2" y="9" width="16" height="1"></rect> <rect x="2" y="14" width="16" height="1"></rect></svg>');
+                        var createToast = notifToast('Reordering Submenus', 'Success reordering submenus', 'success', true);
                     }
-                })
+                    else {
+                        var createToast = notifToast('Reordering Submenus', 'There is an error with Purple. Please try again', 'error', true);
+                    }
+                });
+                ajaxProcessing.fail(function(jqXHR, textStatus) {
+                    var createToast = notifToast(jqXHR.statusText, 'There is an error with Purple. Please try again', 'error', true);
+                });
+                ajaxProcessing.always(function () {
+                    $('input, button, textarea, select').prop("disabled", false);
+                });
             });
         <?php
                 endif;

@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Log\Log;
 use Cake\Routing\Router;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
@@ -11,6 +12,7 @@ use Cake\Filesystem\Folder;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
+use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 
 class SitemapController extends AppController
@@ -59,9 +61,9 @@ class SitemapController extends AppController
 
         $urls[] = [
             'loc' => Router::url(['_name' => 'home', '_full' => true]),
-            'lastmod' => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H:i:s') . $timezone,
+            'lastmod'    => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H: i: s') . $timezone,
             'changefreq' => 'weekly',
-            'priority' => '0.8'
+            'priority'   => '0.8'
         ];
 
         // Pages
@@ -87,9 +89,9 @@ class SitemapController extends AppController
 
                 $urls[] = [
                     'loc' => Router::url(['_name' => 'specificPage', 'page'  => $page->slug, '_full' => true]),
-                    'lastmod' => $modified,
+                    'lastmod'    => $modified,
                     'changefreq' => $changeFreq,
-                    'priority' => '0.5'
+                    'priority'   => '0.5'
                 ];
             }
         }
@@ -107,11 +109,25 @@ class SitemapController extends AppController
                     $modified = $blog->modified->format('Y-m-d') . 'T' . $blog->modified->format('H:i:s') . $timezone;
                 }
 
+                if ($blog->featured == NULL || $blog->featured == '') {
+                    $urlImage = NULL;
+                }
+                else {
+                    if (strpos($blog->featured, ',') !== false) {
+                        $explodeFeatured = explode(',', $blog->featured);
+                        $urlImage = ['image:loc' => Router::url(['_name' => 'home', '_full' => true]) . 'uploads/images/original/' . $explodeFeatured[0]];
+                    }
+                    else {
+                        $urlImage = ['image:loc' => Router::url(['_name' => 'home', '_full' => true]) . 'uploads/images/original/' . $blog->featured];
+                    }
+                }
+
                 $urls[] = [
                     'loc' => Router::url(['_name' => 'specificPost', 'year'  => date('Y', strtotime($blog->created)), 'month' => date('m', strtotime($blog->created)), 'date'  => date('d', strtotime($blog->created)), 'post' => $blog->slug, '_full' => true]),
-                    'lastmod' => $modified,
-                    'changefreq' => 'daily',
-                    'priority' => '0.5'
+                    'lastmod'     => $modified,
+                    'changefreq'  => 'daily',
+                    'priority'    => '0.5',
+                    'image:image' => $urlImage
                 ];
             }
         }
@@ -131,9 +147,9 @@ class SitemapController extends AppController
 
                 $urls[] = [
                     'loc' => Router::url(['_name' => 'postsInCategory', 'category'  => $category->slug, '_full' => true]),
-                    'lastmod' => $modified,
+                    'lastmod'    => $modified,
                     'changefreq' => 'daily',
-                    'priority' => '0.5'
+                    'priority'   => '0.5'
                 ];
             }
         }
@@ -155,9 +171,9 @@ class SitemapController extends AppController
             foreach ($archives as $archive) {
                 $urls[] = [
                     'loc' => Router::url(['_name' => 'archivesPost', 'year'  => date('Y', strtotime($archive->created)), 'month' => date('m', strtotime($archive->created)), '_full' => true]),
-                    'lastmod' => $modified,
+                    'lastmod'    => $modified,
                     'changefreq' => 'daily',
-                    'priority' => '0.5'
+                    'priority'   => '0.5'
                 ];
             }
         }
@@ -179,11 +195,25 @@ class SitemapController extends AppController
             foreach($tags as $tag) {
                 $urls[] = [
                     'loc' => Router::url(['_name' => 'taggedPosts', 'tag'  => $tag->slug, '_full' => true]),
-                    'lastmod' => $modified,
+                    'lastmod'    => $modified,
                     'changefreq' => 'daily',
-                    'priority' => '0.5'
+                    'priority'   => '0.5'
                 ];
             }
+        }
+
+        $purplePlugins = new PurpleProjectPlugins();
+        $sitemap       = $purplePlugins->pluginSitemap();
+        foreach ($sitemap as $pluginSitemap) {
+            array_push($urls, $pluginSitemap);
+        }
+        
+        $urlsKey = 0;
+        foreach ($urls as $url) {
+            if (array_key_exists('image:image', $urls[$urlsKey]) && $urls[$urlsKey]['image:image'] == NULL) {
+                unset($urls[$urlsKey]['image:image']);
+            }
+            $urlsKey++;
         }
 
         // Define a custom root node in the generated document.

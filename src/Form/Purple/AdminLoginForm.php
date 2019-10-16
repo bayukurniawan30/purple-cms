@@ -13,16 +13,16 @@ class AdminLoginForm extends Form
                   ->notEmpty('username', 'Please fill this field')
                   ->add('username', [
                         'minLength' => [
-                            'rule'    => ['minLength', 1],
-                            'message' => 'Database name need to be at least 1 character'
+                            'rule'    => ['minLength', 6],
+                            'message' => 'Username need to be at least 1 character'
                         ],
                         'maxLength' => [
                             'rule'    => ['maxLength', 15],
-                            'message' => 'Database name is maximum 15 characters'
+                            'message' => 'Username is maximum 15 characters'
                         ],
                         'alphaNumeric' => [
                             'rule'    => 'alphaNumeric',
-                            'message' => 'Database name is alpha numeric'
+                            'message' => 'Username is alpha numeric'
                         ]
                     ])
                   ->requirePresence('password')

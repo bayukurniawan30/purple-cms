@@ -42,4 +42,36 @@ class PurpleProjectPlugins
 
         return $plugins;
     }
+    public function pluginSitemap()
+    {
+        // Plugins List
+        $listPlugin = new Folder(PLUGINS);
+        $pluginJson = $listPlugin->findRecursive('plugin.json', true);
+
+        $sitemapArray = [];
+        $pluginStart  = 0;
+        foreach ($pluginJson as $plugin) {
+            $readPluginJson = new File($plugin);
+            $readJson 		= $readPluginJson->read();
+
+            if ($readJson != false) {
+                $decodeJson = json_decode($readJson, true);
+
+                $class = $decodeJson['namespace'] . '\\Functions\\SeoFunction';
+                $sitemapFunction = new $class();
+
+                $sitemap = $sitemapFunction->sitemap();
+                array_push($sitemapArray, $sitemap);
+            }
+
+            $pluginStart++;
+        }
+
+        if (empty($sitemapArray)) {
+            return false;
+        }
+        else {
+            return $sitemapArray[0];
+        }
+    }
 }

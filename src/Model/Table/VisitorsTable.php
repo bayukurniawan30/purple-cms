@@ -6,7 +6,6 @@ use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
-use Cake\Log\Log;
 
 class VisitorsTable extends Table
 {

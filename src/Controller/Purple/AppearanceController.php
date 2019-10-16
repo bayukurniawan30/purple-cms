@@ -16,13 +16,18 @@ use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
-use \Gumlet\ImageResize;
+use Particle\Filter\Filter;
 
 class AppearanceController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -30,80 +35,87 @@ class AppearanceController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
 		parent::initialize();
+		
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
+		$this->viewBuilder()->setLayout('dashboard');
+		$this->loadModel('Admins');
+		$this->loadModel('Medias');
+		$this->loadModel('Settings');
+
+		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+			$cakeDebug = 'on';
+		} 
 		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-			$this->loadModel('Admins');
-			$this->loadModel('Medias');
-            $this->loadModel('Settings');
-			$this->loadModel('Histories');
+			$cakeDebug = 'off';
+		}
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
+		$queryAdmin   = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon = $this->Settings->fetch('favicon');
 
-			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-            $queryFavicon = $this->Settings->find()->where(['name' => 'favicon'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
-				
-				$dashboardSearch = new SearchForm();
-				
-				// Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-                
-                if ($adminData->level == 1) {
-					$data = [
-						'sessionHost'       => $sessionHost,
-						'sessionID'         => $sessionID,
-						'sessionPassword'   => $sessionPassword,
-	                    'cakeDebug'         => $cakeDebug,
-						'adminName' 	    => ucwords($adminData->display_name),
-						'adminLevel' 	    => $adminData->level,
-						'adminEmail' 	    => $adminData->email,
-						'adminPhoto' 	    => $adminData->photo,
-	                    'greeting'          => '',
-						'dashboardSearch'	=> $dashboardSearch,
-						'title'             => 'Appearance | Purple CMS',
-						'pageTitle'         => 'Appearance',
-						'pageTitleIcon'     => 'mdi-image',
-						'pageBreadcrumb'    => 'Appearance',
-	                    'appearanceFavicon' => $queryFavicon
-			    	];
-		        	$this->set($data);
-		        }
-                else {
-                    return $this->redirect(
-                        ['controller' => 'Dashboard', 'action' => 'index']
-                    );
-                }
+		$rowCount = $queryAdmin->count();
+		if ($rowCount > 0) {
+			$adminData = $queryAdmin->first();
+			
+			$dashboardSearch = new SearchForm();
+			
+			// Plugins List
+			$purplePlugins 	= new PurpleProjectPlugins();
+			$plugins		= $purplePlugins->purplePlugins();
+			$this->set('plugins', $plugins);
+			
+			if ($adminData->level == 1) {
+				$data = [
+					'sessionHost'       => $sessionHost,
+					'sessionID'         => $sessionID,
+					'sessionPassword'   => $sessionPassword,
+					'cakeDebug'         => $cakeDebug,
+					'adminName' 	    => ucwords($adminData->display_name),
+					'adminLevel' 	    => $adminData->level,
+					'adminEmail' 	    => $adminData->email,
+					'adminPhoto' 	    => $adminData->photo,
+					'greeting'          => '',
+					'dashboardSearch'	=> $dashboardSearch,
+					'title'             => 'Appearance | Purple CMS',
+					'pageTitle'         => 'Appearance',
+					'pageTitleIcon'     => 'mdi-image',
+					'pageBreadcrumb'    => 'Appearance',
+					'appearanceFavicon' => $queryFavicon
+				];
+				$this->set($data);
 			}
 			else {
 				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
+					['controller' => 'Dashboard', 'action' => 'index']
+				);
 			}
-	    }
+		}
+		else {
+			return $this->redirect(
+				['controller' => 'Authenticate', 'action' => 'login']
+			);
+		}
 	}
     public function favicon() {
         $appearanceDelete  = new AppearanceDeleteForm();
@@ -186,33 +198,13 @@ class AppearanceController extends AppController
 						if (file_exists($image->getFullPath())) {
 							$readImageFile   = new File($image->getFullPath());
 							$imageSize       = $readImageFile->size();
-							/**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$fullSize        = new ImageResize($image->getFullPath());
-								$fullSize->save($fullSizeImage . $generatedName);
-							 */
-							$fullSize = Image::open($image->getFullPath())->save($fullSizeImage . $generatedName, 'guess', 90);
-							/**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$thumbnailSquare = new ImageResize($image->getFullPath());
-								$thumbnailSquare->crop(300, 300);
-								$thumbnailSquare->save($uploadedThumbnailSquare . $generatedName);
-							 */
-							$thumbnailSquare = Image::open($image->getFullPath())
-											    ->zoomCrop(300, 300)
-											    ->save($uploadedThumbnailSquare . $generatedName, 'guess', 90);
-							/**
-							 * Old style, cropping with ImageResize, but quality is bad
-							 * 
-								$thumbnailLandscape = new ImageResize($image->getFullPath());
-								$thumbnailLandscape->crop(480, 270);
-								$thumbnailLandscape->save($uploadedThumbnailLandscape . $generatedName);
-                             */
+							$fullSize 			= Image::open($image->getFullPath())->save($fullSizeImage . $generatedName, 'guess', 90);
+							$thumbnailSquare 	= Image::open($image->getFullPath())
+													->zoomCrop(300, 300)
+													->save($uploadedThumbnailSquare . $generatedName, 'guess', 90);
                            	$thumbnailLandscape = Image::open($image->getFullPath())
-											    ->zoomCrop(480, 270)
-											    ->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);
+													->zoomCrop(480, 270)
+													->save($uploadedThumbnailLandscape . $generatedName, 'guess', 90);
                            
 							$media           = $this->Medias->newEntity();
 
@@ -253,38 +245,32 @@ class AppearanceController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
 		if ($this->request->is('post') || $this->request->is('ajax')) {
-        	$session   = $this->getRequest()->getSession();
-            $sessionID = $session->read('Admin.id');
+			// Sanitize user input
+			$filter = new Filter();
+			$filter->values(['image', 'type'])->trim()->stripHtml();
+			$filter->values(['id'])->int();
+			$filterResult = $filter->filter($this->request->getData());
+			$requestData  = json_decode(json_encode($filterResult), FALSE);
 
-			$fileImage = $this->request->getData('image');
-			$type      = $this->request->getData('type');
+        	$session   = $this->getRequest()->getSession();
+			$sessionID = $session->read('Admin.id');
+			$admin     = $this->Admins->get($sessionID);
+
+			$fileImage = $requestData->image;
+			$type      = $requestData->type;
 
 			$fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
 			$fullSize 	   = Image::open($fullSizeImage . $fileImage)->save($fullSizeImage . $type . '.png', 'png');
 			
-			$data = $this->Settings->get($this->request->getData('id'));
+			$setting = $this->Settings->get($requestData->id);
 			
-			$data->value = $type.'.png';
-            if ($this->Settings->save($data)) {
-            	/**
-                 * Save user activity to histories table
-                 * array $options => title, detail, admin_id
-                 */
-                
-                $options = [
-                    'title'    => 'Change of '.ucwords($type),
-                    'detail'   => ' change the '.$type.' of the website.',
-                    'admin_id' => $sessionID
-                ];
+			$setting->value = $type.'.png';
+            if ($this->Settings->save($setting)) {
+				// Tell system for new event
+				$event = new Event('Model.Setting.afterUpdateAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
+				$this->getEventManager()->dispatch($event);
 
-                $saveActivity   = $this->Histories->saveActivity($options);
-
-                if ($saveActivity == true) {
-                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-                }
-                else {
-                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-                }
+                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
             }
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -300,11 +286,19 @@ class AppearanceController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
         
         if ($this->request->is('ajax') || $this->request->is('post')) {
+			// Sanitize user input
+			$filter = new Filter();
+			$filter->values(['base64', 'type'])->trim()->stripHtml();
+			$filter->values(['id'])->int();
+			$filterResult = $filter->filter($this->request->getData());
+			$requestData  = json_decode(json_encode($filterResult), FALSE);
+
         	$session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
+			$admin     = $this->Admins->get($sessionID);
 
-            $base64   = $this->request->getData('base64');
-            $saveType = $this->request->getData('type');
+            $base64   = $requestData->base64;
+            $saveType = $requestData->type;
 
             if (strpos($base64, 'png') !== false) {
                 $sanitizeString = str_replace('data:image/png;base64,', '', $base64);
@@ -313,7 +307,7 @@ class AppearanceController extends AppController
                 $sanitizeString = str_replace('data:image/jpeg;base64,', '', $base64);
             }
             
-            $data = $this->Settings->get($this->request->getData('id'));
+            $setting = $this->Settings->get($requestData->id);
             
 			$fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
 			
@@ -321,35 +315,14 @@ class AppearanceController extends AppController
             list(, $base64)      = explode(',', $base64);
 			$base64Decode		 = base64_decode($base64);
 			file_put_contents($fullSizeImage . $saveType.'.png', $base64Decode);
-			
-			 /**
-             * Old style, cropping with ImageResize, but quality is bad
-             * 
-            	$image = ImageResize::createFromString(base64_decode($sanitizeString));
-				$image->save($fullSizeImage . $type.'.png', IMAGETYPE_PNG);
-			 */
 
-            $data->value = $saveType.'.png';
-            if ($this->Settings->save($data)) {
-            	/**
-                 * Save user activity to histories table
-                 * array $options => title, detail, admin_id
-                 */
-                
-                $options = [
-                    'title'    => 'Change of '.ucwords($type),
-                    'detail'   => ' change the '.$type.' of the website.',
-                    'admin_id' => $sessionID
-                ];
+            $setting->value = $saveType.'.png';
+            if ($this->Settings->save($setting)) {
+            	// Tell system for new event
+				$event = new Event('Model.Setting.afterUpdateAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
+				$this->getEventManager()->dispatch($event);
 
-                $saveActivity   = $this->Histories->saveActivity($options);
-
-                if ($saveActivity == true) {
-                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-                }
-                else {
-                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-                }
+                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
             }
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -367,41 +340,33 @@ class AppearanceController extends AppController
         $appearanceDelete  = new AppearanceDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($appearanceDelete->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['type'])->trim()->stripHtml();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
 				$session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
-	            $type      = $this->request->getData('type');
+				$admin     = $this->Admins->get($sessionID);
+				$type      = $requestData->type;
 
-	            $data          = $this->Settings->get($this->request->getData('id'));
-	            $filePath      = $data->value;
+	            $setting       = $this->Settings->get($requestData->id);
+	            $filePath      = $setting->value;
 	            
 	            $fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS . $filePath;
 	            
 	            $readImageFile = new File($fullSizeImage);
 	            
-	            $data->value = '';
+	            $setting->value = '';
 	            
-	            if ($readImageFile->delete() && $this->Settings->save($data)) {
-	                /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $setting = $this->Settings->get($this->request->getData('id'));
+	            if ($readImageFile->delete() && $this->Settings->save($setting)) {
+					// Tell system for new event
+					$event = new Event('Model.Setting.afterDeleteAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
+					$this->getEventManager()->dispatch($event);
 
-	                $options = [
-	                    'title'    => 'Delete '.ucwords($type),
-	                    'detail'   => ' delete '.ucwords($type).' website.',
-	                    'admin_id' => $sessionID
-	                ];
-
-	                $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -425,37 +390,29 @@ class AppearanceController extends AppController
         $sfooterEdit    = new FooterEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($sfooterEdit->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['left', 'right'])->stripHtml('<span><a><strong><em>');
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
 	            $session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 	            
-	            $setting        = $this->Settings->get($this->request->getData('id'));
+	            $setting        = $this->Settings->get($requestData->id);
 
-	            $leftFooter     = htmlentities(strip_tags($this->request->getData('left'), '<span><a><strong><em>'));
-	            $rightFooter    = htmlentities(strip_tags($this->request->getData('right'), '<span><a><strong><em>'));
+	            $leftFooter     = htmlentities($requestData->left);
+	            $rightFooter    = htmlentities($requestData->right);
 	            $setting->value = $leftFooter . '::' . $rightFooter;
 
 	            if ($this->Settings->save($setting)) {
-	                /**
-	                 * Save user activity to histories table
-	                 * array $options => title, detail, admin_id
-	                 */
-	                
-	                $setting = $this->Settings->get($this->request->getData('id'));
+					// Tell system for new event
+					$event = new Event('Model.Setting.afterUpdateFooter', $this, ['setting' => $setting, 'admin' => $admin]);
+					$this->getEventManager()->dispatch($event);
 
-	                $options = [
-	                    'title'    => 'Change of Setting',
-	                    'detail'   => ' change footer setting.',
-	                    'admin_id' => $sessionID
-	                ];
-
-	                $saveActivity   = $this->Histories->saveActivity($options);
-
-	                if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -464,7 +421,7 @@ class AppearanceController extends AppController
 	            $this->set(['json' => $json]);
 	        }
 	        else {
-	        	$errors = $appearanceDelete->errors();
+	        	$errors = $sfooterEdit->errors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
         }

@@ -8,6 +8,7 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectApi;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Filesystem\File;
+use Particle\Filter\Filter;
 
 class ProductionController extends AppController
 {
@@ -89,8 +90,14 @@ class ProductionController extends AppController
 		$userVerification = new ProductionUserVerificationForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($userVerification->execute($this->request->getData())) {
-				$email = trim($this->request->getData('email'));
-				$key   = trim($this->request->getData('key'));
+				// Sanitize user input
+                $filter = new Filter();
+				$filter->values(['email', 'key'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+				
+				$email = $requestData->email;
+				$key   = $requestData->key;
 
 				$keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
 				$content = $keyFile->read();
@@ -147,8 +154,14 @@ class ProductionController extends AppController
     {
         $codeVerification = new ProductionVerifyCodeForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
+			// Sanitize user input
+			$filter = new Filter();
+			$filter->values(['code'])->int();
+			$filterResult = $filter->filter($this->request->getData());
+			$requestData  = json_decode(json_encode($filterResult), FALSE);
+
             if ($codeVerification->execute($this->request->getData())) {
-                $code = trim($this->request->getData('code'));
+                $code = $requestData->code;
                 $session     = $this->getRequest()->getSession();
                 $sessionCode = $session->read('User.Code');
 
@@ -177,9 +190,16 @@ class ProductionController extends AppController
 		$setupDatabase = new SetupDatabaseForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($setupDatabase->execute($this->request->getData())) {
-				$name     = trim(strtolower($this->request->getData('name')));
-				$username = trim($this->request->getData('username'));
-				$password = trim($this->request->getData('password'));
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->value('name')->lower()->trim()->stripHtml();
+				$filter->values(['username', 'password'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
+				$name     = $requestData->name;
+				$username = $requestData->username;
+				$password = $requestData->password;
 
 				if (strpos($name, ' ') !== false) {
 	                $json = json_encode(['status' => 'error', 'error' => "Invalid database name. Please try again."]);

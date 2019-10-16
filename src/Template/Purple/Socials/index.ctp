@@ -83,261 +83,20 @@
     </div>
 </div>
 
-<div id="modal-add-social" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($socialAdd, [
-                'id'                    => 'form-add-social',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url' 					=> ['action' => 'ajax-add']
-            ]);
-        ?>
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Add Social Media</h3>
-        </div>
-        <div class=" uk-modal-body">
-        	<div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'name',
-                        [
-							'facebook'    => 'Facebook',
-							'instagram'   => 'Instagram',
-							'twitter'     => 'Twitter',
-							'google-plus' => 'Google+',
-							'youtube'     => 'Youtube',
-							'pinterest'   => 'Pinterest',
-							'github'      => 'Github'
-                        ],
-                        [
-                            'empty'    => 'Select Social Media',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->text('link', [
-                        'class'                  => 'form-control',
-                        'placeholder'            => 'Social Link',
-                        'data-parsley-type'      => 'url',
-                        'required'               => 'required'
-                    ]);
-                ?>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-        <?php
-            echo $this->Form->button('Save', [
-                'id'    => 'button-add-social',
-                'class' => 'btn btn-gradient-primary'
-            ]);
-
-            echo $this->Form->button('Cancel', [
-                'id'           => 'button-close-modal',
-                'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-                'type'         => 'button',
-                'data-target'  => '.purple-modal'
-            ]);
-        ?>
-        </div>
-    </div>
-    <?php
-        echo $this->Form->end();
-    ?>
-</div>
+<?= $this->element('Dashboard/Modal/Socials/add_modal'); ?>
 
 <?php
     if ($socials->count() > 0):
-?>
-<div id="modal-edit-social" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($socialEdit, [
-                'id'                    => 'form-edit-social',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url' 					=> ['action' => 'ajax-update']
-            ]);
-
-            echo $this->Form->hidden('id');
-        ?>
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Edit Social Media</h3>
-        </div>
-        <div class=" uk-modal-body">
-        	<div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'name',
-                        [
-							'facebook'    => 'Facebook',
-							'instagram'   => 'Instagram',
-							'twitter'     => 'Twitter',
-							'google-plus' => 'Google+',
-							'youtube'     => 'Youtube',
-							'pinterest'   => 'Pinterest',
-							'github'      => 'Github'
-                        ],
-                        [
-                            'empty'    => 'Select Social Media',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->text('link', [
-                        'class'                  => 'form-control',
-                        'placeholder'            => 'Social Link',
-                        'data-parsley-type'      => 'url',
-                        'required'               => 'required'
-                    ]);
-                ?>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-        <?php
-            echo $this->Form->button('Save', [
-                'id'    => 'button-edit-social',
-                'class' => 'btn btn-gradient-primary'
-            ]);
-
-            echo $this->Form->button('Cancel', [
-                'id'           => 'button-close-modal',
-                'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-                'type'         => 'button',
-                'data-target'  => '.purple-modal'
-            ]);
-        ?>
-        </div>
-    </div>
-    <?php
-        echo $this->Form->end();
-    ?>
-</div>
-
-
-<?= $this->element('Dashboard/Modal/delete_modal', [
-        'action'     => 'social',
-        'form'       => $socialDelete,
-        'formAction' => 'ajax-delete'
-]) ?>
-
-<?php 
+        echo $this->element('Dashboard/Modal/Socials/edit_modal');
+        echo $this->element('Dashboard/Modal/delete_modal', [
+            'action'     => 'social',
+            'form'       => $socialDelete,
+            'formAction' => 'ajax-delete'
+        ]);
 	endif;
 ?>
 
-<div id="modal-edit-sharing-buttons" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($socialButtons, [
-                'id'                    => 'form-edit-sharing-buttons',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-sharing-buttons']
-            ]);
-        ?>
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Edit Sharing Buttons</h3>
-        </div>
-        <div class=" uk-modal-body">
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'theme',
-                        [
-                            'flat'    => 'Flat',
-                            'classic' => 'Classic',
-                            'minima'  => 'Minima',
-                            'plain'   => 'Plain'
-                        ],
-                        [
-                            'empty'    => 'Select Theme',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'fontsize',
-                        [
-                            '8'  => '8',
-                            '10' => '10',
-                            '12' => '12',
-                            '14' => '14',
-                            '16' => '16',
-                            '18' => '18'
-                        ],
-                        [
-                            'empty'    => 'Select Font Size',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'label',
-                        [
-                            'true'  => 'Show',
-                            'false' => "Don't show"
-                        ],
-                        [
-                            'empty'    => 'Select Label',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-            <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'count',
-                        [
-                            'true'  => 'Show',
-                            'false' => "Don't show"
-                        ],
-                        [
-                            'empty'    => 'Select Counter',
-                            'class'    => 'form-control',
-                            'required' => 'required'
-                        ]
-                    );
-                ?>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <?php
-                echo $this->Form->button('Save', [
-                    'id'    => 'button-edit-sharing-buttons',
-                    'class' => 'btn btn-gradient-primary'
-                ]);
-
-                echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
-                    'type'         => 'button',
-                    'data-target'  => '.purple-modal'
-                ]);
-            ?>
-        </div>
-        <?php
-            echo $this->Form->end();
-        ?>
-    </div>
-</div>
+<?= $this->element('Dashboard/Modal/Socials/sharing_modal'); ?>
 
 <script>
     $(document).ready(function() {
@@ -426,7 +185,7 @@
                     url   = $("#sortable-items").data('purple-url');
                     token = $('#csrf-ajax-token').val();
 
-                $.ajax({
+                var ajaxProcessing = $.ajax({
                     type: "POST",
                     url:  url,
                     headers : {
@@ -435,14 +194,35 @@
                     data: data,
                     cache: false,
                     beforeSend: function() {
+                        $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-items>li .sortable-remover").show();
-                    },
-                    success: function(data) {
+                    }
+                });
+                ajaxProcessing.done(function(msg) {
+                    if (cakeDebug == 'on') {
+                        console.log(msg);
+                    }
+
+                    var json    = $.parseJSON(msg),
+                        status  = (json.status);
+
+                    if (status == 'ok') {
                         $("#sortable-items>li .sortable-remover").hide();
                         $("#sortable-items>li .uk-sortable-handle").html('<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="2" y="4" width="16" height="1"></rect> <rect x="2" y="9" width="16" height="1"></rect> <rect x="2" y="14" width="16" height="1"></rect></svg>');
+                        var createToast = notifToast('Reordering Social Media Links', 'Success reordering social media links', 'success', true);
                     }
-                })
+                    else {
+                        var createToast = notifToast('Reordering Social Media Links', 'There is an error with Purple. Please try again', 'error', true);
+
+                    }
+                });
+                ajaxProcessing.fail(function(jqXHR, textStatus) {
+                    var createToast = notifToast(jqXHR.statusText, 'There is an error with Purple. Please try again', 'error', true);
+                });
+                ajaxProcessing.always(function () {
+                    $('input, button, textarea, select').prop("disabled", false);
+                });
             });
 
     	<?php endif; ?>

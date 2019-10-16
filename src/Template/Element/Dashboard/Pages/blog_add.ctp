@@ -28,18 +28,18 @@
     echo $this->Form->hidden('featured');
 ?>
 <div class="row">
-    <div class="col-md-8 grid-margin">
+    <div class="col-md-12 grid-margin">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title uk-margin-remove-bottom">Post Detail</h4>
+                <h4 class="card-title uk-margin-remove-bottom">Post Title</h4>
             </div>
             
             <div class="card-body">
-                <div class="form-group">
+                <div class="form-group uk-margin-remove-bottom">
                     <?php
                         echo $this->Form->text('title', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Post Title',
+                            'placeholder'            => 'Post Title. Max 255 chars.',
                             'data-parsley-minlength' => '2',
                             'data-parsley-maxlength' => '255',
                             'uk-tooltip'             => 'title: Required. 2-255 chars.; pos: bottom',
@@ -48,72 +48,84 @@
                         ]);
                     ?>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 grid-margin">
+        <div class="card">
+            <div class="card-body uk-padding-remove">
+                <?php
+                    echo $this->Form->textarea('content',[
+                        'class'       => 'form-control',
+                        'placeholder' => 'Post Content',
+                        'required'    => 'required'
+                    ]);
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 grid-margin">
+        <div class="card uk-margin-medium-bottom">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Post Category and Tags</h4>
+            </div>
+            
+            <div class="card-body">
+                <div id="load-blog-categories"></div>
+                    
                 <div class="form-group">
                     <?php
-                        echo $this->Form->select(
-                            'status',
-                            [
-                                '0' => 'Draft',
-                                '1' => 'Publish',
-                            ],
-                            [
-                                'empty'    => 'Select Status',
-                                'class'    => 'form-control',
-                                'required' => 'required'
-                            ]
-                        );
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php
-                        echo $this->Form->select(
-                            'comment',
-                            [
-                                'yes' => 'Allow',
-                                'no'  => 'Close Comment',
-                            ],
-                            [
-                                'empty'    => 'Allow Comment?',
-                                'class'    => 'form-control',
-                                'required' => 'required'
-                            ]
-                        );
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php
-                        echo $this->Form->select(
-                            'social_share',
-                            [
-                                'enable'  => 'Enable',
-                                'disable' => 'Disable',
-                            ],
-                            [
-                                'empty'    => 'Social Sharing Buttons',
-                                'class'    => 'form-control',
-                                'required' => 'required'
-                            ]
-                        );
-                    ?>
-                </div>
-                <div class="form-group">
-                    <?php
-                        echo $this->Form->textarea('content',[
-                            'class'       => 'form-control',
-                            'placeholder' => 'Post Content',
-                            'required'    => 'required'
-                        ]);
-                    ?>
-                </div>   
-                <div class="form-group">
-                    <?php
+                        echo $this->Form->label('tags', 'Post Tags');
                         echo $this->Form->text('tags', [
-                            'class'                  => 'form-control',
-                            'placeholder'            => 'Post Tags',
-                            'uk-tooltip'             => 'title: Optional. Max 5 tags.; pos: bottom'
+                            'class'       => 'form-control',
+                            'placeholder' => 'Post Tags',
+                            'uk-tooltip'  => 'title: Optional. Max 5 tags.; pos: bottom'
                         ]);
                     ?>
-                </div>    
+                </div>  
+            </div>
+            <div class="card-footer">
+                <button id="button-new-post-category" type="button" class="btn btn-gradient-primary btn-sm" data-purple-modal="#modal-add-post-category">New Category</button>
+            </div>
+        </div>
+
+        <div class="card uk-margin-medium-bottom">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">SEO (Search Engine Optimization)</h4>
+            </div>
+            
+            <div class="card-body">
+                <div class="form-group">
+                    <!-- <label>Meta Keywords</label> -->
+                    <?php
+                        echo $this->Form->label('meta_keywords', 'Meta Keywords');
+                        echo $this->Form->text('meta_keywords', [
+                            'id'                     => 'form-input-metakeywords',
+                            'class'                  => 'form-control',
+                            'placeholder'            => 'Best practice is 10 keyword phrases',
+                            'data-parsley-maxlength' => '100',
+                            'uk-tooltip'             => 'title: Optional. max 100 chars.; pos: bottom',
+                        ]);
+                    ?>
+                </div>
+                <div class="form-group">
+                    <!-- <label>Meta Description</label> -->
+                    <?php
+                        echo $this->Form->label('meta_description', 'Meta Description');
+                        echo $this->Form->textarea('meta_description',[
+                            'id'                     => 'form-input-metadescription',
+                            'class'                  => 'form-control',
+                            'placeholder'            => 'Max 150 chars',
+                            'data-parsley-maxlength' => '150',
+                            'rows'                   => '4',
+                            'uk-tooltip'             => 'title: Optional. max 150 chars.; pos: bottom',
+                        ]);
+                    ?>
+                </div>
             </div>
             <div class="card-footer">
                 <?php
@@ -152,50 +164,35 @@
             <div class="col-md-12 grid-margin">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title uk-margin-remove-bottom">Category</h4>
+                        <h4 class="card-title uk-margin-remove-bottom">Post Settings</h4>
                     </div>
-                    <div class="card-body">
-                        <div id="load-blog-categories">
-                            
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button id="button-new-post-category" type="button" class="btn btn-gradient-primary btn-sm" data-purple-modal="#modal-add-post-category">New Category</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-12 grid-margin">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title uk-margin-remove-bottom">SEO (Search Engine Optimization)</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <!-- <label>Meta Keywords</label> -->
-                            <?php
-                                echo $this->Form->text('meta_keywords', [
-                                    'id'                     => 'form-input-metakeywords',
-                                    'class'                  => 'form-control',
-                                    'placeholder'            => 'Meta Keywords (Best practice is 10 keyword phrases)',
-                                    'data-parsley-maxlength' => '100',
-                                    'uk-tooltip'             => 'title: Optional. max 100 chars.; pos: bottom',
-                                ]);
-                            ?>
-                        </div>
-                        <div class="form-group">
-                            <!-- <label>Meta Description</label> -->
-                            <?php
-                                echo $this->Form->textarea('meta_description',[
-                                    'id'                     => 'form-input-metadescription',
-                                    'class'                  => 'form-control',
-                                    'placeholder'            => 'Meta Description (Max 150 chars)',
-                                    'data-parsley-maxlength' => '150',
-                                    'rows'                   => '4',
-                                    'uk-tooltip'             => 'title: Optional. max 150 chars.; pos: bottom',
-                                ]);
-                            ?>
-                        </div>
+                    <div class="card-body uk-padding-remove">
+                        <ul class="uk-list uk-list-divider uk-margin-remove">
+                            <li class="uk-padding-small uk-margin-remove-top">
+                                Publish
+                                <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                                    <?php
+                                        echo $this->Form->checkbox('status', ['class' => 'js-switch', 'value' => '1', 'checked' => true, 'required' => false]);
+                                    ?>
+                                </div>
+                            </li>
+                            <li class="uk-padding-small uk-margin-remove-top">
+                                Allow Comment
+                                <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                                    <?php
+                                        echo $this->Form->checkbox('comment', ['class' => 'js-switch', 'value' => 'yes', 'hiddenField' => 'no', 'required' => false]);
+                                    ?>
+                                </div>
+                            </li>
+                            <li class="uk-padding-small uk-margin-remove-top">
+                                Social Share Buttons
+                                <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                                    <?php
+                                        echo $this->Form->checkbox('social_share', ['class' => 'js-switch', 'value' => 'enable', 'hiddenField' => 'disable', 'required' => false]);
+                                    ?>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -206,7 +203,7 @@
     echo $this->Form->end();
 ?>
 
-<?= $this->element('Dashboard/Modal/add_blog_category_modal', [
+<?= $this->element('Dashboard/Modal/BlogCategories/add_modal', [
         'blogCategoryAdd' => $blogCategoryAdd,
         'pageId'          => $this->request->getParam('id'),
         'afterSubmit'     => 'load',
@@ -216,6 +213,15 @@
 
 <!-- Include PDF export JS lib. -->
 <?= $this->Html->script('/master-assets/plugins/html2pdf/html2pdf.bundle.js'); ?>
+
+<?= $this->Html->script('/master-assets/plugins/switchery/switchery.min.js'); ?>
+<script type="text/javascript">
+    var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+
+    elems.forEach(function(html) {
+        var switchery = new Switchery(html, { color: '#9a55ff', jackColor: '#ffffff', size: 'small' });
+    });
+</script>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -279,13 +285,17 @@
                 'X-CSRF-Token': token
             },
             data: {page: '<?php if ($this->request->getParam('id') == NULL) echo 'NULL'; else echo $this->request->getParam('id') ?>'},
-            cache: false,
-            beforeSend: function() {
-            },
-            success: function(data) {
-                $('#load-blog-categories').html(data);
-            }
+            cache: false
         })
+        .done(function(data) {
+            $('#load-blog-categories').html(data);
+        })
+        .fail(function(jqXHR, textStatus) {
+            var createToast = notifToast(jqXHR.statusText, 'Error loading categories. Please reload this page', 'error', true);
+        })
+        .always(function () {
+            $('button, input, select, textarea').prop("disabled", false);
+        });
 
         var categoryAdd = {
             form            : 'form-add-post-category',

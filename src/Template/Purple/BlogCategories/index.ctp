@@ -13,9 +13,6 @@
     }
 ?>
 
-<!--CSRF Token-->
-<input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
-
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
@@ -58,7 +55,7 @@
                                 <button class="uk-button uk-button-link"><span uk-icon="more-vertical"></span></button>
                                 <div uk-dropdown="mode: click; pos: bottom-right">
                                     <ul class="uk-nav uk-dropdown-nav">
-                                        <li><a href="#">Open</a></li>
+                                        <li><a href="<?= $permalink ?>" target="_blank">Open</a></li>
                                         <li><a class="button-edit-category" href="#" data-purple-id="<?= $blogCategory->id ?>" data-purple-name="<?= $blogCategory->name ?>" data-purple-page="<?= $this->request->getParam('id') ?>" data-purple-modal="#modal-edit-post-category">Edit</a></li>
                                         <li><a class="button-get-permalink" href="#" data-purple-link="<?= $permalink ?>" data-purple-modal="#modal-show-permalink">Get Permalink</a></li>
                                         <li class="uk-nav-divider"></li>
@@ -93,7 +90,7 @@
     </div>
 </div>
 
-<?= $this->element('Dashboard/Modal/add_blog_category_modal', [
+<?= $this->element('Dashboard/Modal/BlogCategories/add_modal', [
         'blogCategoryAdd' => $blogCategoryAdd,
         'pageId'          => $this->request->getParam('id'),
         'afterSubmit'     => 'redirect',
@@ -101,68 +98,20 @@
         'loadUrl'         => NULL
 ]) ?>
 
-<?= $this->element('Dashboard/Modal/edit_blog_category_modal', [
-        'blogCategoryAdd' => $blogCategoryEdit,
-        'pageId'          => NULL
-]) ?>
-
 <?php
-    if ($blogCategories->count() > 0):
+    if ($blogCategories->count() > 0) {
+        echo $this->element('Dashboard/Modal/BlogCategories/edit_modal', [
+            'blogCategoryEdit' => $blogCategoryEdit,
+            'pageId'           => NULL
+        ]);
+        echo $this->element('Dashboard/Modal/delete_modal', [
+            'action'     => 'post-category',
+            'form'       => $blogCategoryDelete,
+            'formAction' => 'ajax-delete'
+        ]);
+        echo $this->element('Dashboard/Modal/permalink_modal');
+    }
 ?>
-<div id="modal-delete-post-category" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($blogCategoryDelete, [
-                'id'                    => 'form-delete-post-category',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-delete']
-            ]);
-
-            echo $this->Form->hidden('id');
-        ?>
-        <div class=" uk-modal-body">
-            <p>Are you sure want to delete <span class="bind-title"></span>?</p>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <?php
-                echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-modal-close',
-                    'type'         => 'button',
-                    'data-target'  => '.purple-modal'
-                ]);
-
-                echo $this->Form->button('Yes, Delete it', [
-                    'id'    => 'button-delete-post-category',
-                    'class' => 'btn btn-gradient-danger uk-margin-left'
-                ]);
-            ?>
-        </div>
-        <?php
-
-            echo $this->Form->end();
-        ?>
-    </div>
-</div>
-
-<div id="modal-show-permalink" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Permalink</h3>
-        </div>
-        <div class="uk-modal-body">
-            <div class="form-group">
-                <input id="purple-permalink" class="form-control" type="text" value="" readonly>
-            </div>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <button class="btn btn-gradient-primary button-copy-permalink" type="button" data-clipboard-target="#purple-permalink">Copy</button>
-            <button class="btn btn-outline-primary uk-margin-left uk-modal-close" type="button">Close</button>
-        </div>
-    </div>
-</div>
-<?php endif; ?>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -223,7 +172,7 @@
                 url   = $("#sortable-items").data('purple-url');
                 token = $('#csrf-ajax-token').val();
 
-            $.ajax({
+            var ajaxProcessing = $.ajax({
                 type: "POST",
                 url:  url,
                 headers : {
@@ -232,14 +181,34 @@
                 data: data,
                 cache: false,
                 beforeSend: function() {
+                    $('input, button, textarea, select').prop("disabled", true);
                     $("#sortable-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                     $("#sortable-items>li .sortable-remover").show();
-                },
-                success: function(data) {
+                }
+            });
+            ajaxProcessing.done(function(msg) {
+                if (cakeDebug == 'on') {
+                    console.log(msg);
+                }
+
+                var json    = $.parseJSON(msg),
+                    status  = (json.status);
+
+                if (status == 'ok') {
                     $("#sortable-items>li .sortable-remover").hide();
                     $("#sortable-items>li .uk-sortable-handle").html('<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="2" y="4" width="16" height="1"></rect> <rect x="2" y="9" width="16" height="1"></rect> <rect x="2" y="14" width="16" height="1"></rect></svg>');
+                    var createToast = notifToast('Reordering Categories', 'Success reordering categories', 'success', true);
                 }
-            })
+                else {
+                    var createToast = notifToast('Reordering Categories', 'There is an error with Purple. Please try again', 'error', true);
+                }
+            });
+            ajaxProcessing.fail(function(jqXHR, textStatus) {
+                var createToast = notifToast(jqXHR.statusText, 'There is an error with Purple. Please try again', 'error', true);
+            });
+            ajaxProcessing.always(function () {
+                $('input, button, textarea, select').prop("disabled", false);
+            });
         });
 		<?php endif; ?>
     })

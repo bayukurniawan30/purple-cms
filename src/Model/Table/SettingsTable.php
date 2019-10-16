@@ -12,6 +12,21 @@ class SettingsTable extends Table
         $this->setTable('settings');
 		$this->setPrimaryKey('id');
     }
+    public function fetch($settingName, $return = 'query')
+    {
+        $setting = $this->find()->where(['name' => $settingName]);
+        if ($setting->count() > 0) {
+            $data = $setting->first();
+            if ($return == 'query') {
+                return $data;
+            }
+            elseif ($return == 'value') {
+                return $data->value;
+            }
+        }
+
+        return false;
+    }
     public function settingsSiteName() 
     {
         $sitename = $this->find()->where(['name' => 'sitename'])->first();

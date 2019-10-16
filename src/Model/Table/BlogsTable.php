@@ -6,7 +6,6 @@ use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Query;
 use Cake\Utility\Text;
-use Cake\Log\Log;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 

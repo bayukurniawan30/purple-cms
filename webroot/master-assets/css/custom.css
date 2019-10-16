@@ -438,10 +438,18 @@ select.form-control {
 
 /* Toast UI Editor */
 #tuieditor {
-    zoom: 0.8;
-    -webkit-transform: scale(0.8);
-    -moz-transform: scale(0.8);
-    transform: scale(0.8);
+    /* zoom: 0.9;
+    -webkit-transform: scale(0.9);
+    -moz-transform: scale(0.9);
+    transform: scale(0.9); */
+    width: 98%!important;
+    height: 98%!important;
+}
+#tuieditor .tui-image-editor-header-logo {
+    display: none;
+}
+.tui-image-editor-container .tui-image-editor-menu > .tui-image-editor-item[title]:hover:after {
+    min-width: 80px;
 }
 .tui-editor-save-btn {
     background: linear-gradient(to right, #da8cff, #9a55ff);

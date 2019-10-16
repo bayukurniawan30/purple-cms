@@ -3,8 +3,6 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
-use App\Purple\PurpleProjectSettings;
-use Carbon\Carbon;
 
 class BlogsTagsTable extends Table
 {

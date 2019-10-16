@@ -111,6 +111,11 @@ class AdminsTable extends Table
             return $date->format('Y-m-d H:i:s');
         }
     }
+    public function signedInUser($id, $password)
+    {
+        $admin = $this->find()->where(['id' => $id, 'password' => $password])->limit(1);
+        return $admin;
+    }
 	public function lastUser()
 	{
 		$admin = $this->find()->all()->last();

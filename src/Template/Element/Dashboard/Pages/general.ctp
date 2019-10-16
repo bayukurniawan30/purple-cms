@@ -356,32 +356,32 @@
 </div>
 
 <!-- Color Picker for Froala Blocks -->
-<?= $this->element('Dashboard/Modal/change_bgcolor_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/change_bgcolor_modal') ?>
 
 <!-- UIkit Slideshow Tuning -->
-<?= $this->element('Dashboard/Modal/uikit_slider_tuning_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/UiKit/slider_tuning_modal') ?>
 
 <!-- UIkit Animation -->
-<?= $this->element('Dashboard/Modal/uikit_add_animation_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/UiKit/add_animation_modal') ?>
 
 <!-- UIkit Filter -->
-<?= $this->element('Dashboard/Modal/uikit_set_filter_id_modal') ?>
-<?= $this->element('Dashboard/Modal/uikit_set_filter_category_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/UiKit/set_filter_id_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/UiKit/set_filter_category_modal') ?>
 
 <!-- Font Awesome Icons for Froala Blocks -->
-<?= $this->element('Dashboard/Modal/font_awesome_icons_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/font_awesome_icons_modal') ?>
 
 <!-- Save Block to File -->
-<?= $this->element('Dashboard/Modal/froala_save_block_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/froala_save_block_modal') ?>
 
 <!-- Delete Saved Block -->
-<?= $this->element('Dashboard/Modal/froala_delete_block_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/froala_delete_block_modal') ?>
 
 <!-- Buttons Customizing for Froala Blocks -->
-<?= $this->element('Dashboard/Modal/buttons_customizing_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/buttons_customizing_modal') ?>
 
 <!-- Element Properties for Froala Blocks -->
-<?= $this->element('Dashboard/Modal/froala_master_attribute_modal') ?>
+<?= $this->element('Dashboard/Modal/BlockEditor/froala_master_attribute_modal') ?>
 
 <script>
     $(document).ready(function() {

@@ -48,6 +48,11 @@
                 <div id="croppie-editor" style="min-height: 300px; max-height: auto">
                 </div>
                 
+                <div id="croppie-result">
+                    <img class="img-fluid" src="" width="64" height="64">
+                </div>
+            </div>
+            <div class="card-footer">
                 <button id="button-without-crop-image" type="button" class="btn btn-primary" uk-tooltip="Save without Crop">
                     <i class="mdi mdi-content-save"></i> Save without Crop
                 </button>
@@ -60,10 +65,6 @@
                 <button type="button" class="btn btn-inverse-primary btn-icon uk-margin-left image-rotate" data-deg="90" uk-tooltip="Rotate Right">
                     <i class="mdi mdi-rotate-right"></i>
                 </button>
-                
-                <div id="croppie-result">
-                    <img class="img-fluid" src="" width="64" height="64">
-                </div>
             </div>
         </div>
     </div>
@@ -196,13 +197,13 @@
                                             beforeSend: function(){ 
                                             },
                                             success: function(data){
-                                                console.log(data);
                                                 $("#croppie-editor").hide();
                                                 $(".image-rotate").hide();
                                                 $(".uk-alert-primary").hide();
                                                 $("#button-without-crop-image").hide();
                                                 btn.html('Result');
                                                 btn.hide();
+                                                $("#collapse-croppie").find('.card-footer').hide();
                                                 $(".bind-new-result-title").html('Result');
                                                 $("#croppie-result").find('img').attr('src', canvas.toDataURL());
                                             }
@@ -221,12 +222,10 @@
                     var extension = file.name.split('.').pop().toLowerCase();
                     if($.inArray(extension, extArray) !== -1) {
                         // Allowed
-                        console.log('Allowed');
                         var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
-                        console.log('Not Allowed');
                         var console_response = 'File \'' + file.name + '\' cannot be added: must be an image';
                         var createToast = notifToast('File Uploading', console_response, 'error');
                     }
@@ -266,8 +265,6 @@
                 $.danidemo.updateFileStatus(id, 'success', 'Upload Complete');
 
                 $.danidemo.updateFileProgress(id, '100%');
-
-                console.log(console_response);
 
                 var json    = $.parseJSON(data),
                     status  = (json.status),
@@ -309,7 +306,6 @@
 
             },
             onUploadError: function(id, message) {
-                console.log(message);
                 var console_response = 'Failed to Upload file #' + id + ': ' + message;
                 $.danidemo.updateFileStatus(id, 'error', message);
 

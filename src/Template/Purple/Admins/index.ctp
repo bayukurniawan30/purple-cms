@@ -99,42 +99,12 @@
 
 <?php
     if ($users->count() > 0):
+        echo $this->element('Dashboard/Modal/delete_modal', [
+            'action'     => 'user',
+            'form'       => $adminDelete,
+            'formAction' => 'ajax-delete'
+        ]);
 ?>
-<div id="modal-delete-user" class="uk-flex-top purple-modal" uk-modal>
-    <div class="uk-modal-dialog uk-margin-auto-vertical">
-        <?php
-            echo $this->Form->create($adminDelete, [
-                'id'                    => 'form-delete-user',
-                'class'                 => 'pt-3',
-                'data-parsley-validate' => '',
-                'url'                   => ['action' => 'ajax-delete']
-            ]);
-
-            echo $this->Form->hidden('id');
-        ?>
-        <div class=" uk-modal-body">
-            <p>Are you sure want to delete <span class="bind-title"></span>?</p>
-        </div>
-        <div class="uk-modal-footer uk-text-right">
-            <?php
-                echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-modal-close',
-                    'type'         => 'button',
-                    'data-target'  => '.purple-modal'
-                ]);
-
-                echo $this->Form->button('Yes, Delete it', [
-                    'id'    => 'button-delete-user',
-                    'class' => 'btn btn-gradient-danger uk-margin-left'
-                ]);
-            ?>
-        </div>
-        <?php
-            echo $this->Form->end();
-        ?>
-    </div>
-</div>
 
 <script>
     $(document).ready(function() {
@@ -149,7 +119,7 @@
             "bLengthChange": false
         });
 
-        dataTable.on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
+        dataTable.on('responsive-display', function ( e, datatable, row, showHide, update ) {
             $(".button-delete-purple").click(function() {
                 var btn         = $(this),
                     id          = btn.data('purple-id'),

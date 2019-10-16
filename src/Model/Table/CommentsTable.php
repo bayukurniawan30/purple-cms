@@ -39,7 +39,6 @@ class CommentsTable extends Table
 
 		if ($entity->isNew()) {
 			$entity->created  = $date;
-			$entity->content = trim(htmlentities(nl2br($entity->content)));
 		}
     }
     protected function _getCreated($created)

@@ -15,18 +15,37 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
+use Particle\Filter\Filter;
 
 class ThemesController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
 			return $this->redirect(
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
+		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
 		}
 	}
 	public function initialize()
@@ -37,74 +56,66 @@ class ThemesController extends AppController
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
+		$this->viewBuilder()->setLayout('dashboard');
+		$this->loadModel('Admins');
+		$this->loadModel('Settings');
+
+		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+			$cakeDebug = 'on';
+		} 
 		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
-            $this->loadModel('Settings');
-			$this->loadModel('Histories');
+			$cakeDebug = 'off';
+		}
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
+		$queryAdmin      = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon    = $this->Settings->fetch('favicon');
+		$queryDateFormat = $this->Settings->fetch('dateformat');
+		$queryTimeFormat = $this->Settings->fetch('timeformat');
 
-			$queryAdmin      = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-			$queryFavicon    = $this->Settings->find()->where(['name' => 'favicon'])->first();
-			$queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
-			$queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
-				
-				$dashboardSearch = new SearchForm();
-				
-				// Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-                
-                if ($adminData->level == 1) {
-					$data = [
-						'sessionHost'        => $sessionHost,
-						'sessionID'          => $sessionID,
-						'sessionPassword'    => $sessionPassword,
-						'cakeDebug'          => $cakeDebug,
-						'adminName'          => ucwords($adminData->display_name),
-						'adminLevel'         => $adminData->level,
-						'adminEmail'         => $adminData->email,
-						'adminPhoto'         => $adminData->photo,
-						'greeting'           => '',
-						'dashboardSearch'    => $dashboardSearch,
-						'title'              => 'Themes | Purple CMS',
-						'pageTitle'          => 'Themes',
-						'pageTitleIcon'      => 'mdi-image',
-						'pageBreadcrumb'     => 'Themes',
-						'appearanceFavicon'  => $queryFavicon,
-						'settingsDateFormat' => $queryDateFormat->value,
-						'settingsTimeFormat' => $queryTimeFormat->value,
-			    	];
-		        	$this->set($data);
-		        }
-                else {
-                    return $this->redirect(
-                        ['controller' => 'Dashboard', 'action' => 'index']
-                    );
-                }
+		$rowCount = $queryAdmin->count();
+		if ($rowCount > 0) {
+			$adminData = $queryAdmin->first();
+			
+			$dashboardSearch = new SearchForm();
+			
+			// Plugins List
+			$purplePlugins 	= new PurpleProjectPlugins();
+			$plugins		= $purplePlugins->purplePlugins();
+			$this->set('plugins', $plugins);
+			
+			if ($adminData->level == 1) {
+				$data = [
+					'sessionHost'        => $sessionHost,
+					'sessionID'          => $sessionID,
+					'sessionPassword'    => $sessionPassword,
+					'cakeDebug'          => $cakeDebug,
+					'adminName'          => ucwords($adminData->display_name),
+					'adminLevel'         => $adminData->level,
+					'adminEmail'         => $adminData->email,
+					'adminPhoto'         => $adminData->photo,
+					'greeting'           => '',
+					'dashboardSearch'    => $dashboardSearch,
+					'title'              => 'Themes | Purple CMS',
+					'pageTitle'          => 'Themes',
+					'pageTitleIcon'      => 'mdi-image',
+					'pageBreadcrumb'     => 'Themes',
+					'appearanceFavicon'  => $queryFavicon,
+					'settingsDateFormat' => $queryDateFormat->value,
+					'settingsTimeFormat' => $queryTimeFormat->value,
+				];
+				$this->set($data);
 			}
 			else {
 				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
+					['controller' => 'Dashboard', 'action' => 'index']
+				);
 			}
-	    }
+		}
+		else {
+			return $this->redirect(
+				['controller' => 'Authenticate', 'action' => 'login']
+			);
+		}
 	}
 	public function index()
 	{
@@ -189,7 +200,6 @@ class ThemesController extends AppController
     	$this->set('arrayList', $arrayList);
     	$this->set('themeApply', $themeApply);
     	$this->set('themeDelete', $themeDelete);
-
 	}
 	public function ajaxApplyTheme()
 	{
@@ -198,16 +208,22 @@ class ThemesController extends AppController
         $themeApply = new ThemeApplyForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($themeApply->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['folder', 'name', 'active'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
             	$session   = $this->getRequest()->getSession();
 	            $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-	            $targetFolder = trim($this->request->getData('folder'));
+	            $targetFolder = $requestData->folder;
 
 	            // Delete folder from active theme
-	            $folderActive   = str_replace(' ', '', ucwords(trim($this->request->getData('active')), ' ')).'Theme'; 
+	            $folderActive   = str_replace(' ', '', ucwords($requestData->active)).'Theme'; 
 	            $folderToDelete = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive);
 				if ($folderToDelete->delete()) {
-
 	             	// Create theme folder
 	            	$themePath   = WWW_ROOT . 'uploads' . DS . 'themes' . DS . $folderActive;
 	            	$checkPath   = new Folder($themePath);
@@ -253,25 +269,11 @@ class ThemesController extends AppController
 					$fileJson = new File(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $targetFolder . DS . 'detail.json');
 					$fileJson->copy(PLUGINS . 'EngageTheme' . DS . 'detail.json');
 
-	                /**
-					 * Save user activity to histories table
-					 * array $options => title, detail, admin_id
-					 */
+					// Tell system for new event
+					$event = new Event('Model.Theme.afterApply', $this, ['theme' => $requestData->name, 'admin' => $admin]);
+					$this->getEventManager()->dispatch($event);
 
-					$options = [
-						'title'    => 'Applying a Theme',
-						'detail'   => ' apply '.trim($this->request->getData('name')).' as an active theme.',
-						'admin_id' => $sessionID
-					];
-
-	                $saveActivity   = $this->Histories->saveActivity($options);
-
-					if ($saveActivity == true) {
-	                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-	                }
-	                else {
-	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-	                }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't delete folder. Please try again."]);
@@ -295,6 +297,7 @@ class ThemesController extends AppController
 		if ($this->request->is('post')) {
 			$session   = $this->getRequest()->getSession();
             $sessionID = $session->read('Admin.id');
+			$admin     = $this->Admins->get($sessionID);
 
         	$temporaryFolder = TMP . 'uploads' . DS . 'themes';
 
@@ -321,25 +324,11 @@ class ThemesController extends AppController
 
 			            $deleteZip = new File($temporaryFolder . DS . $fileName);
 						if ($deleteZip->delete()) {
-		                    /**
-		                     * Save user activity to histories table
-		                     * array $options => title, detail, admin_id
-		                     */
-		                    
-		                    $options = [
-		                        'title'    => 'Addition of a New Theme',
-		                        'detail'   => ' upload '.$onlyName.' to themes.',
-		                        'admin_id' => $sessionID
-		                    ];
+							// Tell system for new event
+							$event = new Event('Model.Theme.afterUpload', $this, ['theme' => $onlyName, 'admin' => $admin]);
+							$this->getEventManager()->dispatch($event);
 
-		                    $saveActivity   = $this->Histories->saveActivity($options);
-
-		                    if ($saveActivity == true) {
-		                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-		                    }
-		                    else {
-		                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-		                    }
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 	                	}
 	                	else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't upload file. Please try again."]);
@@ -370,31 +359,24 @@ class ThemesController extends AppController
 		$themeDelete = new ThemeDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($themeDelete->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['folder', 'name'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
                 
-				$deleteTheme = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $this->request->getData('folder'));
+				$deleteTheme = new Folder(WWW_ROOT . 'uploads' . DS . 'themes' . DS . $requestData->folder);
 
                 if ($deleteTheme->delete()) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Deletion of a Theme',
-                        'detail'   => ' delete '.$this->request->getData('name').' from themes.',
-                        'admin_id' => $sessionID
-                    ];
+					// Tell system for new event
+					$event = new Event('Model.Theme.afterDelete', $this, ['theme' => $requestData->name, 'admin' => $admin]);
+					$this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

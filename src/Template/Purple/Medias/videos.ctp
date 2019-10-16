@@ -314,7 +314,7 @@
                 console.log(console_response);
                 // console.log(console_response2);
 
-                var createToast = notifToast('Preparing File', 'Upload Complete. Loading file list...', 'success');
+                var createToast = notifToast('Preparing File', 'Upload Complete. Loading file list...', 'success', true);
 
                 setTimeout(function() {
                     $.ajax({

@@ -3,9 +3,7 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use App\Form\MaintenanceForm;
@@ -15,6 +13,7 @@ use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
 use Melbahja\Seo\Factory;
+use Particle\Filter\Filter;
 
 class MaintenanceController extends AppController
 {
@@ -92,20 +91,27 @@ class MaintenanceController extends AppController
         $maintenance  = new MaintenanceForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($maintenance->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+                
                 $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                $verifyEmail = $purpleApi->verifyEmail($requestData->email);
 
                 if ($verifyEmail == true) {
                     $this->loadModel('Subscribers');
 
-                    $findDuplicate = $this->Subscribers->find()->where(['email' => $this->request->getData('email')]);
+                    $findDuplicate = $this->Subscribers->find()->where(['email' => $requestData->email]);
 
                     if ($findDuplicate->count() >= 1) {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another email."]);
                     }
                     else {
                         $subscriber = $this->Subscribers->newEntity();
-                        $subscriber = $this->Subscribers->patchEntity($subscriber, $this->request->getData());
+                        $subscriber = $this->Subscribers->patchEntity($subscriber, $requestArray);
                         $subscriber->status = 'active';
 
                         if ($this->Subscribers->save($subscriber)) {

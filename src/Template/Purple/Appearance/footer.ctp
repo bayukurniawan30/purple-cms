@@ -73,6 +73,7 @@
 
             <div class="form-group">
                 <?php
+                    echo $this->Form->label('left', 'Left Footer Text');
                     echo $this->Form->text('left', [
                         'class'                  => 'form-control',
                         'placeholder'            => 'Left Column',
@@ -84,6 +85,7 @@
             </div>
             <div class="form-group">
                 <?php
+                    echo $this->Form->label('right', 'Right Footer Text');
                     echo $this->Form->text('right', [
                         'class'                  => 'form-control',
                         'placeholder'            => 'Right Column',

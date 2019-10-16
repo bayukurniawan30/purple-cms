@@ -18,6 +18,7 @@ use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
 use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
+use Particle\Filter\Filter;
 
 class BlogsController extends AppController
 {
@@ -93,6 +94,7 @@ class BlogsController extends AppController
             $totalAllVisitors = $this->Visitors->totalAllVisitors();
 
             // Send Email to User to Notify user
+            $purpleApi = new PurpleProjectApi();
             $users     = $this->Admins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
             $totalUser = $users->count();
 
@@ -107,7 +109,7 @@ class BlogsController extends AppController
                     'level'       => $user->level
                 );
                 $senderData   = array(
-                    'total'   => $totalAllVisitors,
+                    'total'   => $purpleGlobal->shortenNumber($totalAllVisitors),
                     'domain'  => $this->request->domain()
                 );
                 $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));
@@ -562,62 +564,47 @@ class BlogsController extends AppController
 		$postComment = new PostCommentForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
 			if ($postComment->execute($this->request->getData())) {
+                // Sanitize user input
+                $filter = new Filter();
+                if ($this->request->getEnv('HTTP_HOST') == 'localhost') {
+                    $filter->values(['status'])->defaults('success');
+                    $filter->values(['score'])->defaults('0.9');
+                }
+                $filter->value('content')->trim()->stripHtml()->replace("\n", '<br>');
+				$filter->values(['name', 'email', 'ds', 'status', 'score'])->trim()->stripHtml();
+				$filter->values(['blog_id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+
                 $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                $verifyEmail = $purpleApi->verifyEmail($requestData->email);
 
                 if ($verifyEmail == true) {
                     $purpleGlobal = new PurpleProjectGlobal();
-                    if ($purpleGlobal->isRecaptchaPass($this->request->getData('status'), $this->request->getData('score')) == true) {
+                    if ($purpleGlobal->isRecaptchaPass($requestData->status, $requestData->score) == true) {
                         $comment = $this->Comments->newEntity();
-                        $comment = $this->Comments->patchEntity($comment, $this->request->getData());
+                        $comment = $this->Comments->patchEntity($comment, $requestArray);
                         $comment->status = '0';
                         $comment->reply  = '0';
 
         				if ($this->Comments->save($comment)) {
-                            $record_id = $comment->id;
+                            $recordId = $comment->id;
 
-                            /**
-                             * Save data to Notifications Table
-                             */
-                            $this->loadModel('Notifications');
-                            $notification = $this->Notifications->newEntity();
-                            $notification->type       = 'comment';
-                            $notification->content    = $this->request->getData('name').' sent a comment to your post. Click to view the comment.';
-                            $notification->comment_id = $record_id;
-                            $notification->blog_id    = $this->request->getData('blog_id');
+                            // Tell system for new event
+                            // Notification Event
+                            $notificationEvent = new Event('Model.Notification.afterSaveComment', $this, ['data' => ['blog_id' => $requestData->blog_id, 'comment_id' => $recordId, 'name' => $requestData->name]]);
+                            $this->getEventManager()->dispatch($notificationEvent);
+                            
+                            // Send Email Event
+                            $commentEvent = new Event('Model.Blog.afterSentComment', $this, ['data' => ['blog_id' => $requestData->blog_id, 'link' => $requestData->ds, 'name' => $requestData->name, 'email' => $requestData->email, 'domain' => $this->request->domain()]]);
+                            $this->getEventManager()->dispatch($commentEvent);
 
-                            // Send Email to User to Notify author
-                            $blog   = $this->Blogs->get($this->request->getData('blog_id'));
-                            $author = $this->Admins->get($blog->admin_id);
-                            $key    = $this->Settings->settingsPublicApiKey();
-                            $dashboardLink = $this->request->getData('ds');
-                            $userData      = array(
-                                'sitename'    => $this->Settings->settingsSiteName(),
-                                'email'       => $author->email,
-                                'displayName' => $author->display_name,
-                                'level'       => $author->level
-                            );
-                            $post          = $blog->title;
-                            $commentData   = array(
-                                'name'   => $this->request->getData('name'),
-                                'email'  => $this->request->getData('email'),
-                                'blogId' => $this->request->getData('blog_id'),
-                                'domain' => $this->request->domain()
-                            );
-                            $notifyUser = $purpleApi->sendEmailPostComment($key, $dashboardLink, json_encode($userData), $post, json_encode($commentData));
-
-                            if ($notifyUser == true) {
-                                $emailNotification = true;
+                            if ($notificationEvent->getResult()) {
+                                $json = json_encode(['status' => 'ok', 'notification' => $notificationEvent->getResult(), 'email' => $commentEvent->getResult(), 'content' => '<strong>Success</strong> Your comment has been sent. We need to review your comment before publish it. Thank you.']);
                             }
                             else {
-                                $emailNotification = false;
-                            }
-
-                            if ($this->Notifications->save($notification)) {
-                                $json = json_encode(['status' => 'ok', 'notification' => true, 'email' => [$author->email => $emailNotification], 'content' => '<strong>Success</strong> Your comment has been sent. We need to review your comment before publish it. Thank you.']);
-                            }
-                            else {
-                                $json = json_encode(['status' => 'ok', 'email' => [$author->email => $emailNotification], 'content' => '<strong>Success</strong> Your comment has been sent. We need to review your comment before publish it. Thank you.']);
+                                $json = json_encode(['status' => 'ok', 'email' => $commentEvent->getResult(), 'content' => '<strong>Success</strong> Your comment has been sent. We need to review your comment before publish it. Thank you.']);
                             }
                         }
                         else {

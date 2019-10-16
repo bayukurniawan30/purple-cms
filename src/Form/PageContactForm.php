@@ -10,8 +10,8 @@ class PageContactForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('title', 'Please fill this field')
-                  ->add('title', [
+                  ->notEmpty('name', 'Please fill this field')
+                  ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
                             'message' => 'Name need to be at least 2 characters'
@@ -43,7 +43,7 @@ class PageContactForm extends Form
                     ])
                   ->requirePresence('content')
                   ->notEmpty('content', 'Please fill this field')
-                  ->add('title', [
+                  ->add('content', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],
                             'message' => 'Comment need to be at least 3 characters'

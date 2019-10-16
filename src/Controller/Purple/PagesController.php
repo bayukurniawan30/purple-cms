@@ -21,7 +21,7 @@ use App\Form\PageContactForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectFroalaBlocks;
 use App\Purple\PurpleProjectPlugins;
-use \Gumlet\ImageResize;
+use Particle\Filter\Filter;
 
 class PagesController extends AppController
 {
@@ -29,95 +29,106 @@ class PagesController extends AppController
     public $pagesLimit  = 10;
 
     public function beforeFilter(Event $event)
-    {
-        parent::beforeFilter($event);
-        $purpleGlobal = new PurpleProjectGlobal();
-        $databaseInfo   = $purpleGlobal->databaseInfo();
-        if ($databaseInfo == 'default') {
-            return $this->redirect(
-                ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
-            );
-        }
-    }
+	{
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
+	    $purpleGlobal = new PurpleProjectGlobal();
+		$databaseInfo   = $purpleGlobal->databaseInfo();
+		if ($databaseInfo == 'default') {
+			return $this->redirect(
+	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
+	        );
+		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
+	}
     public function initialize()
     {
         parent::initialize();
-        $this->loadComponent('RequestHandler');
+
+		// Get Admin Session data
         $session = $this->getRequest()->getSession();
         $sessionHost     = $session->read('Admin.host');
         $sessionID       = $session->read('Admin.id');
         $sessionPassword = $session->read('Admin.password');
 
-        if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+        $this->viewBuilder()->setLayout('dashboard');
+        $this->loadModel('Admins');
+        $this->loadModel('PageTemplates');
+        $this->loadModel('Generals');
+        $this->loadModel('CustomPages');
+        $this->loadModel('Medias');
+        $this->loadModel('Settings');
+
+        if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+            $cakeDebug = 'on';
+        } 
+        else {
+            $cakeDebug = 'off';
+        }
+
+        $queryAdmin       = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon     = $this->Settings->fetch('favicon');
+		$queryDateFormat  = $this->Settings->fetch('dateformat');
+		$queryTimeFormat  = $this->Settings->fetch('timeformat');
+
+        $browseMedias  = $this->Medias->find('all', [
+            'order' => ['Medias.id' => 'DESC']])->contain('Admins');
+
+        $rowCount = $queryAdmin->count();
+        if ($rowCount > 0) {
+            $adminData = $queryAdmin->first();
+
+            $dashboardSearch = new SearchForm();
+
+            // Plugins List
+            $purplePlugins 	= new PurpleProjectPlugins();
+            $plugins		= $purplePlugins->purplePlugins();
+            $this->set('plugins', $plugins);
+            
+            $data = [
+                'sessionHost'        => $sessionHost,
+                'sessionID'          => $sessionID,
+                'sessionPassword'    => $sessionPassword,
+                'cakeDebug'          => $cakeDebug,
+                'adminName'          => ucwords($adminData->display_name),
+                'adminLevel'         => $adminData->level,
+                'adminEmail'         => $adminData->email,
+                'adminPhoto'         => $adminData->photo,
+                'greeting'           => '',
+                'dashboardSearch'    => $dashboardSearch,
+                'title'              => 'Pages | Purple CMS',
+                'pageTitle'          => 'Pages',
+                'pageTitleIcon'      => 'mdi-file-multiple',
+                'pageBreadcrumb'     => 'Pages',
+                'appearanceFavicon'  => $queryFavicon,
+                'settingsDateFormat' => $queryDateFormat->value,
+                'settingsTimeFormat' => $queryTimeFormat->value,
+                'mediaImageTotal'    => $browseMedias->count(),
+                'mediaImageLimit'    => $this->imagesLimit
+            ];
+            $this->set($data);
+            $this->set(compact('browseMedias'));
+        }
+        else {
             return $this->redirect(
                 ['controller' => 'Authenticate', 'action' => 'login']
             );
-        }
-        else {
-            $this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
-            $this->loadModel('PageTemplates');
-            $this->loadModel('Generals');
-            $this->loadModel('CustomPages');
-            $this->loadModel('Medias');
-            $this->loadModel('Settings');
-			$this->loadModel('Histories');
-
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
-
-            $queryAdmin      = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-            $queryFavicon    = $this->Settings->find()->where(['name' => 'favicon'])->first();
-            $queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
-            $queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
-
-            $browseMedias  = $this->Medias->find('all', [
-                'order' => ['Medias.id' => 'DESC']])->contain('Admins');
-
-            $rowCount = $queryAdmin->count();
-            if ($rowCount > 0) {
-                $adminData = $queryAdmin->first();
-
-                $dashboardSearch = new SearchForm();
-
-                // Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-                
-                $data = [
-                    'sessionHost'        => $sessionHost,
-                    'sessionID'          => $sessionID,
-                    'sessionPassword'    => $sessionPassword,
-                    'cakeDebug'          => $cakeDebug,
-                    'adminName'          => ucwords($adminData->display_name),
-                    'adminLevel'         => $adminData->level,
-                    'adminEmail'         => $adminData->email,
-                    'adminPhoto'         => $adminData->photo,
-                    'greeting'           => '',
-                    'dashboardSearch'    => $dashboardSearch,
-                    'title'              => 'Pages | Purple CMS',
-                    'pageTitle'          => 'Pages',
-                    'pageTitleIcon'      => 'mdi-file-multiple',
-                    'pageBreadcrumb'     => 'Pages',
-                    'appearanceFavicon'  => $queryFavicon,
-                    'settingsDateFormat' => $queryDateFormat->value,
-                    'settingsTimeFormat' => $queryTimeFormat->value,
-                    'mediaImageTotal'    => $browseMedias->count(),
-                    'mediaImageLimit'    => $this->imagesLimit
-                ];
-                $this->set($data);
-                $this->set(compact('browseMedias'));
-            }
-            else {
-                return $this->redirect(
-                    ['controller' => 'Authenticate', 'action' => 'login']
-                );
-            }
         }
     }
     public function index($id = 1)
@@ -317,12 +328,24 @@ class PagesController extends AppController
         $pageAdd = new PageAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageAdd->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['title', 'status'])->trim()->stripHtml();
+				if (!empty($this->request->getData('parent'))) {
+					$filter->values(['parent'])->int();
+				}
+                $filter->values(['page_template_id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+                
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-                $reservedText = ['purple', 'setup', 'posts', 'tag'];
+                $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
 
-                $slug = Text::slug(strtolower($this->request->getData('title')));
+                $slug = Text::slug(strtolower($requestData->title));
                 $findDuplicate = $this->Pages->find()->where(['slug' => $slug]);
                 if ($findDuplicate->count() >= 1) {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another title."]);
@@ -333,7 +356,7 @@ class PagesController extends AppController
                     }
                     else {
                         $page = $this->Pages->newEntity();
-                        $page = $this->Pages->patchEntity($page, $this->request->getData());
+                        $page = $this->Pages->patchEntity($page, $requestArray);
                         $page->admin_id = $sessionID;
                     
                         if ($this->Pages->save($page)) {
@@ -365,6 +388,7 @@ class PagesController extends AppController
             if ($pageSave->execute($this->request->getData())) {
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
                 if ($this->request->getData('id') == 0) {
                     $queryHomepage  = $this->Settings->find()->where(['name' => 'homepagestyle'])->first();
@@ -386,25 +410,11 @@ class PagesController extends AppController
                     $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$trimContent));
                     
                     if ($this->Settings->save($setting)) {
-                        /**
-                         * Save user activity to histories table
-                         * array $options => title, detail, admin_id
-                         */
-                        
-                        $options = [
-                            'title'    => 'Update Home Page Content',
-                            'detail'   => ' update home page content of your website.',
-                            'admin_id' => $sessionID
-                        ];
+                        // Tell system for new event
+                        $event = new Event('Model.Page.afterSave', $this, ['page' => 'Home Page', 'admin' => $admin, 'type' => 'homepage']);
+                        $this->getEventManager()->dispatch($event);
 
-                        $saveActivity   = $this->Histories->saveActivity($options);
-
-                        if ($saveActivity == true) {
-                            $json = json_encode(['status' => 'ok', 'activity' => true]);
-                        }
-                        else {
-                            $json = json_encode(['status' => 'ok', 'activity' => false]);
-                        }
+                        $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -413,7 +423,7 @@ class PagesController extends AppController
                 else {
                     $slug = Text::slug(strtolower($this->request->getData('title')));
 
-                    $reservedText = ['purple', 'setup', 'posts', 'tag'];
+                    $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
 
                     if (in_array($slug, $reservedText)) {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
@@ -448,28 +458,15 @@ class PagesController extends AppController
                             $page->title = $this->request->getData('title');
 
                             if ($this->Generals->save($general) && $this->Pages->save($page)) {
-                                $record_id = $page->id;
-                                $page      = $this->Pages->get($record_id);
+                                $recordId = $page->id;
+                                $page      = $this->Pages->get($recordId);
                                 $title     = $page->title;
-                                /**
-                                 * Save user activity to histories table
-                                 * array $options => title, detail, admin_id
-                                 */
-                                
-                                $options = [
-                                    'title'    => 'Content Making of a Page',
-                                    'detail'   => ' add content in '.$title.'.',
-                                    'admin_id' => $sessionID
-                                ];
 
-                                $saveActivity   = $this->Histories->saveActivity($options);
+                                // Tell system for new event
+                                $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'general']);
+                                $this->getEventManager()->dispatch($event);
 
-                                if ($saveActivity == true) {
-                                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-                                }
-                                else {
-                                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-                                }
+                                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                             }
                             else {
                                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -494,28 +491,15 @@ class PagesController extends AppController
                                 $page->title = $this->request->getData('title');
 
                                 if ($this->Generals->save($general) && $this->Pages->save($page)) {
-                                    $record_id = $page->id;
-                                    $page      = $this->Pages->get($record_id);
+                                    $recordId = $page->id;
+                                    $page      = $this->Pages->get($recordId);
                                     $title     = $page->title;
-                                    /**
-                                     * Save user activity to histories table
-                                     * array $options => title, detail, admin_id
-                                     */
-                                    
-                                    $options = [
-                                        'title'    => 'Content Update of a Page',
-                                        'detail'   => ' update content in '.$title.'.',
-                                        'admin_id' => $sessionID
-                                    ];
 
-                                    $saveActivity   = $this->Histories->saveActivity($options);
+                                    // Tell system for new event
+                                    $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'general', 'save' => 'update']);
+                                    $this->getEventManager()->dispatch($event);
 
-                                    if ($saveActivity == true) {
-                                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                                    }
-                                    else {
-                                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                                    }
+                                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                                 }
                                 else {
                                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -543,40 +527,33 @@ class PagesController extends AppController
         $pageStatus = new PageStatusForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageStatus->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+                $filter->values(['status', 'id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-                $page         = $this->Pages->get($this->request->getData('id'));
+                $page         = $this->Pages->get($requestData->id);
                 $title        = $page->title;
-                $page->status = $this->request->getData('status');
+                $page->status = $requestData->status;
 
-                if ($this->request->getData('status') == '0') {
+                if ($requestData->status == 0) {
                     $statusText = 'draft';
                 }
-                else if ($this->request->getData('status') == '1') {
+                else if ($requestData->status == 1) {
                     $statusText = 'publish';
                 }
 
                 if ($this->Pages->save($page)) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Change Status of a Page',
-                        'detail'   => ' change status '.$title.' in pages to '.$statusText.'.',
-                        'admin_id' => $sessionID
-                    ];
+                    // Tell system for new event
+                    $event = new Event('Model.Page.changeStatus', $this, ['page' => $title, 'admin' => $admin, 'type' => 'status', 'status' => $statusText]);
+                    $this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -600,45 +577,40 @@ class PagesController extends AppController
         $pageBlogEdit = new PageBlogEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageBlogEdit->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['title'])->trim()->stripHtml();
+                $filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+                
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-                $slug = Text::slug(strtolower($this->request->getData('title')));
+                $slug = Text::slug(strtolower($requestData->title));
 
-                $reservedText = ['purple', 'setup', 'posts', 'tag'];
+                $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
 
                 if (in_array($slug, $reservedText)) {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
                 }
                 else {
-                    $page  = $this->Pages->get($this->request->getData('id'));
+                    $page  = $this->Pages->get($requestData->id);
                     $title = $page->title;
-                    $page  = $this->Pages->patchEntity($page, $this->request->getData());
+                    $page  = $this->Pages->patchEntity($page, $requestArray);
                     
                     if ($this->Pages->save($page)) {
-                        $record_id = $page->id;
-                        $page      = $this->Pages->get($record_id);
+                        $recordId = $page->id;
+                        $page      = $this->Pages->get($recordId);
                         $newTitle  = $page->title;
 
-                        /**
-                         * Save user activity to histories table
-                         * array $options => title, detail, admin_id
-                         */
-                        
-                        $options = [
-                            'title'    => 'Data Change of a Page',
-                            'detail'   => ' change page title from '.$title.' to '.$newTitle.'.',
-                            'admin_id' => $sessionID
-                        ];
+                        // Tell system for new event
+                        $event = new Event('Model.Page.afterSave', $this, ['page' => ['title' => $title, 'newTitle' => $newTitle], 'admin' => $admin, 'type' => 'blog']);
+                        $this->getEventManager()->dispatch($event);
 
-                        $saveActivity   = $this->Histories->saveActivity($options);
-
-                        if ($saveActivity == true) {
-                            $json = json_encode(['status' => 'ok', 'activity' => true]);
-                        }
-                        else {
-                            $json = json_encode(['status' => 'ok', 'activity' => false]);
-                        }
+                        $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -663,10 +635,18 @@ class PagesController extends AppController
         $pageCustomSave = new PageCustomSaveForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageCustomSave->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['title', 'meta_keywords', 'meta_description'])->trim()->stripHtml();
+                $filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-                $slug = Text::slug(strtolower($this->request->getData('title')));
+                $slug = Text::slug(strtolower($requestData->title));
                     
                 $reservedText = ['purple', 'setup'];
 
@@ -674,16 +654,16 @@ class PagesController extends AppController
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
                 }
                 else {
-                    $customPages = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')]);
+                    $customPages = $this->CustomPages->find()->where(['page_id' => $requestData->id]);
 
                     if ($customPages->count() < 1) {
-                        $fileName   = Text::slug(strtolower($this->request->getData('title'))) . '-' . time() . '.php';
+                        $fileName   = Text::slug(strtolower($requestData->title)) . '-' . time() . '.php';
                         $customPage = $this->CustomPages->newEntity();
 
                         $customPage->file_name        = $fileName;
-                        $customPage->meta_keywords    = $this->request->getData('meta_keywords');
-                        $customPage->meta_description = $this->request->getData('meta_description');
-                        $customPage->page_id          = $this->request->getData('id');
+                        $customPage->meta_keywords    = $requestData->meta_keywords;
+                        $customPage->meta_description = $requestData->meta_description;
+                        $customPage->page_id          = $requestData->id;
                         $customPage->admin_id         = $sessionID;
 
                         // Create php file with code editor content
@@ -691,49 +671,36 @@ class PagesController extends AppController
                         $writeFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $fileName);
                         $writeFile->write($this->request->getData('content'));
 
-                        $page = $this->Pages->get($this->request->getData('id'));
-                        $page->title = $this->request->getData('title');
+                        $page = $this->Pages->get($requestData->id);
+                        $page->title = $requestData->title;
 
                         if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
-                            $record_id = $page->id;
-                            $page      = $this->Pages->get($record_id);
+                            $recordId = $page->id;
+                            $page      = $this->Pages->get($recordId);
                             $title     = $page->title;
-                            /**
-                             * Save user activity to histories table
-                             * array $options => title, detail, admin_id
-                             */
-                            
-                            $options = [
-                                'title'    => 'Content Making of a Page',
-                                'detail'   => ' add custom code in '.$title.'.',
-                                'admin_id' => $sessionID
-                            ];
 
-                            $saveActivity   = $this->Histories->saveActivity($options);
+                            // Tell system for new event
+                            $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'custom']);
+                            $this->getEventManager()->dispatch($event);
 
-                            if ($saveActivity == true) {
-                                $json = json_encode(['status' => 'ok', 'activity' => true]);
-                            }
-                            else {
-                                $json = json_encode(['status' => 'ok', 'activity' => false]);
-                            }
+                            $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
                         }
                     }
                     else {
-                        $customPages = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->first();
+                        $customPages = $this->CustomPages->find()->where(['page_id' => $requestData->id])->first();
                         $customPage  = $this->CustomPages->get($customPages->id);
 
                         $fileName                     = $customPage->file_name;
-                        $customPage->meta_keywords    = $this->request->getData('meta_keywords');
-                        $customPage->meta_description = $this->request->getData('meta_description');
-                        $customPage->page_id          = $this->request->getData('id');
+                        $customPage->meta_keywords    = $requestData->meta_keywords;
+                        $customPage->meta_description = $requestData->meta_description;
+                        $customPage->page_id          = $requestData->id;
                         $customPage->admin_id         = $sessionID;
 
-                        $slug = Text::slug(strtolower($this->request->getData('title')));
-                        $findDuplicate = $this->Pages->find('all')->where(['slug' => $slug, 'id <>' => $this->request->getData('id')]);
+                        $slug = Text::slug(strtolower($requestData->title));
+                        $findDuplicate = $this->Pages->find('all')->where(['slug' => $slug, 'id <>' => $requestData->id]);
                         if ($findDuplicate->count() >= 1) {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another title dsa."]);
                         }
@@ -741,32 +708,19 @@ class PagesController extends AppController
                             $writeFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $fileName);
                             $writeFile->write($this->request->getData('content'));
 
-                            $page = $this->Pages->get($this->request->getData('id'));
-                            $page->title = $this->request->getData('title');
+                            $page = $this->Pages->get($requestData->id);
+                            $page->title = $requestData->title;
 
                             if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
-                                $record_id = $page->id;
-                                $page      = $this->Pages->get($record_id);
+                                $recordId = $page->id;
+                                $page      = $this->Pages->get($recordId);
                                 $title     = $page->title;
-                                /**
-                                 * Save user activity to histories table
-                                 * array $options => title, detail, admin_id
-                                 */
-                                
-                                $options = [
-                                    'title'    => 'Content Update of a Page',
-                                    'detail'   => ' update custom code in '.$title.'.',
-                                    'admin_id' => $sessionID
-                                ];
 
-                                $saveActivity   = $this->Histories->saveActivity($options);
+                                // Tell system for new event
+                                $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'custom', 'save' => 'update']);
+                                $this->getEventManager()->dispatch($event);
 
-                                if ($saveActivity == true) {
-                                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-                                }
-                                else {
-                                    $json = json_encode(['status' => 'ok', 'activity' => false]);
-                                }
+                                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                             }
                             else {
                                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -793,18 +747,26 @@ class PagesController extends AppController
         $pageDelete = new PageDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($pageDelete->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['page_type'])->trim()->stripHtml();
+                $filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-                $page  = $this->Pages->get($this->request->getData('id'));
+                $page  = $this->Pages->get($requestData->id);
                 $title = $page->title;
 
                 // Delete custom php file if page type is custom
-                if ($this->request->getData('page_type') == 'custom') {
-                    $checkCustom = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->count();
+                if ($requestData->page_type == 'custom') {
+                    $checkCustom = $this->CustomPages->find()->where(['page_id' => $requestData->id])->count();
 
                     if ($checkCustom > 0) {
-                        $customPage = $this->CustomPages->find()->where(['page_id' => $this->request->getData('id')])->first();
+                        $customPage = $this->CustomPages->find()->where(['page_id' => $requestData->id])->first();
                         $fileName   = $customPage->file_name;
                         $customFile = WWW_ROOT . 'uploads' . DS .'custom-pages' . DS . $fileName;
 
@@ -814,25 +776,11 @@ class PagesController extends AppController
                                 $readFile->delete();
                             }
 
-                            /**
-                             * Save user activity to histories table
-                             * array $options => title, detail, admin_id
-                             */
-                            
-                            $options = [
-                                'title'    => 'Deletion of a Page',
-                                'detail'   => ' delete '.$title.' in pages.',
-                                'admin_id' => $sessionID
-                            ];
+                            // Tell system for new event
+                            $event = new Event('Model.Page.afterDelete', $this, ['page' => $title, 'admin' => $admin]);
+                            $this->getEventManager()->dispatch($event);
 
-                            $saveActivity   = $this->Histories->saveActivity($options);
-
-                            if ($saveActivity == true) {
-                                $json = json_encode(['status' => 'ok', 'activity' => true]);
-                            }
-                            else {
-                                $json = json_encode(['status' => 'ok', 'activity' => false]);
-                            }
+                            $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -840,25 +788,11 @@ class PagesController extends AppController
                     }
                     else {
                         if ($this->Pages->delete($page)) {
-                            /**
-                             * Save user activity to histories table
-                             * array $options => title, detail, admin_id
-                             */
-                            
-                            $options = [
-                                'title'    => 'Deletion of a Page',
-                                'detail'   => ' delete '.$title.' in pages.',
-                                'admin_id' => $sessionID
-                            ];
+                            // Tell system for new event
+                            $event = new Event('Model.Page.afterDelete', $this, ['page' => $title, 'admin' => $admin]);
+                            $this->getEventManager()->dispatch($event);
 
-                            $saveActivity   = $this->Histories->saveActivity($options);
-
-                            if ($saveActivity == true) {
-                                $json = json_encode(['status' => 'ok', 'activity' => true]);
-                            }
-                            else {
-                                $json = json_encode(['status' => 'ok', 'activity' => false]);
-                            }
+                            $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -867,25 +801,11 @@ class PagesController extends AppController
                 }
                 else {
                     if ($this->Pages->delete($page)) {
-                        /**
-                         * Save user activity to histories table
-                         * array $options => title, detail, admin_id
-                         */
-                        
-                        $options = [
-                            'title'    => 'Deletion of a Page',
-                            'detail'   => ' delete '.$title.' in pages.',
-                            'admin_id' => $sessionID
-                        ];
+                        // Tell system for new event
+                        $event = new Event('Model.Page.afterDelete', $this, ['page' => $title, 'admin' => $admin]);
+                        $this->getEventManager()->dispatch($event);
 
-                        $saveActivity   = $this->Histories->saveActivity($options);
-
-                        if ($saveActivity == true) {
-                            $json = json_encode(['status' => 'ok', 'activity' => true]);
-                        }
-                        else {
-                            $json = json_encode(['status' => 'ok', 'activity' => false]);
-                        }
+                        $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

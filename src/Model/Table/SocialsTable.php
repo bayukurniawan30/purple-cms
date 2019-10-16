@@ -3,9 +3,6 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
-use Cake\Utility\Text;
-use App\Purple\PurpleProjectSettings;
-use Carbon\Carbon;
 
 class SocialsTable extends Table
 {

@@ -5,12 +5,12 @@
                 <h4 class="card-title uk-margin-remove-bottom">Messages</h4>
             </div>
             <div class="card-toolbar">
-                <button type="button" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text">
-                <i class="mdi mdi-reply btn-icon-prepend"></i>
+                <button type="button" onclick="location.href='mailto:<?= $message->email ?>?subject=Re: <?= urlencode($message->subject) ?>&body=<?= urlencode('On '.$message->created.' '.$message->name.' ('.$message->email.') wrote:<br><blockquote>'.$message->content.'</blockquote>') ?>';" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text">
+                    <i class="mdi mdi-reply btn-icon-prepend"></i>
                     Reply
                 </button>
                 <button type="button" class="btn btn-gradient-danger btn-toolbar-card btn-sm btn-icon-text uk-margin-small-left button-delete-purple" data-purple-id="<?= $message->id ?>" data-purple-name="<?= $message->name ?>" data-purple-modal="#modal-delete-message">
-                <i class="mdi mdi-delete btn-icon-prepend"></i>
+                    <i class="mdi mdi-delete btn-icon-prepend"></i>
                     Move to Trash
                 </button>
             </div>

@@ -16,11 +16,11 @@
         </div>
         <div class=" uk-modal-body">
             <div class="form-group">
-                <label>Category Name</label>
                 <?php
+                    echo $this->Form->label('name', 'Category Name');
                     echo $this->Form->text('name', [
                         'class'                  => 'form-control',
-                        'placeholder'            => 'Category Name',
+                        'placeholder'            => 'Category Name. E.g. News, Technology, or Sports',
                         'data-parsley-minlength' => '2',
                         'data-parsley-maxlength' => '100',
                         'autofocus'              => 'autofocus',

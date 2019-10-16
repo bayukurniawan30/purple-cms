@@ -74,7 +74,7 @@
     				                'Post Date',
                                     'Modified Date',
     				                'Status',
-    				                'Posted By',
+    				                'Author',
     				                ['Action' => ['class' => 'uk-width-small text-center']]
     				            ]);
     				        ?>
@@ -123,7 +123,7 @@
                                 <td><?= $blog->text_status ?></td>
     				            <td><?= $blog->admin->display_name ?></td>
     				            <td class="text-center">
-    				                <button type="button" class="btn btn-gradient-primary btn-rounded btn-icon" uk-tooltip="Edit Post" onclick="location.href='<?= $editPostUrl; ?>'">
+                                    <button type="button" class="btn btn-gradient-primary btn-rounded btn-icon" uk-tooltip="Edit Post" onclick="location.href='<?= $editPostUrl; ?>'">
     				                    <i class="mdi mdi-pencil"></i>
     				                </button>
     				                <button type="button" class="btn btn-gradient-success btn-rounded btn-icon btn-with-badge" uk-tooltip="<?php if ($totalAllComments != '0') echo 'View Comments'; else echo 'No comment for this post'; ?>" onclick="location.href='<?= $postCommentsUrl; ?>'" <?php if ($totalAllComments == '0') echo 'disabled' ?>>
@@ -132,7 +132,7 @@
                                         <?php if ($totalUnreadComments != '0'): ?><span class="uk-badge bg-danger notification-badge"><?= $totalUnreadComments ?></span><?php endif; ?>
                                     </button>
                                     <?php
-                                        if ($adminLevel == 1):
+                                        if ($adminLevel == 1 || $sessionID == $blog->admin->id):
                                     ?>
     				                <button type="button" class="btn btn-gradient-danger btn-rounded btn-icon button-delete-purple" uk-tooltip="Delete Post" data-purple-id="<?= $blog->id ?>" data-purple-name="<?= $blog->title ?>" data-purple-modal="#modal-delete-post">
     				                    <i class="mdi mdi-delete"></i>
@@ -216,7 +216,7 @@
             }]
         });
 
-        dataTable.on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
+        dataTable.on('responsive-display', function ( e, datatable, row, showHide, update ) {
             $(".button-delete-purple").on("click", function() {
                 var btn         = $(this),
                     id          = btn.data('purple-id'),

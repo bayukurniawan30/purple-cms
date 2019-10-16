@@ -24,9 +24,10 @@
             <div class="card-body">
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('username', 'Username');
                         echo $this->Form->text('username', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Username',
+                            'placeholder'            => 'Username. Alpha numeric without space',
                             'data-parsley-type'      => 'alphanum',
                             'data-parsley-minlength' => '6',
                             'data-parsley-maxlength' => '15',
@@ -39,10 +40,11 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('email', 'Email');
                         echo $this->Form->text('email', [
                             'type'        => 'email',
                             'class'       => 'form-control',
-                            'placeholder' => 'Email',
+                            'placeholder' => 'Email. E.g. yourname@yourdomain.com',
                             'uk-tooltip'  => 'title: Required. Enter a valid email address; pos: bottom',
                             'required'    => 'required',
                             'value'       => $adminData->email
@@ -51,9 +53,10 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('display_name', 'Display Name');
                         echo $this->Form->text('display_name', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Display Name',
+                            'placeholder'            => 'Display Name. Alpha numeric without space',
                             'data-parsley-type'      => 'alphanum',
                             'data-parsley-minlength' => '3',
                             'data-parsley-maxlength' => '50',
@@ -65,6 +68,7 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('level', 'Level');
                         echo $this->Form->select(
                             'level',
                             [
@@ -81,6 +85,7 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('about', 'About This User');
                         echo $this->Form->textarea('about', [
                             'class'                  => 'form-control', 
                             'placeholder'            => 'About user...',
@@ -119,7 +124,7 @@
                     </div>
                     <div class="card-body">
                         <div class="uk-alert-primary" uk-alert>
-                            <p>User key is used for API request from external application.</p>
+                            <p>User key is used for <strong>API Request</strong> from external application.</p>
                         </div>
                         <div class="uk-inline" style="width: 100%">
                             <a title="Copy User Key" class="uk-form-icon uk-form-icon-flip icon-copy-key" href="#" uk-icon="icon: copy" data-clipboard-target="#purple-user-key" uk-tooltip="title: Copy User Key; pos: bottom"></a>

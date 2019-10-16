@@ -13,7 +13,6 @@
         "drewm/mailchimp-api": "^2.5",
         "google/recaptcha": "^1.2",
         "gregwar/image": "2.*",
-        "gumlet/php-image-resize": "1.9.*",
         "guzzlehttp/psr7": "^1.4",
         "josegonzalez/dotenv": "3.*",
         "mailgun/mailgun-php": "^2.5",
@@ -21,10 +20,10 @@
         "mmeyer2k/dcrypt": "~4.0",
         "mobiledetect/mobiledetectlib": "2.*",
         "nelexa/zip": "^3.1",
-        "nesbot/carbon": "^1.32",
+        "nesbot/carbon": "^2.25",
+        "particle/filter": "^1.5",
         "php-http/curl-client": "^1.7",
-        "samayo/bulletproof": "4.0.*",
-        "twilio/sdk": "^5.21"
+        "samayo/bulletproof": "4.0.*"
     },
     "require-dev": {
         "cakephp/bake": "^1.1",

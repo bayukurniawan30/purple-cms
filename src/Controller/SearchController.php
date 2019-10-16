@@ -91,6 +91,7 @@ class SearchController extends AppController
                 $totalAllVisitors = $this->Visitors->totalAllVisitors();
 
                 // Send Email to User to Notify user
+                $purpleApi = new PurpleProjectApi();
                 $users     = $this->Admins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
                 $totalUser = $users->count();
 
@@ -105,7 +106,7 @@ class SearchController extends AppController
                         'level'       => $user->level
                     );
                     $senderData   = array(
-                        'total'   => $totalAllVisitors,
+                        'total'   => $purpleGlobal->shortenNumber($totalAllVisitors),
                         'domain'  => $this->request->domain()
                     );
                     $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));

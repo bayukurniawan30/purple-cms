@@ -15,7 +15,12 @@ class DashboardController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+
+	    /**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -23,78 +28,90 @@ class DashboardController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
 		parent::initialize();
+
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
+		// Set layout
+		$this->viewBuilder()->setLayout('dashboard');
+
+		// Load other models
+		$this->loadModel('Admins');
+		$this->loadModel('Comments');
+		$this->loadModel('Blogs');
+		$this->loadModel('Visitors');
+		$this->loadModel('Settings');
+		$this->loadModel('Histories');
+
+		// Check debug is on or off
+		if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+			$cakeDebug = 'on';
+		} 
+		else {
+			$cakeDebug = 'off';
+		}            
+
+		$queryAdmin   = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon = $this->Settings->fetch('favicon');
+
+		$rowCount = $queryAdmin->count();
+		if ($rowCount > 0) {
+			$purpleGlobal = new PurpleProjectGlobal();
+			$greeting     = $purpleGlobal->greetings();
+
+			$adminData = $queryAdmin->first();
+
+			$dashboardSearch = new SearchForm();
+			
+			// Plugins List
+			$purplePlugins 	= new PurpleProjectPlugins();
+			$plugins		= $purplePlugins->purplePlugins();
+			$this->set('plugins', $plugins);
+
+			$data = [
+				'sessionHost'       => $sessionHost,
+				'sessionID'         => $sessionID,
+				'sessionPassword'   => $sessionPassword,
+				'cakeDebug'         => $cakeDebug,
+				'adminName' 	    => ucwords($adminData->display_name),
+				'adminLevel' 	    => $adminData->level,
+				'adminEmail' 	    => $adminData->email,
+				'adminPhoto' 	    => $adminData->photo,
+				'greeting'			=> $greeting,
+				'dashboardSearch'	=> $dashboardSearch,
+				'title'             => 'Dashboard | Purple CMS',
+				'pageTitle'         => 'Dashboard',
+				'pageTitleIcon'     => 'mdi-home',
+				'pageBreadcrumb'    => 'Overview <span id="selected-date-range"></span> <a href="#" class="button-dashboard-date-range" data-purple-modal="#modal-select-date-range"><span class="dashboard-date-range bg-gradient-primary text-white" uk-tooltip="title:Select Month of Visit""><i class="mdi mdi-calendar"></i></span></a>',
+				'appearanceFavicon' => $queryFavicon
+			];
+			$this->set($data);
 		}
 		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-			$this->loadModel('Admins');
-			$this->loadModel('Comments');
-    		$this->loadModel('Blogs');
-	        $this->loadModel('Visitors');
-            $this->loadModel('Settings');
-	        $this->loadModel('Histories');
-
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }            
-
-			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-            $queryFavicon = $this->Settings->find()->where(['name' => 'favicon'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-			    $purpleGlobal = new PurpleProjectGlobal();
-			    $greeting     = $purpleGlobal->greetings();
-
-				$adminData = $queryAdmin->first();
-
-				$dashboardSearch = new SearchForm();
-				
-				// Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-
-				$data = [
-					'sessionHost'       => $sessionHost,
-					'sessionID'         => $sessionID,
-					'sessionPassword'   => $sessionPassword,
-                    'cakeDebug'         => $cakeDebug,
-					'adminName' 	    => ucwords($adminData->display_name),
-					'adminLevel' 	    => $adminData->level,
-					'adminEmail' 	    => $adminData->email,
-					'adminPhoto' 	    => $adminData->photo,
-					'greeting'			=> $greeting,
-					'dashboardSearch'	=> $dashboardSearch,
-					'title'             => 'Dashboard | Purple CMS',
-					'pageTitle'         => 'Dashboard',
-					'pageTitleIcon'     => 'mdi-home',
-					'pageBreadcrumb'    => 'Overview <span id="selected-date-range"></span> <a href="#" class="button-dashboard-date-range" data-purple-modal="#modal-select-date-range"><span class="dashboard-date-range bg-gradient-primary text-white" uk-tooltip="title:Select Month of Visit""><i class="mdi mdi-calendar"></i></span></a>',
-                    'appearanceFavicon' => $queryFavicon
-		    	];
-	        	$this->set($data);
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
+			return $this->redirect(
+				['controller' => 'Authenticate', 'action' => 'login']
+			);
+		}
 	}
 	public function index() 
 	{
@@ -109,24 +126,23 @@ class DashboardController extends AppController
 	        );
 		}
 		else {
-    		
-
-			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->first();
+			$queryAdmin   = $this->Admins->signedInUser($sessionID, $sessionPassword)->first();
 			$loggedInAdmin = [
 				'id'    => $sessionID,
 				'email' => $queryAdmin->email,
 				'level' => $queryAdmin->level
 			];
 
+			// Dashboard mont of visit form
 	        $dashboardMonthOfVisit  = new DashboardMonthOfVisitForm();
 
+			// Get last month name and year
 			$lastMonth        = date('Y-m', strtotime(date('Y-m')." -1 month"));
 			$explodeLastMonth = explode('-', $lastMonth);
 			$lastMonthName    = $explodeLastMonth[1];
 			$lastMonthYear    = $explodeLastMonth[0];
 
 			$purpleGlobal  = new PurpleProjectGlobal();
-
 
 			$currentMonthVisitor    = $this->Visitors->countVisitorsInMonth();
 			$lastMonthVisitor       = $this->Visitors->countVisitorsInMonth($lastMonthYear, $lastMonthName);
@@ -211,11 +227,12 @@ class DashboardController extends AppController
 	    	$this->set($data);
 
 	        if ($loggedInAdmin['level'] == 1) {
-		    	$histories = $this->Histories->find('all', ['contain' => ['Admins']])->order(['Histories.id' => 'DESC'])->limit(6);
+		    	$histories = $this->Histories->recentActivity();
 	    	}
 	    	else {
-		    	$histories = $this->Histories->find('all', ['contain' => ['Admins']])->where(['Admins.id' => $loggedInAdmin['id']])->order(['Histories.id' => 'DESC'])->limit(5);
-	    	}
+		    	$histories = $this->Histories->recentActivity($loggedInAdmin['id']);
+			}
+			
 	    	$this->set(compact('histories'));
 	    }
 	}
@@ -306,6 +323,7 @@ class DashboardController extends AppController
 					'visitorsUnkOs'         => $totalVisitorsUnkOs,
 					'totalVisitorsPlatform' => $totalVisitorsPlatform
 				];
+				
 		    	$this->set($data);
             }
             else {

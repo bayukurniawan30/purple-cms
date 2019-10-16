@@ -21,31 +21,31 @@
 	}
 </style>
 
-<div class="form-group">
-	<div class="input-group">
+<div class="uk-width-1-1 uk-margin">
+	<div class="uk-inline" style="width: 100%">
+		<a id="button-generate-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: cog" uk-tooltip="title: Generate Password; pos: bottom-right"></a>
 		<?php
 			echo $this->Form->password('password', [
 				'id'                     => 'same-password',
-				'class'                  => 'form-control input-lg',
+				'class'                  => 'uk-input',
 				'placeholder'            => 'Password',
+				'uk-tooltip'             => 'title: Required. 6-20 chars.; pos: bottom',
 				'data-parsley-minlength' => '6',
 				'data-parsley-maxlength' => '20',
-				'uk-tooltip'			 => 'title: Required. 6-20 chars.; pos: bottom',
-				'autocomplete' 			 => '',
+				'autocomplete'           => 'current-password',
 				'required'               => 'required'
 			]);
 		?>
-		<div class="input-group-append">
-			<button id="button-generate-password" class="btn btn-gradient-success btn-sm" type="button" uk-tooltip="title: Generate password; pos: bottom"><i class="fa fa-key"></i></button>
-		</div>
 	</div>
-	<div class="pwstrength-viewport-progress"></div>
+	<!-- <div class="pwstrength-viewport-progress"></div> -->
 </div>
-<div class="form-group">
-	<div class="input-group">
+
+<div class="uk-width-1-1 uk-margin">
+	<div class="uk-inline" style="width: 100%">
+		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
 		<?php
 			echo $this->Form->password('repeatpassword', [
-				'class'                  => 'form-control input-lg',
+				'class'                  => 'uk-input',
 				'placeholder'            => 'Repeat Password',
 				'data-parsley-minlength' => '6',
 				'data-parsley-maxlength' => '20',
@@ -54,9 +54,6 @@
 				'required'               => 'required'
 			]);
 		?>
-		<div class="input-group-append">
-			<button id="button-visible-password" class="btn btn-gradient-success btn-sm" type="button" uk-tooltip="title: Toggle visible password; pos: bottom"><i class="fa fa-eye"></i></button>
-		</div>
 	</div>
 </div>
 <?php
@@ -105,14 +102,14 @@
 		function visiblePassword() {
             function visiblePassword1() {
 				$(this).one("click", visiblePassword2);
-				$(this).find('i').attr('class', 'fa fa-eye-slash');
+				$(this).attr('uk-icon', 'icon: unlock');
 				$('input[name=password]').attr('type', 'text');
 				$('input[name=repeatpassword]').attr('type', 'text');
 			}
 
             function visiblePassword2() {
 				$(this).one("click", visiblePassword1);
-				$(this).find('i').attr('class', 'fa fa-eye');
+				$(this).attr('uk-icon', 'icon: lock');
 				$('input[name=password]').attr('type', 'password');
 				$('input[name=repeatpassword]').attr('type', 'password');
             }
@@ -153,7 +150,6 @@
 						data: serializedData
 					});
 					resetPassword.done(function (msg){
-						console.log(msg);
 						var json   = $.parseJSON(msg);
 						var status = (json.status);
 						if(status == 'error') {
@@ -162,6 +158,9 @@
 
 						if(status == 'ok') {
 							$button.html('<i class="fa fa-spinner fa-pulse"></i> Sending Email...');
+							setTimeout(function() {
+								$button.html('<i class="fa fa-spinner fa-pulse"></i> Redirecting...');
+							}, 5000);
 							setTimeout(function() {
 								$button.html('Change Password');
 								$('#error-message').html('<div class="alert alert-success" role="alert" style="margin-top: 15px">Your password has been change. The new sign in information has been sent to your email. Please check your inbox or spam folder.</div>');

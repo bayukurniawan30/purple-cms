@@ -320,4 +320,34 @@ class PurpleProjectApi
 	    	return true;
 	    }
 	}
+	public function sendEmailCertainVisitors($key, $userData, $senderData)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/action/certain-visitors', 
+								[
+									'key'			=> $key,
+									'userData'      => $userData,
+									'senderData'    => $senderData
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        // Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return true;
+	    }
+	}
 }

@@ -18,9 +18,10 @@
             <div class="card-body">
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('username', 'Username');
                         echo $this->Form->text('username', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Username',
+                            'placeholder'            => 'Username. Alpha numeric without space',
                             'data-parsley-type'      => 'alphanum',
                             'data-parsley-minlength' => '6',
                             'data-parsley-maxlength' => '15',
@@ -32,10 +33,11 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('email', 'Email');
                         echo $this->Form->text('email', [
                             'type'        => 'email',
                             'class'       => 'form-control',
-                            'placeholder' => 'Email',
+                            'placeholder' => 'Email. E.g. yourname@yourdomain.com',
                             'uk-tooltip'  => 'title: Required. Enter a valid email address; pos: bottom',
                             'required'    => 'required'
                         ]);
@@ -43,10 +45,11 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('password', 'Password');
                         echo $this->Form->password('password', [
                             'id'                     => 'same-password',
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Password',
+                            'placeholder'            => 'Password. 6-20 chars',
                             'data-parsley-minlength' => '6',
                             'data-parsley-maxlength' => '20',
                             'uk-tooltip'             => 'title: Required. 6-20 chars.; pos: bottom',
@@ -58,9 +61,10 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('repeatpassword', 'Repeat Password');
                         echo $this->Form->password('repeatpassword', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Repeat Password',
+                            'placeholder'            => 'Repeat Password. 6-20 chars',
                             'data-parsley-minlength' => '6',
                             'data-parsley-maxlength' => '20',
                             'uk-tooltip'             => 'title: Required. Repeat Password. 6-20 chars.; pos: bottom',
@@ -71,9 +75,10 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('display_name', 'Display Name');
                         echo $this->Form->text('display_name', [
                             'class'                  => 'form-control',
-                            'placeholder'            => 'Display Name',
+                            'placeholder'            => 'Display Name. Alpha numeric without space',
                             'data-parsley-type'      => 'alphanum',
                             'data-parsley-minlength' => '3',
                             'data-parsley-maxlength' => '50',
@@ -84,6 +89,7 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('level', 'Level');
                         echo $this->Form->select(
                             'level',
                             [
@@ -100,6 +106,7 @@
                 </div>
                 <div class="form-group">
                     <?php
+                        echo $this->Form->label('about', 'About This User');
                         echo $this->Form->textarea('about', [
                             'class'                  => 'form-control', 
                             'placeholder'            => 'About user...',

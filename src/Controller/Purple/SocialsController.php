@@ -10,17 +10,22 @@ use App\Form\Purple\SocialEditForm;
 use App\Form\Purple\SocialDeleteForm;
 use App\Form\Purple\SocialSharingButtonsForm;
 use App\Form\Purple\SearchForm;
-use Cake\I18n\Time;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
+use Particle\Filter\Filter;
 
 class SocialsController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -28,80 +33,86 @@ class SocialsController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
-		parent::initialize();
-        $this->loadComponent('RequestHandler');
+        parent::initialize();
+        
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
+		
+        $this->viewBuilder()->setLayout('dashboard');
+        $this->loadModel('Admins');
+        $this->loadModel('Settings');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
-		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Admins');
-            $this->loadModel('Settings');
-            $this->loadModel('Histories');
+        if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+            $cakeDebug = 'on';
+        } 
+        else {
+            $cakeDebug = 'off';
+        }
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
+        $queryAdmin   = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon = $this->Settings->fetch('favicon');
+
+        $rowCount = $queryAdmin->count();
+        if ($rowCount > 0) {
+            $adminData = $queryAdmin->first();
+
+            $dashboardSearch = new SearchForm();
+
+            // Plugins List
+            $purplePlugins 	= new PurpleProjectPlugins();
+            $plugins		= $purplePlugins->purplePlugins();
+            $this->set('plugins', $plugins);
+            
+            if ($adminData->level == 1) {
+                $data = [
+                    'sessionHost'       => $sessionHost,
+                    'sessionID'         => $sessionID,
+                    'sessionPassword'   => $sessionPassword,
+                    'cakeDebug'         => $cakeDebug,
+                    'adminName' 	    => ucwords($adminData->display_name),
+                    'adminLevel' 	    => $adminData->level,
+                    'adminEmail' 	    => $adminData->email,
+                    'adminPhoto' 	    => $adminData->photo,
+                    'greeting'          => '',
+                    'dashboardSearch'   => $dashboardSearch,
+                    'title'             => 'Account and Sharing | Purple CMS',
+                    'pageTitle'         => 'Account and Sharing',
+                    'pageTitleIcon'     => 'mdi-share-variant',
+                    'pageBreadcrumb'    => 'Socials::Account and Sharing',
+                    'appearanceFavicon' => $queryFavicon
+                ];
+                $this->set($data);
             }
-
-			$queryAdmin   = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-            $queryFavicon = $this->Settings->find()->where(['name' => 'favicon'])->first();
-
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
-
-                $dashboardSearch = new SearchForm();
-
-                // Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-	        	$this->set('plugins', $plugins);
-				
-                if ($adminData->level == 1) {
-    				$data = [
-    					'sessionHost'       => $sessionHost,
-    					'sessionID'         => $sessionID,
-    					'sessionPassword'   => $sessionPassword,
-                        'cakeDebug'         => $cakeDebug,
-    					'adminName' 	    => ucwords($adminData->display_name),
-    					'adminLevel' 	    => $adminData->level,
-    					'adminEmail' 	    => $adminData->email,
-    					'adminPhoto' 	    => $adminData->photo,
-                        'greeting'          => '',
-                        'dashboardSearch'   => $dashboardSearch,
-    					'title'             => 'Account and Sharing | Purple CMS',
-    					'pageTitle'         => 'Account and Sharing',
-    					'pageTitleIcon'     => 'mdi-share-variant',
-    					'pageBreadcrumb'    => 'Socials::Account and Sharing',
-                        'appearanceFavicon' => $queryFavicon
-    		    	];
-    	        	$this->set($data);
-                }
-                else {
-                    return $this->redirect(
-                        ['controller' => 'Dashboard', 'action' => 'index']
-                    );
-                }
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
+            else {
+                return $this->redirect(
+                    ['controller' => 'Dashboard', 'action' => 'index']
+                );
+            }
+        }
+        else {
+            return $this->redirect(
+                ['controller' => 'Authenticate', 'action' => 'login']
+            );
+        }
 	}
 	public function index()
     {
@@ -110,12 +121,12 @@ class SocialsController extends AppController
         $socialDelete  = new SocialDeleteForm();
         $socialButtons = new SocialSharingButtonsForm();
 
-        $querySocialButtonsShare    = $this->Settings->find()->where(['name' => 'socialshare'])->first();
-        $querySocialButtonsTheme    = $this->Settings->find()->where(['name' => 'socialtheme'])->first();
-        $querySocialButtonsFontSize = $this->Settings->find()->where(['name' => 'socialfontsize'])->first();
-        $querySocialButtonsLabel    = $this->Settings->find()->where(['name' => 'sociallabel'])->first();
-        $querySocialButtonsCount    = $this->Settings->find()->where(['name' => 'socialcount'])->first();
-
+        $querySocialButtonsShare    = $this->Settings->fetch('socialshare');
+        $querySocialButtonsTheme    = $this->Settings->fetch('socialtheme');
+        $querySocialButtonsFontSize = $this->Settings->fetch('socialfontsize');
+        $querySocialButtonsLabel    = $this->Settings->fetch('sociallabel');
+        $querySocialButtonsCount    = $this->Settings->fetch('socialcount');
+        
         $data = [
             'socialAdd'             => $socialAdd,
             'socialEdit'            => $socialEdit,
@@ -140,38 +151,32 @@ class SocialsController extends AppController
         $socialAdd = new SocialAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialAdd->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['name', 'link'])->trim()->stripHtml();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+                
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
                 
                 $social = $this->Socials->newEntity();
-                $social = $this->Socials->patchEntity($social, $this->request->getData());
+                $social = $this->Socials->patchEntity($social, $requestArray);
 			
                 if ($this->Socials->save($social)) {
-                	$record_id = $social->id;
+                	$recordId = $social->id;
 
-					$social = $this->Socials->get($record_id);
-	                $social->ordering = $record_id;
-					$result = $this->Socials->save($social);
-
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
+					$social = $this->Socials->get($recordId);
+	                $social->ordering = $recordId;
+                    $result = $this->Socials->save($social);
                     
-                    $options = [
-                        'title'    => 'Addition of a New Social Media',
-                        'detail'   => ' add '.$this->request->getData('name').' as a new social media.',
-                        'admin_id' => $sessionID
-                    ];
+                    // Tell system for new event
+                    $event = new Event('Model.Social.afterSave', $this, ['social' => $requestData->name, 'admin' => $admin, 'save' => 'new']);
+                    $this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -195,32 +200,27 @@ class SocialsController extends AppController
         $socialEdit = new SocialEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialEdit->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['name', 'link'])->trim()->stripHtml();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
 
-            	$social = $this->Socials->get($this->request->getData('id'));
-				$this->Socials->patchEntity($social, $this->request->getData());
+            	$social = $this->Socials->get($requestData->id);
+				$this->Socials->patchEntity($social, $requestArray);
 
                 if ($this->Socials->save($social)) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Data Change of a Social Media',
-                        'detail'   => ' change '.$this->request->getData('name').' url.',
-                        'admin_id' => $sessionID
-                    ];
+                    // Tell system for new event
+                    $event = new Event('Model.Social.afterSave', $this, ['social' => $requestData->name, 'admin' => $admin, 'save' => 'update']);
+                    $this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -244,34 +244,27 @@ class SocialsController extends AppController
         $socialDelete = new SocialDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialDelete->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+				$admin     = $this->Admins->get($sessionID);
                 
-                $social = $this->Socials->get($this->request->getData('id'));
+                $social = $this->Socials->get($requestData->id);
 				$name   = $social->name;
 
 				$result = $this->Socials->delete($social);
 
                 if ($result) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Deletion of a Social Media',
-                        'detail'   => ' delete '.$name.' from social media.',
-                        'admin_id' => $sessionID
-                    ];
+                    // Tell system for new event
+                    $event = new Event('Model.Social.afterDelete', $this, ['social' => $name, 'admin' => $admin]);
+                    $this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -293,18 +286,39 @@ class SocialsController extends AppController
         $this->viewBuilder()->enableAutoLayout(false);
 
         if ($this->request->is('ajax') || $this->request->is('post')) {
+            $session   = $this->getRequest()->getSession();
+			$sessionID = $session->read('Admin.id');
+            $admin     = $this->Admins->get($sessionID);
+            
 			$order = $this->request->getData('order');
 			$explodeOrder = explode(',', $order);
 
 			$count = 1;
+			$resultArray = [];
 			foreach ($explodeOrder as $newOrder) {
 				$social = $this->Socials->get($newOrder);
 				$social->ordering = $count;
-				$result = $this->Socials->save($social);
+                if ($this->Socials->save($social)) {
+					array_push($resultArray, 1);
+				}
+				else {
+					array_push($resultArray, 0);
+                }
+                
 				$count++;
+            }
+            
+			if (!in_array(0, $resultArray)) {
+                // Tell system for new event
+                $event = new Event('Model.Social.afterReorder', $this, ['admin' => $admin]);
+                $this->getEventManager()->dispatch($event);
+
+                $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+            }
+			else {
+				$json = json_encode(['status' => 'error',]);
 			}
 
-			$json = json_encode(['status' => 'ok']);
 			$this->set(['json' => $json]);
 		}
 		else {
@@ -318,18 +332,26 @@ class SocialsController extends AppController
         $socialButtons = new SocialSharingButtonsForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($socialButtons->execute($this->request->getData())) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['theme', 'label', 'count'])->trim()->stripHtml();
+				$filter->values(['fontsize'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                
                 $session   = $this->getRequest()->getSession();
                 $sessionID = $session->read('Admin.id');
+                $admin     = $this->Admins->get($sessionID);
 
-                $theme    = $this->request->getData('theme');
-                $fontSize = $this->request->getData('fontsize');
-                $label    = $this->request->getData('label');
-                $count    = $this->request->getData('count');
+                $theme    = $requestData->theme;
+                $fontSize = $requestData->fontsize;
+                $label    = $requestData->label;
+                $count    = $requestData->count;
 
-                $querySocialButtonsTheme    = $this->Settings->find()->where(['name' => 'socialtheme'])->first();
-                $querySocialButtonsFontSize = $this->Settings->find()->where(['name' => 'socialfontsize'])->first();
-                $querySocialButtonsLabel    = $this->Settings->find()->where(['name' => 'sociallabel'])->first();
-                $querySocialButtonsCount    = $this->Settings->find()->where(['name' => 'socialcount'])->first();
+                $querySocialButtonsTheme    = $this->Settings->fetch('socialtheme');
+                $querySocialButtonsFontSize = $this->Settings->fetch('socialfontsize');
+                $querySocialButtonsLabel    = $this->Settings->fetch('sociallabel');
+                $querySocialButtonsCount    = $this->Settings->fetch('socialcount');
 
                 $settingSocialButtonsTheme  = $this->Settings->get($querySocialButtonsTheme->id);
                 $settingSocialButtonsTheme->value = $theme;
@@ -344,25 +366,11 @@ class SocialsController extends AppController
                 $settingSocialButtonsCount->value = $count;
 
                 if ($this->Settings->save($settingSocialButtonsTheme) && $this->Settings->save($settingSocialButtonsFontSize) && $this->Settings->save($settingSocialButtonsLabel) && $this->Settings->save($settingSocialButtonsCount)) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Setting Change for Content Sharing Buttons',
-                        'detail'   => ' change content sharing buttons theme: '.$theme.', font size: '.$fontSize.', label: '.$label.', count: '.$count.'.',
-                        'admin_id' => $sessionID
-                    ];
+                    // Tell system for new event
+                    $event = new Event('Model.Social.afterUpdateSharingButtons', $this, ['admin' => $admin, 'data' => ['theme' => $theme, 'fontSize' => $fontSize, 'label' => $label, 'count' => $count]]);
+                    $this->getEventManager()->dispatch($event);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
-
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
-                    }
-                    else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
-                    }
+                    $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't edit content sharing buttons. Please try again."]);

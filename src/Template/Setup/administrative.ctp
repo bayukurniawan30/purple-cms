@@ -35,7 +35,6 @@
 		echo $this->Form->text('sitename', [
 			'class'                  => 'uk-input',
 			'placeholder'            => 'Site Name',
-			'data-parsley-minlength' => '1',
 			'data-parsley-maxlength' => '30',
             'autofocus'              => 'autofocus',
 			'uk-tooltip'			 => 'title: Required. Max 30 chars.; pos: bottom',

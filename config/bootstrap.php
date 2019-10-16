@@ -45,11 +45,25 @@ use Cake\Database\Type;
 use Cake\Datasource\ConnectionManager;
 use Cake\Error\ErrorHandler;
 use Cake\Http\ServerRequest;
+use Cake\Event\EventManager;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
 
+use App\Event\Purple\AdminListener;
+use App\Event\Purple\AppearanceListener;
+use App\Event\Purple\NavigationListener;
+use App\Event\Purple\ThemeListener;
+use App\Event\Purple\BlogCategoryListener;
+use App\Event\Purple\BlogListener;
+use App\Event\Purple\PageListener;
+use App\Event\Purple\MediaListener;
+use App\Event\Purple\SocialListener;
+use App\Event\Purple\SubscriberListener;
+use App\Event\Purple\SettingListener;
+use App\Event\PageListener as FrontPageListener;
+use App\Event\BlogListener as FrontBlogListener;
 /**
  * Uncomment block of code below if you want to use `.env` file during development.
  * You should copy `config/.env.default to `config/.env` and set/modify the
@@ -204,5 +218,46 @@ Type::build('timestamp')
 //Inflector::rules('uninflected', ['dontinflectme']);
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
+/**
+ * Purple Event Listener
+ */
+$purpleAdminListener = new AdminListener();
+EventManager::instance()->on($purpleAdminListener);
+
+$purpleAppearanceListener = new AppearanceListener();
+EventManager::instance()->on($purpleAppearanceListener);
+
+$purpleNavigationListener = new NavigationListener();
+EventManager::instance()->on($purpleNavigationListener);
+
+$purpleThemeListener = new ThemeListener();
+EventManager::instance()->on($purpleThemeListener);
+
+$purpleBlogCategoryListener = new BlogCategoryListener();
+EventManager::instance()->on($purpleBlogCategoryListener);
+
+$purpleBlogListener = new BlogListener();
+EventManager::instance()->on($purpleBlogListener);
+
+$purplePageListener = new PageListener();
+EventManager::instance()->on($purplePageListener);
+
+$purpleMediaListener = new MediaListener();
+EventManager::instance()->on($purpleMediaListener);
+
+$purpleSocialListener = new SocialListener();
+EventManager::instance()->on($purpleSocialListener);
+
+$purpleSubscriberListener = new SubscriberListener();
+EventManager::instance()->on($purpleSubscriberListener);
+
+$purpleSettingListener = new SettingListener();
+EventManager::instance()->on($purpleSettingListener);
+
+$pageListener = new FrontPageListener();
+EventManager::instance()->on($pageListener);
+
+$blogListener = new FrontBlogListener();
+EventManager::instance()->on($blogListener);
 
 Plugin::load('EngageTheme', ['bootstrap' => true, 'routes' => true]);

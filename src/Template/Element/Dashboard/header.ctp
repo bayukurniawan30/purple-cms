@@ -1,7 +1,7 @@
 <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
         <a class="navbar-brand brand-logo" href="<?= $this->Url->build(['_name' => 'adminDashboard']); ?>">
-            <?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Purple CMS']) ?>
+            <?= $this->Html->image('/master-assets/img/logo-animated.svg', ['alt' => 'Purple CMS']) ?>
         </a>
         <a class="navbar-brand brand-logo-mini" href="<?= $this->Url->build(['_name' => 'adminDashboard']); ?>">
             <?= $this->Html->image('/master-assets/img/logo-mini.svg', ['alt' => 'Purple CMS']) ?>

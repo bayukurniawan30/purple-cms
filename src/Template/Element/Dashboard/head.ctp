@@ -38,8 +38,10 @@
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/plugins/code_view.min.css') ?>
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/font_awesome.min.css') ?>
         <?= $this->Html->css('https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css') ?>
+        <?= $this->Html->css('https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css') ?>
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/third_party/image_tui.min.css') ?>
         <?= $this->Html->css('/master-assets/plugins/tag-editor/jquery.tag-editor.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/switchery/switchery.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages' && $this->request->getParam('action') == 'detail'): ?>
         <?= $this->Html->css('/master-assets/plugins/froala-blocks/css/froala_blocks.css') ?>

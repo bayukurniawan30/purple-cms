@@ -19,13 +19,18 @@ use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 use Bulletproof;
-use \Gumlet\ImageResize;
+use Particle\Filter\Filter;
 
 class AdminsController extends AppController
 {
 	public function beforeFilter(Event $event)
 	{
-	    parent::beforeFilter($event);
+		parent::beforeFilter($event);
+		
+		/**
+		 * Check if Purple CMS has been setup or not
+		 * If not, redirect to Purple Setup
+		 */
 	    $purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
 		if ($databaseInfo == 'default') {
@@ -33,75 +38,82 @@ class AdminsController extends AppController
 	            ['prefix' => false, 'controller' => 'Setup', 'action' => 'index']
 	        );
 		}
+
+		/**
+		 * Check if user is signed in
+		 * If not, redirect to login page
+		 */
+		$session     = $this->getRequest()->getSession();
+		$sessionHost = $session->read('Admin.host');
+
+		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
+			return $this->redirect(
+				['_name' => 'adminLogin']
+			);
+		}
 	}
 	public function initialize()
 	{
-		parent::initialize();
+        parent::initialize();
+        
+		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
 		$sessionPassword = $session->read('Admin.password');
 
-		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
-			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
-	        );
-		}
-		else {
-	    	$this->viewBuilder()->setLayout('dashboard');
-            $this->loadModel('Settings');
-            $this->loadModel('Histories');
+        $this->viewBuilder()->setLayout('dashboard');
+        $this->loadModel('Settings');
 
-            if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
-                $cakeDebug = 'on';
-            } 
-            else {
-                $cakeDebug = 'off';
-            }
+        if (Configure::read('debug') || $this->request->getEnv('HTTP_HOST') == 'localhost') {
+            $cakeDebug = 'on';
+        } 
+        else {
+            $cakeDebug = 'off';
+        }
 
-			$queryAdmin      = $this->Admins->find()->where(['id' => $sessionID, 'password' => $sessionPassword])->limit(1);
-			$queryFavicon    = $this->Settings->find()->where(['name' => 'favicon'])->first();
-			$queryDateFormat = $this->Settings->find()->where(['name' => 'dateformat'])->first();
-			$queryTimeFormat = $this->Settings->find()->where(['name' => 'timeformat'])->first();
+        $queryAdmin      = $this->Admins->signedInUser($sessionID, $sessionPassword);
+		$queryFavicon    = $this->Settings->fetch('favicon');
+		$queryDateFormat = $this->Settings->fetch('dateformat');
+		$queryTimeFormat = $this->Settings->fetch('timeformat');
 
-			$rowCount = $queryAdmin->count();
-			if ($rowCount > 0) {
-				$adminData = $queryAdmin->first();
+        $rowCount = $queryAdmin->count();
+        if ($rowCount > 0) {
+            $adminData = $queryAdmin->first();
 
-                $dashboardSearch = new SearchForm();
+            $dashboardSearch = new SearchForm();
 
-                // Plugins List
-				$purplePlugins 	= new PurpleProjectPlugins();
-				$plugins		= $purplePlugins->purplePlugins();
-                $this->set('plugins', $plugins);
+            // Plugins List
+            $purplePlugins 	= new PurpleProjectPlugins();
+            $plugins		= $purplePlugins->purplePlugins();
+            $this->set('plugins', $plugins);
 
-				$data = [
-					'sessionHost'        => $sessionHost,
-					'sessionID'          => $sessionID,
-					'sessionPassword'    => $sessionPassword,
-                    'cakeDebug'          => $cakeDebug,
-					'adminName'          => ucwords($adminData->display_name),
-					'adminLevel'         => $adminData->level,
-					'adminEmail'         => $adminData->email,
-					'adminPhoto'         => $adminData->photo,
-                    'greeting'           => '',
-                    'dashboardSearch'    => $dashboardSearch,
-					'title'              => 'Users | Purple CMS',
-					'pageTitle'          => 'Users',
-					'pageTitleIcon'      => 'mdi-account-multiple',
-					'pageBreadcrumb'     => 'Users',
-					'appearanceFavicon'  => $queryFavicon,
-					'settingsDateFormat' => $queryDateFormat->value,
-					'settingsTimeFormat' => $queryTimeFormat->value
-		    	];
-	        	$this->set($data);
-			}
-			else {
-				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
-		        );
-			}
-	    }
+            $data = [
+                'sessionHost'        => $sessionHost,
+                'sessionID'          => $sessionID,
+                'sessionPassword'    => $sessionPassword,
+                'cakeDebug'          => $cakeDebug,
+                'adminName'          => ucwords($adminData->display_name),
+                'adminLevel'         => $adminData->level,
+                'adminEmail'         => $adminData->email,
+                'adminPhoto'         => $adminData->photo,
+                'greeting'           => '',
+                'dashboardSearch'    => $dashboardSearch,
+                'title'              => 'Users | Purple CMS',
+                'pageTitle'          => 'Users',
+                'pageTitleIcon'      => 'mdi-account-multiple',
+                'pageBreadcrumb'     => 'Users',
+                'appearanceFavicon'  => $queryFavicon,
+                'settingsDateFormat' => $queryDateFormat->value,
+                'settingsTimeFormat' => $queryTimeFormat->value
+            ];
+            $this->set($data);
+        }
+        else {
+            return $this->redirect(
+                ['controller' => 'Authenticate', 'action' => 'login']
+            );
+        }
 	}
 	public function index() 
 	{
@@ -188,10 +200,13 @@ class AdminsController extends AppController
             }
             
             $fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS;
-            $image = ImageResize::createFromString(base64_decode($sanitizeString));
-            $name  = md5(time());
 
-            if ($image->save($fullSizeImage. $name .'.png', IMAGETYPE_PNG)) {
+            list($type, $base64) = explode(';', $base64);
+            list(, $base64)      = explode(',', $base64);
+            $base64Decode		 = base64_decode($base64);
+            $name                = md5(time());
+
+            if (file_put_contents($fullSizeImage . $name.'.png', $base64Decode)) {
                 $json = json_encode(['status' => 'ok', 'image' => $name.'.png']);
             }
             else {
@@ -210,85 +225,91 @@ class AdminsController extends AppController
         $adminAdd = new AdminAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminAdd->execute($this->request->getData())) {
-                $purpleApi = new PurpleProjectApi();
-                $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email', 'username', 'password', 'repeatpassword', 'about', 'photo', 'ds'])->trim()->stripHtml();
+				$filter->values(['display_name'])->trim()->alnum()->stripHtml();
+				$filter->values(['level'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+                
+                if ($requestData->password == $requestData->repeatpassword) {
+                    $purpleApi = new PurpleProjectApi();
+                    $verifyEmail = $purpleApi->verifyEmail($requestData->email);
 
-                if ($verifyEmail == true) {
-                    $session    = $this->getRequest()->getSession();
-                    $sessionID  = $session->read('Admin.id');
-                    $queryAdmin = $this->Admins->find()->where(['id' => $sessionID])->limit(1);
+                    if ($verifyEmail == true) {
+                        $session       = $this->getRequest()->getSession();
+                        $sessionID     = $session->read('Admin.id');
+                        $signedInadmin = $this->Admins->get($sessionID);
+                        $queryAdmin    = $this->Admins->find()->where(['id' => $sessionID])->limit(1);
 
-                    $findDuplicate = $this->Admins->find()->where([
-                    	'OR' => [['username' => $this->request->getData('username')], ['email' => $this->request->getData('email')]]
-                    ]);
+                        $findDuplicate = $this->Admins->find()->where([
+                            'OR' => [['username' => $requestData->username], ['email' => $requestData->email]]
+                        ]);
 
-                    if ($findDuplicate->count() >= 1) {
-                        $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another username or email."]);
-                    }
-                    else {
-                        if(preg_match('/[A-Z]/', $this->request->getData('username'))){
-                            $json = json_encode(['status' => 'error', 'error' => "Please use lowercase letter for username."]);
+                        if ($findDuplicate->count() >= 1) {
+                            $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another username or email."]);
                         }
                         else {
-                            $admin = $this->Admins->newEntity();
-                            $admin = $this->Admins->patchEntity($admin, $this->request->getData());
-        				
-        	                if ($this->Admins->save($admin)) {
-                                $record_id = $admin->id;
-                                $admin     = $this->Admins->get($record_id);
+                            if(preg_match('/[A-Z]/', $requestData->username)){
+                                $json = json_encode(['status' => 'error', 'error' => "Please use lowercase letter for username."]);
+                            }
+                            else {
+                                $admin = $this->Admins->newEntity();
+                                $admin = $this->Admins->patchEntity($admin, $requestArray);
+                            
+                                if ($this->Admins->save($admin)) {
+                                    $recordId = $admin->id;
+                                    $admin     = $this->Admins->get($recordId);
 
-                                /**
-                                 * Save user activity to histories table
-                                 * array $options => title, detail, admin_id
-                                 */
-                                
-                                $options = [
-                                    'title'    => 'Addition of a New User',
-                                    'detail'   => ' add '.$this->request->getData('username').'('.$this->request->getData('email').') as a new user.',
-                                    'admin_id' => $sessionID
-                                ];
+                                    // Tell system for new event
+                                    $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'new']);
+                                    $this->getEventManager()->dispatch($event);
 
-                                $saveActivity   = $this->Histories->saveActivity($options);
+                                    // Send Email to User to Notify author
+                                    $key    = $this->Settings->settingsPublicApiKey();
+                                    $dashboardLink = $this->request->getData('ds').'/edit/'.$recordId;
+                                    $userData      = array(
+                                        'sitename'    => $this->Settings->settingsSiteName(),
+                                        'username'    => $admin->username,
+                                        'password'    => $requestData->password,
+                                        'email'       => $admin->email,
+                                        'displayName' => $admin->display_name,
+                                        'level'       => $admin->level
+                                    );
+                                    $senderData   = array(
+                                        'name'   => $queryAdmin->first()->display_name,
+                                        'domain' => $this->request->domain()
+                                    );
+                                    $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
 
-                                // Send Email to User to Notify author
-                                $key    = $this->Settings->settingsPublicApiKey();
-                                $dashboardLink = $this->request->getData('ds').'/edit/'.$record_id;
-                                $userData      = array(
-                                    'sitename'    => $this->Settings->settingsSiteName(),
-                                    'username'    => $admin->username,
-                                    'password'    => $this->request->getData('password'),
-                                    'email'       => $admin->email,
-                                    'displayName' => $admin->display_name,
-                                    'level'       => $admin->level
-                                );
-                                $senderData   = array(
-                                    'name'   => $queryAdmin->first()->display_name,
-                                    'domain' => $this->request->domain()
-                                );
-                                $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+                                    if ($notifyUser == true) {
+                                        $emailNotification = true;
+                                    }
+                                    else {
+                                        $emailNotification = false;
+                                    }
 
-                                if ($notifyUser == true) {
-                                    $emailNotification = true;
+                                    if ($event->getResult()) {
+                                        $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => [$admin->email => $emailNotification]]);
+                                    }
+                                    else {
+                                        $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
+                                    }
                                 }
                                 else {
-                                    $emailNotification = false;
+                                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
                                 }
-
-                                if ($saveActivity == true) {
-                                    $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => [$admin->email => $emailNotification]]);
-                                }
-                                else {
-                                    $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
-                                }
-        	                }
-        	                else {
-        	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
-        	                }
+                            }
                         }
-    				}
+                    }
+                    else {
+                        $json = json_encode(['status' => 'error', 'error' => "Email is not valid. Please use a real email."]);
+                    }
                 }
                 else {
-                    $json = json_encode(['status' => 'error', 'error' => "Email is not valid. Please use a real email."]);
+                    $json = json_encode(['status' => 'error', 'error' => "Password and repeat password is not equal. Please try again."]);
                 }
             }
             else {
@@ -309,49 +330,50 @@ class AdminsController extends AppController
         $adminEdit = new AdminEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminEdit->execute($this->request->getData())) {
-                $admin = $this->Admins->get($this->request->getData('id'));
-                if ($this->request->getData('email') == $admin->email) {
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email', 'username', 'about', 'photo'])->trim()->stripHtml();
+				$filter->values(['display_name'])->trim()->alnum()->stripHtml();
+				$filter->values(['level', 'id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+
+                $admin = $this->Admins->get($requestData->id);
+                if ($requestData->email == $admin->email) {
                     $verifyEmail = true;
                 }
                 else {
                     $purpleApi = new PurpleProjectApi();
-                    $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
+                    $verifyEmail = $purpleApi->verifyEmail($requestData->email);
                 }
 
                 if ($verifyEmail == true) {
-                    $session   = $this->getRequest()->getSession();
-                    $sessionID = $session->read('Admin.id');
+                    $session       = $this->getRequest()->getSession();
+                    $sessionID     = $session->read('Admin.id');
+                    $signedInadmin = $this->Admins->get($sessionID);
 
                     $findDuplicate = $this->Admins->find()->where([
                     	'id <> ' => $this->request->getData('id'),
-                    	'OR' => [['username' => $this->request->getData('username')], ['email' => $this->request->getData('email')]]
+                    	'OR' => [['username' => $requestData->username], ['email' => $requestData->email]]
                     ]);
 
                     if ($findDuplicate->count() >= 1) {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data due to duplication of data. Please try again with another username or email."]);
                     }
                     else {
-                        if(preg_match('/[A-Z]/', $this->request->getData('username'))){
+                        if(preg_match('/[A-Z]/', $requestData->username)){
                             $json = json_encode(['status' => 'error', 'error' => "Please use lowercase letter for username."]);
                         }
                         else {
-        					$this->Admins->patchEntity($admin, $this->request->getData());
+        					$this->Admins->patchEntity($admin, $requestArray);
 
                             if ($this->Admins->save($admin)) {
-                                /**
-                                 * Save user activity to histories table
-                                 * array $options => title, detail, admin_id
-                                 */
-                                
-                                $options = [
-                                    'title'    => 'Data Change of a User',
-                                    'detail'   => ' change '.$this->request->getData('username').'('.$this->request->getData('email').') data.',
-                                    'admin_id' => $sessionID
-                                ];
+                                // Tell system for new event
+                                $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'update']);
+                                $this->getEventManager()->dispatch($event);
 
-                                $saveActivity   = $this->Histories->saveActivity($options);
-
-                                if ($saveActivity == true) {
+                                if ($event->getResult()) {
                                     $json = json_encode(['status' => 'ok', 'activity' => true]);
                                 }
                                 else {
@@ -386,37 +408,41 @@ class AdminsController extends AppController
         $adminEditPassword = new AdminEditPasswordForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminEditPassword->execute($this->request->getData())) {
-                $session   = $this->getRequest()->getSession();
-                $sessionID = $session->read('Admin.id');
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['email', 'username', 'password', 'repeatpassword'])->trim()->stripHtml();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
 
-                $admin        = $this->Admins->get($this->request->getData('id'));
-                $this->Admins->patchEntity($admin, $this->request->getData());
+                $session       = $this->getRequest()->getSession();
+                $sessionID     = $session->read('Admin.id');
+                $signedInadmin = $this->Admins->get($sessionID);
 
-                if ($this->Admins->save($admin)) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Password Change of a User',
-                        'detail'   => ' change '.$this->request->getData('username').'('.$this->request->getData('email').') password.',
-                        'admin_id' => $sessionID
-                    ];
+                if ($requestData->password == $requestData->repeatpassword) {
+                    $admin        = $this->Admins->get($requestData->id);
+                    $this->Admins->patchEntity($admin, $requestArray);
 
-                    $saveActivity   = $this->Histories->saveActivity($options);
+                    if ($this->Admins->save($admin)) {
+                        // Tell system for new event
+                        $event = new Event('Model.Admin.afterUpdatePassword', $this, ['user' => $admin, 'admin' => $signedInadmin]);
+                        $this->getEventManager()->dispatch($event);
 
-                    if ($saveActivity == true) {
-                        $json = json_encode(['status' => 'ok', 'activity' => true]);
+                        if ($event->getResult()) {
+                            $json = json_encode(['status' => 'ok', 'activity' => true]);
+                        }
+                        else {
+                            $json = json_encode(['status' => 'ok', 'activity' => false]);
+                        }
                     }
                     else {
-                        $json = json_encode(['status' => 'ok', 'activity' => false]);
+                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
                     }
                 }
                 else {
-                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                    $json = json_encode(['status' => 'error', 'error' => "Password and repeat password is not equal. Please try again."]);
                 }
-                  
             }
             else {
                 $errors = $adminEditPassword->errors();
@@ -436,28 +462,26 @@ class AdminsController extends AppController
         $adminDelete = new AdminDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminDelete->execute($this->request->getData())) {
-                $session    = $this->getRequest()->getSession();
-                $sessionID  = $session->read('Admin.id');
-                $queryAdmin = $this->Admins->find()->where(['id' => $sessionID])->limit(1);
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['id'])->int();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+
+                $session       = $this->getRequest()->getSession();
+                $sessionID     = $session->read('Admin.id');
+                $signedInadmin = $this->Admins->get($sessionID);
+                $queryAdmin    = $this->Admins->find()->where(['id' => $sessionID])->limit(1);
                 
-                $admin = $this->Admins->get($this->request->getData('id'));
+                $admin = $this->Admins->get($requestData->id);
 				$name  = $admin->display_name;
 
 				$result = $this->Admins->delete($admin);
 
                 if ($result) {
-                    /**
-                     * Save user activity to histories table
-                     * array $options => title, detail, admin_id
-                     */
-                    
-                    $options = [
-                        'title'    => 'Deletion of a User',
-                        'detail'   => ' delete '.$name.' from user.',
-                        'admin_id' => $sessionID
-                    ];
-
-                    $saveActivity   = $this->Histories->saveActivity($options);
+                    // Tell system for new event
+                    $event = new Event('Model.Admin.afterDelete', $this, ['user' => $admin, 'admin' => $signedInadmin]);
+                    $this->getEventManager()->dispatch($event);
 
                     // Send Email to User to Notify user
                     $key    = $this->Settings->settingsPublicApiKey();
@@ -482,7 +506,7 @@ class AdminsController extends AppController
                         $emailNotification = false;
                     }
 
-                    if ($saveActivity == true) {
+                    if ($event->getResult()) {
                         $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => $emailNotification]);
                     }
                     else {
