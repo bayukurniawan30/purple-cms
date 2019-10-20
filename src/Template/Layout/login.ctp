@@ -72,6 +72,9 @@
 
 <body class="">
 	<div class="container-scroller">
+		<!--CSRF Token-->
+		<input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
+		
 		<?php if ($settingDefaultBgLogin->value != 'no'): ?>
 			<div id="particles-js" class="bg-gradient-primary"></div>
 		<?php endif; ?>
@@ -84,8 +87,20 @@
 							<div class="brand-logo">
 								<?= $this->Html->image('/master-assets/img/logo-animated.svg', ['alt' => 'Purple CMS', 'data-id' => 'login-cover-image', 'width' => '100%']) ?>
 							</div>
+							<?php
+								if ($this->request->getParam('action') == 'verificationCode'):
+							?>
+							<h4>Enter 6 Digits Verification Code</h4>
+							<h6 class="font-weight-light">You haven't signed in for <?= $diff == 7 ? '7 days' : 'more than a week' ?>.</h6>
+							<?php
+								else:
+							?>
 							<h4>Sign In to feel the Purple</h4>
 							<h6 class="font-weight-light">Purple is Awesome</h6>
+							<?php
+								endif;
+							?>
+
 							<?= $this->fetch('content') ?>
 						</div>
 					</div>

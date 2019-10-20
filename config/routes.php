@@ -306,6 +306,9 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/', 
 			['controller' => 'Authenticate', 'action' => 'login'], 
 			['_name' => 'adminLogin']);
+	$routes->connect('/sign-in-code', 
+			['controller' => 'Authenticate', 'action' => 'verificationCode'], 
+			['_name' => 'adminSignInVerification']);
 	$routes->connect('/', 
 			['controller' => 'Authenticate', 'action' => 'loginApi'], 
 			['_name' => 'adminLoginApi']);
@@ -331,6 +334,12 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/ajax-reset-password', 
 			['controller' => 'Authenticate', 'action' => 'ajax-reset-password'], 
 			['_name' => 'adminAjaxResetPassword']);
+	$routes->connect('/ajax-verify-code', 
+			['controller' => 'Authenticate', 'action' => 'ajaxVerifyCode'], 
+			['_name' => 'adminAjaxVerifyCode']);
+	$routes->connect('/ajax-resend-sign-in-code', 
+			['controller' => 'Authenticate', 'action' => 'ajaxResendVerificationCode'], 
+			['_name' => 'adminAjaxResendSignInVerification']);
 
 	/**
 	 * Settings Route

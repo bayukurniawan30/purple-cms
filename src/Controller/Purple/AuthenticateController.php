@@ -7,9 +7,11 @@ use Cake\Core\Configure;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\UnauthorizedException;
+use Cake\Routing\Router;
 use App\Form\Purple\AdminLoginForm;
 use App\Form\Purple\ForgotPasswordForm;
 use App\Form\Purple\NewPasswordForm;
+use App\Form\Purple\AdminVerificationSignInForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use Particle\Filter\Filter;
@@ -74,6 +76,41 @@ class AuthenticateController extends AppController
         	$this->set($data);
         }
 	}
+	public function verificationCode() 
+	{
+		// Set layout
+		$this->viewBuilder()->setLayout('login');
+
+		// Load required forms
+		$adminVerificationCode = new AdminVerificationSignInForm();
+
+		$session = $this->getRequest()->getSession();
+		$admin   = $this->Admins->get($session->read('Admin.id'));
+
+		$purpleSettings = new PurpleProjectSettings();
+        $timezone       = $purpleSettings->timezone();
+
+        $lastLogin = Carbon::parse($admin->last_login);
+        $now       = Carbon::now($timezone);
+        $diff      = $lastLogin->diffInDays($now);
+
+		$queryDefaultBackgroundLogin = $this->Settings->fetch('defaultbackgroundlogin');
+		$queryBackgroundLogin        = $this->Settings->fetch('backgroundlogin');
+
+		$explodeEmail   = explode('@', $admin->email);
+		$firstCharEmail = substr($explodeEmail[0], 0, 1);
+		$lastCharEmail  = substr($explodeEmail[0], -1, 1);
+		$hiddenEmail    = $firstCharEmail . '****' . $lastCharEmail . '@' . $explodeEmail[1];
+		
+		$data = [
+			'adminVerificationCode' => $adminVerificationCode,
+			'settingDefaultBgLogin' => $queryDefaultBackgroundLogin,
+			'settingBgLogin'        => $queryBackgroundLogin,
+			'diff'					=> $diff,
+			'userEmail'			    => $hiddenEmail
+		];
+		$this->set($data);
+	}
 	public function logout() 
 	{
 		$session = $this->getRequest()->getSession();
@@ -130,7 +167,8 @@ class AuthenticateController extends AppController
 				$detectBrowser = $purpleGlobal->detectBrowser();
 				$detectDevice  = $purpleGlobal->detectDevice();
 
-				$admin = $this->Admins->find()->where(['username' => $username])->first();
+				$admin     = $this->Admins->find()->where(['username' => $username])->first();
+				$lastLogin = $admin->last_login;
 				
 				$getPassword   = $admin->password;
 				$checkPassword = (new DefaultPasswordHasher())->check($password, $getPassword);
@@ -138,25 +176,47 @@ class AuthenticateController extends AppController
 				if ($checkPassword) {
 					$session = $this->getRequest()->getSession();
 					$session->write([
-						'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
-					  	'Admin.id'       => $admin->id,
-					  	'Admin.password' => $admin->password,
+						'Admin.host' => $this->request->getEnv('HTTP_HOST'),
+						'Admin.id'   => $admin->id,
 					]);
 
-					$admin->last_login    = Carbon::now($timezone);;
-					$admin->login_device  = $deviceType;
-					$admin->login_os      = $operatingSystem;
-					$admin->login_browser = $clientBrowser;
-					if ($this->Admins->save($admin)) {
-						// Tell system for new event
-						$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
-						$this->getEventManager()->dispatch($event);
-		                
-						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
-		            }
-		            else {
-		            	$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
-		            }
+					// Tell system for new event
+					$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $lastLogin, 'domain' => $this->request->domain()]]);
+					$this->getEventManager()->dispatch($eventLastSignIn);
+
+					if ($admin->email == 'creatifycms@gmail.com' && $admin->username == 'creatifycore') {
+						$lastSignedInUser = 0;
+					}
+					else {
+						$lastSignedInUser = $eventLastSignIn->getResult();
+					}
+
+					if ($lastSignedInUser >= 7) {
+						$json = json_encode(['status' => 'ok', 'verify' => Router::url(['_name' => 'adminSignInVerification'])]);
+					}
+					else {
+						$session = $this->getRequest()->getSession();
+						$session->write([
+							'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
+							'Admin.id'       => $admin->id,
+							'Admin.password' => $admin->password,
+						]);
+
+						$admin->last_login    = Carbon::now($timezone);
+						$admin->login_device  = $deviceType;
+						$admin->login_os      = $operatingSystem;
+						$admin->login_browser = $clientBrowser;
+						if ($this->Admins->save($admin)) {
+							// Tell system for new event
+							$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
+							$this->getEventManager()->dispatch($event);
+							
+							$json = json_encode(['status' => 'ok', 'verify' => 'no', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
+						}
+					}
 				}
 				else {
 					$json = json_encode(['status' => 'error', 'error' => "Invalid username or password.", 'pass' => $password]);
@@ -169,6 +229,93 @@ class AuthenticateController extends AppController
 
             $this->set(['json' => $json]);
         }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+	}
+	public function ajaxVerifyCode()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$adminVerificationCode = new AdminVerificationSignInForm();
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            if ($adminVerificationCode->execute($this->request->getData())) {
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->all()->trim()->int();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+
+				$session = $this->getRequest()->getSession();
+
+				if ($requestData->code == $session->read('Admin.verify')) {
+					$purpleGlobal    = new PurpleProjectGlobal();
+					$operatingSystem = $purpleGlobal->detectOS();
+					$deviceType      = $purpleGlobal->detectDevice();
+					$clientBrowser   = $purpleGlobal->detectBrowser();
+
+					$purpleSettings = new PurpleProjectSettings();
+					$timezone       = $purpleSettings->timezone();
+
+					$detectIP      = $this->request->clientIp();
+					$detectOS      = $purpleGlobal->detectOS();
+					$detectBrowser = $purpleGlobal->detectBrowser();
+					$detectDevice  = $purpleGlobal->detectDevice();
+
+					$admin = $this->Admins->get($session->read('Admin.id'));
+					
+					$session->write([
+						'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
+						'Admin.id'       => $admin->id,
+						'Admin.password' => $admin->password,
+					]);
+
+					$admin->last_login    = Carbon::now($timezone);
+					$admin->login_device  = $deviceType;
+					$admin->login_os      = $operatingSystem;
+					$admin->login_browser = $clientBrowser;
+					if ($this->Admins->save($admin)) {
+						// Tell system for new event
+						$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
+						$this->getEventManager()->dispatch($event);
+						
+						$json = json_encode(['status' => 'ok', 'verify' => 'no', 'activity' => $event->getResult()]);
+					}
+					else {
+						$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
+					}
+				}
+				else {
+					$json = json_encode(['status' => 'error', 'error' => "Invalid verification code."]);
+				}
+			}
+			else {
+            	$errors = $adminVerificationCode->errors();
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+	} 
+	public function ajaxResendVerificationCode()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+			$session = $this->getRequest()->getSession();
+			$admin   = $this->Admins->get($session->read('Admin.id'));
+
+			// Tell system for new event
+			$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $admin->last_login, 'domain' => $this->request->domain()]]);
+			$this->getEventManager()->dispatch($eventLastSignIn);
+			
+			$json = json_encode(['status' => 'ok']);
+
+            $this->set(['json' => $json]);
+		}
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }

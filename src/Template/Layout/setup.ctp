@@ -80,7 +80,7 @@
             .setup-loader p {
                 font-size: 1rem;
             }
-            .purple-check-req-step, .purple-check-mbstring, .purple-check-intl {
+            .purple-check-req-step, .purple-check-mbstring, .purple-check-intl, .purple-check-exif {
                 display: none;
             }
             .setup-information {
@@ -113,6 +113,8 @@
                             <li class="uk-animation-slide-bottom-medium purple-check-mbstring"><span class="purple-check-mbstring-icon" uk-spinner></span> <span class="purple-check-mbstring-text">Checking mbstring PHP extension...</span></li>
 
                             <li class="uk-animation-slide-bottom-medium purple-check-intl"><span class="purple-check-intl-icon" uk-spinner></span> <span class="purple-check-intl-text">Checking intl PHP extension...</span></li>
+
+                            <li class="uk-animation-slide-bottom-medium purple-check-exif"><span class="purple-check-exif-icon" uk-spinner></span> <span class="purple-check-exif-text">Checking exif PHP extension...</span></li>
                         </ul>
                     </div>
                 <?php endif; ?>
@@ -284,8 +286,41 @@
                 }, 6000);
 
                 setTimeout(function() {
+                    $('.purple-check-exif').show();
+                }, 6500);
+
+                setTimeout(function() {
+                    // Icon
+                    $('.purple-check-exif').find('.purple-check-exif-icon').removeClass('uk-spinner');
+                    $('.purple-check-exif').find('.purple-check-exif-icon').removeAttr('uk-spinner');
                 <?php
-                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring')):
+                    if (extension_loaded('exif')):
+                ?>  
+                    // Icon
+                    $('.purple-check-exif').find('.purple-check-exif-icon').attr('uk-icon', 'icon: check');
+                    $('.purple-check-exif').find('.purple-check-exif-icon').attr('uk-icon', 'icon: check');
+
+                    // Text
+                    $('.purple-check-exif').find('.purple-check-exif-text').text('exif PHP extension enabled');
+                <?php
+                    else:
+                ?>
+                    // List
+                    $('.purple-check-exif').addClass('uk-text-danger');
+                    
+                    // Icon
+                    $('.purple-check-exif').find('.purple-check-exif-icon').attr('uk-icon', 'icon: warning');
+
+                    // Text
+                    $('.purple-check-exif').find('.purple-check-exif-text').text('Please enable intl PHP extension');
+                <?php
+                    endif;
+                ?>
+                }, 7500);
+
+                setTimeout(function() {
+                <?php
+                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring') && extension_loaded('exif')):
                 ?>
                     $('.purple-check-req-step').append('<li class="uk-animation-slide-bottom-medium">You are ready to go! </li>')
                 <?php
@@ -295,7 +330,7 @@
                 <?php
                     endif;
                 ?>
-                }, 6500);
+                }, 8500);
             })
         </script>
         <?php
@@ -311,12 +346,12 @@
                 <?php endif; ?>
 
                 <?php
-                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring')):
+                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring') && extension_loaded('exif')):
                 ?>
                     setTimeout(function() {
                         UIkit.modal('#modal-setup-purple').show();
                         $(".setup-loader").hide();
-                    <?php if ($checkStep == 'index') echo '}, 8000);'; else echo '}, 2000);'; ?>
+                    <?php if ($checkStep == 'index') echo '}, 10000);'; else echo '}, 2000);'; ?>
                 <?php
                     endif;
                 ?>
@@ -328,7 +363,7 @@
         <script>
             $(document).ready(function() {
                 <?php
-                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring')):
+                    if (version_compare(PHP_VERSION, '7.1.3') >= 0 && extension_loaded('intl') && extension_loaded('mbstring') && extension_loaded('exif')):
                 ?>
                     UIkit.modal('#modal-setup-purple').show();
                 <?php

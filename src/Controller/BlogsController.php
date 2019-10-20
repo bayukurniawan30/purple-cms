@@ -190,7 +190,9 @@ class BlogsController extends AppController
             'formSecurity'       => $formSecurity,
             'sidebarSearch'      => $search,
             'ldJsonWebsite'      => $websiteSchema,
-            'ldJsonOrganization' => $orgSchema
+            'ldJsonOrganization' => $orgSchema,
+            'recaptchaSitekey'   => $this->Settings->settingsRecaptchaSitekey(),
+            'recaptchaSecret'    => $this->Settings->settingsRecaptchaSecret()
         ];
         $this->set($data);
     }
@@ -207,7 +209,12 @@ class BlogsController extends AppController
             $tags   = $this->Tags->postTags($blog->id);
 
             $page = $this->Pages->find('all')->contain('PageTemplates')->where(['Pages.id' => $pageID]);
-            $pageParent = $page->first()->parent;
+            if ($page->count() > 0) {
+                $pageParent = $page->first()->parent;
+            }
+            else {
+                $pageParent = NULL;
+            }
 
             if ($page->count() == 0) {
                 $pageSlug   = 'posts';
@@ -255,8 +262,6 @@ class BlogsController extends AppController
                 'totalComments'    => $this->Comments->publishedComments($blog->id, 'countall'),
                 'fetchComments'    => $this->Comments->publishedComments($blog->id, 'fetch'),
                 'totalVisitors'    => $this->BlogVisitors->totalVisitors($blog->id),
-                'recaptchaSitekey' => $this->Settings->settingsRecaptchaSitekey(),
-                'recaptchaSecret'  => $this->Settings->settingsRecaptchaSecret()
             ];
 
             if ($pageParent == NULL || $pageParent == '0') {
@@ -325,6 +330,9 @@ class BlogsController extends AppController
                     "height" => $heightImage,
                     "width"  => $widthImage
                 ];
+            }
+            else {
+                $articleJsonLd["image"] = NULL;
             }
 
             $articleSchema = $purpleSeo->schemaLdJson('article', $articleJsonLd);

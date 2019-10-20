@@ -131,8 +131,15 @@ $(document).ready(function() {
 
     			        if (status == 'ok') {
                             if (action == 'login') {
-                                $error.html('');
-                                $ajaxButton.html('<i class="fa fa-circle-o-notch fa-spin"></i> Signing you in...');
+                                var verify = (json.verify);
+                                if (verify == 'no') {
+                                    $error.html('');
+                                    $ajaxButton.html('<i class="fa fa-circle-o-notch fa-spin"></i> Signing you in...');
+                                }
+                                else {
+                                    $error.html('');
+                                    $ajaxButton.html('<i class="fa fa-circle-o-notch fa-spin"></i> Sending Code...');
+                                }
                             }
                             else if (action == 'confirm-email') {
                                 $error.html(content);
@@ -188,9 +195,24 @@ $(document).ready(function() {
                             }
 
                             if (redirectType == 'redirect') {
-                                setTimeout(function() {
-                                    window.location=redirect;
-                                }, 1500);
+                                if (action == 'login') {
+                                    var verify = (json.verify);
+                                    if (verify == 'no') {
+                                        setTimeout(function() {
+                                            window.location=redirect;
+                                        }, 1500);
+                                    }
+                                    else {
+                                        setTimeout(function() {
+                                            window.location=verify;
+                                        }, 1500);
+                                    }
+                                }
+                                else {
+                                    setTimeout(function() {
+                                        window.location=redirect;
+                                    }, 1500);
+                                }
                             }
                             else {
                                 $(redirect).html(content);

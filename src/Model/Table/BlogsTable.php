@@ -127,13 +127,23 @@ class BlogsTable extends Table
 	}
 	public function archivesList($page = NULL)
 	{
-		$find  = $this->find('all')->contain('BlogCategories');
-		$query = $find->select($this)->select(['pcount' => $find->func()->count('Blogs.id')])->group(["DATE_FORMAT(Blogs.created, '%Y-%m') DESC"]);
+		$find  = $this->find('all')->contain('BlogCategories')->where(['Blogs.status' => '1']);
+		$query = $find->select(['year' => 'YEAR(Blogs.created)', 'month' => 'MONTH(Blogs.created)', 'count' => $find->func()->count('Blogs.id')])->group(['year DESC', 'month DESC']);
 		if ($page != NULL) {
 			$query = $query->where(['BlogCategories.page_id' => $page]);
 		}
-		
-		return $query;
+
+		$array = [];
+		$init  = 0;
+		foreach ($query as $archive) {
+			$array[$init]['created'] = date('Y-m', strtotime($archive->year.'-'.$archive->month.'-01'));
+			$array[$init]['total']   = $archive->count;
+			$init++;
+		}
+
+		$newData = json_encode($array);
+
+		return json_decode($newData, FALSE);
 	}
 	public function fetchPosts($limit, $return = 'fetch')
 	{

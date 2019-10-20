@@ -97,9 +97,11 @@ class PurpleProjectSeo
 
                 $schema->datePublished($datePublished)
                        ->datemodified($datemodified)
-                       ->headline($headline)
-                       ->image($image)
-                       ->articleBody($articleBody)
+                       ->headline($headline);
+                if ($image != NULL) {
+                    $schema->image($image);
+                }
+                $schema->articleBody($articleBody)
                        ->mainEntityOfPage(true);
                             
                 // Add logo property
