@@ -10,6 +10,11 @@
 	- [Debug Mode](debug-mode.md)
 	- [Production](production.md)
 
+- **Purple CLI**  
+	- [Database](cli-database.md)
+	- [Model](cli-model.md)
+	- [Theme](cli-theme.md)
+
 - **Developer Guide**
     - [Generate Documentation](generate-documentation.md)
     - [API](purple-cms-api.md)
