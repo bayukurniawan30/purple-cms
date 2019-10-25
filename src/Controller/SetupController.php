@@ -61,7 +61,12 @@ class SetupController extends AppController
 			$setupDatabase = new SetupDatabaseForm();
 
 	        if ($this->request->is('get')) {
-		    	$this->viewBuilder()->setLayout('setup');
+				$this->viewBuilder()->setLayout('setup');
+				
+				$key  = \Dcrypt\OpensslKey::create();
+				$file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'secret.key', true, 0644);
+				$file->write($key);
+
 	        	$this->set('setupDatabase', $setupDatabase);
 	        }
 		}
@@ -131,7 +136,17 @@ class SetupController extends AppController
 	        );
 		}
 	}
-
+	public function generateSslKey()
+	{
+		$key  = \Dcrypt\OpensslKey::create();
+		$file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'secret.key', true, 0644);
+		if ($file->write($key)) {
+			$this->set('status', 'ok');
+		}
+		else {
+			$this->set('status', 'ok');
+		}
+	}
 	// Ajax Proccessing
 	public function ajaxDatabase()
 	{
@@ -156,7 +171,7 @@ class SetupController extends AppController
 					$databaseInfo = $name . ',' . $username .',' . $password;
 
 					$file      = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-					$encrypted = \Dcrypt\Aes::encrypt($databaseInfo, CIPHER);
+					$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
 
 	            	if ($file->write($encrypted)) {
 		                $json = json_encode(['status' => 'ok']);

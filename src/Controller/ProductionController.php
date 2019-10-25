@@ -208,7 +208,7 @@ class ProductionController extends AppController
 					$databaseInfo = $name . ',' . $username .',' . $password;
 
 					$file      = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-					$encrypted = \Dcrypt\Aes::encrypt($databaseInfo, CIPHER);
+					$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
 
 	            	if ($file->write($encrypted)) {
 		                $json = json_encode(['status' => 'ok']);

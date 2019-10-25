@@ -155,7 +155,7 @@ class PurpleCommand extends Command
             if ($value == 'decrypt') {
                 if ($args->getOption('database_info')) {
                     $file        = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-                    $resultcrypt = \Dcrypt\Aes::decrypt($file->read(), CIPHER);
+                    $resultcrypt = \Dcrypt\Aes256Gcm::decrypt($file->read(), CIPHER);
                     $io->out($resultcrypt);
                 }
                 else {
@@ -166,7 +166,7 @@ class PurpleCommand extends Command
                 if ($args->getOption('migrate')) {
                     $databaseInfo = trim($args->getOption('migrate'));
                     $file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-                    $resultcrypt = \Dcrypt\Aes::encrypt($databaseInfo, CIPHER);
+                    $resultcrypt = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
 	            	if ($file->write($resultcrypt)) {
                         $io->success('Database has been changed');
                     }

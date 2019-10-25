@@ -33,8 +33,6 @@ require CORE_PATH . 'config' . DS . 'bootstrap.php';
  * Creatify Constant
  */
 
-define('CIPHER', 'a3780d108626e96091b6ffb88ca72750');
-
 use Cake\Cache\Cache;
 use Cake\Console\ConsoleErrorHandler;
 use Cake\Core\App;
@@ -46,6 +44,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Error\ErrorHandler;
 use Cake\Http\ServerRequest;
 use Cake\Event\EventManager;
+use Cake\Filesystem\File;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
 use Cake\Utility\Inflector;
@@ -64,6 +63,15 @@ use App\Event\Purple\SubscriberListener;
 use App\Event\Purple\SettingListener;
 use App\Event\PageListener as FrontPageListener;
 use App\Event\BlogListener as FrontBlogListener;
+
+$secretKeyFile = new File(__DIR__ . DS . 'secret.key');
+define('CIPHER', $secretKeyFile->read());
+
+/**
+ * Old CHIPER with Dcrypt version 4
+ */
+// define('CIPHER', 'a3780d108626e96091b6ffb88ca72750');
+
 /**
  * Uncomment block of code below if you want to use `.env` file during development.
  * You should copy `config/.env.default to `config/.env` and set/modify the

@@ -22,7 +22,7 @@ class PurpleProjectGlobal
 			return 'default';
 		}
 		else {
-			$decrypted        = \Dcrypt\Aes::decrypt($content, CIPHER);
+			$decrypted        = \Dcrypt\Aes256Gcm::decrypt($content, CIPHER);
 			$explodeLine      = explode(',', $decrypted);
 			$databaseName     = $explodeLine[0];
 			$databaseUser     = $explodeLine[1];

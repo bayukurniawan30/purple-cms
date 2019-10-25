@@ -17,7 +17,7 @@
         "josegonzalez/dotenv": "3.*",
         "mailgun/mailgun-php": "^2.5",
         "melbahja/seo": "^1.0",
-        "mmeyer2k/dcrypt": "~4.0",
+        "mmeyer2k/dcrypt": "^13.0",
         "mobiledetect/mobiledetectlib": "2.*",
         "nelexa/zip": "^3.1",
         "nesbot/carbon": "^2.25",

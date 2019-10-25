@@ -22,6 +22,10 @@
             $currentStep = 'Database Migration';
             $currentLoad = 'Preparing database form...';
             $currentDesc = "Provide your production database information that you created earlier on your server. If you don't have permission to do that, please contact your hosting provider.";
+        elseif ($checkStep == 'generateSslKey'):
+            $currentStep = 'Database Key';
+            $currentLoad = 'Generating secret key...';
+            $currentDesc = NULL;
         endif;
     elseif ($this->request->getParam('controller') == 'Production'):
         $purpleTag = 'Get Ready to Live Your Website';
