@@ -64,7 +64,7 @@ class MediasTable extends Table
     }
     public function findPreviousRow(Query $query, array $options)
     {
-        $check = $query->where(['id >' => $options['id']])->order(['id' => 'DESC']);
+        $check = $query->where(['id >' => $options['id']])->order(['id' => 'ASC']);
         if ($check->count() > 0) {
             return $check->first();
         }

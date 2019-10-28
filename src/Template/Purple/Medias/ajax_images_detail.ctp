@@ -14,12 +14,29 @@
     <?php
             $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
             $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
+            $previousId  = $this->cell('Medias::previousId', [$media->id]);
+            $nextId      = $this->cell('Medias::nextId', [$media->id]);
+            $colors      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $media->name]);
+
+            if ($previousId == '0') {
+                $previousUrl = '#';
+            }
+            else {
+                $previousUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $previousId;
+            }
+
+            if ($nextId == '0') {
+                $nextUrl = '#';
+            }
+            else {
+                $nextUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextId;
+            }
     ?>
     <div class="col-6 col-md-2 grid-margin" data-date="<?= date('Y-m-d H:i', strtotime($media->created)) ?>">
         <div>
             <div class="uk-card uk-card-default">
                 <div class="uk-card-media-top">
-                    <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= ucwords($media->admin->display_name) ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
+                    <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= ucwords($media->admin->display_name) ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>"  data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors="<?= $colors ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
                 </div>
             </div>
         </div>
@@ -99,9 +116,20 @@
                 host    = $(this).data('purple-host'),
                 by      = $(this).data('purple-by'),
                 created = $(this).data('purple-created'),
+                colors  = $(this).data('purple-colors'),
                 desc    = $(this).data('purple-description'),
                 title   = $(this).attr('title'),
                 modal   = $("#modal-full-content");
+
+            // Image colors
+            var colorsArray = colors.split(","),
+                i, setColors = '';
+            for (i = 0; i < colorsArray.length; i++) {
+                setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
+            }
+
+            modal.find(".bind-colors").html(setColors);
+            modal.find(".bind-background").css('background-color', colorsArray[0]);
             modal.find(".uk-background-contain").css('background-image', 'url(' + image + ')');
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
@@ -150,6 +178,25 @@
                 }, 500);
                 return false;
             });
+
+            $('#modal-full-content').find('.bind-background').on({
+            mouseenter: function () {
+                var modal   = $('#modal-full-content');
+                var prevUrl = modal.find('#media-image-previous-url').attr('href');
+                var nextUrl = modal.find('#media-image-next-url').attr('href');
+                if (prevUrl != '#') {
+                    modal.find('#media-image-previous-url').show(500);
+                }
+                if (nextUrl != '#') {
+                    modal.find('#media-image-next-url').show(500);
+                }
+            },
+            mouseleave: function () {
+                var modal = $('#modal-full-content');
+                modal.find('#media-image-previous-url').hide(500);
+                modal.find('#media-image-next-url').hide(500);
+            }
+        });
             
             return false;
         });

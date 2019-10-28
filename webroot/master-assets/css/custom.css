@@ -343,6 +343,9 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
     cursor: pointer;
     border: 2px solid var(--primary);
 }
+#media-image-previous-url, #media-image-next-url {
+    display: none;
+}
 
 /* Table */
 .uk-table th {

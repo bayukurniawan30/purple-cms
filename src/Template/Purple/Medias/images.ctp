@@ -57,6 +57,7 @@
                     $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
                     $previousId  = $this->cell('Medias::previousId', [$media->id]);
                     $nextId      = $this->cell('Medias::nextId', [$media->id]);
+                    $colors      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $media->name]);
 
                     if ($previousId == '0') {
                         $previousUrl = '#';
@@ -76,7 +77,7 @@
                     <div>
                         <div class="uk-card uk-card-default">
                             <div class="uk-card-media-top">
-                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
+                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors="<?= $colors ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
                             </div>
                         </div>
                     </div>
@@ -144,7 +145,7 @@
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-            <div class="uk-background-contain uk-animation-slide-left" style="" uk-height-viewport>
+            <div class="uk-background-contain uk-animation-slide-left bind-background" style="" uk-height-viewport>
                 <a href="#" id="media-image-previous-url">
                     <div class="uk-position-center-left uk-overlay uk-overlay-default"><span uk-icon="chevron-left"></span></div>
                 </a>
@@ -157,6 +158,7 @@
                     <li class="uk-disabled"><a class="bind-by"></a></li>
                     <li class="uk-disabled purple-mobile-media-breadcrumb"><a class="bind-created"></a></li>
                 </ul>
+                <p class="bind-colors"></p>
                 <?php
                     echo $this->Form->create($mediaImageModal, [
                         'id'                    => 'form-image-detail', 
@@ -249,6 +251,9 @@
             $fullImageDetail   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $detail->name;
             $previousIdDetail  = $this->cell('Medias::previousId', [$detail->id]);
             $nextIdDetail      = $this->cell('Medias::nextId', [$detail->id]);
+            $colorsDetail      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $detail->name]);
+            $explodeColors     = explode(",", $colorsDetail);
+
 
             if ($previousIdDetail == '0') {
                 $previousUrlDetail = '#';
@@ -268,7 +273,7 @@
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-            <div class="uk-background-contain uk-animation-slide-left" style="background-image: url(<?= $fullImageDetail ?>)" uk-height-viewport>
+            <div class="uk-background-contain uk-animation-slide-left bind-background" style="background-image: url(<?= $fullImageDetail ?>); background-color: <?= $explodeColors[0] ?>" uk-height-viewport>
                 <a href="<?= $previousUrlDetail ?>" id="media-image-previous-url">
                     <div class="uk-position-center-left uk-overlay uk-overlay-default"><span uk-icon="chevron-left"></span></div>
                 </a>
@@ -281,6 +286,15 @@
                     <li class="uk-disabled"><a class="bind-by">Uploaded by <?= $detail->admin->get('display_name') ?></a></li>
                     <li class="uk-disabled purple-mobile-media-breadcrumb"><a class="bind-created">Uploaded at <?= date('F d, Y H:i', strtotime($media->created)) ?></a></li>
                 </ul>
+                <p class="bind-colors">
+                    <?php
+                        foreach ($explodeColors as $colorExtract):
+                    ?>
+                    <a href="#" class="uk-margin-left-small" style="color: <?= $colorExtract ?>" title="<?= $colorExtract ?>"><i class="fa fa-square"></i></a>
+                    <?php
+                        endforeach;
+                    ?>
+                </p>
                 <?php
                     echo $this->Form->create($mediaImageModal, [
                         'id'                    => 'form-image-detail-initial', 
@@ -413,6 +427,25 @@
                 UIkit.modal('#modal-delete-media').show();
             }, 500);
             return false;
+        });
+
+        $('#modal-full-content-initial').find('.bind-background').on({
+            mouseenter: function () {
+                var modal   = $('#modal-full-content-initial');
+                var prevUrl = modal.find('#media-image-previous-url').attr('href');
+                var nextUrl = modal.find('#media-image-next-url').attr('href');
+                if (prevUrl != '#') {
+                    modal.find('#media-image-previous-url').show(500);
+                }
+                if (nextUrl != '#') {
+                    modal.find('#media-image-next-url').show(500);
+                }
+            },
+            mouseleave: function () {
+                var modal = $('#modal-full-content-initial');
+                modal.find('#media-image-previous-url').hide(500);
+                modal.find('#media-image-next-url').hide(500);
+            }
         });
 
         var mediaUpdateDetail = {

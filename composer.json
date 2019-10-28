@@ -15,6 +15,7 @@
         "gregwar/image": "2.*",
         "guzzlehttp/psr7": "^1.4",
         "josegonzalez/dotenv": "3.*",
+        "league/color-extractor": "0.3.*",
         "mailgun/mailgun-php": "^2.5",
         "melbahja/seo": "^1.0",
         "mmeyer2k/dcrypt": "^13.0",
