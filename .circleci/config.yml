@@ -1,8 +1,8 @@
 version: 2
- jobs:
-   build:
-     docker:
-       - image: circleci/php:7.3.9
-     steps:
-       - checkout
-       - run: echo "Hello CircleCI"
+jobs:
+   	build:
+    	docker:
+       		- image: circleci/php:7.3.9
+     	steps:
+       		- checkout
+       		- run: echo "Hello CircleCI"
