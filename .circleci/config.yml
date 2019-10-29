@@ -42,10 +42,16 @@ jobs:
             done
             echo Failed waiting for MySQL && exit 1
       - run:
-          name: Install MySQL CLI; Import dummy data; run an example query
+          name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
-            mysql -h 127.0.0.1 -u $MYSQL_USER -$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
+      - run:
+          name: Create Database
+          command: |
+            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
+      - run:
+          name: Show Databases
+          command: |
             mysql -h 127.0.0.1 SHOW DATABASES
 
       # Download and cache dependencies
