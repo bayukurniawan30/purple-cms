@@ -48,7 +48,7 @@ jobs:
       - run:
           name: Create Database
           command: |
-            mysql -h 127.0.0.1 -u$MYSQL_USER -p$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
+            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
       - run:
           name: Show Databases
           command: |
