@@ -14,6 +14,7 @@ jobs:
           MYSQL_DATABASE: $MYSQL_DATABASE
           MYSQL_USER: $MYSQL_USER
           MYSQL_PASSWORD: $MYSQL_PASSWORD
+          MYSQL_ALLOW_EMPTY_PASSWORD: $MYSQL_ALLOW_EMPTY_PASSWORD
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -53,11 +54,11 @@ jobs:
       - run:
           name: Create Database
           command: |
-            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD -e "create database $MYSQL_DATABASE;"
+            mysql -h 127.0.0.1 -u $MYSQL_USER -e "create database $MYSQL_DATABASE;"
       - run:
           name: Show Databases
           command: |
-            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD SHOW DATABASES
+            mysql -h 127.0.0.1 -u $MYSQL_USER SHOW DATABASES
 
       # Download and cache dependencies
       - restore_cache:
