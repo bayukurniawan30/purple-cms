@@ -7,8 +7,8 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.3.9
-      - image: circleci/mysql:8.0.4
+      - image: circleci/php:7.3.9-apache-node-browsers
+      - image: circleci/mysql:5.7.28
         environment:
           MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
           MYSQL_DATABASE: $MYSQL_DATABASE
@@ -50,6 +50,10 @@ jobs:
           name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
+      - run:
+          name: Create Database
+          command: |
+            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD -e "create database $MYSQL_DATABASE;"
       - run:
           name: Show Databases
           command: |
