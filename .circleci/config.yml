@@ -10,11 +10,11 @@ jobs:
       - image: circleci/php:7.3.9-apache-node-browsers
       - image: circleci/mysql:5.7.28
         environment:
-          MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-          MYSQL_DATABASE: $MYSQL_DATABASE
-          MYSQL_USER: $MYSQL_USER
-          MYSQL_PASSWORD: $MYSQL_PASSWORD
-          MYSQL_ALLOW_EMPTY_PASSWORD: $MYSQL_ALLOW_EMPTY_PASSWORD
+          MYSQL_ROOT_PASSWORD: rootpw
+          MYSQL_DATABASE: purplecms
+          MYSQL_USER: baycore30
+          MYSQL_PASSWORD: passw0rd
+          
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -54,11 +54,11 @@ jobs:
       - run:
           name: Create Database
           command: |
-            mysql -h 127.0.0.1 -u $MYSQL_USER -e "create database $MYSQL_DATABASE;"
+            mysql -h 127.0.0.1 -u baycore30 -ppassw0rd -e "create database purplecms;"
       - run:
           name: Show Databases
           command: |
-            mysql -h 127.0.0.1 -u $MYSQL_USER SHOW DATABASES
+            mysql -h 127.0.0.1 -u baycore30 -ppassw0rd SHOW DATABASES
 
       # Download and cache dependencies
       - restore_cache:
