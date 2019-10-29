@@ -46,9 +46,15 @@ jobs:
           command: |
             sudo apt-get install default-mysql-client
       - run:
+          name: Create Database User
+          command: |
+            mysql -h 127.0.0.1 CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'
+            mysql -h 127.0.0.1 GRANT ALL PRIVILEGES ON * . * TO '$MYSQL_USER'@'localhost'
+            mysql -h 127.0.0.1 FLUSH PRIVILEGES
+      - run:
           name: Create Database
           command: |
-            mysql -h 127.0.0.1 --user=$MYSQL_USER --password=$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
+            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
       - run:
           name: Show Databases
           command: |
