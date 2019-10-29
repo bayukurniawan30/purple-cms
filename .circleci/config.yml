@@ -25,6 +25,7 @@ jobs:
       - run: sudo apt install zlib1g-dev 
       - run: sudo docker-php-ext-install zip
       - run: sudo docker-php-ext-install exif
+      - run: sudo docker-php-ext-install gd
 
       # Download and cache dependencies
       - restore_cache:
