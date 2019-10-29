@@ -9,6 +9,11 @@ jobs:
       # Specify the version you desire here
       - image: circleci/php:7.3.9
       - image: circleci/mysql:8.0.4
+        environment:
+          MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+          MYSQL_DATABASE: $MYSQL_DATABASE
+          MYSQL_USER: $MYSQL_USER
+          MYSQL_PASSWORD: $MYSQL_PASSWORD
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -45,16 +50,6 @@ jobs:
           name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
-      - run:
-          name: Create Database User
-          command: |
-            mysql -h 127.0.0.1 CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD'
-            mysql -h 127.0.0.1 GRANT ALL PRIVILEGES ON * . * TO '$MYSQL_USER'@'localhost'
-            mysql -h 127.0.0.1 FLUSH PRIVILEGES
-      - run:
-          name: Create Database
-          command: |
-            mysql -h 127.0.0.1 -u $MYSQL_USER -p$MYSQL_PASSWORD CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE
       - run:
           name: Show Databases
           command: |
