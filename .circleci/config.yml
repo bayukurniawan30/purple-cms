@@ -13,7 +13,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: rootpw
           MYSQL_DATABASE: purplecms
           MYSQL_USER: baycore30
-          MYSQL_PASSWORD: passw0rd
+          MYSQL_PASSWORD: p4ssw012d
           
 
       # Specify service dependencies here if necessary
@@ -51,10 +51,6 @@ jobs:
           name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
-      - run:
-          name: Create Database
-          command: |
-            mysql -h 127.0.0.1 -u baycore30 -ppassw0rd -e "create database purplecms;"
       - run:
           name: Show Databases
           command: |
