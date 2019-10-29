@@ -51,10 +51,6 @@ jobs:
           name: Install MySQL CLI
           command: |
             sudo apt-get install default-mysql-client
-      - run:
-          name: Show Databases
-          command: |
-            mysql -h 127.0.0.1 -u baycore30 -ppassw0rd SHOW DATABASES
 
       # Download and cache dependencies
       - restore_cache:
