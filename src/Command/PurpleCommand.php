@@ -395,13 +395,15 @@ class PurpleCommand extends Command
         }
         elseif ($type == 'deploy') {
             if ($value == 'master') {
+                $dir = new Folder();
                 $configDatabase = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php', false, 0777);
+                $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php', 0777);
                 $io->out('Permissions set on /config/database.php');
 
                 $configProdKey  = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php', false, 0777);
+                $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php', 0777);
                 $io->out('Permissions set on /config/production_key.php');
 
-                $dir = new Folder();
                 $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'logs', 0777, true);
                 $io->out('Permissions set on /logs');
 
