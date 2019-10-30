@@ -10,10 +10,10 @@ jobs:
       - image: circleci/php:7.3.9-apache-node-browsers
       - image: circleci/mysql:5.7.28
         environment:
-          MYSQL_ROOT_PASSWORD: rootpw
-          MYSQL_DATABASE: purplecms
-          MYSQL_USER: baycore30
-          MYSQL_PASSWORD: p4ssw012d
+          MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+          MYSQL_DATABASE: $MYSQL_DATABASE
+          MYSQL_USER: $MYSQL_USER
+          MYSQL_PASSWORD: $MYSQL_PASSWORD
           
 
       # Specify service dependencies here if necessary
@@ -66,6 +66,23 @@ jobs:
           key: v1-dependencies-{{ checksum "composer.json" }}
           paths:
             - ./vendor
+
+      - run: sudo chmod +x bin/cake
+      - run: sudo chmod 777 config/database.php
+      - run: sudo chmod 777 config/production_key.php
+      - run: sudo chmod -R 777 logs
+      - run: sudo chmod -R 777 tmp
+      - run: sudo chmod 777 webroot/exports
+      - run: sudo chmod 777 webroot/uploads
+      - run: sudo chmod 777 webroot/uploads/images
+      - run: sudo chmod 777 webroot/uploads/images/thumbnails
+      - run: sudo chmod 777 webroot/uploads/images/thumbnails/300x300
+      - run: sudo chmod 777 webroot/uploads/images/thumbnails/480x270
+      - run: sudo chmod 777 webroot/uploads/documents
+      - run: sudo chmod 777 webroot/uploads/videos
+      - run: sudo chmod 777 webroot/uploads/custom-pages
+      - run: sudo chmod 777 webroot/uploads/themes
+      
   deploy:
     docker:
       - image: buildpack-deps:trusty
