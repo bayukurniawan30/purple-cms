@@ -138,8 +138,8 @@ jobs:
       - run: mkdir webroot/uploads/documents
       - run: chmod 777 webroot/uploads/documents
 
-      - run: sudo mkdir webroot/uploads/videos
-      - run: 777 webroot/uploads/videos
+      - run: mkdir webroot/uploads/videos
+      - run: chmod 777 webroot/uploads/videos
 
       - run: mkdir webroot/uploads/custom-pages
       - run: chmod 777 webroot/uploads/custom-pages
