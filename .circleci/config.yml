@@ -70,10 +70,7 @@ jobs:
       - run: sudo chmod +x bin/cake
       - run: sudo chmod 777 config/database.php
       - run: sudo chmod 777 config/production_key.php
-
-      - run: sudo mkdir logs
       - run: sudo chmod -R 777 logs
-
       - run: sudo chmod -R 777 tmp
       - run: sudo mkdir webroot/exports
       - run: sudo chmod 777 webroot/exports
@@ -117,9 +114,9 @@ jobs:
       - run: sudo chmod 777 config/database.php
       - run: sudo chmod 777 config/production_key.php
 
-      - run: sudo mkdir logs
+      - run: sudo mkdir -p logs
       - run: sudo chmod -R 777 logs
-      
+
       - run: sudo chmod -R 777 tmp
       - run: sudo mkdir webroot/exports
       - run: sudo chmod 777 webroot/exports
