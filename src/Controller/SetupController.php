@@ -64,7 +64,7 @@ class SetupController extends AppController
 				$this->viewBuilder()->setLayout('setup');
 				
 				$key  = \Dcrypt\OpensslKey::create();
-				$file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'secret.key', true, 0644);
+				$file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'secret.key');
 				$file->write($key);
 
 	        	$this->set('setupDatabase', $setupDatabase);
