@@ -68,37 +68,6 @@ jobs:
             - ./vendor
 
       - run: sudo chmod +x bin/cake
-      - run: sudo chmod 777 config/database.php
-      - run: sudo chmod 777 config/production_key.php
-      - run: sudo chmod -R 777 logs
-      - run: sudo chmod -R 777 tmp
-      - run: sudo mkdir webroot/exports
-      - run: sudo chmod 777 webroot/exports
-
-      - run: sudo chmod 777 webroot/uploads
-
-      - run: sudo mkdir webroot/uploads/images
-      - run: sudo chmod 777 webroot/uploads/images
-
-      - run: sudo mkdir webroot/uploads/images/thumbnails
-      - run: sudo chmod 777 webroot/uploads/images/thumbnails
-
-      - run: sudo mkdir webroot/uploads/images/thumbnails/300x300
-      - run: sudo chmod 777 webroot/uploads/images/thumbnails/300x300
-
-      - run: sudo mkdir webroot/uploads/images/thumbnails/480x270
-      - run: sudo chmod 777 webroot/uploads/images/thumbnails/480x270
-
-      - run: sudo mkdir webroot/uploads/documents
-      - run: sudo chmod 777 webroot/uploads/documents
-
-      - run: sudo mkdir webroot/uploads/videos
-      - run: sudo chmod 777 webroot/uploads/videos
-
-      - run: sudo mkdir webroot/uploads/custom-pages
-      - run: sudo chmod 777 webroot/uploads/custom-pages
-
-      - run: sudo chmod 777 webroot/uploads/themes
       
   deploy:
     docker:
@@ -111,40 +80,6 @@ jobs:
             git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
 
       - run: chmod +x bin/cake
-      - run: chmod 777 config/database.php
-      - run: chmod 777 config/production_key.php
-
-      - run: mkdir -p logs
-      - run: chmod -R 777 logs
-
-      - run: chmod -R 777 tmp
-      - run: mkdir webroot/exports
-      - run: chmod 777 webroot/exports
-
-      - run: chmod 777 webroot/uploads
-
-      - run: mkdir webroot/uploads/images
-      - run: chmod 777 webroot/uploads/images
-
-      - run: mkdir webroot/uploads/images/thumbnails
-      - run: chmod 777 webroot/uploads/images/thumbnails
-
-      - run: mkdir webroot/uploads/images/thumbnails/300x300
-      - run: chmod 777 webroot/uploads/images/thumbnails/300x300
-
-      - run: mkdir webroot/uploads/images/thumbnails/480x270
-      - run: chmod 777 webroot/uploads/images/thumbnails/480x270
-
-      - run: mkdir webroot/uploads/documents
-      - run: chmod 777 webroot/uploads/documents
-
-      - run: mkdir webroot/uploads/videos
-      - run: chmod 777 webroot/uploads/videos
-
-      - run: mkdir webroot/uploads/custom-pages
-      - run: chmod 777 webroot/uploads/custom-pages
-      
-      - run: chmod 777 webroot/uploads/themes
 
 workflows:
   version: 2

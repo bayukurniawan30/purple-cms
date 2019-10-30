@@ -19,7 +19,7 @@ class PurpleCommand extends Command
     protected function buildOptionParser(ConsoleOptionParser $parser)
     {
         $parser->addArguments([
-            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme']],
+            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme', 'deploy']],
             'value' => ['help' => 'Command value', 'required' => true]
         ])
         ->addOption('display', [
@@ -391,6 +391,25 @@ class PurpleCommand extends Command
             }
             else {
                 $io->error('Empty value for theme type. Available value is create');
+            }
+        }
+        elseif ($type == 'deploy') {
+            if ($value == 'master') {
+                $configDatabase = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php', false, 0777);
+                $io->out('Permissions set on /config/database.php');
+
+                $configProdKey  = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php', false, 0777);
+                $io->out('Permissions set on /config/production_key.php');
+
+                $dir = new Folder();
+                $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'logs', 0777, true);
+                $io->out('Permissions set on /logs');
+
+                $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'tmp', 0777, true);
+                $io->out('Permissions set on /tmp');
+            }
+            else {
+                $io->error('Empty option for theme type and migrate value');
             }
         }
     }
