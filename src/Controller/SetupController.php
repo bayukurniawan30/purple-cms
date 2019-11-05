@@ -270,6 +270,7 @@ class SetupController extends AppController
 						$keyFile  = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
 						$productionKey = $hasher->hash(time());
 						$writeKey      = $keyFile->write($productionKey);
+						$prodKeyDb     = $connection->update('settings', ['value' => $productionKey], ['name' => 'productionkey']);
 
 						// Send Email to User to Notify user
                         $key    = TableRegistry::get('Settings')->settingsPublicApiKey();

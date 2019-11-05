@@ -1,5 +1,6 @@
 # CakePHP 3
 
+*.env
 /vendor/*
 
 /tmp/cache/models/*
@@ -16,7 +17,6 @@
 !/tmp/tests/empty
 /tmp/uploads/images*
 /tmp/uploads/themes*
-
 
 /logs/*
 !/logs/empty

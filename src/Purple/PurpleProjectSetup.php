@@ -661,6 +661,10 @@ class PurpleProjectSetup
 			'value' => $this->apiKeyGenerator()
 		]);
 		$this->conn->insert('settings', [
+			'name'  => 'productionkey',
+			'value' => ''
+		]);
+		$this->conn->insert('settings', [
 			'name'  => 'twiliosid',
 			'value' => ''
 		]);

@@ -100,7 +100,6 @@
 							<?php
 								endif;
 							?>
-
 							<?= $this->fetch('content') ?>
 						</div>
 					</div>

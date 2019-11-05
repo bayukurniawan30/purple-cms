@@ -8,6 +8,12 @@ To view database info, use command below
 bin/cake purple database decrypt -i
 ```
 
+If your Purple CMS uses environment variables, use command below
+
+```bash
+bin/cake purple database env -i
+```
+
 To migrate the database, use command below
 
 ```bash

@@ -71,7 +71,7 @@ class AuthenticateController extends AppController
 				'adminLogin'            => $adminLogin,
 				'forgotPassword'        => $forgotPassword,
 				'settingDefaultBgLogin' => $queryDefaultBackgroundLogin,
-                'settingBgLogin'        => $queryBackgroundLogin,
+				'settingBgLogin'        => $queryBackgroundLogin,
             ];
         	$this->set($data);
         }

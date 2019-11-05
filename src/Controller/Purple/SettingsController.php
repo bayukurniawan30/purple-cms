@@ -168,8 +168,14 @@ class SettingsController extends AppController
         $queryRecaptchaSecret  = $this->Settings->find()->where(['name' => 'recaptchasecret'])->first();
 
         $keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
-        $content = $keyFile->read();
-        $key     = substr($content, 0, 20) . '...';
+        if (empty($keyFile->read()) || $keyFile->read() == '') {
+            $content = $this->Settings->fetch('productionkey', 'value');
+        }
+        else {
+            $content = $keyFile->read();
+        }
+        
+        $key = substr($content, 0, 20) . '...';
 
         $data = [
             'pageTitle'               => 'Security',
@@ -325,7 +331,13 @@ class SettingsController extends AppController
 
             if ($this->request->getData('title') == 'Production Key') {
                 $keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
-                $value   = $keyFile->read();
+                if (empty($keyFile->read()) || $keyFile->read() == '') {
+                    $value = $this->Settings->fetch('productionkey', 'value');
+                }
+                else {
+                    $value = $keyFile->read();
+                }
+
                 $name    = 'productionkey';
             }
             else {

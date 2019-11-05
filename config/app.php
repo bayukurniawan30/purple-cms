@@ -2,17 +2,24 @@
 
 use App\Purple\PurpleProjectGlobal;
 
-$purpleGlobal = new PurpleProjectGlobal();
-$databaseInfo   = $purpleGlobal->databaseInfo();
-if ($databaseInfo == 'default') {
-    define('CRDBNAME', '');
-    define('CRDBUSERNAME', '');
-    define('CRDBPASSWORD', '');
+if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+    define('CRDBNAME', getenv('PURPLE_DATABASE_NAME'));
+    define('CRDBUSERNAME', getenv('PURPLE_DATABASE_USER'));
+    define('CRDBPASSWORD', getenv('PURPLE_DATABASE_PASSWORD'));
 }
 else {
-    define('CRDBNAME', $databaseInfo['name']);
-    define('CRDBUSERNAME', $databaseInfo['user']);
-    define('CRDBPASSWORD', $databaseInfo['password']);
+    $purpleGlobal = new PurpleProjectGlobal();
+    $databaseInfo   = $purpleGlobal->databaseInfo();
+    if ($databaseInfo == 'default') {
+        define('CRDBNAME', '');
+        define('CRDBUSERNAME', '');
+        define('CRDBPASSWORD', '');
+    }
+    else {
+        define('CRDBNAME', $databaseInfo['name']);
+        define('CRDBUSERNAME', $databaseInfo['user']);
+        define('CRDBPASSWORD', $databaseInfo['password']);
+    }
 }
 
 return [
@@ -25,7 +32,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure basic information about the application.
