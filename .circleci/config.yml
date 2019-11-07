@@ -68,12 +68,6 @@ jobs:
             - ./vendor
 
       - run: sudo chmod +x bin/cake
-      - run: sudo printf "export APP_NAME=\"$ENV_APP_NAME\"\n" > config/.env
-      - run: sudo printf "export PURPLE_DATABASE_HOST=\"$ENV_PURPLE_DATABASE_HOST\"\n" >> config/.env
-      - run: sudo printf "export PURPLE_DATABASE_NAME=\"$ENV_PURPLE_DATABASE_NAME\"\n" >> config/.env
-      - run: sudo printf "export PURPLE_DATABASE_USER=\"$ENV_PURPLE_DATABASE_USER\"\n" >> config/.env
-      - run: sudo printf "export PURPLE_DATABASE_PASSWORD=\"$ENV_PURPLE_DATABASE_PASSWORD\"\n" >> config/.env
-      - run: sudo printf "export PURPLE_DEBUG_ENGINE=\"$ENV_PURPLE_DEBUG_ENGINE\"\n" >> config/.env
       
   deploy:
     docker:

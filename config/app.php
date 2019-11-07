@@ -3,20 +3,24 @@
 use App\Purple\PurpleProjectGlobal;
 
 if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
-    define('CRDBNAME', getenv('PURPLE_DATABASE_NAME'));
-    define('CRDBUSERNAME', getenv('PURPLE_DATABASE_USER'));
-    define('CRDBPASSWORD', getenv('PURPLE_DATABASE_PASSWORD'));
-
+    $herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+    
+    define('CRDBHOST', $herokuClearMysqlUrl["host"]);
+    define('CRDBNAME', substr($herokuClearMysqlUrl["path"], 1));
+    define('CRDBUSERNAME', $herokuClearMysqlUrl["user"]);
+    define('CRDBPASSWORD', $herokuClearMysqlUrl["pass"]);
 }
 else {
     $purpleGlobal = new PurpleProjectGlobal();
     $databaseInfo   = $purpleGlobal->databaseInfo();
     if ($databaseInfo == 'default') {
+        define('CRDBHOST', '');
         define('CRDBNAME', '');
         define('CRDBUSERNAME', '');
         define('CRDBPASSWORD', '');
     }
     else {
+        define('CRDBHOST', 'localhost');
         define('CRDBNAME', $databaseInfo['name']);
         define('CRDBUSERNAME', $databaseInfo['user']);
         define('CRDBPASSWORD', $databaseInfo['password']);
@@ -331,7 +335,7 @@ return [
             'className' => 'Cake\Database\Connection',
             'driver' => 'Cake\Database\Driver\Mysql',
             'persistent' => false,
-            'host' => 'localhost',
+            'host' => CRDBHOST,
             /*
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
