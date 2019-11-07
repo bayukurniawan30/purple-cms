@@ -6,6 +6,7 @@ if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !
     define('CRDBNAME', getenv('PURPLE_DATABASE_NAME'));
     define('CRDBUSERNAME', getenv('PURPLE_DATABASE_USER'));
     define('CRDBPASSWORD', getenv('PURPLE_DATABASE_PASSWORD'));
+
 }
 else {
     $purpleGlobal = new PurpleProjectGlobal();
@@ -22,6 +23,66 @@ else {
     }
 }
 
+if (getenv("PURPLE_DEBUG_ENGINE") && file_exists(CONFIG . '.env')) {
+    $logConfig = [
+        'debug' => [
+            'className' => getenv("PURPLE_DEBUG_ENGINE"),
+            'levels' => ['notice', 'info', 'debug'],
+        ],
+        'error' => [
+            'className' => getenv("PURPLE_DEBUG_ENGINE"),
+            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+        ],
+        // To enable this dedicated query log, you need set your datasource's log flag to true
+        'queries' => [
+            'className' => getenv("PURPLE_DEBUG_ENGINE"),
+            'scopes' => ['queriesLog'],
+        ],
+
+        'purple' => [
+            'className' => getenv("PURPLE_DEBUG_ENGINE"),
+            'levels'    => ['info'],
+            'scopes'    => ['purple']
+        ],
+    ];
+}
+else {
+    $logConfig = [
+        'debug' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path' => LOGS,
+            'file' => 'debug',
+            'url' => env('LOG_DEBUG_URL', null),
+            'scopes' => false,
+            'levels' => ['notice', 'info', 'debug'],
+        ],
+        'error' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path' => LOGS,
+            'file' => 'error',
+            'url' => env('LOG_ERROR_URL', null),
+            'scopes' => false,
+            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+        ],
+        // To enable this dedicated query log, you need set your datasource's log flag to true
+        'queries' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path' => LOGS,
+            'file' => 'queries',
+            'url' => env('LOG_QUERIES_URL', null),
+            'scopes' => ['queriesLog'],
+        ],
+
+        'purple' => [
+            'className' => 'Cake\Log\Engine\FileLog',
+            'path'      => LOGS,
+            'file'      => 'purple',
+            'levels'    => ['info'],
+            'scopes'    => ['purple']
+        ],
+    ];
+}
+
 return [
     /**
      * Debug Level:
@@ -32,7 +93,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
+    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure basic information about the application.
@@ -336,40 +397,7 @@ return [
     /**
      * Configures logging options
      */
-    'Log' => [
-        'debug' => [
-            'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'debug',
-            'url' => env('LOG_DEBUG_URL', null),
-            'scopes' => false,
-            'levels' => ['notice', 'info', 'debug'],
-        ],
-        'error' => [
-            'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'error',
-            'url' => env('LOG_ERROR_URL', null),
-            'scopes' => false,
-            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
-        ],
-        // To enable this dedicated query log, you need set your datasource's log flag to true
-        'queries' => [
-            'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'queries',
-            'url' => env('LOG_QUERIES_URL', null),
-            'scopes' => ['queriesLog'],
-        ],
-
-        'purple' => [
-            'className' => 'Cake\Log\Engine\FileLog',
-            'path'      => LOGS,
-            'file'      => 'purple',
-            'levels'    => ['info'],
-            'scopes'    => ['purple']
-        ],
-    ],
+    'Log' => $logConfig,
 
     /**
      * Session configuration.

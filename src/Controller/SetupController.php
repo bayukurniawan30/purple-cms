@@ -168,17 +168,31 @@ class SetupController extends AppController
 	                $json = json_encode(['status' => 'error', 'error' => "Invalid database name. Please try again."]);
 				}
 				else {
-					$databaseInfo = $name . ',' . $username .',' . $password;
+					if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+						$envDbName = $this->request->getenv('PURPLE_DATABASE_NAME');
+						$envDbUser = $this->request->getenv('PURPLE_DATABASE_USER');
+						$envDbPass = $this->request->getenv('PURPLE_DATABASE_PASSWORD');
 
-					$file      = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-					$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
+						if ($envDbName == $name && $envDbUser == $username && $envDbPass == $password) {
+							$json = json_encode(['status' => 'ok']);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Database information is incorrect."]);
+						}
+					}
+					else {
+						$databaseInfo = $name . ',' . $username .',' . $password;
 
-	            	if ($file->write($encrypted)) {
-		                $json = json_encode(['status' => 'ok']);
-		            }
-		            else {
-		                $json = json_encode(['status' => 'error', 'error' => "Can't save database configuration."]);
-		            }
+						$file      = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
+						$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
+
+						if ($file->write($encrypted)) {
+							$json = json_encode(['status' => 'ok']);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't save database configuration."]);
+						}
+					}
 		        }
 			} 
 			else {
