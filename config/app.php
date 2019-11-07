@@ -3,12 +3,20 @@
 use App\Purple\PurpleProjectGlobal;
 
 if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
-    $herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
-    
-    define('CRDBHOST', $herokuClearMysqlUrl["host"]);
-    define('CRDBNAME', substr($herokuClearMysqlUrl["path"], 1));
-    define('CRDBUSERNAME', $herokuClearMysqlUrl["user"]);
-    define('CRDBPASSWORD', $herokuClearMysqlUrl["pass"]);
+    if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+        $herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+        
+        define('CRDBHOST', $herokuClearMysqlUrl["host"]);
+        define('CRDBNAME', substr($herokuClearMysqlUrl["path"], 1));
+        define('CRDBUSERNAME', $herokuClearMysqlUrl["user"]);
+        define('CRDBPASSWORD', $herokuClearMysqlUrl["pass"]);
+    }
+    else {
+        define('CRDBHOST', 'localhost');
+        define('CRDBNAME', getenv("PURPLE_DATABASE_NAME"));
+        define('CRDBUSERNAME', getenv("PURPLE_DATABASE_USER"));
+        define('CRDBPASSWORD', getenv("PURPLE_DATABASE_PASSWORD"));
+    }
 }
 else {
     $purpleGlobal = new PurpleProjectGlobal();

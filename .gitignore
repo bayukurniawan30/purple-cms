@@ -1,6 +1,5 @@
 # CakePHP 3
 
-*.env
 /vendor/*
 
 /tmp/cache/models/*
