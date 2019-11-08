@@ -125,7 +125,7 @@ class SetupController extends AppController
 			else {
 			    $this->viewBuilder()->setLayout('setup');
 			    $results = $connection
-				    ->execute('SELECT * FROM admins WHERE id = :id', ['id' => 2])
+				    ->execute('SELECT * FROM admins ORDER BY id DESC LIMIT 1')
 				    ->fetch('assoc');
 	        	$this->set('admin', $results);
 			}

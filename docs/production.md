@@ -20,8 +20,6 @@ If you installed Purple CMS in local server or localhost, you have to migrate to
  - Insert the verification code to verify you provide a real email.
  - Insert the new database information in live server, and you are done!
 
-Some server or platform doesn't give permission to write file, like [Heroku](https://heroku.com), so steps above will not work. To make your website live is by editing the environment file. If you don't have one, create <code>.env</code> file inside config folder. Copy <code>.env.default</code> content and paste to <code>.env</code>. Make sure you uncomment **APP_NAME**, **PURPLE_DATABASE_HOST**, **PURPLE_DATABASE_NAME**, **PURPLE_DATABASE_PASSWORD**, and **PURPLE_DATABASE_PASSWORD**.
-
-Fill the environment variables above according to the database on the production server.
+Some server or platform doesn't give permission to write file, like [Heroku](https://heroku.com), so steps above will not work. The easiest way is install ClearDB MySQL Add-on. Purple CMS will automatically set the database information.
 
 Now your website is running live.  
