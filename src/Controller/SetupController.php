@@ -57,7 +57,7 @@ class SetupController extends AppController
 	{	    
 		$purpleGlobal = new PurpleProjectGlobal();
 		$databaseInfo   = $purpleGlobal->databaseInfo();
-		if ($databaseInfo == 'default') {
+		if ($databaseInfo == 'default' || (getenv("PURPLE_DEPLOY_PLATFORM") !== false && file_exists(CONFIG . '.env'))) {
 			$setupDatabase = new SetupDatabaseForm();
 
 	        if ($this->request->is('get')) {
