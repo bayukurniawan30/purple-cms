@@ -14,27 +14,65 @@ class PurpleProjectGlobal
 
 	public function databaseInfo() 
 	{
-		$key     = CIPHER;
-		$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
-		$content = $file->read();
-		
-		if ($content == 'default') {
-			return 'default';
+		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+				$herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+				$databaseInfo     = array(
+					'name'     => substr($herokuClearMysqlUrl["path"], 1),
+					'user'     => $herokuClearMysqlUrl["user"],
+					'password' => $herokuClearMysqlUrl["pass"]
+				);
+				return $databaseInfo;
+			}
+			else {
+				$key     = CIPHER;
+				$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
+				$content = $file->read();
+				
+				if ($content == 'default') {
+					return 'default';
+				}
+				else {
+					$decrypted        = \Dcrypt\Aes256Gcm::decrypt($content, CIPHER);
+					$explodeLine      = explode(',', $decrypted);
+					$databaseName     = $explodeLine[0];
+					$databaseUser     = $explodeLine[1];
+					$databasePassword = $explodeLine[2];
+
+					$databaseInfo     = array(
+						'name'     => $databaseName,
+						'user'     => $databaseUser,
+						'password' => $databasePassword
+					);
+					return $databaseInfo;
+				}
+			}
 		}
 		else {
-			$decrypted        = \Dcrypt\Aes256Gcm::decrypt($content, CIPHER);
-			$explodeLine      = explode(',', $decrypted);
-			$databaseName     = $explodeLine[0];
-			$databaseUser     = $explodeLine[1];
-			$databasePassword = $explodeLine[2];
+			$key     = CIPHER;
+			$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'database.php');
+			$content = $file->read();
+			
+			if ($content == 'default') {
+				return 'default';
+			}
+			else {
+				$decrypted        = \Dcrypt\Aes256Gcm::decrypt($content, CIPHER);
+				$explodeLine      = explode(',', $decrypted);
+				$databaseName     = $explodeLine[0];
+				$databaseUser     = $explodeLine[1];
+				$databasePassword = $explodeLine[2];
 
-			$databaseInfo     = array(
-				'name'     => $databaseName,
-				'user'     => $databaseUser,
-				'password' => $databasePassword
-			);
-			return $databaseInfo;
+				$databaseInfo     = array(
+					'name'     => $databaseName,
+					'user'     => $databaseUser,
+					'password' => $databasePassword
+				);
+				return $databaseInfo;
+			}
 		}
+		
 	}
 	public function productionKeyInfo() 
 	{
