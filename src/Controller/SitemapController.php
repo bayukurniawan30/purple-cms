@@ -70,13 +70,13 @@ class SitemapController extends AppController
         $pages = $this->Pages->find('all')->contain('PageTemplates')->where(['status' => '1']);
         if ($pages->count() > 0) {
             foreach ($pages as $page) {
-                if ($page->page_template_id == '1') {
+                if ($page->page_template->type == 'general') {
                     $changeFreq = 'yearly';
                 }
-                elseif ($page->page_template_id == '2') {
+                elseif ($page->page_template->type == 'blog') {
                     $changeFreq = 'daily';
                 }
-                elseif ($page->page_template_id == '3') {
+                elseif ($page->page_template->type == 'custom') {
                     $changeFreq = 'yearly';
                 }
 

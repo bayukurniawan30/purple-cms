@@ -269,7 +269,7 @@ class PagesController extends AppController
                 throw new NotFoundException(__('Page not found'));
             }
             else {
-                if ($loadPage->page_template_id == '1') {
+                if ($loadPage->page_template->type == 'general') {
                     $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug])->limit(1);
                     if ($viewPage->count() == 0) {
                         throw new NotFoundException(__('Page not found'));
@@ -278,10 +278,10 @@ class PagesController extends AppController
                         $this->setAction('general');
                     }
                 }
-                elseif ($loadPage->page_template_id == '2') {
+                elseif ($loadPage->page_template->type == 'blog') {
                     $this->setAction('blog');
                 }
-                elseif ($loadPage->page_template_id == '3') {
+                elseif ($loadPage->page_template->type == 'custom') {
                     $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug])->limit(1);
                     if ($viewPage->count() == 0) {
                         throw new NotFoundException(__('Page not found'));
@@ -303,7 +303,7 @@ class PagesController extends AppController
         $page   = $this->Pages->find('all')->contain('PageTemplates')->where(['slug' => $slug]);
         if ($page->count() == 1) {
             $loadPage = $page->first();
-            if ($loadPage->page_template_id == '1') {
+            if ($loadPage->page_template->type == 'general') {
                 $viewPage = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug])->limit(1);
                 if ($viewPage->count() == 0) {
                     throw new NotFoundException(__('Page not found'));
@@ -312,10 +312,10 @@ class PagesController extends AppController
                     $this->setAction('general');
                 }
             }
-            elseif ($loadPage->page_template_id == '2') {
+            elseif ($loadPage->page_template->type == 'blog') {
                 $this->setAction('blog');
             }
-            elseif ($loadPage->page_template_id == '3') {
+            elseif ($loadPage->page_template->type == 'custom') {
                 $viewPage = $this->Pages->find('all')->contain('CustomPages')->where(['Pages.slug' => $slug])->limit(1);
                 if ($viewPage->count() == 0) {
                     throw new NotFoundException(__('Page not found'));
