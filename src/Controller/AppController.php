@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Filesystem\File;
 use App\Purple\PurpleProjectGlobal;
 
 /**
