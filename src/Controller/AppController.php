@@ -49,6 +49,8 @@ class AppController extends Controller
 
         }
         else {
+            $createTestFile = new File(TMP . 'test_file.php', true, 0777);
+
             // Timezone
             $purpleGlobal      = new PurpleProjectGlobal();
             $productionKeyInfo = $purpleGlobal->productionKeyInfo();
