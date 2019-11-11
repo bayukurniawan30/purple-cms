@@ -194,7 +194,7 @@ class Installer
         foreach ($filesToChmod as $file) {
             $currentPerms = fileperms(dirname(dirname(__DIR__)) . '/' . $file) & 0777;
             $worldWritable = $currentPerms | 0007;
-            if ($worldWritable == $currentPerms) {
+            if ($worldWritable != $currentPerms) {
                 $res = chmod(dirname(dirname(__DIR__)) . '/' . $file, 0777);
                 if ($res) {
                     $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/' . $file);
