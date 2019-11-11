@@ -185,25 +185,23 @@ class Installer
         $changePerms($dir . '/webroot/uploads/videos');
         $changePerms($dir . '/webroot/uploads/custom-pages');
 
-        $res = chmod(dirname(dirname(__DIR__)) . '/config/database.php', 0777);
-        if ($res) {
-            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/database.php');
-        } else {
-            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/database.php');
-        }
+        $filesToChmod = [
+            'config/database.php',
+            'config/production_key.php',
+            'config/secret.key'
+        ];
 
-        $res = chmod(dirname(dirname(__DIR__)) . '/config/production_key.php', 0777);
-        if ($res) {
-            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/production_key.php');
-        } else {
-            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/production_key.php');
-        }
-
-        $res = chmod(dirname(dirname(__DIR__)) . '/config/secret.key', 0777);
-        if ($res) {
-            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/secret.key');
-        } else {
-            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/secret.key');
+        foreach ($filesToChmod as $file) {
+            $currentPerms = fileperms(dirname(dirname(__DIR__)) . '/' . $file) & 0777;
+            $worldWritable = $currentPerms | 0007;
+            if ($worldWritable == $currentPerms) {
+                $res = chmod(dirname(dirname(__DIR__)) . '/' . $file, 0777);
+                if ($res) {
+                    $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/' . $file);
+                } else {
+                    $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/' . $file);
+                }
+            }
         }
     }
 
