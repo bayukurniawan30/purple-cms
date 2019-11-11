@@ -51,11 +51,7 @@
         }
     },
     "scripts": {
-        "post-install-cmd": [
-            "App\\Console\\Installer::postInstall",
-            "chmod -R 777 tmp",
-            "chmod -R 777 logs"
-        ],
+        "post-install-cmd": "App\\Console\\Installer::postInstall",
         "post-create-project-cmd": "App\\Console\\Installer::postInstall",
         "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump",
         "check": [

@@ -40,7 +40,11 @@ class Installer
         'tmp/cache/persistent',
         'tmp/cache/views',
         'tmp/sessions',
-        'tmp/tests'
+        'tmp/tests',
+        'webroot',
+        'config/database.php',
+        'config/production_key.php',
+        'config/secret.key',
     ];
 
     /**
