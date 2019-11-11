@@ -1,9 +1,9 @@
 {
-    "name": "cakephp/app",
-    "description": "CakePHP skeleton app",
-    "homepage": "https://cakephp.org",
+    "name": "bayukurniawan30/purple-cms",
+    "description": "Content Management System Base on CakePHP 3",
+    "homepage": "https://bayukurniawan30.github.io/purple-cms/",
     "type": "project",
-    "license": "MIT",
+    "license": "GPL-3.0-only",
     "require": {
         "php": ">=5.6",
         "cakephp/cakephp": "3.6.*",
@@ -51,7 +51,11 @@
         }
     },
     "scripts": {
-        "post-install-cmd": "App\\Console\\Installer::postInstall",
+        "post-install-cmd": [
+            "App\\Console\\Installer::postInstall",
+            "chmod -R 777 tmp",
+            "chmod -R 777 logs"
+        ],
         "post-create-project-cmd": "App\\Console\\Installer::postInstall",
         "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump",
         "check": [
