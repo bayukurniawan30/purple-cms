@@ -41,10 +41,16 @@ class Installer
         'tmp/cache/views',
         'tmp/sessions',
         'tmp/tests',
-        'webroot',
-        'config/database.php',
-        'config/production_key.php',
-        'config/secret.key',
+        'webroot/exports',
+        'webroot/uploads',
+        'webroot/uploads/images',
+        'webroot/uploads/images/thumbnails',
+        'webroot/uploads/images/thumbnails/300x300',
+        'webroot/uploads/images/thumbnails/480x270',
+        'webroot/uploads/documents',
+        'webroot/uploads/videos',
+        'webroot/uploads/custom-pages',
+        'webroot/uploads/themes'
     ];
 
     /**
@@ -172,6 +178,30 @@ class Installer
         $walker($dir . '/tmp');
         $changePerms($dir . '/tmp');
         $changePerms($dir . '/logs');
+        $changePerms($dir . '/webroot/exports');
+        $walker($dir . '/webroot/uploads');
+        $changePerms($dir . '/webroot/uploads');
+
+        $res = chmod(dirname(dirname(__DIR__)) . '/config/database.php', 0777);
+        if ($res) {
+            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/database.php');
+        } else {
+            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/database.php');
+        }
+
+        $res = chmod(dirname(dirname(__DIR__)) . '/config/production_key.php', 0777);
+        if ($res) {
+            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/production_key.php');
+        } else {
+            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/production_key.php');
+        }
+
+        $res = chmod(dirname(dirname(__DIR__)) . '/config/secret.key', 0777);
+        if ($res) {
+            $io->write('Permissions set on ' . dirname(dirname(__DIR__)) . '/config/secret.key');
+        } else {
+            $io->write('Failed to set permissions on ' . dirname(dirname(__DIR__)) . '/config/secret.key');
+        }
     }
 
     /**
