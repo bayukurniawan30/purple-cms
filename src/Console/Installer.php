@@ -50,7 +50,6 @@ class Installer
         'webroot/uploads/documents',
         'webroot/uploads/videos',
         'webroot/uploads/custom-pages',
-        'webroot/uploads/themes'
     ];
 
     /**
@@ -179,8 +178,12 @@ class Installer
         $changePerms($dir . '/tmp');
         $changePerms($dir . '/logs');
         $changePerms($dir . '/webroot/exports');
-        $walker($dir . '/webroot/uploads');
         $changePerms($dir . '/webroot/uploads');
+        $walker($dir . '/webroot/uploads/images');
+        $changePerms($dir . '/webroot/uploads/images');
+        $changePerms($dir . '/webroot/uploads/documents');
+        $changePerms($dir . '/webroot/uploads/videos');
+        $changePerms($dir . '/webroot/uploads/custom-pages');
 
         $res = chmod(dirname(dirname(__DIR__)) . '/config/database.php', 0777);
         if ($res) {
