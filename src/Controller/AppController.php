@@ -16,7 +16,6 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
-use Cake\Filesystem\File;
 use App\Purple\PurpleProjectGlobal;
 
 /**
@@ -50,8 +49,6 @@ class AppController extends Controller
 
         }
         else {
-            $createTestFile = new File(TMP . 'test_file.php', true, 0777);
-
             // Timezone
             $purpleGlobal      = new PurpleProjectGlobal();
             $productionKeyInfo = $purpleGlobal->productionKeyInfo();
