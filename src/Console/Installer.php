@@ -184,6 +184,7 @@ class Installer
         $changePerms($dir . '/webroot/uploads/documents');
         $changePerms($dir . '/webroot/uploads/videos');
         $changePerms($dir . '/webroot/uploads/custom-pages');
+        $changePerms($dir . '/webroot/uploads/themes');
 
         $filesToChmod = [
             'config/database.php',
