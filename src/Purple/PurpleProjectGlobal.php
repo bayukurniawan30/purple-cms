@@ -76,14 +76,19 @@ class PurpleProjectGlobal
 	}
 	public function productionKeyInfo() 
 	{
-		$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
-		$content = $file->read();
-		
-		if ($content == '') {
-			return 'empty';
+		if (file_exists(CONFIG . '.env') && getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+			return 'filled';
 		}
 		else {
-			return 'filled';
+			$file    = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+			$content = $file->read();
+			
+			if ($content == '') {
+				return 'empty';
+			}
+			else {
+				return 'filled';
+			}
 		}
 	}
 	public function detectOS() 

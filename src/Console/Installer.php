@@ -44,6 +44,7 @@ class Installer
         'webroot/exports',
         'webroot/uploads',
         'webroot/uploads/images',
+        'webroot/uploads/images/original',
         'webroot/uploads/images/thumbnails',
         'webroot/uploads/images/thumbnails/300x300',
         'webroot/uploads/images/thumbnails/480x270',
