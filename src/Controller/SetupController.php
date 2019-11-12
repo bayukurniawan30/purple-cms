@@ -64,7 +64,7 @@ class SetupController extends AppController
 				$this->viewBuilder()->setLayout('setup');
 				
 				$key  = \Dcrypt\OpensslKey::create();
-				$file = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'secret.key');
+				$file = new File(CONFIG . 'secret.key');
 				$file->write($key);
 
 	        	$this->set('setupDatabase', $setupDatabase);
@@ -290,7 +290,7 @@ class SetupController extends AppController
 						TableRegistry::get('BlogCategories')->save($blogCategory);
 
 						// Write production key
-						$keyFile  = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
+						$keyFile  = new File(CONFIG . 'production_key.php');
 						$productionKey = $hasher->hash(time());
 						$writeKey      = $keyFile->write($productionKey);
 						$prodKeyDb     = $connection->update('settings', ['value' => $productionKey], ['name' => 'productionkey']);
