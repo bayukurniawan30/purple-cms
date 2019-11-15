@@ -30,9 +30,32 @@
         <div class="box-masonry"> 
             <?php
                 if (!empty($blog->featured)):
+                    if (strpos($blog->featured, ',') !== false):
+                        $imageArray = explode(',', $blog->featured);
             ?>
-            <a href="<?= $url ?>" title="" class="box-masonry-image with-hover-overlay with-hover-icon"><img src="<?= $this->request->getAttribute("webroot").'uploads/images/original/'.$blog->featured ?>" alt="<?= $blog->title ?>" class="img-fluid"></a>
-            <?php endif; ?>
+            <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow="animation: fade; autoplay: true; autoplay-interval: 5000; pause-on-hover: true">
+                <ul class="uk-slideshow-items">
+                    <?php
+                        foreach ($imageArray as $image):
+                    ?>
+                    <li>
+                        <img src="<?= $this->cell('Medias::mediaPath', [$image, 'image', 'original']) ?>" alt="<?= $image ?>" uk-cover>
+                    </li>
+                    <?php
+                        endforeach;
+                    ?>
+                </ul>
+                <a class="uk-position-center-left uk-position-small non-uikit uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+                <a class="uk-position-center-right uk-position-small non-uikit uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+            </div>
+            <?php
+                    else:
+            ?>
+            <a href="<?= $url ?>" title="" class="box-masonry-image with-hover-overlay with-hover-icon"><img src="<?= $this->cell('Medias::mediaPath', [$blog->featured, 'image', 'original']) ?>" alt="<?= $blog->title ?>" class="img-fluid"></a>
+            <?php 
+                    endif;
+                endif; 
+            ?>
             <div class="box-masonry-text"> 
                 <h4 class="non-uikit uk-margin-remove-bottom">
                     <a class="non-uikit" href="<?= $url ?>"><?= $blog->title ?></a>

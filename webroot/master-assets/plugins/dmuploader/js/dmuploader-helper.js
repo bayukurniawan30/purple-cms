@@ -19,7 +19,7 @@
 		                   '<img src="http://placehold.it/48.png" class="demo-image-preview" />' +
 		                   '<span class="demo-file-id"></span>' + file.name + ' <span class="demo-file-size">(' + $.danidemo.humanizeSize(file.size) + ')</span><br /><small>Status: <span class="demo-file-status">Waiting to upload</span></small>'+
 		                   '<div class="demo-upload-progress progress active">'+
-		                       '<div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">'+
+		                       '<div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100">'+
 		                       '</div>'+
 		                   '</div>'+
 		               '</div>';

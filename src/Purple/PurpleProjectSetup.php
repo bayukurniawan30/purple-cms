@@ -680,5 +680,25 @@ class PurpleProjectSetup
 			'name'  => 'mailchimplistid',
 			'value' => ''
 		]);
+		$this->conn->insert('settings', [
+			'name'  => 'mediastorage',
+			'value' => 'server'
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'awss3accesskey',
+			'value' => ''
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'awss3secretkey',
+			'value' => ''
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'awss3region',
+			'value' => ''
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'awss3bucket',
+			'value' => ''
+		]);
 	}
 }

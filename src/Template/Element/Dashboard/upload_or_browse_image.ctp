@@ -29,14 +29,18 @@
                 if ($selected != NULL):
                     if (strpos($selected, ',') !== false):
                         $imageArray = explode(',', $selected);
+                        $fullSelectedImage = $this->cell('Medias::mediaPath', [$selected, 'image', 'original']);
+
             ?>
                 <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>
                     <ul class="uk-slideshow-items">
                         <?php
                             foreach ($imageArray as $image):
+                                $fullImage = $this->cell('Medias::mediaPath', [$image, 'image', 'original']);
+
                         ?>
                         <li>
-                            <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $image ?>" alt="<?= $image ?>" uk-cover>
+                            <img src="<?= $fullImage ?>" alt="<?= $image ?>" uk-cover>
                         </li>
                         <?php
                             endforeach;
@@ -48,7 +52,7 @@
             <?php 
                     else:
             ?>
-                <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $selected ?>" class="img-fluid">
+                <img src="<?= $fullSelectedImage ?>" class="img-fluid">
             <?php
                     endif; 
                 endif; 
@@ -83,7 +87,7 @@
                 var console_response = 'Starting the upload of #' + id;
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
-                $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+                $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
                 $('.upload-image-progress').css('padding-bottom', '20px');
             },
             onNewFile: function(id, file) {
@@ -111,7 +115,7 @@
                     if($.inArray(extension, extArray) !== -1) {
                         // Allowed
                         console.log('Allowed');
-                        var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
+                        var createToast = notifToast('File Uploading', '<i class="fa fa-circle-o-notch fa-spin"></i> Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
@@ -141,6 +145,8 @@
                 var console_response = 'Upload of file #' + id + ' completed';
                 var console_response2 = 'Server Response for file #' + id + ': ' + JSON.stringify(data);
 
+                $('#demo-file' + id).find('.progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
+
                 $.danidemo.addLog('#demo-debug', 'success', console_response);
 
                 $.danidemo.addLog('#demo-debug', 'info', console_response2);
@@ -151,13 +157,16 @@
 
                 var json    = $.parseJSON(data),
                     status  = (json.status),
+                    path    = (json.path),
                     image   = (json.name);
 
                     console.log(image);
+                    console.log(path);
                     console.log(status);
 
                 if (status == 'ok') {
-                    var checkValue = $('input[name=<?= $inputTarget ?>]').val();
+                    var checkValue     = $('input[name=<?= $inputTarget ?>]').val();
+                    var checkValuePath = $('input[name=<?= $inputTarget ?>]').attr('data-purple-path');
                     <?php
                         if ($multiple == true):
                     ?>
@@ -172,17 +181,19 @@
 
                     if (multiUpload == true) {
                         if (checkValue == '') {
-                            var newValue = image;
+                            var newValue   = path;
+                            var inputValue = image;
                         }
                         else {
-                            var newValue = checkValue + ',' + image;
+                            var newValue   = checkValuePath + ',' + path;
+                            var inputValue = checkValue + ',' + image;
                         }
                         var split       = newValue.split(",");
                         var arrayLength = split.length;
                         var init        = '';
 
                         for (var i = 0; i < arrayLength; i++) {
-                            init += '<li><img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
+                            init += '<li><img src="' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
                         }
 
                         var slideshow = '<div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>' +
@@ -192,12 +203,14 @@
                                     '<a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>' +
                                 '</div>';
                         $('.browse-image-preview').html(slideshow);
-                        $('input[name=<?= $inputTarget ?>]').val(newValue);
+                        $('input[name=<?= $inputTarget ?>]').val(inputValue);
+                        $('input[name=<?= $inputTarget ?>]').attr('data-purple-path', newValue);
 
                     }
                     else {
                         $('input[name=<?= $inputTarget ?>]').val(image);
-                        $('.browse-image-preview').html('<img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + image + '" class="img-fluid">');
+                        $('input[name=<?= $inputTarget ?>]').attr('data-purple-path', path);
+                        $('.browse-image-preview').html('<img src="' + path + '" class="img-fluid">');
                     }
                 }
 

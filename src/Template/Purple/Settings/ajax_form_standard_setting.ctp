@@ -288,6 +288,19 @@
                 ]);
                 echo '</div>';
             }
+            elseif ($name == 'mediastorage') {
+                echo $this->Form->select(
+                    'value',
+                    [
+                        'server' => 'Same Host (Default)',
+                        'awss3'  => 'Amazon AWS S3'
+                    ],
+                    [
+                        'empty' => 'Select Media Storage', 
+                        'class' => 'form-control'
+                    ]
+                );
+            }
             else {
                 echo $this->Form->text('value', [
                     'class'                  => 'form-control', 
@@ -325,7 +338,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         <?php
-            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink' || $name == 'ldjson'):
+            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink' || $name == 'ldjson' || $name == 'mediastorage'):
         ?>
         $('#form-update-setting').find('select[name=value] option[value="<?= $value ?>"]').attr("selected","selected");
         <?php

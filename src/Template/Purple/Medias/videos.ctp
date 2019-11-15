@@ -57,7 +57,7 @@
                             <?php
                                 $i = 1;
                                 foreach ($videos as $video):
-                                    $filePath = $this->request->getAttribute("webroot") . 'uploads/videos/' . $video->name;
+                                    $filePath = $this->cell('Medias::mediaPath', [$video->name, 'video']);
                             ?>
                             <tr>
                                 <td><?= $i ?></td>
@@ -246,7 +246,7 @@
                 var console_response = 'Starting the upload of #' + id;
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
-                $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+                $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
             },
             onNewFile: function(id, file) {
                 var extArray = ['mp4', 'm4v', 'ogv', 'webm'];
@@ -268,7 +268,7 @@
                     var extension = file.name.split('.').pop().toLowerCase();
                     if($.inArray(extension, extArray) !== -1) {
                         console.log('Allowed');
-                        var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
+                        var createToast = notifToast('File Uploading', '<i class="fa fa-circle-o-notch fa-spin"></i> Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
@@ -302,6 +302,8 @@
             onUploadSuccess: function(id, data) {
                 var console_response = 'Upload of file #' + id + ' completed';
                 var console_response2 = 'Server Response for file #' + id + ': ' + JSON.stringify(data);
+
+                $('#demo-file' + id).find('.progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
 
                 $.danidemo.addLog('#demo-debug', 'success', console_response);
 

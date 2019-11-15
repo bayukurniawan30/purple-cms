@@ -146,7 +146,7 @@
                         </p> -->
 
                         <div class="existing-profile-picture" style="width: 100%">
-                            <img src="<?= $this->request->webroot . 'uploads/images/original/' . $adminData->photo ?>">
+                            <img src="<?= $this->cell('Medias::mediaPath', [$adminData->photo, 'image', 'original']) ?>">
                         </div>
                         <?php endif; ?>
 
@@ -240,7 +240,7 @@
                 var console_response = 'Starting the upload of #' + id;
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
-                $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+                $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
             },
             onNewFile: function(id, file) {
                 var extArray = ['jpg', 'jpeg', 'png'];
@@ -353,7 +353,7 @@
                     if($.inArray(extension, extArray) !== -1) {
                         // Allowed
                         console.log('Allowed');
-                        var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
+                        var createToast = notifToast('File Uploading', '<i class="fa fa-circle-o-notch fa-spin"></i> Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
@@ -389,6 +389,8 @@
             onUploadSuccess: function(id, data) {
                 var console_response = 'Upload of file #' + id + ' completed';
                 var console_response2 = 'Server Response for file #' + id + ': ' + JSON.stringify(data);
+
+                $('#demo-file' + id).find('.progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
 
                 $.danidemo.addLog('#demo-debug', 'success', console_response);
 

@@ -5,7 +5,7 @@
                 if ($logo == ''):
                     echo $this->Html->image('logo.svg', ['alt' => '', 'class' => 'main-logo']);
                 else:
-                    echo '<img src="'.$this->request->getAttribute("webroot").'uploads/images/original/' . $logo.'" alt="'.$siteName.'" height="40" style="height: 40px">';
+                    echo '<img src="'.$this->cell('Medias::mediaPath', [$logo, 'image', 'original']).'" alt="'.$siteName.'" height="40" style="height: 40px">';
                 endif; 
             ?>
         </a>

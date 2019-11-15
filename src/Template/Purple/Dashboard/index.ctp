@@ -116,7 +116,7 @@
                                 <?php if ($history->admin->photo === NULL): ?>
                                 <img class="initial-photo" src="" alt="<?= $history->admin->get('display_name') ?>" data-name="<?= $history->admin->get('display_name') ?>" data-height="28" data-width="28" data-char-count="2" data-font-size="14" style="max-width: none;">
                                 <?php else: ?>
-                                <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $history->admin->photo ?>" alt="<?= $history->admin->get('display_name') ?>" width="28" height="28" style="max-width: none;">
+                                <img src="<?= $this->cell('Medias::mediaPath', [$history->admin->photo, 'image', 'original']) ?>" alt="<?= $history->admin->get('display_name') ?>" width="28" height="28" style="max-width: none;">
                                 <?php endif; ?>    
                             </td>
                             <td uk-tooltip="title:<?= $history->admin->get('display_name').' '.$history->detail ?>; pos:bottom">

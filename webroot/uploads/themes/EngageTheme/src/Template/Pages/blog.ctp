@@ -40,7 +40,7 @@
                                 foreach ($imageArray as $image):
                             ?>
                             <li>
-                                <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $image ?>" alt="<?= $image ?>" uk-cover>
+                                <img src="<?= $this->cell('Medias::mediaPath', [$image, 'image', 'original']) ?>" alt="<?= $image ?>" uk-cover>
                             </li>
                             <?php
                                 endforeach;
@@ -52,7 +52,7 @@
                     <?php
                             else:
                     ?>
-                    <a href="<?= $url ?>" title="" class=""><img src="<?= $this->request->getAttribute("webroot").'uploads/images/original/'.$blog->featured ?>" alt="<?= $blog->title ?>" class="img-fluid"></a>
+                    <a href="<?= $url ?>" title="" class=""><img src="<?= $this->cell('Medias::mediaPath', [$blog->featured, 'image', 'original']) ?>" alt="<?= $blog->title ?>" class="img-fluid"></a>
                     <?php 
                             endif;
                         endif; 

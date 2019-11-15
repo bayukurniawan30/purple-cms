@@ -15,7 +15,7 @@
                 <?php
                     $i = 1;
                     foreach ($docs as $doc):
-                        $filePath = $this->request->getAttribute("webroot") . 'uploads/documents/' . $doc->name;
+                        $filePath = $this->cell('Medias::mediaPath', [$doc->name, 'document']);
                 ?>
                 <tr>
                     <td><?= $i ?></td>
@@ -68,7 +68,7 @@
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
             modal.find("form textarea[name=description]").val(desc);
-            modal.find("form input[name=path]").val(host + file);
+            modal.find("form input[name=path]").val(file);
             modal.find(".bind-created").html('Uploaded at ' + created);
             modal.find(".bind-by").html('Uploaded by ' + by);
             UIkit.modal('#modal-edit-media').show();

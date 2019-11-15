@@ -36,9 +36,10 @@
                     <div class="uk-child-width-1-2 uk-child-width-1-6@s uk-grid-small browse-image-container" uk-grid>
                         <?php foreach ($browseMedias as $media): ?>
                         <?php
-                            $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
+                            $thumbSquare = $this->cell('Medias::mediaPath', [$media->name, 'image', 'thumbnail::300']);
+                            $original    = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
                         ?>
-                        <div class="media-image choose-image" data-purple-image="<?= $media->name ?>">
+                        <div class="media-image choose-image" data-purple-image="<?= $media->name ?>" data-purple-path="<?= $original ?>">
                             <div class="uk-card uk-card-default">
                                 <?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?>
                             </div>
@@ -103,7 +104,7 @@
                             <?php
                                 if ($browseMedias->count() > 0):
                             ?>
-                            <button class="btn btn-gradient-primary button-select-image uk-margin-left" data-purple-image="" disabled>Select Image</button>
+                            <button class="btn btn-gradient-primary button-select-image uk-margin-left" data-purple-image="" data-purple-path="" disabled>Select Image</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -134,7 +135,8 @@
                 var image     = $(this),
                     container = image.parent(),
                     modal     = $("#modal-browse-images"),
-                    filename  = image.data('purple-image');
+                    filename  = image.data('purple-image'),
+                    filePath  = image.data('purple-path');
 
                 <?php
                     if ($multiSelect == false):
@@ -154,16 +156,20 @@
                     if ($multiSelect == true):
                 ?>
                     var imageList = modal.find(".button-select-image").attr('data-purple-image');
+                    var pathList  = modal.find(".button-select-image").attr('data-purple-path');
                     if (imageList == '') {
                         modal.find(".button-select-image").attr('data-purple-image', filename);
+                        modal.find(".button-select-image").attr('data-purple-path', filePath);
                     }
                     else {
                         modal.find(".button-select-image").attr('data-purple-image', imageList + ',' + filename);   
+                        modal.find(".button-select-image").attr('data-purple-path', pathList + ',' + filePath);   
                     }
                 <?php
                     else:
                 ?>
                     modal.find(".button-select-image").attr('data-purple-image', filename);
+                    modal.find(".button-select-image").attr('data-purple-path', filePath);
                 <?php
                     endif;
                 ?>
@@ -176,12 +182,18 @@
                     container = image.parent(),
                     modal     = $("#modal-browse-images"),
                     filename  = image.data('purple-image'),
+                    filePath  = image.data('purple-path'),
                     imageList = modal.find(".button-select-image").attr('data-purple-image');
+                    pathList  = modal.find(".button-select-image").attr('data-purple-path');
 
                 image.find(".selected-overlay").remove();
                 var newImageList  = imageList.replace(',' + filename, '');
                 var newImageList2 = newImageList.replace(filename, '');
                 modal.find(".button-select-image").attr('data-purple-image', newImageList2);
+
+                var newPathList  = pathList.replace(',' + filePath, '');
+                var newPathList2 = newPathList.replace(filePath, '');
+                modal.find(".button-select-image").attr('data-purple-path', newPathList2);
 
                 if (modal.find(".button-select-image").attr('data-purple-image') == '') {
                     modal.find(".button-select-image").attr('disabled', 'disabled');
@@ -205,6 +217,7 @@
                     actionTarget = $(this).data('purple-target'),
                     image        = $(".choose-image"),
                     filename     = $(this).attr('data-purple-image'),
+                    filePath     = $(this).attr('data-purple-path'),
                     modal        = $("#modal-browse-images");
 
                 if (selectAction == 'update') {
@@ -233,15 +246,15 @@
                             if ($multiSelect == true):
                         ?>
                         var init = '';
-                        var findSeparator = filename.search(",");
+                        var findSeparator = filePath.search(",");
                         if (findSeparator == -1) {
-                            init = '<li><img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + filename + '" alt="' + filename + '" uk-cover></li>';
+                            init = '<li><img src="' + filePath + '" alt="' + filename + '" uk-cover></li>';
                         }
                         else {
-                            var split = filename.split(",");
+                            var split = filePath.split(",");
                             var arrayLength = split.length;
                             for (var i = 0; i < arrayLength; i++) {
-                                init += '<li><img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
+                                init += '<li><img src="' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
                             }
                         }
 
@@ -255,7 +268,7 @@
                         <?php
                             else:
                         ?>
-                        $('.browse-image-preview').html('<img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + filename + '" class="img-fluid">');
+                        $('.browse-image-preview').html('<img src="' + filePath + '" class="img-fluid">');
                         <?php
                             endif;
                         ?>
@@ -266,7 +279,7 @@
                 else if (selectAction == 'froala-section-bg') {
                     var block = $(".button-select-image").attr('data-purple-froala-block');
                     $(".button-select-image").click(function() {
-                        $(block).css('background-image', 'url(<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>'+filename+')');
+                        $(block).css('background-image', 'url(' + filePath + ')');
                         UIkit.modal(modal).hide();
                         return false;
                     })
@@ -274,7 +287,7 @@
                 else if (selectAction == 'froala-block-bg') {
                     var block = $(".button-select-image").attr('data-purple-froala-block');
                     $(".button-select-image").click(function() {
-                        $(block).css('background-image', 'url(<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>'+filename+')');
+                        $(block).css('background-image', 'url(' + filePath + ')');
                         UIkit.modal(modal).hide();
                         return false;
                     })

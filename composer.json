@@ -6,6 +6,7 @@
     "license": "GPL-3.0-only",
     "require": {
         "php": ">=5.6",
+        "aws/aws-sdk-php": "^3.115",
         "cakephp/cakephp": "3.6.*",
         "cakephp/migrations": "^2.0.0",
         "cakephp/plugin-installer": "^1.0",

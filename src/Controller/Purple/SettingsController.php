@@ -212,6 +212,25 @@ class SettingsController extends AppController
         ];
         $this->set($data);
     }
+    public function mediaStorage()
+    {
+        $queryMediaStorage   = $this->Settings->fetch('mediastorage');
+        $queryAwsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+        $queryAwsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+        $queryAwsS3Region    = $this->Settings->fetch('awss3region');
+        $queryAwsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+        $data = [
+            'pageTitle'             => 'Media Storage',
+            'pageBreadcrumb'        => 'Settings::Media Storage',
+            'settingMediaStorage'   => $queryMediaStorage,
+            'settingAwsS3AccessKey' => $queryAwsS3AccessKey,
+            'settingAwsS3SecretKey' => $queryAwsS3SecretKey,
+            'settingAwsS3Region'    => $queryAwsS3Region,
+            'settingAwsS3Bucket'    => $queryAwsS3Bucket,
+        ];
+        $this->set($data);
+    }
     public function maintenance()
 	{
         $queryComingSoon           = $this->Settings->find()->where(['name' => 'comingsoon'])->first();

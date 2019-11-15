@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;
@@ -17,6 +18,8 @@ use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
 use Particle\Filter\Filter;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class AppearanceController extends AppController
 {
@@ -218,7 +221,94 @@ class AppearanceController extends AppController
 								$readImageFile   = new File($image->getFullPath());
 								$deleteImage     = $readImageFile->delete();
 
-							    $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $imageSize]);
+								// Check for media storage
+								$mediaStorage   = $this->Settings->fetch('mediastorage');
+
+								// If media storage is Amazon AWS S3
+								if ($mediaStorage->value == 'awss3') {
+									$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+									$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+									$awsS3Region    = $this->Settings->fetch('awss3region');
+									$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+									$s3Client = new S3Client([
+										'region'  => $awsS3Region->value,
+										'version' => 'latest',
+										'credentials' => [
+											'key'      => $awsS3AccessKey->value,
+											'secret'   => $awsS3SecretKey->value,
+										]
+									]);
+
+									// Path
+									$originalFilePath           = $fullSizeImage . $generatedName;
+									$thumbnailSquareFilePath    = $uploadedThumbnailSquare . $generatedName;
+									$thumbnailLandscapeFilePath = $uploadedThumbnailLandscape . $generatedName;
+
+									// Key
+									$originalKey           = 'images/original/' . basename($originalFilePath);
+									$thumbnailSquareKey    = 'images/thumbnails/300x300/' . basename($thumbnailSquareFilePath);
+									$thumbnailLandscapeKey = 'images/thumbnails/480x270/' . basename($thumbnailLandscapeFilePath);
+									
+									// Send original image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $originalKey,
+											'SourceFile' => $originalFilePath,
+											'ACL'        => 'public-read',
+										]);
+
+										// $readImageFile = new File($fullSizeImage . $generatedName);
+										// $readImageFile->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									// Send thumbnail 300x300 image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $thumbnailSquareKey,
+											'SourceFile' => $thumbnailSquareFilePath,
+											'ACL'        => 'public-read',
+										]);
+
+										$readImageSquare = new File($uploadedThumbnailSquare . $generatedName);
+										$readImageSquare->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									// Send thumbnail 480x270 image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $thumbnailLandscapeKey,
+											'SourceFile' => $thumbnailLandscapeFilePath,
+											'ACL'        => 'public-read',
+										]);
+										
+										$readImageLandscape = new File($uploadedThumbnailLandscape . $generatedName);
+										$readImageLandscape->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									$path = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);;
+								}
+								else {
+									$baseUrl = Router::url([
+										'_name' => 'home'
+									], true);
+
+									$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+								}
+
+							    $json = json_encode(['status' => 'ok', 'name' => $generatedName, 'path' => $path, 'size' => $imageSize]);
 							}
 							else {
 								$json = json_encode(['status' => 'error', 'error' => "Can't save image file. Please try again."]);
@@ -266,6 +356,57 @@ class AppearanceController extends AppController
 			
 			$setting->value = $type.'.png';
             if ($this->Settings->save($setting)) {
+				// Check for media storage
+				$mediaStorage = $this->Settings->fetch('mediastorage');
+
+				// If media storage is Amazon AWS S3
+				if ($mediaStorage->value == 'awss3') {
+					$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+					$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+					$awsS3Region    = $this->Settings->fetch('awss3region');
+					$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+					$s3Client = new S3Client([
+						'region'  => $awsS3Region->value,
+						'version' => 'latest',
+						'credentials' => [
+							'key'      => $awsS3AccessKey->value,
+							'secret'   => $awsS3SecretKey->value,
+						]
+					]);
+
+					// Path
+					$originalFilePath = $fullSizeImage . $type . '.png';
+
+					// Key
+					$originalKey = 'images/original/' . basename($originalFilePath);
+					
+					// Send original image
+					try {
+						$result = $s3Client->putObject([
+							'Bucket'     => $awsS3Bucket->value,
+							'Key'        => $originalKey,
+							'SourceFile' => $originalFilePath,
+							'ACL'        => 'public-read',
+						]);
+
+						$readImageFile = new File($fullSizeImage . $type . '.png');
+						$readImageFile->delete();
+					} 
+					catch (AwsException $e) {
+						$this->log($e->getMessage(), 'debug');
+					}
+
+					$path = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);;
+				}
+				else {
+					$baseUrl = Router::url([
+						'_name' => 'home'
+					], true);
+
+					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+				}
+
 				// Tell system for new event
 				$event = new Event('Model.Setting.afterUpdateAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
 				$this->getEventManager()->dispatch($event);
@@ -318,6 +459,57 @@ class AppearanceController extends AppController
 
             $setting->value = $saveType.'.png';
             if ($this->Settings->save($setting)) {
+				// Check for media storage
+				$mediaStorage   = $this->Settings->fetch('mediastorage');
+				
+				// If media storage is Amazon AWS S3
+				if ($mediaStorage->value == 'awss3') {
+					$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+					$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+					$awsS3Region    = $this->Settings->fetch('awss3region');
+					$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+					$s3Client = new S3Client([
+						'region'  => $awsS3Region->value,
+						'version' => 'latest',
+						'credentials' => [
+							'key'      => $awsS3AccessKey->value,
+							'secret'   => $awsS3SecretKey->value,
+						]
+					]);
+
+					// Path
+					$originalFilePath = $fullSizeImage . $saveType . '.png';
+
+					// Key
+					$originalKey = 'images/original/' . basename($originalFilePath);
+					
+					// Send original image
+					try {
+						$result = $s3Client->putObject([
+							'Bucket'     => $awsS3Bucket->value,
+							'Key'        => $originalKey,
+							'SourceFile' => $originalFilePath,
+							'ACL'        => 'public-read',
+						]);
+
+						$readImageFile = new File($fullSizeImage . $saveType . '.png');
+						$readImageFile->delete();
+					} 
+					catch (AwsException $e) {
+						$this->log($e->getMessage(), 'debug');
+					}
+
+					$path = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);;
+				}
+				else {
+					$baseUrl = Router::url([
+						'_name' => 'home'
+					], true);
+
+					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+				}
+
             	// Tell system for new event
 				$event = new Event('Model.Setting.afterUpdateAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
 				$this->getEventManager()->dispatch($event);
@@ -360,14 +552,81 @@ class AppearanceController extends AppController
 	            $readImageFile = new File($fullSizeImage);
 	            
 	            $setting->value = '';
-	            
-	            if ($readImageFile->delete() && $this->Settings->save($setting)) {
-					// Tell system for new event
-					$event = new Event('Model.Setting.afterDeleteAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
-					$this->getEventManager()->dispatch($event);
+				
+				if ($this->Settings->save($setting)) {
+					// Check for media storage
+					$mediaStorage   = $this->Settings->fetch('mediastorage');
 
-					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
-	            }
+					// If media storage is Amazon AWS S3
+					if ($mediaStorage->value == 'awss3') {
+						$deleteOriginal = false;
+						$delete300x300  = false;
+						$delete480x270  = false;
+
+						$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+						$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+						$awsS3Region    = $this->Settings->fetch('awss3region');
+						$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+						$s3Client = new S3Client([
+							'region'  => $awsS3Region->value,
+							'version' => 'latest',
+							'credentials' => [
+								'key'      => $awsS3AccessKey->value,
+								'secret'   => $awsS3SecretKey->value,
+							]
+						]);
+
+						// Path
+						$originalFilePath           = $fullSizeImage;
+						$thumbnailSquareFilePath    = $uploadedThumbnailSquare;
+						$thumbnailLandscapeFilePath = $uploadedThumbnailLandscape;
+
+						// Key
+						$originalKey           = 'images/original/' . basename($originalFilePath);
+						$thumbnailSquareKey    = 'images/thumbnails/300x300/' . basename($thumbnailSquareFilePath);
+						$thumbnailLandscapeKey = 'images/thumbnails/480x270/' . basename($thumbnailLandscapeFilePath);
+						
+						$imagePath = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);
+
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $originalKey
+							]);
+
+							$deleteOriginal = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						if ($deleteOriginal) {
+							// Tell system for new event
+							$event = new Event('Model.Setting.afterDeleteAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
+							$this->getEventManager()->dispatch($event);
+
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+
+						}
+					}
+					else {
+						if ($readImageFile->delete()) {
+							// Tell system for new event
+							$event = new Event('Model.Setting.afterDeleteAppearance', $this, ['setting' => $setting, 'admin' => $admin, 'type' => $type]);
+							$this->getEventManager()->dispatch($event);
+
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+				}
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
 	            }

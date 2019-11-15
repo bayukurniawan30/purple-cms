@@ -39,7 +39,7 @@
                                             echo 'Default';
                                         } 
                                         else {
-                                            echo $this->Html->image('/uploads/images/original/' . $settingBgLogin->value, ['width' => 50]);
+                                            echo $this->Html->image($this->cell('Medias::mediaPath', [$settingBgLogin->value, 'image', 'original']), ['width' => 50]);
                                         }
                                     ?>
                                 </td>

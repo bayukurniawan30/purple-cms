@@ -75,7 +75,7 @@
         <div class="card">
             <div class="card-body">
                 <div>
-                    <img class="img-fluid" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $favicon->value; ?>" width="64">
+                    <img class="img-fluid" src="<?= $this->cell('Medias::mediaPath', [$favicon->value, 'image', 'original']) ?>" width="64">
                 </div>
             </div>
             <div class="card-footer">
@@ -120,7 +120,7 @@
                 var console_response = 'Starting the upload of #' + id;
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
-                $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+                $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
             },
             onNewFile: function(id, file) {
                 var extArray = ['jpg', 'jpeg', 'png'];
@@ -222,7 +222,7 @@
                     var extension = file.name.split('.').pop().toLowerCase();
                     if($.inArray(extension, extArray) !== -1) {
                         // Allowed
-                        var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
+                        var createToast = notifToast('File Uploading', '<i class="fa fa-circle-o-notch fa-spin"></i> Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
@@ -258,6 +258,8 @@
                 var console_response = 'Upload of file #' + id + ' completed';
                 var console_response2 = 'Server Response for file #' + id + ': ' + JSON.stringify(data);
 
+                $('#demo-file' + id).find('.progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
+
                 $.danidemo.addLog('#demo-debug', 'success', console_response);
 
                 $.danidemo.addLog('#demo-debug', 'info', console_response2);
@@ -268,6 +270,7 @@
 
                 var json    = $.parseJSON(data),
                     status  = (json.status),
+                    path    = (json.path),
                     image   = (json.name);
 
                 if (status == 'ok') {

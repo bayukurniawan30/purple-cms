@@ -26,7 +26,7 @@
                                         <?php if ($history->admin->photo === NULL): ?>
                                         <img class="uk-comment-avatar uk-border-circle initial-photo" src="" alt="<?= $history->admin->display_name ?>" data-name="<?= $history->admin->display_name ?>" data-height="50" data-width="50" data-char-count="2" data-font-size="20">
                                         <?php else: ?>
-                                        <img class="uk-border-circle" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $history->admin->photo ?>" alt="<?= $history->admin->display_name ?>" width="50" height="50" style="max-width: none;">
+                                        <img class="uk-border-circle" src="<?= $this->cell('Medias::mediaPath', [$history->admin->photo, 'image', 'original']) ?>" alt="<?= $history->admin->display_name ?>" width="50" height="50" style="max-width: none;">
                                         <?php endif; ?>    
                                     </div>
                                     <div class="uk-width-expand">

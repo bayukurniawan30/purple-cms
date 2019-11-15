@@ -63,10 +63,10 @@
 
     <?php if ($favicon != ''): ?>
     <!-- Favicon -->
-    <link rel="icon" href="<?= $this->request->getAttribute("webroot").'uploads/images/original/' . $favicon ?>">
+    <link rel="shortcut icon" href="<?= $this->cell('Medias::mediaPath', [$favicon, 'image', 'original']) ?>" />
     <?php else: ?>
     <!-- Favicon -->
-    <link rel="icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
+    <link rel="shortcut icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
     <?php endif; ?>
 
     <!-- jQuery -->

@@ -20,7 +20,7 @@
                     <?php if ($blog->admin->photo === NULL): ?>
                         <img class="initial-photo uk-border-circle mr-3" src="" alt="<?= $blog->admin->display_name ?>" data-name="<?= $blog->admin->display_name ?>" data-height="48" data-width="48" data-char-count="2" data-font-size="24">
                     <?php else: ?>
-                        <img class="uk-border-circle mr-3" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $blog->admin->photo ?>" alt="<?= $blog->admin->display_name ?>" width="48" height="48">
+                        <img class="uk-border-circle mr-3" src="<?= $this->cell('Medias::mediaPath', [$blog->admin->photo, 'image', 'original']) ?>" alt="<?= $blog->admin->display_name ?>" width="48" height="48">
                     <?php endif; ?>
                     <div class="media-body">
                         <h5 class="mt-0 mb-1">Posted by <?= $blog->admin->display_name ?> in <a class="non-uikit" href="<?= $this->Url->build(['_name'    => 'postsInCategory','category' => $blog->blog_category->slug]) ?>"><?= $blog->blog_category->name ?></a></h5>
@@ -40,7 +40,7 @@
                         foreach ($imageArray as $image):
                     ?>
                     <li>
-                        <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $image ?>" alt="<?= $image ?>" uk-cover>
+                        <img src="<?= $this->cell('Medias::mediaPath', [$image, 'image', 'original']) ?>" alt="<?= $image ?>" uk-cover>
                     </li>
                     <?php
                         endforeach;
@@ -52,7 +52,7 @@
             <?php
                     else:
             ?>
-            <img class="uk-margin" src="<?= $this->request->getAttribute("webroot").'uploads/images/original/'.$blog->featured ?>" data-src="<?= $this->request->getAttribute("webroot").'uploads/images/original/'.$blog->featured ?>" alt="<?= $blog->title ?>" uk-img>
+            <img class="uk-margin" src="<?= $this->cell('Medias::mediaPath', [$blog->featured, 'image', 'original']) ?>" data-src="<?= $this->request->getAttribute("webroot").'uploads/images/original/'.$blog->featured ?>" alt="<?= $blog->title ?>" uk-img>
             <?php 
                     endif;
                 endif; 

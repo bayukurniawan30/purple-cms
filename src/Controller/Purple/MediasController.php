@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;
@@ -21,6 +22,8 @@ use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
 use Particle\Filter\Filter;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class MediasController extends AppController
 {
@@ -295,11 +298,98 @@ class MediasController extends AppController
 								$readImageFile   = new File($image->getFullPath());
 								$deleteImage     = $readImageFile->delete();
 
+								// Check for media storage
+								$mediaStorage   = $this->Settings->fetch('mediastorage');
+
+								// If media storage is Amazon AWS S3
+								if ($mediaStorage->value == 'awss3') {
+									$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+									$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+									$awsS3Region    = $this->Settings->fetch('awss3region');
+									$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+									$s3Client = new S3Client([
+										'region'  => $awsS3Region->value,
+										'version' => 'latest',
+										'credentials' => [
+											'key'      => $awsS3AccessKey->value,
+											'secret'   => $awsS3SecretKey->value,
+										]
+									]);
+
+									// Path
+									$originalFilePath           = $fullSizeImage . $generatedName;
+									$thumbnailSquareFilePath    = $uploadedThumbnailSquare . $generatedName;
+									$thumbnailLandscapeFilePath = $uploadedThumbnailLandscape . $generatedName;
+
+									// Key
+									$originalKey           = 'images/original/' . basename($originalFilePath);
+									$thumbnailSquareKey    = 'images/thumbnails/300x300/' . basename($thumbnailSquareFilePath);
+									$thumbnailLandscapeKey = 'images/thumbnails/480x270/' . basename($thumbnailLandscapeFilePath);
+									
+									// Send original image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $originalKey,
+											'SourceFile' => $originalFilePath,
+											'ACL'        => 'public-read',
+										]);
+
+										$readImageFile = new File($fullSizeImage . $generatedName);
+										$readImageFile->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									// Send thumbnail 300x300 image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $thumbnailSquareKey,
+											'SourceFile' => $thumbnailSquareFilePath,
+											'ACL'        => 'public-read',
+										]);
+
+										$readImageSquare = new File($uploadedThumbnailSquare . $generatedName);
+										$readImageSquare->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									// Send thumbnail 480x270 image
+									try {
+										$result = $s3Client->putObject([
+											'Bucket'     => $awsS3Bucket->value,
+											'Key'        => $thumbnailLandscapeKey,
+											'SourceFile' => $thumbnailLandscapeFilePath,
+											'ACL'        => 'public-read',
+										]);
+										
+										$readImageLandscape = new File($uploadedThumbnailLandscape . $generatedName);
+										$readImageLandscape->delete();
+									} 
+									catch (AwsException $e) {
+										$this->log($e->getMessage(), 'debug');
+									}
+
+									$path = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);;
+								}
+								else {
+									$baseUrl = Router::url([
+										'_name' => 'home'
+									], true);
+
+									$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+								}
+
 								// Tell system for new event
 								$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'image', 'save' => 'new']);
 								$this->getEventManager()->dispatch($event);
 
-								$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $imageSize, 'activity' => $event->getResult()]);
+								$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'path' => $path, 'size' => $imageSize, 'activity' => $event->getResult()]);
 							}
 							else {
 								$json = json_encode(['status' => 'error', 'error' => "Can't save image file. Please try again."]);
@@ -408,15 +498,107 @@ class MediasController extends AppController
                 $readImageLandscape = new File($uploadedThumbnailLandscape);
 
                 $entity = $this->Medias->get($this->request->getData('id'));
-                $result = $this->Medias->delete($entity);
+				$result = $this->Medias->delete($entity);
+				
+				if ($result) {
+					// Check for media storage
+					$mediaStorage   = $this->Settings->fetch('mediastorage');
 
-                if ($result && $readImageFile->delete() && $readImageSquare->delete() && $readImageLandscape->delete()) {
-					// Tell system for new event
-					$event = new Event('Model.Media.afterDelete', $this, ['media' => $imagePath, 'admin' => $admin, 'type' => 'image']);
-					$this->getEventManager()->dispatch($event);
+					// If media storage is Amazon AWS S3
+					if ($mediaStorage->value == 'awss3') {
+						$deleteOriginal = false;
+						$delete300x300  = false;
+						$delete480x270  = false;
 
-					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
-                }
+						$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+						$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+						$awsS3Region    = $this->Settings->fetch('awss3region');
+						$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+						$s3Client = new S3Client([
+							'region'  => $awsS3Region->value,
+							'version' => 'latest',
+							'credentials' => [
+								'key'      => $awsS3AccessKey->value,
+								'secret'   => $awsS3SecretKey->value,
+							]
+						]);
+
+						// Path
+						$originalFilePath           = $fullSizeImage;
+						$thumbnailSquareFilePath    = $uploadedThumbnailSquare;
+						$thumbnailLandscapeFilePath = $uploadedThumbnailLandscape;
+
+						// Key
+						$originalKey           = 'images/original/' . basename($originalFilePath);
+						$thumbnailSquareKey    = 'images/thumbnails/300x300/' . basename($thumbnailSquareFilePath);
+						$thumbnailLandscapeKey = 'images/thumbnails/480x270/' . basename($thumbnailLandscapeFilePath);
+						
+						$imagePath = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);
+
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $originalKey
+							]);
+
+							$deleteOriginal = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $thumbnailSquareKey,
+							]);
+
+							$delete300x300 = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $thumbnailLandscapeKey,
+							]);
+
+							$delete480x270 = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						if ($deleteOriginal && $delete300x300 && $delete480x270) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $imagePath, 'admin' => $admin, 'type' => 'image']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+					else {
+						if ($readImageFile->delete() && $readImageSquare->delete() && $readImageLandscape->delete()) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $imagePath, 'admin' => $admin, 'type' => 'image']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+				}
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
                 }
@@ -467,11 +649,60 @@ class MediasController extends AppController
                     $doc->admin_id = $sessionID;
 
                     if ($this->MediaDocs->save($doc)) {
+						// Check for media storage
+						$mediaStorage   = $this->Settings->fetch('mediastorage');
+
+						// If media storage is Amazon AWS S3
+						if ($mediaStorage->value == 'awss3') {
+							$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+							$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+							$awsS3Region    = $this->Settings->fetch('awss3region');
+							$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+							$s3Client = new S3Client([
+								'region'  => $awsS3Region->value,
+								'version' => 'latest',
+								'credentials' => [
+									'key'      => $awsS3AccessKey->value,
+									'secret'   => $awsS3SecretKey->value,
+								]
+							]);
+
+							// Path
+							$filePath = $uploadFile;
+
+							// Key
+							$key = 'documents/' . basename($filePath);
+							try {
+								$result = $s3Client->putObject([
+									'Bucket'     => $awsS3Bucket->value,
+									'Key'        => $key,
+									'SourceFile' => $filePath,
+									'ACL'        => 'public-read',
+								]);
+
+								$readFile = new File($uploadFile);
+								$readFile->delete();
+							} 
+							catch (AwsException $e) {
+								$this->log($e->getMessage(), 'debug');
+							}
+
+							$path = $s3Client->getObjectUrl($awsS3Bucket->value, $key);;
+						}
+						else {
+							$baseUrl = Router::url([
+								'_name' => 'home'
+							], true);
+
+							$path = $baseUrl . 'uploads/documents/' . $generatedName;
+						}
+
 						// Tell system for new event
 						$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'document', 'save' => 'new']);
 						$this->getEventManager()->dispatch($event);
 
-						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
+						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'path' => $path, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save document file. Please try again."]);
@@ -562,15 +793,75 @@ class MediasController extends AppController
                 $query = $this->MediaDocs->query()
                     ->delete()
                     ->where(['id' => $this->request->getData('id')]);
-                $result = $query->execute();
+				$result = $query->execute();
+				
+				if ($result) {
+					// Check for media storage
+					$mediaStorage   = $this->Settings->fetch('mediastorage');
 
-                if ($result && $readDocumentFile->delete()) {
-					// Tell system for new event
-					$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'document']);
-					$this->getEventManager()->dispatch($event);
+					// If media storage is Amazon AWS S3
+					if ($mediaStorage->value == 'awss3') {
+						$deleteFile = false;
 
-					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
-                }
+						$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+						$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+						$awsS3Region    = $this->Settings->fetch('awss3region');
+						$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+						$s3Client = new S3Client([
+							'region'  => $awsS3Region->value,
+							'version' => 'latest',
+							'credentials' => [
+								'key'      => $awsS3AccessKey->value,
+								'secret'   => $awsS3SecretKey->value,
+							]
+						]);
+
+						// Path
+						$filePath = $fullPath;
+
+						// Key
+						$key = 'documents/' . basename($filePath);
+
+						$filePath = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+						
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $key
+							]);
+
+							$deleteFile = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						if ($deleteFile) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'document']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+					else {
+						if ($readDocumentFile->delete()) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'document']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+				}
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
                 }
@@ -621,11 +912,60 @@ class MediasController extends AppController
                     $video->admin_id = $sessionID;
 
                     if ($this->MediaVideos->save($video)) {
+						// Check for media storage
+						$mediaStorage   = $this->Settings->fetch('mediastorage');
+
+						// If media storage is Amazon AWS S3
+						if ($mediaStorage->value == 'awss3') {
+							$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+							$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+							$awsS3Region    = $this->Settings->fetch('awss3region');
+							$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+							$s3Client = new S3Client([
+								'region'  => $awsS3Region->value,
+								'version' => 'latest',
+								'credentials' => [
+									'key'      => $awsS3AccessKey->value,
+									'secret'   => $awsS3SecretKey->value,
+								]
+							]);
+
+							// Path
+							$filePath = $uploadFile;
+
+							// Key
+							$key = 'videos/' . basename($filePath);
+							try {
+								$result = $s3Client->putObject([
+									'Bucket'     => $awsS3Bucket->value,
+									'Key'        => $key,
+									'SourceFile' => $filePath,
+									'ACL'        => 'public-read',
+								]);
+
+								$readFile = new File($uploadFile);
+								$readFile->delete();
+							} 
+							catch (AwsException $e) {
+								$this->log($e->getMessage(), 'debug');
+							}
+
+							$path = $s3Client->getObjectUrl($awsS3Bucket->value, $key);;
+						}
+						else {
+							$baseUrl = Router::url([
+								'_name' => 'home'
+							], true);
+
+							$path = $baseUrl . 'uploads/videos/' . $generatedName;
+						}
+
 						// Tell system for new event
 						$event = new Event('Model.Media.afterSave', $this, ['media' => $generatedName, 'admin' => $admin, 'type' => 'video', 'save' => 'new']);
 						$this->getEventManager()->dispatch($event);
 
-						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
+						$json = json_encode(['status' => 'ok', 'name' => $generatedName, 'path' => $path, 'size' => $fileSize, 'extension' => $fileExtension, 'activity' => $event->getResult()]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save video file. Please try again."]);
@@ -715,15 +1055,75 @@ class MediasController extends AppController
                 $query = $this->MediaVideos->query()
                     ->delete()
                     ->where(['id' => $this->request->getData('id')]);
-                $result = $query->execute();
+				$result = $query->execute();
+				
+				if ($result) {
+					// Check for media storage
+					$mediaStorage   = $this->Settings->fetch('mediastorage');
 
-                if ($result && $readVideoFile->delete()) {
-					// Tell system for new event
-					$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'video']);
-					$this->getEventManager()->dispatch($event);
+					// If media storage is Amazon AWS S3
+					if ($mediaStorage->value == 'awss3') {
+						$deleteFile = false;
 
-					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
-                }
+						$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+						$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+						$awsS3Region    = $this->Settings->fetch('awss3region');
+						$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+						$s3Client = new S3Client([
+							'region'  => $awsS3Region->value,
+							'version' => 'latest',
+							'credentials' => [
+								'key'      => $awsS3AccessKey->value,
+								'secret'   => $awsS3SecretKey->value,
+							]
+						]);
+
+						// Path
+						$filePath = $fullPath;
+
+						// Key
+						$key = 'videos/' . basename($filePath);
+
+						$filePath = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+						
+						// Delete object
+						try {
+							$result = $s3Client->deleteObject([
+								'Bucket' => $awsS3Bucket->value,
+								'Key'    => $key
+							]);
+
+							$deleteFile = true;
+						} 
+						catch (AwsException $e) {
+							$this->log($e->getMessage(), 'debug');
+						}
+
+						if ($deleteFile) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'document']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+					else {
+						if ($readVideoFile->delete()) {
+							// Tell system for new event
+							$event = new Event('Model.Media.afterDelete', $this, ['media' => $filePath, 'admin' => $admin, 'type' => 'video']);
+							$this->getEventManager()->dispatch($event);
+		
+							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+						}
+						else {
+							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
+						}
+					}
+				}
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
                 }

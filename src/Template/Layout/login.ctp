@@ -79,7 +79,7 @@
 			<div id="particles-js" class="bg-gradient-primary"></div>
 		<?php endif; ?>
 		<div class="container-fluid page-body-wrapper full-page-wrapper" style="position: relative; z-index: 5">
-			<div class="content-wrapper d-flex align-items-center auth login-background" <?php if ($settingDefaultBgLogin->value == 'no'): ?><?= $settingBgLogin->value != '' ? 'style="background: url('.$this->request->getAttribute("webroot") . 'uploads/images/original/'. $settingBgLogin->value .'); background-size: cover;"' : '' ?><?php endif; ?>>
+			<div class="content-wrapper d-flex align-items-center auth login-background" <?php if ($settingDefaultBgLogin->value == 'no'): ?><?= $settingBgLogin->value != '' ? 'style="background: url('.$this->cell('Medias::mediaPath', [$settingBgLogin->value, 'image', 'original']) .'); background-size: cover;"' : '' ?><?php endif; ?>>
 				
 				<div class="row w-100">
 					<div class="col-lg-4 mx-auto">

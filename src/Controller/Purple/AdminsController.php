@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
@@ -20,6 +21,8 @@ use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 use Bulletproof;
 use Particle\Filter\Filter;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class AdminsController extends AppController
 {
@@ -207,6 +210,57 @@ class AdminsController extends AppController
             $name                = md5(time());
 
             if (file_put_contents($fullSizeImage . $name.'.png', $base64Decode)) {
+                // Check for media storage
+				$mediaStorage   = $this->Settings->fetch('mediastorage');
+				
+				// If media storage is Amazon AWS S3
+				if ($mediaStorage->value == 'awss3') {
+					$awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+					$awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+					$awsS3Region    = $this->Settings->fetch('awss3region');
+					$awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+					$s3Client = new S3Client([
+						'region'  => $awsS3Region->value,
+						'version' => 'latest',
+						'credentials' => [
+							'key'      => $awsS3AccessKey->value,
+							'secret'   => $awsS3SecretKey->value,
+						]
+					]);
+
+					// Path
+					$originalFilePath = $fullSizeImage . $name . '.png';
+
+					// Key
+					$originalKey = 'images/original/' . basename($originalFilePath);
+					
+					// Send original image
+					try {
+						$result = $s3Client->putObject([
+							'Bucket'     => $awsS3Bucket->value,
+							'Key'        => $originalKey,
+							'SourceFile' => $originalFilePath,
+							'ACL'        => 'public-read',
+						]);
+
+						$readImageFile = new File($fullSizeImage . $saveType . '.png');
+						$readImageFile->delete();
+					} 
+					catch (AwsException $e) {
+						$this->log($e->getMessage(), 'debug');
+					}
+
+					$path = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);;
+				}
+				else {
+					$baseUrl = Router::url([
+						'_name' => 'home'
+					], true);
+
+					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+                }
+                
                 $json = json_encode(['status' => 'ok', 'image' => $name.'.png']);
             }
             else {

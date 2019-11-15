@@ -20,7 +20,7 @@
 						                if ($logo == ''):
 						                    echo $siteName;
 						                else:
-						                	echo '<img src="'.$this->request->getAttribute("webroot").'uploads/images/original/' . $logo.'" alt="'.$siteName.'">';
+						                	echo '<img src="'.$this->cell('Medias::mediaPath', [$logo, 'image', 'original']).'" alt="'.$siteName.'">';
 						                endif; 
 						            ?>
 								</a>
@@ -60,7 +60,7 @@
 						                if ($logo == ''):
 						                    echo $siteName;
 						                else:
-						                    echo '<img src="'.$this->request->getAttribute("webroot").'uploads/images/original/' . $logo.'" alt="'.$siteName.'" width="200">';
+						                    echo '<img src="'.$this->cell('Medias::mediaPath', [$logo, 'image', 'original']).'" alt="'.$siteName.'" width="200">';
 						                endif; 
 						            ?>
 			            		</a>

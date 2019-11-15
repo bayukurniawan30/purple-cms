@@ -1090,7 +1090,7 @@
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
             modal.find("form textarea[name=description]").val(desc);
-            modal.find("form input[name=path]").val(host + image);
+            modal.find("form input[name=path]").val(image);
             modal.find(".bind-created").html('Uploaded at ' + created);
             modal.find(".bind-by").html('Uploaded by ' + by);
             modal.find("form .button-delete-media-image").attr('data-id', id);
@@ -1178,7 +1178,7 @@
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
             modal.find("form textarea[name=description]").val(desc);
-            modal.find("form input[name=path]").val(host + file);
+            modal.find("form input[name=path]").val(file);
             modal.find(".bind-created").html('Uploaded at ' + created);
             modal.find(".bind-by").html('Uploaded by ' + by);
             UIkit.modal('#modal-edit-media').show();

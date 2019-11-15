@@ -84,7 +84,6 @@
     <!-- endinject -->
 
     <!-- Favicon -->
-    <link rel="icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
 
     <?= $this->Html->script('/master-assets/js/vendor.bundle.base.js'); ?>
     <?= $this->Html->script('/master-assets/js/notification.js'); ?>
@@ -113,6 +112,8 @@
     </script>
 
     <?php if ($appearanceFavicon->value != ''): ?>
-    <link rel="shortcut icon" href="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $appearanceFavicon->value ?>" />
+    <link rel="shortcut icon" href="<?= $this->cell('Medias::mediaPath', [$appearanceFavicon->value, 'image', 'original']) ?>" />
+    <?php else: ?>
+    <link rel="shortcut icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
     <?php endif; ?>
 </head>

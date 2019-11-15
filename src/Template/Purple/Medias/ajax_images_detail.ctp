@@ -12,11 +12,11 @@
 <div id="bind-media-load" class="js-filter row">
     <?php foreach ($medias as $media): ?>
     <?php
-            $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
-            $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
+            $thumbSquare = $this->cell('Medias::mediaPath', [$media->name, 'image', 'thumbnail::300']);
+            $fullImage   = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
             $previousId  = $this->cell('Medias::previousId', [$media->id]);
             $nextId      = $this->cell('Medias::nextId', [$media->id]);
-            $colors      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $media->name]);
+            $colors      = $this->cell('Medias::colorExtract', [$fullImage]);
 
             if ($previousId == '0') {
                 $previousUrl = '#';
@@ -134,7 +134,7 @@
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);
             modal.find("form textarea[name=description]").val(desc);
-            modal.find("form input[name=path]").val(host + image);
+            modal.find("form input[name=path]").val(image);
             modal.find(".bind-created").html('Uploaded at ' + created);
             modal.find(".bind-by").html('Uploaded by ' + by);
             modal.find("form .button-delete-media-image").attr('data-id', id);

@@ -44,7 +44,7 @@
                         <?php if ($adminPhoto === NULL): ?>
                         <img class="initial-photo" src="" alt="<?= $adminName ?>" data-name="<?= $adminName ?>" data-height="32" data-width="32" data-char-count="2" data-font-size="16">
                         <?php else: ?>
-                        <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $adminPhoto ?>" alt="<?= $adminName ?>">
+                        <img src="<?= $this->cell('Medias::mediaPath', [$adminPhoto, 'image', 'original'])  ?>" alt="<?= $adminName ?>">
                         <?php endif; ?>
                         <span class="availability-status online"></span>
                     </div>

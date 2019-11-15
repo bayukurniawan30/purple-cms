@@ -12,6 +12,8 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 use Gregwar\Image\Image;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class FroalaController extends AppController
 {
@@ -87,7 +89,82 @@ class FroalaController extends AppController
                             $readImageFile   = new File($uploadFile);
                             $deleteImage     = $readImageFile->delete();
 
-                            $json = json_encode(['link' => $this->request->getAttribute("webroot") . 'uploads/images/original/' . $generatedName]);
+                            $link = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $generatedName;
+
+                            $this->loadModel('Settings');
+
+                            // Check for media storage
+                            $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+                            // If media storage is Amazon AWS S3
+                            if ($mediaStorage->value == 'awss3') {
+                                $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                                $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                                $awsS3Region    = $this->Settings->fetch('awss3region');
+                                $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+                                $s3Client = new S3Client([
+                                    'region'  => $awsS3Region->value,
+                                    'version' => 'latest',
+                                    'credentials' => [
+                                        'key'      => $awsS3AccessKey->value,
+                                        'secret'   => $awsS3SecretKey->value,
+                                    ]
+                                ]);
+
+                                // Path
+                                $originalFilePath           = $fullSizeImage . $generatedName;
+                                $thumbnailSquareFilePath    = $uploadedThumbnailSquare . $generatedName;
+                                $thumbnailLandscapeFilePath = $uploadedThumbnailLandscape . $generatedName;
+
+                                // Key
+                                $originalKey           = 'images/original/' . basename($originalFilePath);
+                                $thumbnailSquareKey    = 'images/thumbnails/300x300/' . basename($thumbnailSquareFilePath);
+                                $thumbnailLandscapeKey = 'images/thumbnails/480x270/' . basename($thumbnailLandscapeFilePath);
+                                
+                                // Send original image
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $originalKey,
+                                        'SourceFile' => $originalFilePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+
+                                // Send thumbnail 300x300 image
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $thumbnailSquareKey,
+                                        'SourceFile' => $thumbnailSquareFilePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+
+                                // Send thumbnail 480x270 image
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $thumbnailLandscapeKey,
+                                        'SourceFile' => $thumbnailLandscapeFilePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+
+                                    $link = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+                            }
+
+                            $json = json_encode(['link' => $link]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save image file. Please try again."]);
@@ -146,7 +223,49 @@ class FroalaController extends AppController
                         $doc->admin_id = $sessionID;
 
                         if ($this->MediaDocs->save($doc)) {
-                            $json = json_encode(['link' => $this->request->getAttribute("webroot") . 'uploads/documents/' . $generatedName]);
+                            $link = $this->request->getAttribute("webroot") . 'uploads/documents/' . $generatedName;
+
+                            $this->loadModel('Settings');
+                            
+                            // Check for media storage
+                            $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+                            // If media storage is Amazon AWS S3
+                            if ($mediaStorage->value == 'awss3') {
+                                $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                                $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                                $awsS3Region    = $this->Settings->fetch('awss3region');
+                                $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+                                $s3Client = new S3Client([
+                                    'region'  => $awsS3Region->value,
+                                    'version' => 'latest',
+                                    'credentials' => [
+                                        'key'      => $awsS3AccessKey->value,
+                                        'secret'   => $awsS3SecretKey->value,
+                                    ]
+                                ]);
+
+                                // Path
+                                $filePath = $uploadFile;
+
+                                // Key
+                                $key = 'documents/' . basename($filePath);
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $key,
+                                        'SourceFile' => $filePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+
+                                    $link = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+                            }
+                            $json = json_encode(['link' => $link]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save file. Please try again."]);
@@ -205,7 +324,50 @@ class FroalaController extends AppController
                         $video->admin_id = $sessionID;
 
                         if ($videosTable->save($video)) {
-                            $json = json_encode(['link' => $this->request->getAttribute("webroot") . 'uploads/videos/' . $generatedName]);
+                            $link = $this->request->getAttribute("webroot") . 'uploads/videos/' . $generatedName;
+
+                            $this->loadModel('Settings');
+
+                            // Check for media storage
+                            $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+                            // If media storage is Amazon AWS S3
+                            if ($mediaStorage->value == 'awss3') {
+                                $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                                $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                                $awsS3Region    = $this->Settings->fetch('awss3region');
+                                $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+                                $s3Client = new S3Client([
+                                    'region'  => $awsS3Region->value,
+                                    'version' => 'latest',
+                                    'credentials' => [
+                                        'key'      => $awsS3AccessKey->value,
+                                        'secret'   => $awsS3SecretKey->value,
+                                    ]
+                                ]);
+
+                                // Path
+                                $filePath = $uploadFile;
+
+                                // Key
+                                $key = 'videos/' . basename($filePath);
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $key,
+                                        'SourceFile' => $filePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+
+                                    $link = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+                            }
+
+                            $json = json_encode(['link' => $link]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save file. Please try again."]);

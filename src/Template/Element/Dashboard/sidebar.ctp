@@ -12,7 +12,7 @@
                     <?php if ($adminPhoto === NULL): ?>
                     <img class="initial-photo" src="" alt="<?= $adminName ?>" data-name="<?= $adminName ?>" data-height="44" data-width="44" data-char-count="2" data-font-size="22">
                     <?php else: ?>
-                    <img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $adminPhoto ?>" alt="<?= $adminName ?>">
+                    <img src="<?= $this->cell('Medias::mediaPath', [$adminPhoto, 'image', 'original']) ?>" alt="<?= $adminName ?>">
                     <?php endif; ?>
                     <span class="login-status online"></span>
                     <!--change to offline or busy as needed-->
@@ -132,6 +132,7 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'general']); ?>">General</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'posts']); ?>">Posts</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'mediaStorage']); ?>">Media Storage</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'email']); ?>">Email</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'seo']); ?>">SEO</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminSettingsAction', 'action' => 'maintenance']); ?>">Maintenance</a></li>

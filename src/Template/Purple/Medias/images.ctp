@@ -53,11 +53,11 @@
         <div id="bind-media-load" class="js-filter row">
             <?php foreach ($medias as $media): ?> 
             <?php
-                    $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
-                    $fullImage   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $media->name;
+                    $thumbSquare = $this->cell('Medias::mediaPath', [$media->name, 'image', 'thumbnail::300']);
+                    $fullImage   = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
                     $previousId  = $this->cell('Medias::previousId', [$media->id]);
                     $nextId      = $this->cell('Medias::nextId', [$media->id]);
-                    $colors      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $media->name]);
+                    $colors      = $this->cell('Medias::colorExtract', [$fullImage]);
 
                     if ($previousId == '0') {
                         $previousUrl = '#';
@@ -248,10 +248,10 @@
 <?php
     if ($this->request->getQuery('id') !== NULL):
         if ($detail !== NULL):
-            $fullImageDetail   = $this->request->getAttribute("webroot") . 'uploads/images/original/' . $detail->name;
+            $fullImageDetail   = $this->cell('Medias::mediaPath', [$detail->name, 'image', 'original']);
             $previousIdDetail  = $this->cell('Medias::previousId', [$detail->id]);
             $nextIdDetail      = $this->cell('Medias::nextId', [$detail->id]);
-            $colorsDetail      = $this->cell('Medias::colorExtract', [WWW_ROOT . 'uploads/images/original/' . $detail->name]);
+            $colorsDetail      = $this->cell('Medias::colorExtract', [$fullImageDetail]);
             $explodeColors     = explode(",", $colorsDetail);
 
 
@@ -329,7 +329,7 @@
                             'class'       => 'form-control', 
                             'placeholder' => 'URL',
                             'readonly'    => 'readonly',
-                            'value'       => $protocol . $this->request->host() . $fullImageDetail
+                            'value'       => $fullImageDetail
                             
                         ]);
                     ?>
@@ -535,7 +535,7 @@
                 var console_response = 'Starting the upload of #' + id;
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
-                $.danidemo.updateFileStatus(id, 'default', 'Uploading...');
+                $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
             },
             onNewFile: function(id, file) {
                 var extArray = ['jpg', 'jpeg', 'png'];
@@ -560,7 +560,7 @@
                     if($.inArray(extension, extArray) !== -1) {
                         // Allowed
                         console.log('Allowed');
-                        var createToast = notifToast('File Uploading', 'Now uploading...', 'info', true);
+                        var createToast = notifToast('File Uploading', '<i class="fa fa-circle-o-notch fa-spin"></i> Now uploading...', 'info', true);
                     }
                     else {
                         // Not Allowed
@@ -594,6 +594,8 @@
             onUploadSuccess: function(id, data) {
                 var console_response = 'Upload of file #' + id + ' completed';
                 var console_response2 = 'Server Response for file #' + id + ': ' + JSON.stringify(data);
+                
+                $('#demo-file' + id).find('.progress-bar').removeClass('progress-bar-animated').addClass('bg-success');
 
                 $.danidemo.addLog('#demo-debug', 'success', console_response);
 
