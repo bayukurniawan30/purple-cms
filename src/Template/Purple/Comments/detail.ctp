@@ -64,7 +64,7 @@
                                                 ?>
                                                 <img class="uk-comment-avatar uk-border-circle initial-photo" width="50" height="50" data-width="50" data-height="50" data-char-count="2" data-font-size="20" data-name="<?= $reply->admin->display_name ?>" alt="<?= $reply->admin->display_name ?>">
                                                 <?php else: ?>
-                                                <img class="uk-comment-avatar uk-border-circle" width="50" height="50" src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' . $reply->admin->photo ?>" alt="<?= $reply->admin->display_name ?>">
+                                                <img class="uk-comment-avatar uk-border-circle" width="50" height="50" src="<?= $this->cell('Medias::mediaPath', [$reply->admin->photo, 'image', 'original']) ?>" alt="<?= $reply->admin->display_name ?>">
                                                 <?php
                                                     endif;
                                                 ?>
