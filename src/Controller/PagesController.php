@@ -19,6 +19,8 @@ use Carbon\Carbon;
 use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 use Particle\Filter\Filter;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class PagesController extends AppController
 {
@@ -447,9 +449,51 @@ class PagesController extends AppController
             throw new NotFoundException(__('Page not found'));
         }
         else {
-            $file = WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $viewPage->first()->custom_page->file_name;
-            // $readFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $viewPage->first()->custom_page->file_name);
-            // $code = $readFile->read();
+            // Check for media storage
+            $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+            // If media storage is Amazon AWS S3
+            if ($mediaStorage->value == 'awss3') {
+                $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                $awsS3Region    = $this->Settings->fetch('awss3region');
+                $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+                $s3Client = new S3Client([
+                    'region'  => $awsS3Region->value,
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key'      => $awsS3AccessKey->value,
+                        'secret'   => $awsS3SecretKey->value,
+                    ]
+                ]);
+
+                $s3Client->registerStreamWrapper();
+
+                $key   = 'custom-pages/' . $viewPage->first()->custom_page->file_name;
+                $s3Url = 's3://' . $awsS3Bucket->value . '/' . $key;
+
+                $code = file_get_contents($s3Url);
+
+                // Create php file with code editor content
+                $customFile = WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $viewPage->first()->custom_page->file_name;
+                $readFile   = new File($customFile);
+                if ($readFile->exists()) {
+                    $readFile->write($code);
+                }
+                else {
+                    $createFile = new File($customFile, true, 0644);
+                    $readFile->write($code);
+                }
+                
+                $file = $customFile;
+            }
+            else {
+                $file = WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $viewPage->first()->custom_page->file_name;
+                // $readFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $viewPage->first()->custom_page->file_name);
+                // $code = $readFile->read();
+            }
+
             $data = [
                 'pageType'        => 'custom',
                 'pageTitle'       => $viewPage->first()->title,

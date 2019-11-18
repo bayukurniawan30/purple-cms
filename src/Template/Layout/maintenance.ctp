@@ -79,10 +79,10 @@
         <div id="modal-setup-purple" class="uk-modal-full" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-                    <div class="bg-primary uk-background-contain" style="background-image: url('<?php if ($settingBgComingSoon->value == '') echo $this->request->getAttribute("webroot") . 'master-assets/img/signin-background.svg'; else echo $this->request->getAttribute("webroot") . 'uploads/images/original/'. $settingBgComingSoon->value ?>');" uk-height-viewport></div>
+                    <div class="bg-primary uk-background-<?php if ($settingBgComingSoon->value == '') echo 'contain'; else echo 'cover'; ?>" style="background-image: url('<?php if ($settingBgComingSoon->value == '') echo $this->request->getAttribute("webroot") . 'master-assets/img/signin-background.svg'; else echo $this->cell('Medias::mediaPath', [$settingBgComingSoon->value, 'image', 'original']) ?>');" uk-height-viewport></div>
                     <div class="uk-padding-large">
                         <!-- <div class="brand-logo">
-                            <?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Setup Page', 'data-id' => 'login-cover-image', 'width' => '150']) ?>
+                            <?= $this->Html->image('/master-assets/img/logo.svg', ['alt' => 'Purple CMS Logo', 'data-id' => 'login-cover-image', 'width' => '150']) ?>
                             <p>&nbsp;</p>
                         </div> -->
                         <h1 class="under-construction-title">UNDER<br>CONSTRUCTION</h1>

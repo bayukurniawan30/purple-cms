@@ -1,14 +1,14 @@
 <?php
     if ($logo == '') {
         if ($metaImage != '') {
-            $metaImage = $this->request->host().$this->request->getAttribute("webroot").'uploads/images/original/' . $metaImage;
+            $metaImage = $this->cell('Medias::mediaPath', [$metaImage, 'image', 'original']);
         }
         else {
             $metaImage = '';
         }
     }
     else {
-        $metaImage = $this->request->host().$this->request->getAttribute("webroot").'uploads/images/original/' . $logo;
+        $metaImage = $this->cell('Medias::mediaPath', [$logo, 'image', 'original']);
     }
 
     // Meta twitter:card

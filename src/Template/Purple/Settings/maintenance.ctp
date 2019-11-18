@@ -39,7 +39,7 @@
                                             echo 'Default';
                                         } 
                                         else {
-                                            echo $this->Html->image('/uploads/images/original/' . $settingBgComingSoon->value, ['width' => 50]);
+                                            echo $this->Html->image($this->cell('Medias::mediaPath', [$settingBgComingSoon->value, 'image', 'original']), ['width' => 50]);
                                         }
                                     ?>
                                 </td>

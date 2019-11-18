@@ -22,6 +22,8 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectFroalaBlocks;
 use App\Purple\PurpleProjectPlugins;
 use Particle\Filter\Filter;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class PagesController extends AppController
 {
@@ -270,8 +272,37 @@ class PagesController extends AppController
                 $result = $this->Pages->get($id, [
                     'contain' => ['CustomPages']
                 ]);
-                $readFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $customPages->first()->custom_page->file_name);
-                $code = $readFile->read();
+
+                // Check for media storage
+                $mediaStorage   = $this->Settings->fetch('mediastorage');
+                            
+                // If media storage is Amazon AWS S3
+                if ($mediaStorage->value == 'awss3') {
+                    $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                    $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                    $awsS3Region    = $this->Settings->fetch('awss3region');
+                    $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+
+                    $s3Client = new S3Client([
+                        'region'  => $awsS3Region->value,
+                        'version' => 'latest',
+                        'credentials' => [
+                            'key'      => $awsS3AccessKey->value,
+                            'secret'   => $awsS3SecretKey->value,
+                        ]
+                    ]);
+
+                    $s3Client->registerStreamWrapper();
+
+                    $key   = 'custom-pages/' . $customPages->first()->custom_page->file_name;
+                    $s3Url = 's3://' . $awsS3Bucket->value . '/' . $key;
+
+                    $code = file_get_contents($s3Url);
+                }
+                else {
+                    $readFile  = new File(WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $customPages->first()->custom_page->file_name);
+                    $code = $readFile->read();
+                }
             }
 
             $data = [
@@ -654,6 +685,16 @@ class PagesController extends AppController
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
                 }
                 else {
+                    // Check for media storage
+                    $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+                    if ($mediaStorage->value == 'awss3') {
+                        $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                        $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                        $awsS3Region    = $this->Settings->fetch('awss3region');
+                        $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+                    }
+
                     $customPages = $this->CustomPages->find()->where(['page_id' => $requestData->id]);
 
                     if ($customPages->count() < 1) {
@@ -675,6 +716,35 @@ class PagesController extends AppController
                         $page->title = $requestData->title;
 
                         if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
+                            // If media storage is Amazon AWS S3
+                            if ($mediaStorage->value == 'awss3') {
+                                $s3Client = new S3Client([
+                                    'region'  => $awsS3Region->value,
+                                    'version' => 'latest',
+                                    'credentials' => [
+                                        'key'      => $awsS3AccessKey->value,
+                                        'secret'   => $awsS3SecretKey->value,
+                                    ]
+                                ]);
+
+                                // Path
+                                $filePath = WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $fileName;
+
+                                // Key
+                                $key = 'custom-pages/' . basename($filePath);
+                                try {
+                                    $result = $s3Client->putObject([
+                                        'Bucket'     => $awsS3Bucket->value,
+                                        'Key'        => $key,
+                                        'SourceFile' => $filePath,
+                                        'ACL'        => 'public-read',
+                                    ]);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
+                            }
+
                             $recordId = $page->id;
                             $page      = $this->Pages->get($recordId);
                             $title     = $page->title;
@@ -712,6 +782,35 @@ class PagesController extends AppController
                             $page->title = $requestData->title;
 
                             if ($this->CustomPages->save($customPage) && $this->Pages->save($page)) {
+                                // If media storage is Amazon AWS S3
+                                if ($mediaStorage->value == 'awss3') {
+                                    $s3Client = new S3Client([
+                                        'region'  => $awsS3Region->value,
+                                        'version' => 'latest',
+                                        'credentials' => [
+                                            'key'      => $awsS3AccessKey->value,
+                                            'secret'   => $awsS3SecretKey->value,
+                                        ]
+                                    ]);
+
+                                    // Path
+                                    $filePath = WWW_ROOT . 'uploads' . DS . 'custom-pages' . DS . $fileName;
+
+                                    // Key
+                                    $key = 'custom-pages/' . basename($filePath);
+                                    try {
+                                        $result = $s3Client->putObject([
+                                            'Bucket'     => $awsS3Bucket->value,
+                                            'Key'        => $key,
+                                            'SourceFile' => $filePath,
+                                            'ACL'        => 'public-read',
+                                        ]);
+                                    } 
+                                    catch (AwsException $e) {
+                                        $this->log($e->getMessage(), 'debug');
+                                    }
+                                }
+                                
                                 $recordId = $page->id;
                                 $page      = $this->Pages->get($recordId);
                                 $title     = $page->title;
@@ -774,6 +873,40 @@ class PagesController extends AppController
                             if (file_exists($customFile)) {
                                 $readFile   = new File($customFile);
                                 $readFile->delete();
+                            }
+
+                            // Check for media storage
+                            $mediaStorage   = $this->Settings->fetch('mediastorage');
+
+                            // If media storage is Amazon AWS S3
+                            if ($mediaStorage->value == 'awss3') {
+                                $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+                                $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+                                $awsS3Region    = $this->Settings->fetch('awss3region');
+                                $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+                                
+                                $s3Client = new S3Client([
+                                    'region'  => $awsS3Region->value,
+                                    'version' => 'latest',
+                                    'credentials' => [
+                                        'key'      => $awsS3AccessKey->value,
+                                        'secret'   => $awsS3SecretKey->value,
+                                    ]
+                                ]);
+
+                                // Key
+                                $key = 'custom-pages/' . $fileName;
+
+                                // Delete object
+                                try {
+                                    $result = $s3Client->deleteObject([
+                                        'Bucket' => $awsS3Bucket->value,
+                                        'Key'    => $key
+                                    ]);
+                                } 
+                                catch (AwsException $e) {
+                                    $this->log($e->getMessage(), 'debug');
+                                }
                             }
 
                             // Tell system for new event
