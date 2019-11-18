@@ -3,6 +3,7 @@
 use App\Purple\PurpleProjectGlobal;
 
 $databaseDriver = 'Cake\Database\Driver\Mysql';
+$databasePort   = '3306';
 
 if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
     if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
@@ -23,6 +24,7 @@ if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !
             define('CRDBPASSWORD', $herokuPostgreSqllUrl["pass"]);
 
             $databaseDriver = 'Cake\Database\Driver\Postgres';
+            $databasePort   = $herokuPostgreSqllUrl["port"];
         }
     }
     else {
@@ -33,6 +35,8 @@ if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !
     }
 
     define('CRDBDRIVER', $databaseDriver);
+    define('CRDBPORT', $databasePort);
+
 }
 else {
     $purpleGlobal = new PurpleProjectGlobal();
@@ -51,6 +55,7 @@ else {
     }
 
     define('CRDBDRIVER', $databaseDriver);
+    define('CRDBPORT', $databasePort);
 }
 
 if (getenv("PURPLE_DEBUG_ENGINE") && file_exists(CONFIG . '.env')) {
@@ -367,7 +372,7 @@ return [
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
              * the following line and set the port accordingly
              */
-            //'port' => 'non_standard_port_number',
+            'port' => CRDBPORT,
             'username' => CRDBUSERNAME,
             'password' => CRDBPASSWORD,
             'database' => CRDBNAME,
