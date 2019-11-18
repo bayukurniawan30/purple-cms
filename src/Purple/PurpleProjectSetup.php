@@ -95,7 +95,7 @@ class PurpleProjectSetup
 		}
 				
 		$this->conn->execute('CREATE table admins(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    username VARCHAR( 50 ) NOT NULL,
 			    password VARCHAR( 255 ) NOT NULL,
 			    api_key_plain VARCHAR( 255 ) NOT NULL,
@@ -118,22 +118,22 @@ class PurpleProjectSetup
 			    login_browser VARCHAR ( 50 ) NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table settings(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    value MEDIUMTEXT NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_types(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table page_templates(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    type VARCHAR( 100 ) NOT NULL,
 			    column_position ' . $typeInteger. '( 1 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table pages(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 100 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
@@ -148,7 +148,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY page_template_page (page_template_id) REFERENCES page_templates(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_categories(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
 			    page_id ' . $typeInteger. '( 11 ) NULL,
@@ -161,7 +161,7 @@ class PurpleProjectSetup
                 FOREIGN KEY page_blog_category (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table chats (
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    subject VARCHAR( 200 ) NOT NULL,
 			    content TEXT NOT NULL,
 			    sender ' . $typeInteger. '( 11 ) NOT NULL,
@@ -173,7 +173,7 @@ class PurpleProjectSetup
 			    type VARCHAR( 10 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table fonts(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    link VARCHAR( 255 ) NOT NULL,
 			    family VARCHAR( 100 ) NOT NULL,
@@ -182,7 +182,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_font (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table histories(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 200 ) NOT NULL,
 			    detail TEXT NOT NULL,
 			    created DATETIME NOT NULL,
@@ -190,7 +190,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_history (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table medias(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
@@ -202,7 +202,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_media (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_docs(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
@@ -214,7 +214,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_media_doc (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_galleries(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    image VARCHAR( 255 ) NOT NULL,
 			    sc TEXT NOT NULL,
@@ -227,7 +227,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_media_gallery (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_videos(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
@@ -239,7 +239,7 @@ class PurpleProjectSetup
 			    FOREIGN KEY admin_media_video (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table menus(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
 			    has_sub ' . $typeInteger. '( 11 ) NULL,
@@ -253,7 +253,7 @@ class PurpleProjectSetup
                 FOREIGN KEY page_menu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table blogs(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 255 ) NOT NULL,
 			    content MEDIUMTEXT NOT NULL,
 			    created DATETIME NOT NULL,
@@ -278,7 +278,7 @@ class PurpleProjectSetup
 		// $this->conn->execute('ALTER TABLE blogs ADD FULLTEXT (content);');
 
 		$this->conn->execute('CREATE table comments(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    content VARCHAR( 1000 ) NOT NULL,
@@ -292,19 +292,19 @@ class PurpleProjectSetup
 			    FOREIGN KEY blog_comment (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_sidebar(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    page VARCHAR( 255 ) NOT NULL,
 			    content TEXT NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_visitors(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    blog_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY blog_blogvisitor (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table tags(
-				id INT ' . $autoIncrement . ' PRIMARY KEY,
+				id ' . $autoIncrement . ' PRIMARY KEY,
 				title VARCHAR( 191 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
 				created DATETIME NOT NULL,
@@ -319,7 +319,7 @@ class PurpleProjectSetup
 				FOREIGN KEY blog_key (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table messages(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    subject VARCHAR( 100 ) NOT NULL,
 			    content TEXT NOT NULL,
 			    name VARCHAR( 50 ) NOT NULL,
@@ -331,7 +331,7 @@ class PurpleProjectSetup
 			    type VARCHAR( 20 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table notifications(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    type VARCHAR( 20 ) NOT NULL,
 			    content VARCHAR( 255 ) NULL,
 			    created DATETIME NOT NULL,
@@ -344,7 +344,7 @@ class PurpleProjectSetup
 				FOREIGN KEY blog_notification (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table generals(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    content MEDIUMTEXT NOT NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
@@ -356,7 +356,7 @@ class PurpleProjectSetup
                 FOREIGN KEY page_general (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table custom_pages(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    file_name VARCHAR( 100 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
@@ -368,20 +368,20 @@ class PurpleProjectSetup
                 FOREIGN KEY page_custom_page (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table socials(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    link VARCHAR( 255 ) NOT NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table subscribers(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    email VARCHAR( 100 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    unsubscribe_date DATETIME NULL,
 			    status VARCHAR( 20 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table submenus(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    menu_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
@@ -396,7 +396,7 @@ class PurpleProjectSetup
                 FOREIGN KEY page_submenu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table visitors(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
 			    browser VARCHAR( 100 ) NOT NULL,
 			    platform VARCHAR( 100 ) NOT NULL,
@@ -405,7 +405,7 @@ class PurpleProjectSetup
 				time_created TIME NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table widgets(
-			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    content TEXT NOT NULL,
 			    content_limit INT NULL)' . $storageEngine . ';');
