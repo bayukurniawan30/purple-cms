@@ -2,14 +2,28 @@
 
 use App\Purple\PurpleProjectGlobal;
 
+$databaseDriver = 'Cake\Database\Driver\Mysql';
+
 if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
     if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
-        $herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
-        
-        define('CRDBHOST', $herokuClearMysqlUrl["host"]);
-        define('CRDBNAME', substr($herokuClearMysqlUrl["path"], 1));
-        define('CRDBUSERNAME', $herokuClearMysqlUrl["user"]);
-        define('CRDBPASSWORD', $herokuClearMysqlUrl["pass"]);
+        if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+            $herokuClearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+            
+            define('CRDBHOST', $herokuClearMysqlUrl["host"]);
+            define('CRDBNAME', substr($herokuClearMysqlUrl["path"], 1));
+            define('CRDBUSERNAME', $herokuClearMysqlUrl["user"]);
+            define('CRDBPASSWORD', $herokuClearMysqlUrl["pass"]);
+        }
+        else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+            $herokuPostgreSqllUrl = parse_url(getenv("DATABASE_URL"));
+            
+            define('CRDBHOST', $herokuPostgreSqllUrl["host"]);
+            define('CRDBNAME', ltrim($herokuPostgreSqllUrl["path"], "/"));
+            define('CRDBUSERNAME', $herokuPostgreSqllUrl["user"]);
+            define('CRDBPASSWORD', $herokuPostgreSqllUrl["pass"]);
+
+            $databaseDriver = 'Cake\Database\Driver\Postgres';
+        }
     }
     else {
         define('CRDBHOST', 'localhost');
@@ -17,6 +31,8 @@ if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !
         define('CRDBUSERNAME', getenv("PURPLE_DATABASE_USER"));
         define('CRDBPASSWORD', getenv("PURPLE_DATABASE_PASSWORD"));
     }
+
+    define('CRDBDRIVER', $databaseDriver);
 }
 else {
     $purpleGlobal = new PurpleProjectGlobal();
@@ -33,6 +49,8 @@ else {
         define('CRDBUSERNAME', $databaseInfo['user']);
         define('CRDBPASSWORD', $databaseInfo['password']);
     }
+
+    define('CRDBDRIVER', $databaseDriver);
 }
 
 if (getenv("PURPLE_DEBUG_ENGINE") && file_exists(CONFIG . '.env')) {
@@ -341,7 +359,7 @@ return [
     'Datasources' => [
         'default' => [
             'className' => 'Cake\Database\Connection',
-            'driver' => 'Cake\Database\Driver\Mysql',
+            'driver' => CRDBDRIVER,
             'persistent' => false,
             'host' => CRDBHOST,
             /*
