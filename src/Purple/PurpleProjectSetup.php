@@ -69,8 +69,33 @@ class PurpleProjectSetup
 	}
 	public function createTable()
 	{
+		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+					$autoIncrement = 'AUTO_INCREMENT';
+					$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+					$typeInteger   = 'INT';
+				}
+				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+					$autoIncrement = 'serial';
+					$storageEngine = NULL;
+					$typeInteger   = 'DECIMAL';
+				}
+			}
+			else {
+				$autoIncrement = 'AUTO_INCREMENT';
+				$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+				$typeInteger   = 'INT';
+			}
+		}
+		else {
+			$autoIncrement = 'AUTO_INCREMENT';
+			$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+			$typeInteger   = 'INT';
+		}
+				
 		$this->conn->execute('CREATE table admins(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    username VARCHAR( 50 ) NOT NULL,
 			    password VARCHAR( 255 ) NOT NULL,
 			    api_key_plain VARCHAR( 255 ) NOT NULL,
@@ -80,7 +105,7 @@ class PurpleProjectSetup
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    display_name VARCHAR( 100 ) NOT NULL,
-			    level INT( 1 ) NOT NULL,
+			    level ' . $typeInteger. '( 1 ) NOT NULL,
 			    about VARCHAR ( 255 ) NULL,
 			    last_login DATETIME NULL,
 			    facebook VARCHAR ( 200 ) NULL,
@@ -90,106 +115,106 @@ class PurpleProjectSetup
 			    first_login VARCHAR ( 50 ) NULL,
 			    login_device VARCHAR ( 50 ) NULL,
 			    login_os VARCHAR ( 50 ) NULL,
-			    login_browser VARCHAR ( 50 ) NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    login_browser VARCHAR ( 50 ) NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table settings(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
-			    value MEDIUMTEXT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    value MEDIUMTEXT NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_types(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
-			    name VARCHAR( 100 ) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
+			    name VARCHAR( 100 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table page_templates(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    type VARCHAR( 100 ) NOT NULL,
-			    column_position INT( 1 ) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    column_position ' . $typeInteger. '( 1 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table pages(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 100 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
-			    page_template_id INT( 11 ) NOT NULL,
+			    page_template_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (slug),
 			    page_option VARCHAR( 100 ) NULL,
-			    parent INT( 11 ) NULL,
+			    parent ' . $typeInteger. '( 11 ) NULL,
 			    FOREIGN KEY admin_page (admin_id) REFERENCES admins(id),
-			    FOREIGN KEY page_template_page (page_template_id) REFERENCES page_templates(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY page_template_page (page_template_id) REFERENCES page_templates(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_categories(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
-			    page_id INT( 11 ) NULL,
+			    page_id ' . $typeInteger. '( 11 ) NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
-			    ordering INT( 11 ) NULL,
-                admin_id INT( 11 ) NULL,
+			    ordering ' . $typeInteger. '( 11 ) NULL,
+                admin_id ' . $typeInteger. '( 11 ) NULL,
 			    UNIQUE (slug),
 			    FOREIGN KEY (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_blog_category (page_id) REFERENCES pages(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+                FOREIGN KEY page_blog_category (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table chats (
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    subject VARCHAR( 200 ) NOT NULL,
 			    content TEXT NOT NULL,
-			    sender INT( 11 ) NOT NULL,
-			    receiver INT( 11 ) NOT NULL,
+			    sender ' . $typeInteger. '( 11 ) NOT NULL,
+			    receiver ' . $typeInteger. '( 11 ) NOT NULL,
 			    created DATETIME NOT NULL,
-			    is_read INT( 1 ) NOT NULL,
+			    is_read ' . $typeInteger. '( 1 ) NOT NULL,
 			    sender_folder VARCHAR( 20 ) NOT NULL,
 			    receiver_folder VARCHAR( 20 ) NOT NULL,
-			    type VARCHAR( 10 ) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    type VARCHAR( 10 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table fonts(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    link VARCHAR( 255 ) NOT NULL,
 			    family VARCHAR( 100 ) NOT NULL,
 			    applied VARCHAR( 255 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
-			    FOREIGN KEY admin_font (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    FOREIGN KEY admin_font (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table histories(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 200 ) NOT NULL,
 			    detail TEXT NOT NULL,
 			    created DATETIME NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
-			    FOREIGN KEY admin_history (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    FOREIGN KEY admin_history (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table medias(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
-			    size INT( 11 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    size ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (name),
-			    FOREIGN KEY admin_media (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY admin_media (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_docs(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
-			    size INT( 11 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    size ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (name),
-			    FOREIGN KEY admin_media_doc (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY admin_media_doc (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_galleries(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    image VARCHAR( 255 ) NOT NULL,
 			    sc TEXT NOT NULL,
@@ -197,45 +222,45 @@ class PurpleProjectSetup
 			    modified DATETIME NULL,
 			    ordering VARCHAR( 255 ) NULL,
 			    type VARCHAR( 50 ) NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (name),
-			    FOREIGN KEY admin_media_gallery (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY admin_media_gallery (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_videos(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
-			    size INT( 11 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    size ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (name),
-			    FOREIGN KEY admin_media_video (admin_id) REFERENCES admins(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY admin_media_video (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table menus(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
-			    ordering INT( 11 ) NULL,
-			    has_sub INT( 11 ) NULL,
+			    ordering ' . $typeInteger. '( 11 ) NULL,
+			    has_sub ' . $typeInteger. '( 11 ) NULL,
 			    status CHAR( 1 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
                 target VARCHAR( 255 ) NOT NULL,
 			    page_id INT NULL,
-                admin_id INT( 11 ) NOT NULL,
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY admin_menu (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_menu (page_id) REFERENCES pages(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+                FOREIGN KEY page_menu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table blogs(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 255 ) NOT NULL,
 			    content MEDIUMTEXT NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
-			    blog_type_id INT( 11 ) NOT NULL,
-			    blog_category_id INT( 11 ) NOT NULL,
+			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    comment VARCHAR( 3 ) NOT NULL,
 			    featured VARCHAR( 500 ) NULL,
 			    selected CHAR( 3 ) NULL,
@@ -243,147 +268,147 @@ class PurpleProjectSetup
 			    meta_description TEXT NULL,
 			    status VARCHAR( 10 ) NOT NULL,
 			    social_share VARCHAR( 10 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (slug),
 			    FOREIGN KEY admin_blog (admin_id) REFERENCES admins(id),
 			    FOREIGN KEY blogcategory_blog (blog_category_id) REFERENCES blog_categories(id),
-			    FOREIGN KEY blogtype_blog (blog_type_id) REFERENCES blog_types(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY blogtype_blog (blog_type_id) REFERENCES blog_types(id))' . $storageEngine . ';');
 
 		// $this->conn->execute('ALTER TABLE blogs ADD FULLTEXT (title);');
 		// $this->conn->execute('ALTER TABLE blogs ADD FULLTEXT (content);');
 
 		$this->conn->execute('CREATE table comments(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    content VARCHAR( 1000 ) NOT NULL,
 			    created DATETIME NOT NULL,
-			    status INT( 1 ) NOT NULL,
-			    reply INT( 11 ) NOT NULL,
-			    is_read INT( 1 ) NULL,
-			    admin_id INT( 11 ) NULL,
-			    blog_id INT( 1 ) NOT NULL,
+			    status ' . $typeInteger. '( 1 ) NOT NULL,
+			    reply ' . $typeInteger. '( 11 ) NOT NULL,
+			    is_read ' . $typeInteger. '( 1 ) NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NULL,
+			    blog_id ' . $typeInteger. '( 1 ) NOT NULL,
 			    FOREIGN KEY admin_comment (admin_id) REFERENCES admins(id),
-			    FOREIGN KEY blog_comment (blog_id) REFERENCES blogs(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    FOREIGN KEY blog_comment (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_sidebar(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    page VARCHAR( 255 ) NOT NULL,
-			    content TEXT NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    content TEXT NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_visitors(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
 			    created DATETIME NOT NULL,
-			    blog_id INT( 11 ) NOT NULL,
-			    FOREIGN KEY blog_blogvisitor (blog_id) REFERENCES blogs(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    blog_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    FOREIGN KEY blog_blogvisitor (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table tags(
-				id INT AUTO_INCREMENT PRIMARY KEY,
+				id INT ' . $autoIncrement . ' PRIMARY KEY,
 				title VARCHAR( 191 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
 				created DATETIME NOT NULL,
 				modified DATETIME,
-				UNIQUE KEY (title)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+				UNIQUE KEY (title))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blogs_tags (
-				blog_id INT( 11 ) NOT NULL,
-				tag_id INT( 11 ) NOT NULL,
+				blog_id ' . $typeInteger. '( 11 ) NOT NULL,
+				tag_id ' . $typeInteger. '( 11 ) NOT NULL,
 				PRIMARY KEY (blog_id, tag_id),
 				FOREIGN KEY tag_key (tag_id) REFERENCES tags(id),
-				FOREIGN KEY blog_key (blog_id) REFERENCES blogs(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+				FOREIGN KEY blog_key (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table messages(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    subject VARCHAR( 100 ) NOT NULL,
 			    content TEXT NOT NULL,
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 200 ) NOT NULL,
 			    created DATETIME NOT NULL,
-			    is_read INT( 1 ) NOT NULL,
+			    is_read ' . $typeInteger. '( 1 ) NOT NULL,
 			    folder VARCHAR( 20 ) NOT NULL,
-			    replied INT( 1 ) NOT NULL,
-			    type VARCHAR( 20 ) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    replied ' . $typeInteger. '( 1 ) NOT NULL,
+			    type VARCHAR( 20 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table notifications(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    type VARCHAR( 20 ) NOT NULL,
 			    content VARCHAR( 255 ) NULL,
 			    created DATETIME NOT NULL,
-			    is_read INT( 1 ) NULL,
-			    comment_id INT( 11 ) NULL,
-			    message_id INT( 11 ) NULL,
-			    blog_id INT( 11 ) NULL,
+			    is_read ' . $typeInteger. '( 1 ) NULL,
+			    comment_id ' . $typeInteger. '( 11 ) NULL,
+			    message_id ' . $typeInteger. '( 11 ) NULL,
+			    blog_id ' . $typeInteger. '( 11 ) NULL,
 			    FOREIGN KEY comment_notification (comment_id) REFERENCES comments(id),
 			    FOREIGN KEY message_notification (message_id) REFERENCES messages(id),
-				FOREIGN KEY blog_notification (blog_id) REFERENCES blogs(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+				FOREIGN KEY blog_notification (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table generals(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    content MEDIUMTEXT NOT NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
-                page_id INT( 11 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+                page_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY admin_general (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_general (page_id) REFERENCES pages(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+                FOREIGN KEY page_general (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table custom_pages(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    file_name VARCHAR( 100 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
-			    page_id INT( 11 ) NOT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    page_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY admin_custom_page (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_custom_page (page_id) REFERENCES pages(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+                FOREIGN KEY page_custom_page (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table socials(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    link VARCHAR( 255 ) NOT NULL,
-			    ordering INT( 11 ) NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    ordering ' . $typeInteger. '( 11 ) NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table subscribers(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    email VARCHAR( 100 ) NOT NULL,
 			    created DATETIME NOT NULL,
 			    unsubscribe_date DATETIME NULL,
-			    status VARCHAR( 20 ) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    status VARCHAR( 20 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table submenus(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
-			    menu_id INT( 11 ) NOT NULL,
+			    menu_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
-			    ordering INT( 11 ) NULL,
+			    ordering ' . $typeInteger. '( 11 ) NULL,
 			    created DATETIME NOT NULL,
 			    modified DATETIME NULL,
                 target VARCHAR( 255 ) NOT NULL,
 			    page_id INT NULL,
-			    admin_id INT( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 				FOREIGN KEY menu_submenu (menu_id) REFERENCES menus(id),
 			    FOREIGN KEY admin_submenu (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_submenu (page_id) REFERENCES pages(id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+                FOREIGN KEY page_submenu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table visitors(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
 			    browser VARCHAR( 100 ) NOT NULL,
 			    platform VARCHAR( 100 ) NOT NULL,
 			    device VARCHAR( 100 ) NOT NULL,
 			    date_created DATE NOT NULL,
-				time_created TIME NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+				time_created TIME NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table widgets(
-			    id INT AUTO_INCREMENT PRIMARY KEY,
+			    id INT ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
 			    content TEXT NOT NULL,
-			    content_limit INT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
+			    content_limit INT NULL)' . $storageEngine . ';');
 
 		/**
 		 * Insert Core admin for debugging
