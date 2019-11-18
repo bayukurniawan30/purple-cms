@@ -183,6 +183,39 @@ class PurpleCommand extends Command
                     $io->error('Empty option for database type');
                 }
             }
+            elseif ($value == 'heroku') {
+                if ($args->getOption('database_info')) {
+                    if ($request->getEnv("PURPLE_DEPLOY_PLATFORM") !== false && $request->getEnv("PURPLE_DEPLOY_PLATFORM") == 'heroku' && file_exists(CONFIG . '.env')) {
+                        if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+                            $clearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+                            $envDbUser = $clearMysqlUrl["user"];
+                            $envDbPass = $clearMysqlUrl["pass"];
+                            $envDbName = substr($clearMysqlUrl["path"], 1);
+                        }
+                        else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+                            $herokuPostgreSqllUrl = parse_url(getenv("DATABASE_URL"));
+
+                            $envDbUser = $herokuPostgreSqllUrl["user"];
+                            $envDbPass = $herokuPostgreSqllUrl["pass"];
+                            $envDbName = ltrim($herokuPostgreSqllUrl["path"], "/");
+                        }
+                        
+                        $databaseNameEnv = $envDbName;
+                        $databaseUserEnv = $envDbUser;
+                        $databasePassEnv = $envDbName;
+
+                        $result = $databaseNameEnv . ',' . $databaseUserEnv . ',' . $databasePassEnv;
+                        $io->out($result);
+                    }
+                    else {
+                        $io->error('Environment variables is not exist');
+                    }
+                }
+                else {
+                    $io->error('Empty option for database type');
+                }
+            }
             elseif ($value == 'migrate') {
                 if ($args->getOption('migrate')) {
                     $databaseInfo = trim($args->getOption('migrate'));

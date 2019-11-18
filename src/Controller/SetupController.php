@@ -170,11 +170,20 @@ class SetupController extends AppController
 				else {
 					if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
 						if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
-							$clearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
+							if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+								$clearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
-							$envDbUser = $clearMysqlUrl["user"];
-							$envDbPass = $clearMysqlUrl["pass"];
-							$envDbName = substr($clearMysqlUrl["path"], 1);
+								$envDbUser = $clearMysqlUrl["user"];
+								$envDbPass = $clearMysqlUrl["pass"];
+								$envDbName = substr($clearMysqlUrl["path"], 1);
+							}
+							else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+								$herokuPostgreSqllUrl = parse_url(getenv("DATABASE_URL"));
+
+								$envDbUser = $herokuPostgreSqllUrl["user"];
+								$envDbPass = $herokuPostgreSqllUrl["pass"];
+								$envDbName = ltrim($herokuPostgreSqllUrl["path"], "/");
+							}
 						}
 						else {
 							$envDbName = $this->request->getenv('PURPLE_DATABASE_NAME');
