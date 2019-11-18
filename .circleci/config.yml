@@ -37,7 +37,7 @@ jobs:
       - run: sudo docker-php-ext-install pdo_pgsql
       - run: sudo docker-php-ext-install mbstring
       - run: sudo docker-php-ext-install gd
-      - run:
+      # - run:
       # Our primary container isn't MYSQL so run a sleep command until it's ready.
       #     name: Waiting for MySQL to be ready
       #     command: |
