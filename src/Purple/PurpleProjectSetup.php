@@ -77,12 +77,20 @@ class PurpleProjectSetup
 					$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 					$typeInteger   = 'INT';
 					$typeDatetime  = 'DATETIME';
+					$mysqlTableUniqueSlug  = 'UNIQUE KEY (slug),';
+					$mysqlTableUniqueName  = 'UNIQUE KEY (name),';
+					$mysqlTableUniqueTitle = ',UNIQUE KEY (title)';
+					$pgsqlTableUnique      = '';
 				}
 				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
 					$autoIncrement = 'serial';
 					$storageEngine = '';
 					$typeInteger   = 'DECIMAL';
 					$typeDatetime  = 'TIMESTAMP';
+					$mysqlTableUniqueSlug  = '';
+					$mysqlTableUniqueName  = '';
+					$mysqlTableUniqueTitle = '';
+					$pgsqlTableUnique      = ' UNIQUE ';
 				}
 			}
 			else {
@@ -90,6 +98,10 @@ class PurpleProjectSetup
 				$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 				$typeInteger   = 'INT';
 				$typeDatetime  = 'DATETIME';
+				$mysqlTableUniqueSlug  = 'UNIQUE KEY (slug),';
+				$mysqlTableUniqueName  = 'UNIQUE KEY (name),';
+				$mysqlTableUniqueTitle = ',UNIQUE KEY (title)';
+				$pgsqlTableUnique = '';
 			}
 		}
 		else {
@@ -97,6 +109,10 @@ class PurpleProjectSetup
 			$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 			$typeInteger   = 'INT';
 			$typeDatetime  = 'DATETIME';
+			$mysqlTableUniqueSlug  = 'UNIQUE KEY (slug),';
+			$mysqlTableUniqueName  = 'UNIQUE KEY (name),';
+			$mysqlTableUniqueTitle = ',UNIQUE KEY (title)';
+			$pgsqlTableUnique = '';
 		}
 				
 		$this->conn->execute('CREATE table admins(
@@ -140,13 +156,13 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table pages(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
-			    slug VARCHAR( 100 ) NOT NULL,
+			    slug VARCHAR( 100 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    status CHAR( 1 ) NOT NULL,
 			    page_template_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (slug),
+			    ' . $mysqlTableUniqueSlug . '
 			    page_option VARCHAR( 100 ) NULL,
 			    parent ' . $typeInteger. '( 11 ) NULL,
 			    FOREIGN KEY admin_page (admin_id) REFERENCES admins(id),
@@ -155,13 +171,13 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table blog_categories(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
-			    slug VARCHAR( 191 ) NOT NULL,
+			    slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    page_id ' . $typeInteger. '( 11 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
                 admin_id ' . $typeInteger. '( 11 ) NULL,
-			    UNIQUE (slug),
+			    ' . $mysqlTableUniqueSlug . '
 			    FOREIGN KEY (admin_id) REFERENCES admins(id),
                 FOREIGN KEY page_blog_category (page_id) REFERENCES pages(id))' . $storageEngine . ';');
 
@@ -196,31 +212,31 @@ class PurpleProjectSetup
 
 		$this->conn->execute('CREATE table medias(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    name VARCHAR( 191 ) NOT NULL,
+			    name VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (name),
+			    ' . $mysqlTableUniqueName . '
 			    FOREIGN KEY admin_media (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_docs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    name VARCHAR( 191 ) NOT NULL,
+			    name VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (name),
+			    ' . $mysqlTableUniqueName . '
 			    FOREIGN KEY admin_media_doc (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_galleries(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    name VARCHAR( 191 ) NOT NULL,
+			    name VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    image VARCHAR( 255 ) NOT NULL,
 			    sc TEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
@@ -228,19 +244,19 @@ class PurpleProjectSetup
 			    ordering VARCHAR( 255 ) NULL,
 			    type VARCHAR( 50 ) NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (name),
+			    ' . $mysqlTableUniqueName . '
 			    FOREIGN KEY admin_media_gallery (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_videos(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    name VARCHAR( 191 ) NOT NULL,
+			    name VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (name),
+			    ' . $mysqlTableUniqueName . '
 			    FOREIGN KEY admin_media_video (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table menus(
@@ -263,7 +279,7 @@ class PurpleProjectSetup
 			    content TEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
-			    slug VARCHAR( 191 ) NOT NULL,
+			    slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    comment VARCHAR( 3 ) NOT NULL,
@@ -274,7 +290,7 @@ class PurpleProjectSetup
 			    status VARCHAR( 10 ) NOT NULL,
 			    social_share VARCHAR( 10 ) NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    UNIQUE KEY (slug),
+			    ' . $mysqlTableUniqueSlug . '
 			    FOREIGN KEY admin_blog (admin_id) REFERENCES admins(id),
 			    FOREIGN KEY blogcategory_blog (blog_category_id) REFERENCES blog_categories(id),
 			    FOREIGN KEY blogtype_blog (blog_type_id) REFERENCES blog_types(id))' . $storageEngine . ';');
@@ -310,11 +326,11 @@ class PurpleProjectSetup
 
 		$this->conn->execute('CREATE table tags(
 				id ' . $autoIncrement . ' PRIMARY KEY,
-				title VARCHAR( 191 ) NOT NULL,
+				title VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    slug VARCHAR( 191 ) NOT NULL,
 				created ' . $typeDatetime . ' NOT NULL,
-				modified DATETIME,
-				UNIQUE KEY (title))' . $storageEngine . ';');
+				modified DATETIME
+				' . $mysqlTableUniqueTitle . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blogs_tags (
 				blog_id ' . $typeInteger. '( 11 ) NOT NULL,
