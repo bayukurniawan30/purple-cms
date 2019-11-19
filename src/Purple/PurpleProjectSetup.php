@@ -70,40 +70,33 @@ class PurpleProjectSetup
 	}
 	public function createTable()
 	{
-		try {
-            $connection = ConnectionManager::get('default');
-            $connected = $connection->connect();
-			Log::write('debug', 'connected');
-		} 
-		catch (Exception $connectionError) {
-            $connected = false;
-			$errorMsg = $connectionError->getMessage();
-			Log::write('error', $errorMsg);
-		}
-
 		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
 			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
 				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
 					$autoIncrement = 'AUTO_INCREMENT';
 					$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 					$typeInteger   = 'INT';
+					$typeDatetime  = 'DATETIME';
 				}
 				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
 					$autoIncrement = 'serial';
 					$storageEngine = '';
 					$typeInteger   = 'DECIMAL';
+					$typeDatetime  = 'TIMESTAMP';
 				}
 			}
 			else {
 				$autoIncrement = 'AUTO_INCREMENT';
 				$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 				$typeInteger   = 'INT';
+				$typeDatetime  = 'DATETIME';
 			}
 		}
 		else {
 			$autoIncrement = 'AUTO_INCREMENT';
 			$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 			$typeInteger   = 'INT';
+			$typeDatetime  = 'DATETIME';
 		}
 				
 		$this->conn->execute('CREATE table admins(
@@ -114,12 +107,12 @@ class PurpleProjectSetup
 			    api_key VARCHAR( 255 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    photo VARCHAR( 200 ) NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    display_name VARCHAR( 100 ) NOT NULL,
 			    level ' . $typeInteger. '( 1 ) NOT NULL,
 			    about VARCHAR ( 255 ) NULL,
-			    last_login DATETIME NULL,
+			    last_login ' . $typeDatetime . ' NULL,
 			    facebook VARCHAR ( 200 ) NULL,
 			    googleplus VARCHAR ( 200 ) NULL,
 			    twitter VARCHAR ( 200 ) NULL,
@@ -150,8 +143,8 @@ class PurpleProjectSetup
 			    slug VARCHAR( 100 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
 			    page_template_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    UNIQUE KEY (slug),
 			    page_option VARCHAR( 100 ) NULL,
@@ -164,8 +157,8 @@ class PurpleProjectSetup
 			    name VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
 			    page_id ' . $typeInteger. '( 11 ) NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
                 admin_id ' . $typeInteger. '( 11 ) NULL,
 			    UNIQUE (slug),
@@ -178,7 +171,7 @@ class PurpleProjectSetup
 			    content TEXT NOT NULL,
 			    sender ' . $typeInteger. '( 11 ) NOT NULL,
 			    receiver ' . $typeInteger. '( 11 ) NOT NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NOT NULL,
 			    sender_folder VARCHAR( 20 ) NOT NULL,
 			    receiver_folder VARCHAR( 20 ) NOT NULL,
@@ -197,15 +190,15 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 200 ) NOT NULL,
 			    detail TEXT NOT NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY admin_history (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table medias(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
@@ -216,8 +209,8 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table media_docs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
@@ -230,8 +223,8 @@ class PurpleProjectSetup
 			    name VARCHAR( 191 ) NOT NULL,
 			    image VARCHAR( 255 ) NOT NULL,
 			    sc TEXT NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    ordering VARCHAR( 255 ) NULL,
 			    type VARCHAR( 50 ) NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
@@ -241,8 +234,8 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table media_videos(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 191 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
@@ -256,8 +249,8 @@ class PurpleProjectSetup
 			    ordering ' . $typeInteger. '( 11 ) NULL,
 			    has_sub ' . $typeInteger. '( 11 ) NULL,
 			    status CHAR( 1 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
                 target VARCHAR( 255 ) NOT NULL,
 			    page_id INT NULL,
                 admin_id ' . $typeInteger. '( 11 ) NOT NULL,
@@ -268,8 +261,8 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 255 ) NOT NULL,
 			    content MEDIUMTEXT NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
 			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL,
@@ -294,7 +287,7 @@ class PurpleProjectSetup
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    content VARCHAR( 1000 ) NOT NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    status ' . $typeInteger. '( 1 ) NOT NULL,
 			    reply ' . $typeInteger. '( 11 ) NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NULL,
@@ -311,7 +304,7 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table blog_visitors(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    blog_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY blog_blogvisitor (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
 
@@ -319,7 +312,7 @@ class PurpleProjectSetup
 				id ' . $autoIncrement . ' PRIMARY KEY,
 				title VARCHAR( 191 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
-				created DATETIME NOT NULL,
+				created ' . $typeDatetime . ' NOT NULL,
 				modified DATETIME,
 				UNIQUE KEY (title))' . $storageEngine . ';');
 
@@ -336,7 +329,7 @@ class PurpleProjectSetup
 			    content TEXT NOT NULL,
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 200 ) NOT NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NOT NULL,
 			    folder VARCHAR( 20 ) NOT NULL,
 			    replied ' . $typeInteger. '( 1 ) NOT NULL,
@@ -346,7 +339,7 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    type VARCHAR( 20 ) NOT NULL,
 			    content VARCHAR( 255 ) NULL,
-			    created DATETIME NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NULL,
 			    comment_id ' . $typeInteger. '( 11 ) NULL,
 			    message_id ' . $typeInteger. '( 11 ) NULL,
@@ -360,8 +353,8 @@ class PurpleProjectSetup
 			    content MEDIUMTEXT NOT NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
                 page_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    FOREIGN KEY admin_general (admin_id) REFERENCES admins(id),
@@ -370,8 +363,8 @@ class PurpleProjectSetup
         $this->conn->execute('CREATE table custom_pages(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    file_name VARCHAR( 100 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
 			    page_id ' . $typeInteger. '( 11 ) NOT NULL,
@@ -388,8 +381,8 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table subscribers(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    email VARCHAR( 100 ) NOT NULL,
-			    created DATETIME NOT NULL,
-			    unsubscribe_date DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    unsubscribe_date ' . $typeDatetime . ' NULL,
 			    status VARCHAR( 20 ) NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table submenus(
@@ -398,8 +391,8 @@ class PurpleProjectSetup
 			    menu_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
-			    created DATETIME NOT NULL,
-			    modified DATETIME NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
                 target VARCHAR( 255 ) NOT NULL,
 			    page_id INT NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
