@@ -125,7 +125,7 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table settings(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
-			    value MEDIUMTEXT NOT NULL)' . $storageEngine . ';');
+			    value TEXT NOT NULL)' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_types(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -260,7 +260,7 @@ class PurpleProjectSetup
         $this->conn->execute('CREATE table blogs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 255 ) NOT NULL,
-			    content MEDIUMTEXT NOT NULL,
+			    content TEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    slug VARCHAR( 191 ) NOT NULL,
@@ -350,7 +350,7 @@ class PurpleProjectSetup
 
         $this->conn->execute('CREATE table generals(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    content MEDIUMTEXT NOT NULL,
+			    content TEXT NOT NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
