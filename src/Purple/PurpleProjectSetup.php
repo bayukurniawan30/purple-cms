@@ -68,6 +68,55 @@ class PurpleProjectSetup
 		}
 		return $key;
 	}
+	private function mysqlForeignKey($key, $column, $referenceTable, $referenceColumn, $next = false)
+	{
+		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+					$generatedForeignKey = 'FOREIGN KEY ' . $key . ' (' . $column . ') REFERENCES ' . $referenceTable . '(' . $referenceColumn . ')';
+					if ($next) {
+						$generatedForeignKey .= ',';
+					}
+				}
+				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+					$generatedForeignKey = '';
+				}
+			}
+			else {
+				$generatedForeignKey = 'FOREIGN KEY ' . $key . ' (' . $column . ') REFERENCES ' . $referenceTable . '(' . $referenceColumn . ')';
+				if ($next) {
+					$generatedForeignKey .= ',';
+				}
+			}
+		}
+		else {
+			$generatedForeignKey = 'FOREIGN KEY ' . $key . ' (' . $column . ') REFERENCES ' . $referenceTable . '(' . $referenceColumn . ')';
+			if ($next) {
+				$generatedForeignKey .= ',';
+			}
+		}
+
+		return $generatedForeignKey;
+	}
+	private function pgsqlForeignKey($referenceTable, $referenceColumn)
+	{
+		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
+			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
+				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
+					$generatedForeignKey = '';
+				}
+				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
+					$generatedForeignKey = ' REFERENCES ' . $referenceTable . '(' . $referenceColumn . ')';
+				}
+			}
+			else {
+				$generatedForeignKey = '';
+			}
+		}
+		else {
+			$generatedForeignKey = '';
+		}
+	}
 	public function createTable()
 	{
 		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
@@ -161,25 +210,25 @@ class PurpleProjectSetup
 			    page_template_id ' . $typeInteger. '( 11 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueSlug . '
 			    page_option VARCHAR( 100 ) NULL,
 			    parent ' . $typeInteger. '( 11 ) NULL,
-			    FOREIGN KEY admin_page (admin_id) REFERENCES admins(id),
-			    FOREIGN KEY page_template_page (page_template_id) REFERENCES page_templates(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_page', 'admin_id', 'admins', 'id', true) . '
+			    ' . $this->mysqlForeignKey('page_template_page', 'page_template_id', 'page_templates', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_categories(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
 			    slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
-			    page_id ' . $typeInteger. '( 11 ) NULL,
+			    page_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
-                admin_id ' . $typeInteger. '( 11 ) NULL,
+                admin_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueSlug . '
-			    FOREIGN KEY (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_blog_category (page_id) REFERENCES pages(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_blog_category', 'admin_id', 'admins', 'id', true) . '
+                ' . $this->mysqlForeignKey('page_blog_category', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table chats (
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -199,16 +248,16 @@ class PurpleProjectSetup
 			    link VARCHAR( 255 ) NOT NULL,
 			    family VARCHAR( 100 ) NOT NULL,
 			    applied VARCHAR( 255 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY admin_font (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_font', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table histories(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 200 ) NOT NULL,
 			    detail TEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY admin_history (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_history', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table medias(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -218,9 +267,9 @@ class PurpleProjectSetup
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueName . '
-			    FOREIGN KEY admin_media (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_media', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_docs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -230,9 +279,9 @@ class PurpleProjectSetup
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueName . '
-			    FOREIGN KEY admin_media_doc (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_media_doc', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_galleries(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -243,9 +292,9 @@ class PurpleProjectSetup
 			    modified ' . $typeDatetime . ' NULL,
 			    ordering VARCHAR( 255 ) NULL,
 			    type VARCHAR( 50 ) NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueName . '
-			    FOREIGN KEY admin_media_gallery (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_media_gallery', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table media_videos(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -255,9 +304,9 @@ class PurpleProjectSetup
 			    title VARCHAR( 255 ) NOT NULL,
 			    description TEXT NULL,
 			    size ' . $typeInteger. '( 11 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueName . '
-			    FOREIGN KEY admin_media_video (admin_id) REFERENCES admins(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_media_video', 'admin_id', 'admins', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table menus(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -268,10 +317,10 @@ class PurpleProjectSetup
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
                 target VARCHAR( 255 ) NOT NULL,
-			    page_id INT NULL,
-                admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY admin_menu (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_menu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
+			    page_id INT NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_menu', 'admin_id', 'admins', 'id', true) . '
+                ' . $this->mysqlForeignKey('page_menu', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table blogs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -280,8 +329,8 @@ class PurpleProjectSetup
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
-			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blog_types', 'id') . ',
+			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blog_categories', 'id') . ',
 			    comment VARCHAR( 3 ) NOT NULL,
 			    featured VARCHAR( 500 ) NULL,
 			    selected CHAR( 3 ) NULL,
@@ -289,11 +338,11 @@ class PurpleProjectSetup
 			    meta_description TEXT NULL,
 			    status VARCHAR( 10 ) NOT NULL,
 			    social_share VARCHAR( 10 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
 			    ' . $mysqlTableUniqueSlug . '
-			    FOREIGN KEY admin_blog (admin_id) REFERENCES admins(id),
-			    FOREIGN KEY blogcategory_blog (blog_category_id) REFERENCES blog_categories(id),
-			    FOREIGN KEY blogtype_blog (blog_type_id) REFERENCES blog_types(id))' . $storageEngine . ';');
+			    ' . $this->mysqlForeignKey('admin_blog', 'admin_id', 'admins', 'id', true) . '
+			    ' . $this->mysqlForeignKey('blogcategory_blog', 'blog_category_id', 'blog_categories', 'id', true) . '
+			    ' . $this->mysqlForeignKey('blogtype_blog', 'blog_type_id', 'blog_types', 'id') . ')' . $storageEngine . ';');
 
 		// $this->conn->execute('ALTER TABLE blogs ADD FULLTEXT (title);');
 		// $this->conn->execute('ALTER TABLE blogs ADD FULLTEXT (content);');
@@ -307,10 +356,10 @@ class PurpleProjectSetup
 			    status ' . $typeInteger. '( 1 ) NOT NULL,
 			    reply ' . $typeInteger. '( 11 ) NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NULL,
-			    blog_id ' . $typeInteger. '( 1 ) NOT NULL,
-			    FOREIGN KEY admin_comment (admin_id) REFERENCES admins(id),
-			    FOREIGN KEY blog_comment (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
+			    admin_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    blog_id ' . $typeInteger. '( 1 ) NOT NULL ' . $this->pgsqlForeignKey('blogs', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_comment', 'admin_id', 'admins', 'id', true) . '
+			    ' . $this->mysqlForeignKey('blog_comment', 'blog_id', 'blogs', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blog_sidebar(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -321,8 +370,8 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    ip VARCHAR( 50 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
-			    blog_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY blog_blogvisitor (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
+			    blog_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blogs', 'id') . ',
+			    ' . $this->mysqlForeignKey('blog_blogvisitor', 'blog_id', 'blogs', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table tags(
 				id ' . $autoIncrement . ' PRIMARY KEY,
@@ -333,11 +382,11 @@ class PurpleProjectSetup
 				' . $mysqlTableUniqueTitle . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blogs_tags (
-				blog_id ' . $typeInteger. '( 11 ) NOT NULL,
-				tag_id ' . $typeInteger. '( 11 ) NOT NULL,
+				blog_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blogs', 'id') . ',
+				tag_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('tags', 'id') . ',
 				PRIMARY KEY (blog_id, tag_id),
-				FOREIGN KEY tag_key (tag_id) REFERENCES tags(id),
-				FOREIGN KEY blog_key (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
+				' . $this->mysqlForeignKey('tag_key', 'tag_id', 'tags', 'id', true) . '
+				' . $this->mysqlForeignKey('blog_key', 'blog_id', 'blogs', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table messages(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -357,12 +406,12 @@ class PurpleProjectSetup
 			    content VARCHAR( 255 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NULL,
-			    comment_id ' . $typeInteger. '( 11 ) NULL,
-			    message_id ' . $typeInteger. '( 11 ) NULL,
-			    blog_id ' . $typeInteger. '( 11 ) NULL,
-			    FOREIGN KEY comment_notification (comment_id) REFERENCES comments(id),
-			    FOREIGN KEY message_notification (message_id) REFERENCES messages(id),
-				FOREIGN KEY blog_notification (blog_id) REFERENCES blogs(id))' . $storageEngine . ';');
+			    comment_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('comments', 'id') . ',
+			    message_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('messages', 'id') . ',
+			    blog_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('blogs', 'id') . ',
+			    ' . $this->mysqlForeignKey('comment_notification', 'comment_id', 'comments', 'id', true) . '
+			    ' . $this->mysqlForeignKey('message_notification', 'message_id', 'messages', 'id', true) . '
+				' . $this->mysqlForeignKey('blog_notification', 'blog_id', 'blogs', 'id') . ')' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table generals(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -371,10 +420,10 @@ class PurpleProjectSetup
 			    meta_description TEXT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
-                page_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY admin_general (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_general (page_id) REFERENCES pages(id))' . $storageEngine . ';');
+                page_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_general', 'admin_id', 'admins', 'id', true) . '
+                ' . $this->mysqlForeignKey('page_general', 'page_id', 'pages', 'id', true) . ')' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table custom_pages(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -383,10 +432,10 @@ class PurpleProjectSetup
 			    modified ' . $typeDatetime . ' NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
-			    page_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-			    FOREIGN KEY admin_custom_page (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_custom_page (page_id) REFERENCES pages(id))' . $storageEngine . ';');
+			    page_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+			    ' . $this->mysqlForeignKey('admin_custom_page', 'admin_id', 'admins', 'id', true) . '
+                ' . $this->mysqlForeignKey('page_custom_page', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table socials(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -404,17 +453,17 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table submenus(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 100 ) NOT NULL,
-			    menu_id ' . $typeInteger. '( 11 ) NOT NULL,
+			    menu_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('menus', 'id') . ',
 			    status CHAR( 1 ) NOT NULL,
 			    ordering ' . $typeInteger. '( 11 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
                 target VARCHAR( 255 ) NOT NULL,
-			    page_id INT NULL,
-			    admin_id ' . $typeInteger. '( 11 ) NOT NULL,
-				FOREIGN KEY menu_submenu (menu_id) REFERENCES menus(id),
-			    FOREIGN KEY admin_submenu (admin_id) REFERENCES admins(id),
-                FOREIGN KEY page_submenu (page_id) REFERENCES pages(id))' . $storageEngine . ';');
+			    page_id INT NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
+			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
+				' . $this->mysqlForeignKey('menu_submenu', 'menu_id', 'menus', 'id', true) . '
+			    ' . $this->mysqlForeignKey('admin_submenu', 'admin_id', 'admins', 'id', true) . '
+                ' . $this->mysqlForeignKey('page_submenu', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table visitors(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
