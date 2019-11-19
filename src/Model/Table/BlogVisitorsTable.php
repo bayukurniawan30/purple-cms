@@ -46,7 +46,8 @@ class BlogVisitorsTable extends Table
 		$date  = date('d', strtotime($created));
 		$fullDate = $year.'-'.$month.'-'.$date;
 
-		$query = $this->find()->where(['DATE(created)' => $fullDate, 'ip' => $ip]);
+		$query = $this->find();
+		$query->where([$query->func()->date('created') => $fullDate, 'ip' => $ip]);
 		return $query->count(); 
 	}
 	public function totalVisitors($blogId) 
@@ -68,7 +69,8 @@ class BlogVisitorsTable extends Table
 		for ($day = 1; $day <= 14; $day++) {
 			$data = date('Y-m-d', strtotime("-".$day." days"));
 
-	    	$totalVisitors = $this->find()->where(['DATE(created)' => $data, 'blog_id' => $blogId])->count();
+			$totalVisitors = $this->find();
+			$totalVisitors->where([$totalPosts->func()->date('created') => $data, 'blog_id' => $blogId])->count();
 			$arrayDays[] = $totalVisitors;
 		}
 		
@@ -76,7 +78,8 @@ class BlogVisitorsTable extends Table
     }
     public function totalVisitorsDate($blogId, $date) 
     {
-        $totalVisitors = $this->find()->where(['blog_id' => $blogId, 'DATE(created)' => $date])->count();
+		$totalVisitors = $this->find();
+		$totalVisitors->where(['blog_id' => $blogId, $totalVisitors->func()->date('created') => $date])->count();
         return $totalVisitors;
     }
 }
