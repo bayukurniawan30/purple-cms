@@ -6,6 +6,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Text;
 use Cake\Utility\Security;
+use Cake\Log\Log;
 use Carbon\Carbon;
 use DateTimeZone;
 use DateTime;
@@ -69,6 +70,17 @@ class PurpleProjectSetup
 	}
 	public function createTable()
 	{
+		try {
+            $connection = ConnectionManager::get('default');
+            $connected = $connection->connect();
+			Log::write('debug', 'connected');
+		} 
+		catch (Exception $connectionError) {
+            $connected = false;
+			$errorMsg = $connectionError->getMessage();
+			Log::write('error', $errorMsg);
+		}
+
 		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
 			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
 				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
@@ -78,7 +90,7 @@ class PurpleProjectSetup
 				}
 				else if (getenv("PURPLE_DATABASE_DRIVER") == 'pgsql') {
 					$autoIncrement = 'serial';
-					$storageEngine = NULL;
+					$storageEngine = '';
 					$typeInteger   = 'DECIMAL';
 				}
 			}
