@@ -32,7 +32,7 @@
 </div>
 <div class="uk-width-1-1 uk-margin-small">
 	<div class="uk-inline" style="width: 100%">
-		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
+		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" tabindex="-1" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
 		<?php
 			echo $this->Form->password('password', [
 				'class'        => 'uk-input',

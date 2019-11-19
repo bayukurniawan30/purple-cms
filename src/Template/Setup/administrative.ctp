@@ -57,7 +57,7 @@
 </div>
 <div class="uk-width-1-2 uk-margin-small">
 	<div class="uk-inline" style="width: 100%">
-		<a id="button-generate-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: file-edit" uk-tooltip="title: Generate password; pos: bottom-right"></a>
+		<a id="button-generate-password" class="uk-form-icon uk-form-icon-flip" tabindex="-1" href="#" uk-icon="icon: file-edit" uk-tooltip="title: Generate password; pos: bottom-right"></a>
 		<?php
 			echo $this->Form->password('password', [
 				'id'                     => 'same-password',
@@ -75,7 +75,7 @@
 </div>
 <div class="uk-width-1-2 uk-margin-small">
 	<div class="uk-inline" style="width: 100%">
-		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
+		<a id="button-visible-password" class="uk-form-icon uk-form-icon-flip" tabindex="-1" href="#" uk-icon="icon: lock" uk-tooltip="title: Unlock Password; pos: bottom-right"></a>
 		<?php
 			echo $this->Form->password('repeatpassword', [
 				'class'                  => 'uk-input',

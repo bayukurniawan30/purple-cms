@@ -390,7 +390,7 @@ class PurpleProjectSetup
 				title VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    slug VARCHAR( 191 ) NOT NULL,
 				created ' . $typeDatetime . ' NOT NULL,
-				modified DATETIME
+				modified ' . $typeDatetime . '
 				' . $mysqlTableUniqueTitle . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table blogs_tags (
