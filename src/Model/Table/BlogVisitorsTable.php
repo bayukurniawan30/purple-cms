@@ -46,8 +46,18 @@ class BlogVisitorsTable extends Table
 		$date  = date('d', strtotime($created));
 		$fullDate = $year.'-'.$month.'-'.$date;
 
-		$query = $this->find();
-		$query->where([$query->func()->date('created') => $fullDate, 'ip' => $ip]);
+		$query     = $this->find();
+		$dateYear  = $query->func()->extract('YEAR', 'created');
+		$dateMonth = $query->func()->extract('MONTH', 'created');
+		$dateDay   = $query->func()->extract('DAY', 'created');
+		$query->select([
+			'yearCreated'  => $dateYear,
+			'monthCreated' => $dateMonth,
+			'dayCreated'   => $dateMonth,
+			'ip'
+		])
+		->having(['yearCreated' => $year, 'monthCreated' => $month, 'dayCreated' => $date, 'ip' => $ip]);
+
 		return $query->count(); 
 	}
 	public function totalVisitors($blogId) 
@@ -68,18 +78,40 @@ class BlogVisitorsTable extends Table
     	$arrayDays = array();
 		for ($day = 1; $day <= 14; $day++) {
 			$data = date('Y-m-d', strtotime("-".$day." days"));
+			$explodeDate = explode(',', $data);
 
 			$totalVisitors = $this->find();
-			$totalVisitors->where([$totalPosts->func()->date('created') => $data, 'blog_id' => $blogId])->count();
-			$arrayDays[] = $totalVisitors;
+			$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
+			$dateMonth = $totalVisitors->func()->extract('MONTH', 'created');
+			$dateDay   = $totalVisitors->func()->extract('DAY', 'created');
+			$totalVisitors->select([
+				'yearCreated'  => $dateYear,
+				'monthCreated' => $dateMonth,
+				'dayCreated'   => $dateMonth,
+				'blog_id'
+			])
+			->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'blog_id' => $blogId]);
+			$arrayDays[] = $totalVisitors->count();
 		}
 		
 		return array_reverse($arrayDays);
     }
     public function totalVisitorsDate($blogId, $date) 
     {
+		$explodeDate = explode(',', $date);
+
 		$totalVisitors = $this->find();
-		$totalVisitors->where(['blog_id' => $blogId, $totalVisitors->func()->date('created') => $date])->count();
-        return $totalVisitors;
+		$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
+		$dateMonth = $totalVisitors->func()->extract('MONTH', 'created');
+		$dateDay   = $totalVisitors->func()->extract('DAY', 'created');
+		$totalVisitors->select([
+			'yearCreated'  => $dateYear,
+			'monthCreated' => $dateMonth,
+			'dayCreated'   => $dateMonth,
+			'blog_id'
+		])
+		->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'blog_id' => $blogId]);
+
+        return $totalVisitors->count();
     }
 }

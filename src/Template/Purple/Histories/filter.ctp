@@ -32,11 +32,9 @@
                                     <div class="uk-width-expand">
                                         <h5 class="uk-comment-title uk-margin-remove">
                                             <a class="uk-link-reset" href="#">
-                                                <?= $history->title ?><br><small class="text-muted">by : <?= $history->admin->display_name ?></small>
-                                            </a> </h5>
-                                        <p class="uk-comment-meta uk-margin-remove-top">
-                                            <i class="fa fa-clock-o"></i> <a class="uk-link-reset" href="#" data-livestamp="<?= $history->created ?>"></a>
-                                        </p>
+                                                <?= $history->title ?><br><small class="text-muted"><i class="fa fa-clock-o"></i> <a class="uk-link-reset" href="#" data-livestamp="<?= $history->created ?>"></a></small> <small class="text-muted">by <?= $history->admin->display_name ?></small>
+                                            </a> 
+                                        </h5>
                                     </div>
                                 </div>
                             </header>

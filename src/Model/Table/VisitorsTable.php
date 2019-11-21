@@ -60,7 +60,7 @@ class VisitorsTable extends Table
             $data = date('Y-m-d', strtotime("-".$day." days"));
 
             $totalVisitors = $this->find();
-            $totalVisitors->where([$totalVisitors->func()->date('date_created') => $data])->count();
+            $totalVisitors->where(['date_created' => $data])->count();
             $arrayDays[] = $totalVisitors;
         }
         
@@ -73,7 +73,7 @@ class VisitorsTable extends Table
             $data = date('Y-m-d', strtotime("-".$day." days"));
 
             $totalVisitors = $this->find();
-            $totalVisitors->where([$totalVisitors->func()->date('date_created') => $data])->count();
+            $totalVisitors->where(['date_created' => $data])->count();
             $arrayDays[] = $totalVisitors;
         }
         
@@ -92,12 +92,19 @@ class VisitorsTable extends Table
     	$arrayMonth = array();
 		for ($month = 1; $month <= 6; $month++) {
 			$data = date('Y-m', strtotime("-".$month." month"));
-			$explodeData = explode('-', $data);
-
+            $explodeData = explode('-', $data);
+            
             $totalVisitors = $this->find();
-            $totalVisitors->where([$totalVisitors->func()->extract('YEAR', 'date_created') => $explodeData[0], $totalVisitors->func()->extract('MONTH', 'date_created') => $explodeData[1]])->count();
-			$arrayMonth[] = $totalVisitors;
-		}
+            $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
+            $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+            $totalVisitors->select([
+                'yearCreated'  => $dateYear,
+                'monthCreated' => $dateMonth
+            ])
+            ->having(['yearCreated' => $explodeData[0], 'monthCreated' => $explodeData[1]]);
+
+            $arrayMonth[] = $totalVisitors->count();
+        }
 		
 		return array_reverse($arrayMonth);
     }
@@ -108,13 +115,18 @@ class VisitorsTable extends Table
 			$data = date('Y-m', strtotime("-".$month." month"));
 			$explodeData = explode('-', $data);
 
-	    	$totalVisitors = $this->find('all',
-			    array('fields'=> array('DISTINCT date_created'))
-            );
-            $totalVisitors->where([$totalVisitors->func()->extract('YEAR', 'date_created') => $explodeData[0], $totalVisitors->func()->extract('MONTH', 'date_created') => $explodeData[1]])->count();
-			$arrayMonth[] = $totalVisitors;
-		}
-		
+            $totalVisitors = $this->find();
+            $dateYear  = $totalVisitors->func()->extract('YEAR', 'date_created');
+            $dateMonth = $totalVisitors->func()->extract('MONTH', 'date_created');
+            $totalVisitors->select([
+                'yearCreated'  => $dateYear,
+                'monthCreated' => $dateMonth
+            ])
+            ->distinct(['date_created'])
+            ->having(['yearCreated' => $explodeData[0], 'monthCreated' => $explodeData[1]]);
+			$arrayMonth[] = $totalVisitors->count();
+        }
+        
 		return array_reverse($arrayMonth);
     }
     public function lastSixMonthTotalMobileVisitors() 
@@ -125,8 +137,15 @@ class VisitorsTable extends Table
             $explodeData = explode('-', $data);
 
             $totalVisitors = $this->find();
-            $totalVisitors->where([$totalVisitors->func()->extract('YEAR', 'date_created') => $explodeData[0], $totalVisitors->func()->extract('MONTH', 'date_created') => $explodeData[1], 'OR' => [['device' => 'Phone'], ['device' => 'Tablet']]])->count();
-            $arrayMonth[] = $totalVisitors;
+            $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
+            $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+            $totalVisitors->select([
+                'yearCreated'  => $dateYear,
+                'monthCreated' => $dateMonth
+            ])
+            ->having(['yearCreated' => $explodeData[0], 'monthCreated' => $explodeData[1]])
+            ->where(['OR' => [['device' => 'Phone'], ['device' => 'Tablet']]]);
+            $arrayMonth[] = $totalVisitors->count();
         }
         
         return array_reverse($arrayMonth);
@@ -148,40 +167,63 @@ class VisitorsTable extends Table
     	}
 
         $totalVisitors = $this->find();
-        $totalVisitors->where([$totalVisitors->func()->extract('YEAR', 'date_created') => $usedYear, $totalVisitors->func()->extract('MONTH', 'date_created') => $usedMonth])->count();
-    	return $totalVisitors;
+        $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
+        $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+        $totalVisitors->select([
+            'yearCreated'  => $dateYear,
+            'monthCreated' => $dateMonth
+        ])
+        ->having(['yearCreated' => $usedYear, 'monthCreated' => $usedMonth]);
+
+    	return $totalVisitors->count();
     }
     public function totalVisitorsDate($date) 
     {
         $totalVisitors = $this->find();
-        $totalVisitors->where([$totalVisitors->func()->date('date_created') => $date])->count();
-        return $totalVisitors;
+        $totalVisitors->where(['date_created' => $date]);
+        return $totalVisitors->count();
     }
     public function totalUniqueVisitorsDate($date) 
     {
         $totalVisitors = $this->find('all', ['fields'=> array('DISTINCT date_created')]);
-        $totalVisitors->where([$totalVisitors->func()->date('date_created') => $date])->count();
-        return $totalVisitors;
+        $totalVisitors->where(['date_created' => $date]);
+        return $totalVisitors->count();
     }
     public function totalMobileVisitorsDate($date) 
     {
         $totalVisitors = $this->find();
-        $totalVisitors->where([$totalVisitors->func()->date('date_created') => $date, 'OR' => [['device' => 'Phone'], ['device' => 'Tablet']]])->count();
-        return $totalVisitors;
+        $totalVisitors->where(['date_created' => $date, 'OR' => [['device' => 'Phone'], ['device' => 'Tablet']]]);
+        return $totalVisitors->count();
     }
     public function visitorsPlatform($browser, $month = NULL, $year = NULL)
     {
         if ($year == NULL && $month == NULL) {
-            $totalVisitorsBrowser = $this->find('all', [
-                'conditions' => ['platform LIKE' => '%'.$browser.'%']
-            ])->count();
-        }
-        else {
-            $totalVisitorsBrowser = $this->find('all', [
+            $query = $this->find('all', [
                 'conditions' => ['platform LIKE' => '%'.$browser.'%']
             ]);
-            $totalVisitorsBrowser->where([$totalVisitorsBrowser->func()->extract('YEAR', 'date_created') => $year, $totalVisitorsBrowser->func()->extract('MONTH', 'date_created') => $month])->count();    
+
+            $totalVisitorsBrowser = $query->count();
         }
+        else {
+            $query = $this->find('all', [
+                'conditions' => ['platform LIKE' => '%'.$browser.'%']
+            ]);
+            $dateYear  = $query->func()->extract('YEAR', 'date_created');
+            $dateMonth = $query->func()->extract('MONTH', 'date_created');
+            $query->select([
+                'yearCreated'  => $dateYear,
+                'monthCreated' => $dateMonth,
+            ])
+            ->having(['yearCreated' => $year, 'monthCreated' => $month]);
+
+            if ($query->count() > 0) {
+                $totalVisitorsBrowser = $query->count();
+            }
+            else {
+                $totalVisitorsBrowser = 0;
+            }
+        }
+
         return $totalVisitorsBrowser;
     }
     public function checkVisitor($ip, $created, $browser, $platform, $device)
@@ -192,7 +234,7 @@ class VisitorsTable extends Table
         $fullDate = $year.'-'.$month.'-'.$date;
 
         $query = $this->find();
-        $query->where([$query->func()->date('date_created') => $fullDate, 'ip' => $ip, 'browser' => $browser, 'platform' => $platform, 'device' => $device]);
+        $query->where(['date_created' => $fullDate, 'ip' => $ip, 'browser' => $browser, 'platform' => $platform, 'device' => $device]);
         return $query->count(); 
     }
     public function isVisitorsEnough() {

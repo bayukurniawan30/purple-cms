@@ -176,11 +176,22 @@ class BlogsTable extends Table
     {
         $arrayDays = array();
         for ($day = 1; $day <= 30; $day++) {
-            $data = date('Y-m-d', strtotime("-".$day." days"));
+			$data = date('Y-m-d', strtotime("-".$day." days"));
+			$explodeDate = explode('-', $data);
 
 			$totalPosts = $this->find();
-			$totalPosts->where([$totalPosts->func()->date('created') => $data, 'status' => '1'])->count();
-            $arrayDays[] = $totalPosts;
+			$dateYear   = $this->find()->func()->extract('YEAR', 'created');
+			$dateMonth  = $this->find()->func()->extract('MONTH', 'created');
+			$dateDay    = $this->find()->func()->extract('DAY', 'created');
+			$totalPosts->select([
+				'yearCreated'  => $dateYear,
+				'monthCreated' => $dateMonth,
+				'dayCreated'   => $dateDay,
+				'status'
+			])
+			->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'status' => '1']);
+
+            $arrayDays[] = $totalPosts->count();
         }
         
         $total = array_sum($arrayDays);

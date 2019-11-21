@@ -41,7 +41,7 @@
                 </button>
             </div>
             <?php endif; ?>
-            <div class="card-body">
+            <div class="card-body <?= $notifications->count() == 0 ? 'uk-padding-remove' : '' ?>">
             	<?php
             		if ($notifications->count() > 0):
             	?>
@@ -145,7 +145,7 @@
             	<?php
 					else:
 				?>
-				<div class="uk-alert-danger" uk-alert>
+				<div class="uk-alert-danger uk-margin-remove-bottom" uk-alert>
 				    <p>Can't find notification for now.</p>
 				</div>
 				<?php

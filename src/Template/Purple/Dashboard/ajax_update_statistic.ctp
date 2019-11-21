@@ -21,7 +21,7 @@
             
             <?php 
             	if ($visitorsWindows > 0):
-            		$windowsPercent = round(($visitorsWindows / $sumNormal) * 100, 2);
+					$windowsPercent = round(($visitorsWindows / $sumNormal) * 100, 2);
             ?>
             <p class="uk-margin-remove-bottom"><strong>Windows</strong> (<?= $windowsPercent ?>%) <em class="text-muted"><?= $this->Purple->plural($this->Purple->shortenNumber($visitorsWindows), ' visitor') ?></em></p>
             <div class="progress">

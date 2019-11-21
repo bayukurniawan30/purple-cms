@@ -145,7 +145,16 @@ class HistoriesController extends AppController
 
 		$selectedMonth = date('F Y', strtotime($year.'-'.$month.'-01'));
 
-		$histories = $this->Histories->find('all')->contain('Admins')->where(['YEAR(Histories.created)' => $year, 'MONTH(Histories.created)' => $month])->order(['Histories.id' => 'DESC']);
+		$histories = $this->Histories->find('all')->contain('Admins');
+		$dateYear  = $histories->func()->extract('YEAR', 'Histories.created');
+		$dateMonth = $histories->func()->extract('MONTH', 'Histories.created');
+		$histories->select([
+			'yearCreated'  => $dateYear,
+			'monthCreated' => $dateMonth
+		])
+		->select($this->Histories)
+		->select($this->Admins)
+		->having(['yearCreated' => $year, 'monthCreated' => $month])->order(['Histories.id' => 'DESC']);
 
         $data = [
 			'historiesTotal'  => $histories->count(),

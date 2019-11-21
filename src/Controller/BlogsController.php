@@ -511,8 +511,19 @@ class BlogsController extends AppController
 
         $monthFormat = date('F', strtotime($year.'-'.$month.'-14'));
 
-        $blogs = $this->Blogs->find('all', [
-                'order' => ['Blogs.created' => 'DESC']])->contain('BlogCategories')->contain('Admins')->where(['Blogs.status' => '1', 'YEAR(Blogs.created)' => $year, 'MONTH(Blogs.created)' => $month]);
+        $blogs     = $this->Blogs->find('all', [
+                'order' => ['Blogs.created' => 'DESC']])->contain('BlogCategories')->contain('Admins');
+        $dateYear  = $blogs->func()->extract('YEAR', 'Blogs.created');
+        $dateMonth = $blogs->func()->extract('MONTH', 'Blogs.created');
+        $blogs->select([
+            'yearCreated'  => $dateYear,
+            'monthCreated' => $dateMonth
+        ])
+        ->select($this->Blogs)
+        ->select($this->BlogCategories)
+        ->select($this->Admins)
+        ->having(['Blogs.status' => '1', 'yearCreated' => $year, 'monthCreated' => $month]);
+
         if ($blogs->count() > 0) {
             $archives    = $this->Blogs->archivesList();
             $tagsSidebar = $this->Tags->tagsSidebar($this->tagsSidebarLimit);
