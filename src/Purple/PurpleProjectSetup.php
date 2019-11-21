@@ -134,7 +134,7 @@ class PurpleProjectSetup
 		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
 			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
 				if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
-					$autoIncrement = 'AUTO_INCREMENT';
+					$autoIncrement = 'INT AUTO_INCREMENT';
 					$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 					$typeInteger   = 'INT';
 					$typeDatetime  = 'DATETIME';
@@ -155,7 +155,7 @@ class PurpleProjectSetup
 				}
 			}
 			else {
-				$autoIncrement = 'AUTO_INCREMENT';
+				$autoIncrement = 'INT AUTO_INCREMENT';
 				$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 				$typeInteger   = 'INT';
 				$typeDatetime  = 'DATETIME';
@@ -166,7 +166,7 @@ class PurpleProjectSetup
 			}
 		}
 		else {
-			$autoIncrement = 'AUTO_INCREMENT';
+			$autoIncrement = 'INT AUTO_INCREMENT';
 			$storageEngine = " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 			$typeInteger   = 'INT';
 			$typeDatetime  = 'DATETIME';
@@ -435,7 +435,7 @@ class PurpleProjectSetup
                 page_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('pages', 'id') . ',
 			    admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . '
 			    ' . $this->mysqlForeignKey('admin_general', 'admin_id', 'admins', 'id', true, true) . '
-                ' . $this->mysqlForeignKey('page_general', 'page_id', 'pages', 'id', true) . ')' . $storageEngine . ';');
+                ' . $this->mysqlForeignKey('page_general', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
         $this->conn->execute('CREATE table custom_pages(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
