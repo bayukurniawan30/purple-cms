@@ -84,7 +84,7 @@ jobs:
           command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: deploy app
-          command: ssh $SSH_USER@$SSH_HOST -p $SSH_PORT 'cd ~/home/admin/web/cake.purple-cms.com/public_html ; sudo mkdir test'
+          command: ssh $SSH_USER@$SSH_HOST -p $SSH_PORT 'cd ~/home/admin/web/cake.purple-cms.com/public_html ; sudo mkdir testfolder'
           # command: scp * $SSH_USER@$SSH_HOST:/home/admin/web/cake.purple-cms.com/public_html/ -p $SSH_PORT
 
 workflows:
