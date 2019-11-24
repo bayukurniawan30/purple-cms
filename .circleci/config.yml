@@ -83,8 +83,8 @@ jobs:
           name: fix host authenticity for production server
           command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
-          name: deploy app
-          command: scp purple-cms/* $SSH_USER@$SSH_HOST:/home/admin/web/cake.purple-cms.com/public_html -p $SSH_PORT
+          name: ssh to server
+          command: ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "cd /home/admin/web/cake.purple-cms.com/public_html; sudo git clone https://github.com/bayukurniawan30/purple-cms.git .; sudo composer install -n"
 
 workflows:
   version: 2
