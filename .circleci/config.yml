@@ -71,16 +71,25 @@ jobs:
       - run: sudo chmod +x bin/cake
       
   deploy:
-    docker:
-      - image: buildpack-deps:trusty
-    steps:
-      - checkout
-      - run:
-          name: Deploy Master to Heroku
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+    # docker:
+    #   - image: buildpack-deps:trusty
+    # steps:
+    #   - checkout
+    #   - run:
+    #       name: Deploy Master to Heroku
+    #       command: |
+    #         git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
 
-      - run: chmod +x bin/cake
+    #   - run: chmod +x bin/cake
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST
+            cd /home/admin/web/cake.purple-cms.com/public_html
+            sudo git clone https://github.com/bayukurniawan30/purple-cms.git .
 
 workflows:
   version: 2
