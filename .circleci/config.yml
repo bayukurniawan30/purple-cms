@@ -71,6 +71,8 @@ jobs:
       - run: sudo chmod +x bin/cake
       
   deploy:
+    machine:
+      enabled: true
     steps:
       - checkout
       - add_ssh_keys:
