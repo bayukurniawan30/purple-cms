@@ -83,7 +83,7 @@ jobs:
           command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: deploy app
-          command: scp purple-cms/* $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH -p $SSH_PORT
+          command: scp * $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH -p $SSH_PORT
 
 workflows:
   version: 2
