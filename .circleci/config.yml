@@ -87,7 +87,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            scp -r purple-cms/* $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH -p $SSH_PORT
+            scp -r * $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH -p $SSH_PORT
 
 workflows:
   version: 2
