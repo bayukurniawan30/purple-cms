@@ -87,9 +87,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST
-            cd /home/admin/web/cake.purple-cms.com/public_html
-            sudo git clone https://github.com/bayukurniawan30/purple-cms.git .
+            scp -P $SSH_PORT -r purple-cms/* $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
 
 workflows:
   version: 2
