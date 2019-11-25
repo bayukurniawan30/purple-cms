@@ -100,7 +100,7 @@ jobs:
       - run: sudo apt-get install sshpass
       - run:
           name: deploy app
-          command: sshpass -p "$SSH_PASSWORD" rsync -zruh --progress * -e "ssh -p $SSH_PORT" $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
+          command: sshpass -p "$SSH_PASSWORD" rsync -zruh --delete-before --progress * -e "ssh -p $SSH_PORT" $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
       - run: 
           name: run composer install
           command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; if [ ! -d "$SSH_DEPLOY_PATH_VENDOR" ]; then composer install -n ; else composer update ; fi"
