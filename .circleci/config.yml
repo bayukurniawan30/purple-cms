@@ -84,7 +84,7 @@ jobs:
           command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: deploy app
-          command: rsync -zruh --progress project/* -e 'ssh -p $SSH_PORT' $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
+          command: rsync -zruh --progress project/* -e 'ssh -p 30592' $SSH_USER@$SSH_HOST:$SSH_DEPLOY_PATH
           # command: scp -P $SSH_PORT -r project/* $SSH_USER@$SSH_HOST:/home/admin/web/cake.purple-cms.com/public_html
 
 workflows:
