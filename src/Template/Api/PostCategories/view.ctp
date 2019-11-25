@@ -4,7 +4,7 @@
     if (property_exists($decode, 'post_categories') && $decode->post_categories != NULL) {
         foreach ($decode->post_categories as $category) {
             if ($category->admin->photo != NULL) {
-                $category->admin->photo = $baseUrl . 'uploads/images/original/' . $category->admin->photo;
+                $category->admin->photo = $this->cell('Medias::mediaPath', [$category->admin->photo, 'image', 'original']);
             }
         }
 

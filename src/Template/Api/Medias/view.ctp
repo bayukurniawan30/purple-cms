@@ -4,23 +4,23 @@
     if (property_exists($decode, 'medias') && $decode->medias != NULL) {
         foreach ($decode->medias as $media) {
             if ($decode->type == 'images') {
-                $media->full_path = $baseUrl . 'uploads/images/original/' . $media->name;
+                $media->full_path = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
                 $media->thumbnail = [
-                    '300x300' => $baseUrl . 'uploads/images/thumbnails/300x300/' . $media->name,
-                    '480x270' => $baseUrl . 'uploads/images/thumbnails/480x270/' . $media->name,
+                    '300x300' => $this->cell('Medias::mediaPath', [$media->name, 'image', 'thumbnail::300']),
+                    '480x270' => $this->cell('Medias::mediaPath', [$media->name, 'image', 'thumbnail::480']),
                 ];
             }
             elseif ($decode->type == 'videos') {
-                $media->full_path = $baseUrl . 'uploads/videos/' . $media->name;
+                $media->full_path = $this->cell('Medias::mediaPath', [$media->name, 'video']);
             }
             elseif ($decode->type == 'documents') {
-                $media->full_path = $baseUrl . 'uploads/documents/' . $media->name;
+                $media->full_path = $this->cell('Medias::mediaPath', [$media->name, 'document']);
             }
 
             $media->readable_size = $this->Purple->readableFileSize($media->size);
 
             if ($media->admin->photo != NULL) {
-                $media->admin->photo = $baseUrl . 'uploads/images/original/' . $media->admin->photo;
+                $media->admin->photo = $this->cell('Medias::mediaPath', [$media->admin->photo, 'image', 'original']);
             }
         }
 

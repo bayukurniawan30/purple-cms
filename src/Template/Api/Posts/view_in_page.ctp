@@ -12,9 +12,9 @@
                     $newFeatured = [];
                     $initFeatured = 0;
                     foreach ($explodeFeatured as $featured) {
-                        $newFeatured[$initFeatured]['original'] = $baseUrl . 'uploads/images/original/' . $featured;
-                        $newFeatured[$initFeatured]['300x300']  = $baseUrl . 'uploads/images/thumbnails/300x300/' . $featured;
-                        $newFeatured[$initFeatured]['480x270']  = $baseUrl . 'uploads/images/thumbnails/480x270/' . $featured;
+                        $newFeatured[$initFeatured]['original'] = $this->cell('Medias::mediaPath', [$featured, 'image', 'original']);
+                        $newFeatured[$initFeatured]['300x300']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::300']);
+                        $newFeatured[$initFeatured]['480x270']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::480']);
 
                         $initFeatured++;
                     }
@@ -23,15 +23,15 @@
                 }
                 else {
                     $post->featured = [
-                        'original' => $baseUrl . 'uploads/images/original/' . $post->featured,
-                        '300x300'  => $baseUrl . 'uploads/images/thumbnails/300x300/' . $post->featured,
-                        '480x270'  => $baseUrl . 'uploads/images/thumbnails/480x270/' . $post->featured
+                        'original' => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'original']),
+                        '300x300'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::300']),
+                        '480x270'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::480'])
                     ];
                 }
             }
 
             if ($post->admin->photo != NULL) {
-                $post->admin->photo = $baseUrl . 'uploads/images/original/' . $post->admin->photo;
+                $post->admin->photo = $this->cell('Medias::mediaPath', [$post->admin->photo, 'image', 'original']);
             }
         }
 

@@ -6,13 +6,13 @@
             $page->link = $baseUrl . $page->slug;
 
             if ($page->admin->photo != NULL) {
-                $page->admin->photo = $baseUrl . 'uploads/images/original/' . $page->admin->photo;
+                $page->admin->photo = $this->cell('Medias::mediaPath', [$page->admin->photo, 'image', 'original']);
             }
 
             if ($page->child != NULL) {
                 $page->child->link = $baseUrl . $page->slug . '/' . $page->child->slug;
                 if ($page->child->admin->photo != NULL) {
-                    $page->child->admin->photo = $baseUrl . 'uploads/images/original/' . $page->child->admin->photo;
+                    $page->child->admin->photo = $this->cell('Medias::mediaPath', [$page->child->admin->photo, 'image', 'original']);
                 }
             }
         }

@@ -11,9 +11,9 @@
                 $newFeatured = [];
                 $init = 0;
                 foreach ($explodeFeatured as $featured) {
-                    $newFeatured[$init]['original'] = $baseUrl . 'uploads/images/original/' . $featured;
-                    $newFeatured[$init]['300x300']  = $baseUrl . 'uploads/images/thumbnails/300x300/' . $featured;
-                    $newFeatured[$init]['480x270']  = $baseUrl . 'uploads/images/thumbnails/480x270/' . $featured;
+                    $newFeatured[$init]['original'] = $this->cell('Medias::mediaPath', [$featured, 'image', 'original']);
+                    $newFeatured[$init]['300x300']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::300']);
+                    $newFeatured[$init]['480x270']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::480']);
 
                     $init++;
                 }
@@ -22,15 +22,15 @@
             }
             else {
                 $decode->post->featured = [
-                    'original' => $baseUrl . 'uploads/images/original/' . $decode->post->featured,
-                    '300x300'  => $baseUrl . 'uploads/images/thumbnails/300x300/' . $decode->post->featured,
-                    '480x270'  => $baseUrl . 'uploads/images/thumbnails/480x270/' . $decode->post->featured
+                    'original' => $this->cell('Medias::mediaPath', [$decode->post->featured, 'image', 'original']),
+                    '300x300'  => $this->cell('Medias::mediaPath', [$decode->post->featured, 'image', 'thumbnail::300']),
+                    '480x270'  => $this->cell('Medias::mediaPath', [$decode->post->featured, 'image', 'thumbnail::480'])
                 ];
             }
         }
 
         if ($decode->post->admin->photo != NULL) {
-            $decode->post->admin->photo = $baseUrl . 'uploads/images/original/' . $decode->post->admin->photo;
+            $decode->post->admin->photo = $this->cell('Medias::mediaPath', [$decode->post->admin->photo, 'image', 'original']);
         }
 
         echo json_encode($decode, JSON_PRETTY_PRINT);

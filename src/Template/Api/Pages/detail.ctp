@@ -10,7 +10,7 @@
         }
 
         if ($decode->page->admin->photo != NULL) {
-            $decode->page->admin->photo = $baseUrl . 'uploads/images/original/' . $decode->page->admin->photo;
+            $decode->page->admin->photo = $this->cell('Medias::mediaPath', [$decode->page->admin->photo, 'image', 'original']);
         }
 
         echo json_encode($decode, JSON_PRETTY_PRINT);
