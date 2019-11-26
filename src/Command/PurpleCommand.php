@@ -40,6 +40,10 @@ class PurpleCommand extends Command
         ->addOption('theme_name', [
             'short'   => 't',
             'help'    => 'Theme name (Must include "Theme after theme name, e.g. GoodTheme or BestTheme")',
+        ])
+        ->addOption('block_name', [
+            'short'   => 'b',
+            'help'    => 'Block name',
         ]);
 
         return $parser;
@@ -429,7 +433,7 @@ class PurpleCommand extends Command
                             $progress->increment(16)->draw();
                             $progress->increment(2)->draw();
 
-                            $io->success(' Theme files has been created');
+                            $io->success('Theme files has been created');
                         }
                         else {
                             $io->error('Theme name doesn\'t include "Theme"');
@@ -440,7 +444,25 @@ class PurpleCommand extends Command
                     }
                 }
                 else {
-                    $io->error('Empty option for theme type and migrate value');
+                    $io->error('Empty option for theme name value');
+                }
+            }
+            elseif ($value == 'create-block') {
+                $blockName = $args->getOption('block_name');
+                $blockFile = PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'blocks' . DS . Text::slug(strtolower($blockName)) . '.json';
+                if ($args->getOption('block_name')) {
+                    if (!file_exists($blockFile)) {
+                        $jsonFile = new File($blockFile, true, 0644);
+                        $jsonFile->write("{\r\n    \"options\" : [\r\n        {\r\n            \"theme\" : \"Engage\",\r\n            \"name\" : \"" . $blockName . "\",\r\n            \"category\" : \"contents\", \r\n            \"editable\" : \"\",\r\n            \"title\"     : \"\",\r\n            \"content\" : \"\",\r\n            \"block\" : \"<div class='purple-theme-block-preview uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white'>Theme Block - Engage<br><small>" . $blockName . "<br>Visit your website to view the content.</small></div>\",\r\n            \"html\" : \"\"\r\n        }\r\n    ]\r\n}");
+
+                        $io->success('Block file (' . $blockFile . ') has been created');
+                    }
+                    else {
+                        $io->error('Block file is already exist');
+                    }
+                }
+                else {
+                    $io->error('Empty option for block name value');
                 }
             }
             else {
