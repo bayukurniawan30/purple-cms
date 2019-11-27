@@ -28,9 +28,6 @@ jobs:
 
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "ca:a6:fb:48:63:20:c4:90:dc:98:b2:bd:13:a6:a9:c5" 
       - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
       - run: sudo apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev libpq-dev
       - run: sudo apt-get install sshpass
@@ -90,12 +87,12 @@ jobs:
       enabled: true
     steps:
       - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "ca:a6:fb:48:63:20:c4:90:dc:98:b2:bd:13:a6:a9:c5" 
-      - run:
-          name: fix host authenticity for production server
-          command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+      # - add_ssh_keys:
+      #     fingerprints:
+      #       - "ca:a6:fb:48:63:20:c4:90:dc:98:b2:bd:13:a6:a9:c5" 
+      # - run:
+      #     name: fix host authenticity for production server
+      #     command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run: sudo apt-get update
       - run: sudo apt-get install sshpass
       - run:
