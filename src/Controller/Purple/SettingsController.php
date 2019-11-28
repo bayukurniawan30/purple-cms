@@ -415,7 +415,7 @@ class SettingsController extends AppController
                             'email'       => $subscriber->email,
                         );
                         $senderData   = array(
-                            'domain' => $this->request->domain()
+                            'domain' => $this->request->host()
                         );
                         $notifySubscriber = $purpleApi->sendEmailOnlineWebsite($key, json_encode($userData), json_encode($senderData));
 

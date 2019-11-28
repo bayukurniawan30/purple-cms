@@ -30,6 +30,14 @@
                 }
             }
 
+            $post->permalink = $this->Url->build([
+                '_name' => 'specificPost',
+                'year'  => date('Y', strtotime($post->created)),
+                'month' => date('m', strtotime($post->created)),
+                'date'  => date('d', strtotime($post->created)),
+                'post'  => $post->slug,
+            ], true);
+
             if ($post->admin->photo != NULL) {
                 $post->admin->photo = $this->cell('Medias::mediaPath', [$post->admin->photo, 'image', 'original']);
             }

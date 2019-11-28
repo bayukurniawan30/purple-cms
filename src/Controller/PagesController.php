@@ -107,7 +107,7 @@ class PagesController extends AppController
                 );
                 $senderData   = array(
                     'total'   => $purpleGlobal->shortenNumber($totalAllVisitors),
-                    'domain'  => $this->request->domain()
+                    'domain'  => $this->request->host()
                 );
                 $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));
 
@@ -724,7 +724,7 @@ class PagesController extends AppController
                             $this->getEventManager()->dispatch($notificationEvent);
 
                             // Send Email Event
-                            $contactEvent = new Event('Model.Page.afterSentContactMessage', $this, ['data' => ['subject' => $requestData->subject, 'name' => $requestData->name, 'email' => $requestData->email, 'link' => $requestData->ds, 'domain' => $this->request->domain()]]);
+                            $contactEvent = new Event('Model.Page.afterSentContactMessage', $this, ['data' => ['subject' => $requestData->subject, 'name' => $requestData->name, 'email' => $requestData->email, 'link' => $requestData->ds, 'domain' => $this->request->host()]]);
                             $this->getEventManager()->dispatch($contactEvent);
 
                             if ($notificationEvent->getResult()) {

@@ -317,7 +317,7 @@ class SetupController extends AppController
                             'key'         => $productionKey
                         );
                         $senderData   = array(
-                            'domain' => $this->request->domain()
+                            'domain' => $this->request->host()
                         );
                         $notifyUser = $purpleApi->sendEmailAdministrativeSetup($key, $dashboardLink, json_encode($userData), json_encode($senderData));
 

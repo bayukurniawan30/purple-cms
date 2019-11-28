@@ -110,7 +110,7 @@ class BlogsController extends AppController
                 );
                 $senderData   = array(
                     'total'   => $purpleGlobal->shortenNumber($totalAllVisitors),
-                    'domain'  => $this->request->domain()
+                    'domain'  => $this->request->host()
                 );
                 $notifyUser = $purpleApi->sendEmailCertainVisitors($key, json_encode($userData), json_encode($senderData));
 
@@ -616,7 +616,7 @@ class BlogsController extends AppController
                             $this->getEventManager()->dispatch($notificationEvent);
                             
                             // Send Email Event
-                            $commentEvent = new Event('Model.Blog.afterSentComment', $this, ['data' => ['blog_id' => $requestData->blog_id, 'link' => $requestData->ds, 'name' => $requestData->name, 'email' => $requestData->email, 'domain' => $this->request->domain()]]);
+                            $commentEvent = new Event('Model.Blog.afterSentComment', $this, ['data' => ['blog_id' => $requestData->blog_id, 'link' => $requestData->ds, 'name' => $requestData->name, 'email' => $requestData->email, 'domain' => $this->request->host()]]);
                             $this->getEventManager()->dispatch($commentEvent);
 
                             if ($notificationEvent->getResult()) {

@@ -122,7 +122,7 @@ class ProductionController extends AppController
 						'code'        => $code
 					);
 					$senderData   = array(
-						'domain' => $this->request->domain()
+						'domain' => $this->request->host()
 					);
 					$purpleApi = new PurpleProjectApi();
 					$notifyUser = $purpleApi->sendEmailUserVerification($key, json_encode($userData), json_encode($senderData));

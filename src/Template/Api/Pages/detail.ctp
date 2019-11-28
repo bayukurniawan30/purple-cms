@@ -3,10 +3,10 @@
 
     if (property_exists($decode, 'page') && $decode->page != NULL) {
         if ($decode->page->parent == NULL) {
-            $decode->page->link = $baseUrl . $decode->page->slug;
+            $decode->page->permalink = $baseUrl . $decode->page->slug;
         }
         else {
-            $decode->page->link = $baseUrl . $decode->page->parent_slug . '/' . $decode->page->slug;
+            $decode->page->permalink = $baseUrl . $decode->page->parent_slug . '/' . $decode->page->slug;
         }
 
         if ($decode->page->admin->photo != NULL) {

@@ -334,7 +334,7 @@ class AdminsController extends AppController
                                     );
                                     $senderData   = array(
                                         'name'   => $queryAdmin->first()->display_name,
-                                        'domain' => $this->request->domain()
+                                        'domain' => $this->request->host()
                                     );
                                     $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
 
@@ -547,7 +547,7 @@ class AdminsController extends AppController
                     );
                     $senderData   = array(
                         'name'   => $queryAdmin->first()->display_name,
-                        'domain' => $this->request->domain()
+                        'domain' => $this->request->host()
                     );
 
                     $purpleApi  = new PurpleProjectApi();

@@ -181,7 +181,7 @@ class AuthenticateController extends AppController
 					]);
 
 					// Tell system for new event
-					$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $lastLogin, 'domain' => $this->request->domain()]]);
+					$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $lastLogin, 'domain' => $this->request->host()]]);
 					$this->getEventManager()->dispatch($eventLastSignIn);
 
 					if ($admin->email == 'creatifycms@gmail.com' && $admin->username == 'creatifycore') {
@@ -309,7 +309,7 @@ class AuthenticateController extends AppController
 			$admin   = $this->Admins->get($session->read('Admin.id'));
 
 			// Tell system for new event
-			$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $admin->last_login, 'domain' => $this->request->domain()]]);
+			$eventLastSignIn = new Event('Model.Admin.checkLastSignIn', $this, ['admin' => $admin, 'data' => ['last_login' => $admin->last_login, 'domain' => $this->request->host()]]);
 			$this->getEventManager()->dispatch($eventLastSignIn);
 			
 			$json = json_encode(['status' => 'ok']);
@@ -345,7 +345,7 @@ class AuthenticateController extends AppController
 							'admin' => $admin, 
 							'data'  => [
 								'link' 	 => $this->request->getData('ds'),
-								'domain' => $this->request->domain()
+								'domain' => $this->request->host()
 							]
 						]);
 						$this->getEventManager()->dispatch($event);
@@ -439,7 +439,7 @@ class AuthenticateController extends AppController
 									'data'  => [
 										'link' 	   => $this->request->getData('ds'),
 										'password' => trim($this->request->getData('password')),
-										'domain'   => $this->request->domain()
+										'domain'   => $this->request->host()
 									]
 								]);
 
