@@ -231,6 +231,15 @@
         ?>
     </div>
 
+    <?php
+        if ($loadedThemeCSS != NULL):
+            echo '<!-- Load Theme Stylesheets -->';
+            foreach ($loadedThemeCSS as $loadCSS):
+                echo csscrush_inline(TMP . $loadCSS);
+            endforeach;
+        endif;
+    ?>
+
     <div id="purple-fdb-blocks-preview" class="uk-width-2-3">
         <div class="uk-card uk-card-default">
             <div class="uk-card-header uk-padding-small" uk-sticky="offset: 70" style="background-color: #ffffff">
@@ -248,6 +257,7 @@
                 <?php endif; ?>
                     <a id="button-toggle-tuning" uk-tooltip="title: Enable/Disable Tuning Mode" data-purple-active="yes" class="uk-margin-small-left active"><i class="mdi mdi-tune"></i>
                     <a id="button-toggle-editing" uk-tooltip="title: Enable/Disable Editing Mode" data-purple-active="no" class="uk-margin-small-left"><i class="mdi mdi-pencil"></i></a>
+                    <a id="button-theme-stylesheet" uk-tooltip="title: Add/Remove theme stylesheet" data-purple-active="<?= $loadedThemeCSS != NULL ? 'yes' : 'no' ?>" class="uk-margin-small-left <?= $loadedThemeCSS != NULL ? 'active' : '' ?>" data-purple-modal="#modal-theme-stylesheet"><i class="mdi mdi-palette"></i></a>
 
                     <span class="preview-screen-modifier" style="display: none">
                         <span class="fdb-button-screen-divider uk-margin-small-left">|</span>
@@ -257,7 +267,7 @@
                     </span>
 
                     <span class="fdb-button-option-divider uk-margin-small-left">|</span>
-                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="general" data-purple-content="#bind-fdb-blocks" class="button-save-block-html uk-margin-small-left"><i class="mdi mdi-content-save"></i> Save</a>
+                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="general" data-purple-content="#bind-fdb-blocks" class="button-save-block-html uk-margin-small-left"><i class="mdi mdi-content-save"></i> SAVE</a>
                 </div>
                 <span class="uk-align-right fdb-blocks-mode"><small>Tuning Mode</small></span>
             </div>
@@ -383,6 +393,9 @@
 <!-- Element Properties for Froala Blocks -->
 <?= $this->element('Dashboard/Modal/BlockEditor/froala_master_attribute_modal') ?>
 
+<!-- Load Theme Stylesheet -->
+<?= $this->element('Dashboard/Modal/BlockEditor/load_theme_stylesheet_modal') ?>
+
 <script>
     $(document).ready(function() {
         // Prevent user leave page
@@ -411,6 +424,22 @@
         targetButton.one('click',function() {
             window.onbeforeunload = null;
             ajaxSubmit(pageHtml.form, pageHtml.action, pageHtml.redirectType, pageHtml.redirect, pageHtml.btnNormal, pageHtml.btnLoading);
+        })
+
+        var loadStylesheet = {
+            form            : 'form-load-css',
+            button          : 'button-load-css',
+            action          : 'edit',
+            redirectType    : 'redirect',
+            redirect        : '<?= $_SERVER['REQUEST_URI']; ?>',
+            btnNormal       : false,
+            btnLoading      : false
+        };
+
+        var targetButton = $("#"+loadStylesheet.button);
+        targetButton.one('click',function() {
+            window.onbeforeunload = null;
+            ajaxSubmit(loadStylesheet.form, loadStylesheet.action, loadStylesheet.redirectType, loadStylesheet.redirect, loadStylesheet.btnNormal, loadStylesheet.btnLoading);
         })
     })
 </script>

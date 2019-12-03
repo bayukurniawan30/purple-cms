@@ -15,6 +15,7 @@ use App\Form\Purple\PageBlogEditForm;
 use App\Form\Purple\PageSaveForm;
 use App\Form\Purple\PageCustomSaveForm;
 use App\Form\Purple\PageDeleteForm;
+use App\Form\Purple\PageLoadStylesheetsForm;
 use App\Form\Purple\BlogDeleteForm;
 use App\Form\Purple\SearchForm;
 use App\Form\PageContactForm;
@@ -176,7 +177,8 @@ class PagesController extends AppController
         $generatedTempFile  = new File(TMP . 'html/' . $fileName, true, 0644);
 
         if ($type == 'general') {
-            $pageSave = new PageSaveForm();
+            $pageSave            = new PageSaveForm();
+            $pageLoadStylesheets = new PageLoadStylesheetsForm();
 
             $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
 
@@ -201,6 +203,9 @@ class PagesController extends AppController
             $froalaSlider       = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'slider');
             $filesSlider        = $froalaSlider->find('.*\.jpg', true);
 
+            $themeStylesheet    = new Folder(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'css');
+            $filesStylesheet    = $themeStylesheet->find('.*\.css', true);
+
             $savedBlocks        = $purpleFroalaBlocks->savedBlocks();
 
             $themeBlocks        = $purpleFroalaBlocks->themeBlocks();
@@ -217,19 +222,42 @@ class PagesController extends AppController
                 $generatedTempFile->write(html_entity_decode($result->general->content));
             }
 
+            $session = $this->getRequest()->getSession();
+            if ($session->check('Pages.themeStylesheet')) {
+                $loadedThemeCSS = $session->read('Pages.themeStylesheet');
+
+                foreach ($loadedThemeCSS as $loadCss) {
+                    $cssFile  = new File(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'css' . DS . $loadCss);
+                    $readFile = $cssFile->read();
+
+                    $tmpCssFile = new File(TMP . 'tmp_' . $loadCss, true, 0644);
+                    $tmpCssFile->write($readFile);
+
+                    $tmpCssCrushFile = new File(TMP . $loadCss, true, 0644);
+                    $tmpCssCrushFile->write('#bind-fdb-blocks { @import "tmp_' . $loadCss . '"; }');
+                }
+
+            }
+            else {
+                $loadedThemeCSS = NULL;
+            }
+
             $froalaBlocks = [
-                'fdbCallToAction' => $filesCallToAction,
-                'fdbContents'     => $filesContents,
-                'fdbFeatures'     => $filesFeatures,
-                'fdbTeams'        => $filesTeams,
-                'fdbContacts'     => $filesContacts,
-                'fdbLightbox'     => $filesLightbox,
-                'fdbSlider'       => $filesSlider,
-                'savedBlocks'     => $savedBlocks,
-                'themeBlocks'     => $themeBlocks,
-                'pageSave'        => $pageSave,
-                'query'           => $result,
-                'tmpFile'         => $tmpFile
+                'fdbCallToAction'  => $filesCallToAction,
+                'fdbContents'      => $filesContents,
+                'fdbFeatures'      => $filesFeatures,
+                'fdbTeams'         => $filesTeams,
+                'fdbContacts'      => $filesContacts,
+                'fdbLightbox'      => $filesLightbox,
+                'fdbSlider'        => $filesSlider,
+                'themeStylesheets' => $filesStylesheet,
+                'savedBlocks'      => $savedBlocks,
+                'themeBlocks'      => $themeBlocks,
+                'pageSave'         => $pageSave,
+                'pageLoadCss'      => $pageLoadStylesheets, 
+                'loadedThemeCSS'   => $loadedThemeCSS,
+                'query'            => $result,
+                'tmpFile'          => $tmpFile
             ];
 
             $this->set($froalaBlocks);
@@ -441,6 +469,20 @@ class PagesController extends AppController
                     $setting->value = trim(htmlentities('<style>'.$this->request->getData('css-content').'</style>'.$trimContent));
                     
                     if ($this->Settings->save($setting)) {
+                        // Delete temporary loaded theme stylesheets
+                        $tmpStylesheet = new Folder(TMP);
+                        $filesTmp      = $tmpStylesheet->find('.*\.css', true);
+                        foreach ($filesTmp as $cssFile) {
+                            $file    = new File(TMP . $cssFile);
+                            $tmpFile = new File(TMP . 'tmp_' . $cssFile);
+                            $file->delete();
+                            $tmpFile->delete();
+                        }
+                        $csscrushFile = new File(TMP . '.csscrush');
+                        $csscrushFile->delete();
+
+                        $session->delete('Pages.themeStylesheet');
+
                         // Tell system for new event
                         $event = new Event('Model.Page.afterSave', $this, ['page' => 'Home Page', 'admin' => $admin, 'type' => 'homepage']);
                         $this->getEventManager()->dispatch($event);
@@ -493,6 +535,19 @@ class PagesController extends AppController
                                 $page      = $this->Pages->get($recordId);
                                 $title     = $page->title;
 
+                                // Delete temporary loaded theme stylesheets
+                                $tmpStylesheet = new Folder(TMP);
+                                $filesTmp      = $tmpStylesheet->find('.*\.css', true);
+                                foreach ($filesTmp as $cssFile) {
+                                    $file    = new File(TMP . $cssFile);
+                                    $tmpFile = new File(TMP . 'tmp_' . $cssFile);
+                                    $file->delete();
+                                    $tmpFile->delete();
+                                }
+                                $csscrushFile = new File(TMP . '.csscrush');
+                                $csscrushFile->delete();
+                                $session->delete('Pages.themeStylesheet');
+
                                 // Tell system for new event
                                 $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'general']);
                                 $this->getEventManager()->dispatch($event);
@@ -525,6 +580,19 @@ class PagesController extends AppController
                                     $recordId = $page->id;
                                     $page      = $this->Pages->get($recordId);
                                     $title     = $page->title;
+
+                                    // Delete temporary loaded theme stylesheets
+                                    $tmpStylesheet = new Folder(TMP);
+                                    $filesTmp      = $tmpStylesheet->find('.*\.css', true);
+                                    foreach ($filesTmp as $cssFile) {
+                                        $file    = new File(TMP . $cssFile);
+                                        $tmpFile = new File(TMP . 'tmp_' . $cssFile);
+                                        $file->delete();
+                                        $tmpFile->delete();
+                                    }
+                                    $csscrushFile = new File(TMP . '.csscrush');
+                                    $csscrushFile->delete();
+                                    $session->delete('Pages.themeStylesheet');
 
                                     // Tell system for new event
                                     $event = new Event('Model.Page.afterSave', $this, ['page' => $title, 'admin' => $admin, 'type' => 'general', 'save' => 'update']);
@@ -1213,6 +1281,37 @@ class PagesController extends AppController
             ob_end_clean();
             
             $json = json_encode(['status' => 'ok', 'content' => $htmlNow, 'jsond' => $jsonDecode]);
+            $this->set(['json' => $json]);
+        }
+        else {
+            throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxLoadThemeStylesheets() 
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+
+        $pageLoadStylesheets = new PageLoadStylesheetsForm();
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            if ($pageLoadStylesheets->execute($this->request->getData())) {
+                $session = $this->getRequest()->getSession();
+                
+                if (!empty($this->request->getData('stylesheet'))) {
+                    $session->write([
+                        'Pages.themeStylesheet' => $this->request->getData('stylesheet')
+                    ]);
+                }
+                else {
+                    $session->delete('Pages.themeStylesheet');
+                }
+
+                $json = json_encode(['status' => 'ok']);
+            }
+            else {
+                $errors = $pageLoadStylesheets->errors();
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
+            }
+
             $this->set(['json' => $json]);
         }
         else {

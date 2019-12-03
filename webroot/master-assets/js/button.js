@@ -340,6 +340,14 @@ $(document).ready(function() {
         return false;
     })
 
+    $("#button-theme-stylesheet").on("click", function() {
+        var btn   = $(this),
+            modal = btn.data('purple-modal');
+
+        UIkit.modal(modal).show();
+        return false;
+    })
+
     // Button Text
     var clipboard     = new ClipboardJS('.button-copy-permalink'),
         defaultButton = $('.button-copy-permalink').html();
