@@ -126,6 +126,27 @@ class SocialsController extends AppController
         $querySocialButtonsFontSize = $this->Settings->fetch('socialfontsize');
         $querySocialButtonsLabel    = $this->Settings->fetch('sociallabel');
         $querySocialButtonsCount    = $this->Settings->fetch('socialcount');
+
+        $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
+        $this->set(compact('socials'));
+        
+        $instagramUrl = false;
+        $igMedias     = false;
+        if ($socials->count() > 0) {
+            foreach ($socials as $social) {
+                if ($social->name == 'instagram' && $social->link != '') {
+                    $instagramAccount = true;
+                    $instagramUrl     = $social->link;
+                }
+            }
+
+            if ($instagramAccount == true) {
+                $instagramApi     = new \InstagramScraper\Instagram();
+                $instagramLink    = parse_url($instagramUrl);
+                $instagramAccount = str_replace('/', '', $instagramLink['path']);
+                $igMedias         = $instagramApi->getMedias($instagramAccount, 12);
+            }
+        }
         
         $data = [
             'socialAdd'             => $socialAdd,
@@ -136,11 +157,9 @@ class SocialsController extends AppController
             'socialButtonsTheme'    => $querySocialButtonsTheme->value,
             'socialButtonsFontSize' => $querySocialButtonsFontSize->value,
             'socialButtonsLabel'    => $querySocialButtonsLabel->value,
-            'socialButtonsCount'    => $querySocialButtonsCount->value
+            'socialButtonsCount'    => $querySocialButtonsCount->value,
+            'igMedias'              => $igMedias 
 		];
-
-        $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
-    	$this->set(compact('socials'));
 
 		$this->set($data);
 	}

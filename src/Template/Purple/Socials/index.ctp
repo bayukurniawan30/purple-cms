@@ -22,13 +22,18 @@
                 <ul id="sortable-items" class="" uk-sortable="handle: .uk-sortable-handle" data-purple-url="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxReorder"]); ?>" uk-grid>
                     <?php
                         $order = 1;
+                        $instagramAccount = false;
                         foreach ($socials as $social):
                         	if ($social->name == 'google-plus') {
                         		$socialType = 'Google+';
                         	}
                         	else {
                         		$socialType = ucwords($social->name);
-                        	}
+                            }
+                            
+                            if ($social->name == 'instagram' && $social->link != '') {
+                                $instagramAccount = true;
+                            }
                     ?>
                     <li id="sortable-<?= $social->id; ?>" class="uk-width-1-1 uk-margin-remove-top" data-order="<?= $order ?>" style="position: relative">
                         <div class="sortable-remover" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 5; display: none; background: rgba(255,255,255,.4)"></div>
@@ -64,7 +69,53 @@
             </div>
         </div>
     </div>
+</div>
 
+<?php
+    if ($socials->count() > 0 && $instagramAccount == true):
+?>
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Instagram Posts</h4>
+            </div>
+            <div class="card-body <?= ($igMedias == NULL || $igMedias == false || count($igMedias) == 0) ? 'uk-padding-remove' : '' ?>">
+                <?php
+                    if ($igMedias == NULL || $igMedias == false || count($igMedias) == 0):
+                ?>
+                <div class="uk-alert-warning uk-margin-remove-bottom" uk-alert>
+                    <p><strong>Private Account</strong> : Your account is private. Change to public to view your posts.</p>
+                </div>
+                <?php
+                    else:
+                ?>
+                <div class="uk-child-width-1-6@s" uk-grid>
+                    <?php
+                        $i = 1;
+                        foreach ($igMedias as $igMedia):
+                    ?>
+                    <div>
+                        <a href="<?= $igMedia->getLink() ?>" target="_blank"><div class="uk-background-contain uk-height-medium uk-panel uk-box-shadow-small <?= $i == 1 ? 'target-height' : '' ?> ig-post" style="background-image: url(<?= $igMedia->getImageHighResolutionUrl() ?>);">
+                        </div></a>
+                    </div>
+                    <?php
+                            ++$i;
+                        endforeach;
+                    ?>
+                </div>
+                <?php
+                    endif;
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+    endif;
+?>
+
+<div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-header">
@@ -100,6 +151,15 @@
 
 <script>
     $(document).ready(function() {
+        <?php
+            if ($socials->count() > 0 && $instagramAccount == true):
+        ?>
+        var getHeight = $('.target-height').outerWidth();
+        $('.ig-post').css('height', getHeight + 'px');
+        <?php
+            endif;
+        ?>
+
         $("#content-sharing-butons").jsSocials({
             showCount: <?php if ($socialButtonsCount == 'true') echo 'true'; else echo 'false' ?>,
             showLabel: <?php if ($socialButtonsLabel == 'true') echo 'true'; else echo 'false' ?>,

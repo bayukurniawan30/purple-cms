@@ -3,7 +3,7 @@
 Purple CMS requires the following:
 
  - HTTP Server. For example: Apache. Having mod_rewrite is preferred
- - PHP 7.1.3 or greater (including PHP 7.3)
+ - PHP 7.2 or greater (including PHP 7.3)
  - mbstring PHP extension
  - intl PHP extension
  - simplexml PHP extension
