@@ -1,6 +1,7 @@
 <?php
 namespace App\View\Cell;
 use Cake\View\Cell;
+use Cake\Log\Log;
 
 class SocialsCell extends Cell
 {
@@ -38,7 +39,22 @@ class SocialsCell extends Cell
             $this->set('instagramPosts', '0');
         }
         else {
-            $this->set('instagramPosts', json_encode($igMedias));
+            $json = [];
+            $i    = 0; 
+            foreach ($igMedias as $post) {
+                $json[$i]['Id']       = $post->getId();
+                $json[$i]['image']    = $post->getImageHighResolutionUrl();
+                $json[$i]['created']  = $post->getCreatedTime();
+                $json[$i]['link']     = $post->getLink();
+                $json[$i]['type']     = $post->getType();
+                $json[$i]['caption']  = $post->getCaption();
+                $json[$i]['comments'] = $post->getCommentsCount();
+                $json[$i]['likes']    = $post->getLikesCount();
+
+                ++$i;
+            }
+
+            $this->set('instagramPosts', json_encode($json));
         }
     }
 }
