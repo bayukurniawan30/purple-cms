@@ -67,7 +67,9 @@
         <div class="card">
             <div id="load-dashboard-statistic" class="card-body">
                 <div class="clearfix">
-                    <h4 class="card-title float-left">Visitors Statistics<br><small id="selected-title-date-range">(Last 6 Months)</small></h4>
+                    <h4 class="card-title float-left">Visitors Statistics<br>
+                        <!-- <small id="selected-title-date-range">(Last 6 Months)</small> -->
+                    </h4>
                     <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>                                     
                 </div>
                 <canvas id="visit-sale-chart" class="mt-4"></canvas>
