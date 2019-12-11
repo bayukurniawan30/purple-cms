@@ -21,7 +21,7 @@ class PurpleCommand extends Command
     protected function buildOptionParser(ConsoleOptionParser $parser)
     {
         $parser->addArguments([
-            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme', 'deploy']],
+            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme']],
             'value' => ['help' => 'Command value', 'required' => true]
         ])
         ->addOption('display', [
@@ -487,10 +487,6 @@ class PurpleCommand extends Command
 
                 $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'tmp', 0777, true);
                 $io->out('Permissions set on /tmp');
-            }
-            elseif ($value == 'path') {
-                $deployPath = Router::url(['_name' => 'home', '_full' => true]);
-                $io->out('Your application has been deploy to ' . $deployPath);
             }
             else {
                 $io->error('Empty option for theme type and migrate value');
