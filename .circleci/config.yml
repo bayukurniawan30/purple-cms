@@ -101,7 +101,9 @@ jobs:
       - run: 
           name: run composer install
           command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; if [ ! -d "$SSH_DEPLOY_PATH_VENDOR" ]; then composer install -n ; else composer update ; fi"
-      
+      - run:
+          name: deploy path
+          command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; bin/cake purple deploy path ;"
 
 workflows:
   version: 2

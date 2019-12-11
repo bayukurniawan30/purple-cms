@@ -7,6 +7,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use Cake\Routing\Router;
 use Cake\Http\ServerRequest;
 use Cake\Utility\Text;
 
@@ -486,6 +487,10 @@ class PurpleCommand extends Command
 
                 $dir->chmod(__DIR__ . DS . '..' . DS . '..' . DS . 'tmp', 0777, true);
                 $io->out('Permissions set on /tmp');
+            }
+            elseif ($value == 'path') {
+                $deployPath = Router::url(['_name' => 'home', '_full' => true]);
+                $io->out('Your application has been deploy to ' . $deployPath);
             }
             else {
                 $io->error('Empty option for theme type and migrate value');
