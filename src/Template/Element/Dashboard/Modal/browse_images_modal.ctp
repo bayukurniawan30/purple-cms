@@ -22,7 +22,7 @@
                 <div class="uk-modal-header">
                     <h3 class="uk-modal-title">Browse Images</h3>
                 </div>
-                <div id="load-media-list" class="uk-modal-body uk-height-max-large" style="overflow-y: scroll; position: relative;" data-purple-url="<?= $this->Url->build(["_name" => 'adminMediasAction', "action" => "ajaxBrowseImages"]); ?>" data-purple-page-total="<?= $this->Paginator->total() ?>" data-purple-page-limit="<?= $mediaImageLimit ?>" data-purple-multiple="<?= $dataMultiple ?>">
+                <div id="load-media-list" class="uk-modal-body uk-height-max-large" style="overflow-y: scroll; position: relative;" data-purple-url="<?= $this->Url->build(["_name" => 'adminMediasAction', "action" => "ajaxBrowseImages", "plugin" => false]); ?>" data-purple-page-total="<?= $this->Paginator->total() ?>" data-purple-page-limit="<?= $mediaImageLimit ?>" data-purple-multiple="<?= $dataMultiple ?>">
                     <?php
                         if ($browseMedias->count() == 0):
                     ?>
@@ -60,14 +60,16 @@
                                         $previousUrl = [
                                             'controller' => 'Medias',
                                             'action'     => 'ajaxBrowseImages',
-                                            'id'         => $this->Paginator->current() - 0
+                                            'id'         => $this->Paginator->current() - 0,
+                                            'plugin'     => false
                                         ];
                                     }
                                     else {
                                         $previousUrl = [
                                             'controller' => 'Medias',
                                             'action'     => 'ajaxBrowseImages',
-                                            'id'         => $this->Paginator->current() - 1
+                                            'id'         => $this->Paginator->current() - 1,
+                                            'plugin'     => false
                                         ];
                                     }
 
@@ -75,14 +77,16 @@
                                         $nextUrl = [
                                             'controller' => 'Medias',
                                             'action'     => 'ajaxBrowseImages',
-                                            'id'         => $this->Paginator->current() + 0
+                                            'id'         => $this->Paginator->current() + 0,
+                                            'plugin'     => false
                                         ];
                                     }
                                     else {
                                         $nextUrl = [
                                             'controller' => 'Medias',
                                             'action'     => 'ajaxBrowseImages',
-                                            'id'         => $this->Paginator->current() + 1
+                                            'id'         => $this->Paginator->current() + 1,
+                                            'plugin'     => false
                                         ];
                                     }
 

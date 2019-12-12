@@ -130,8 +130,9 @@ class SocialsController extends AppController
         $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
         $this->set(compact('socials'));
         
-        $instagramUrl = false;
-        $igMedias     = false;
+        $instagramAccount = false;
+        $instagramUrl     = false;
+        $igMedias         = false;
         if ($socials->count() > 0) {
             foreach ($socials as $social) {
                 if ($social->name == 'instagram' && $social->link != '') {

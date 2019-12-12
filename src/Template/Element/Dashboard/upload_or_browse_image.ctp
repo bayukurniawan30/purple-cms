@@ -29,7 +29,6 @@
                 if ($selected != NULL):
                     if (strpos($selected, ',') !== false):
                         $imageArray = explode(',', $selected);
-                        $fullSelectedImage = $this->cell('Medias::mediaPath', [$selected, 'image', 'original']);
 
             ?>
                 <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>
@@ -37,7 +36,6 @@
                         <?php
                             foreach ($imageArray as $image):
                                 $fullImage = $this->cell('Medias::mediaPath', [$image, 'image', 'original']);
-
                         ?>
                         <li>
                             <img src="<?= $fullImage ?>" alt="<?= $image ?>" uk-cover>
@@ -51,6 +49,7 @@
                 </div>
             <?php 
                     else:
+                        $fullSelectedImage = $this->cell('Medias::mediaPath', [$selected, 'image', 'original']);
             ?>
                 <img src="<?= $fullSelectedImage ?>" class="img-fluid">
             <?php

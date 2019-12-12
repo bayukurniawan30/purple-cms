@@ -78,7 +78,7 @@ class BlogVisitorsTable extends Table
     	$arrayDays = array();
 		for ($day = 1; $day <= 14; $day++) {
 			$data = date('Y-m-d', strtotime("-".$day." days"));
-			$explodeDate = explode(',', $data);
+			$explodeDate = explode('-', $data);
 
 			$totalVisitors = $this->find();
 			$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
@@ -98,7 +98,7 @@ class BlogVisitorsTable extends Table
     }
     public function totalVisitorsDate($blogId, $date) 
     {
-		$explodeDate = explode(',', $date);
+		$explodeDate = explode('-', $date);
 
 		$totalVisitors = $this->find();
 		$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
