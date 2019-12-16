@@ -62,7 +62,7 @@ class BlogsTable extends Table
 
 		// Sanitize title and content
 		$entity->title   = trim(strip_tags($entity->title));
-		$entity->content = trim(htmlentities($entity->content));
+		$entity->content = trim($entity->content);
 
 		if ($entity->isNew()) {
 			$entity->created  = $date;

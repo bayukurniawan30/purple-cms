@@ -14,10 +14,6 @@ class Blog extends Entity
     {
         return html_entity_decode($title);
     }
-    protected function _getContent($content)
-    {
-        return html_entity_decode($content);
-    }
     protected function _getTextStatus()
     {
         if ($this->status == '0') {
