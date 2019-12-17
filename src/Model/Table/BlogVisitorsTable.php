@@ -53,7 +53,7 @@ class BlogVisitorsTable extends Table
 		$query->select([
 			'yearCreated'  => $dateYear,
 			'monthCreated' => $dateMonth,
-			'dayCreated'   => $dateMonth,
+			'dayCreated'   => $dateDay,
 			'ip'
 		])
 		->having(['yearCreated' => $year, 'monthCreated' => $month, 'dayCreated' => $date, 'ip' => $ip]);
@@ -87,7 +87,7 @@ class BlogVisitorsTable extends Table
 			$totalVisitors->select([
 				'yearCreated'  => $dateYear,
 				'monthCreated' => $dateMonth,
-				'dayCreated'   => $dateMonth,
+				'dayCreated'   => $dateDay,
 				'blog_id'
 			])
 			->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'blog_id' => $blogId]);
@@ -107,7 +107,7 @@ class BlogVisitorsTable extends Table
 		$totalVisitors->select([
 			'yearCreated'  => $dateYear,
 			'monthCreated' => $dateMonth,
-			'dayCreated'   => $dateMonth,
+			'dayCreated'   => $dateDay,
 			'blog_id'
 		])
 		->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'blog_id' => $blogId]);
