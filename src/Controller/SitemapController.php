@@ -14,6 +14,8 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
+use Aws\S3\S3Client;  
+use Aws\Exception\AwsException;
 
 class SitemapController extends AppController
 {
@@ -31,9 +33,7 @@ class SitemapController extends AppController
     public function initialize()
     {
         $this->loadComponent('RequestHandler');
-    }
-    public function index()
-    {
+
         $this->loadModel('Admins');
         $this->loadModel('Blogs');
         $this->loadModel('BlogCategories');
@@ -43,7 +43,126 @@ class SitemapController extends AppController
         $this->loadModel('MediaDocs');
         $this->loadModel('MediaVideos');
         $this->loadModel('Settings');
+    }
+    /**
+     * @param $mediaName = media file name
+     * @param $mediaType = ['image', 'document', 'video']
+     * @param $return = default 'original', ['original', 'thumbnail::300', 'thumbnail::480']
+     */
+    private function mediaPath($mediaName, $mediaType, $return = 'original')
+    {
+        $mediaStorage = $this->Settings->fetch('mediastorage');
 
+        if ($mediaStorage->value == 'awss3') {
+            $awsS3AccessKey = $this->Settings->fetch('awss3accesskey');
+            $awsS3SecretKey = $this->Settings->fetch('awss3secretkey');
+            $awsS3Region    = $this->Settings->fetch('awss3region');
+            $awsS3Bucket    = $this->Settings->fetch('awss3bucket');
+        }
+        else {
+            $baseUrl = Router::url([
+                '_name' => 'home'
+            ], true);
+        }
+
+        if ($mediaType == 'image') {
+            // If media storage is Amazon AWS S3
+            if ($mediaStorage->value == 'awss3') {
+                $s3Client = new S3Client([
+                    'region'  => $awsS3Region->value,
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key'      => $awsS3AccessKey->value,
+                        'secret'   => $awsS3SecretKey->value,
+                    ]
+                ]);
+
+                // Key
+                $originalKey           = 'images/original/' . $mediaName;
+                $thumbnailSquareKey    = 'images/thumbnails/300x300/' . $mediaName;
+                $thumbnailLandscapeKey = 'images/thumbnails/480x270/' . $mediaName;
+
+                $original         = $s3Client->getObjectUrl($awsS3Bucket->value, $originalKey);
+                $thumbnail300x300 = $s3Client->getObjectUrl($awsS3Bucket->value, $thumbnailSquareKey);
+                $thumbnail480x270 = $s3Client->getObjectUrl($awsS3Bucket->value, $thumbnailLandscapeKey);
+            }
+            else {
+                $original         = $baseUrl . 'uploads/images/original/' . $mediaName;
+                $thumbnail300x300 = $baseUrl . 'uploads/images/thumbnails/300x300/' . $mediaName;
+                $thumbnail480x270 = $baseUrl . 'uploads/images/thumbnails/480x270/' . $mediaName;
+            }
+
+            $result = [
+                'path'  => $original,
+                'thumbnail' => [
+                    '300x300' => $thumbnail300x300,
+                    '480x270' => $thumbnail480x270,
+                ]
+            ];
+        }
+        elseif ($mediaType == 'document') 
+        {
+            if ($mediaStorage->value == 'awss3') {
+                $s3Client = new S3Client([
+                    'region'  => $awsS3Region->value,
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key'      => $awsS3AccessKey->value,
+                        'secret'   => $awsS3SecretKey->value,
+                    ]
+                ]);
+
+                // Key
+                $key = 'documents/' . $mediaName;
+
+                $path = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+            }
+            else {
+                $path = $baseUrl . 'uploads/documents/' . $mediaName;
+            }
+
+            $result = [
+                'path' => $path
+            ];
+        }
+        elseif ($mediaType == 'video') 
+        {
+            if ($mediaStorage->value == 'awss3') {
+                $s3Client = new S3Client([
+                    'region'  => $awsS3Region->value,
+                    'version' => 'latest',
+                    'credentials' => [
+                        'key'      => $awsS3AccessKey->value,
+                        'secret'   => $awsS3SecretKey->value,
+                    ]
+                ]);
+
+                // Key
+                $key = 'videos/' . $mediaName;
+
+                $path = $s3Client->getObjectUrl($awsS3Bucket->value, $key);
+            }
+            else {
+                $path = $baseUrl . 'uploads/videos/' . $mediaName;
+            }
+
+            $result = [
+                'path' => $path
+            ];
+        }
+
+        if ($return == 'original') {
+            return $result['path'];
+        }
+        elseif ($return == 'thumbnail::300') {
+            return $result['thumbnail']['300x300'];
+        }
+        elseif ($return == 'thumbnail::480') {
+            return $result['thumbnail']['480x270'];
+        }
+    }
+    public function index()
+    {
         $purpleSettings = new PurpleProjectSettings();
         $timezone       = $purpleSettings->timezone('time');
 
@@ -56,14 +175,15 @@ class SitemapController extends AppController
             $logoUrl = Router::url(['_name' => 'home', '_full' => true]).'/master-assets/img/logo.svg';
         }
         else {
-            $logoUrl = Router::url(['_name' => 'home', '_full' => true]).'/uploads/images/original/'.$logo;
+            $logoUrl = $this->mediaPath($logo, 'image', 'original');
         }
 
         $urls[] = [
-            'loc' => Router::url(['_name' => 'home', '_full' => true]),
-            'lastmod'    => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H: i: s') . $timezone,
-            'changefreq' => 'weekly',
-            'priority'   => '0.8'
+            'loc'         => Router::url(['_name' => 'home', '_full' => true]),
+            'lastmod'     => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H: i: s') . $timezone,
+            'changefreq'  => 'weekly',
+            'priority'    => '0.8',
+            'image:image' => ['image:loc' => $logoUrl]
         ];
 
         // Pages
@@ -115,10 +235,10 @@ class SitemapController extends AppController
                 else {
                     if (strpos($blog->featured, ',') !== false) {
                         $explodeFeatured = explode(',', $blog->featured);
-                        $urlImage = ['image:loc' => Router::url(['_name' => 'home', '_full' => true]) . 'uploads/images/original/' . $explodeFeatured[0]];
+                        $urlImage = ['image:loc' => $this->mediaPath($explodeFeatured[0], 'image', 'original')];
                     }
                     else {
-                        $urlImage = ['image:loc' => Router::url(['_name' => 'home', '_full' => true]) . 'uploads/images/original/' . $blog->featured];
+                        $urlImage = ['image:loc' => $this->mediaPath($blog->featured, 'image', 'original')];
                     }
                 }
 
@@ -155,9 +275,9 @@ class SitemapController extends AppController
         }
 
         // Archives
-        $archives    = $this->Blogs->archivesList();
+        $archives = $this->Blogs->archivesList();
 
-        if ($archives->count() > 0) {
+        if (count($archives) > 0) {
             $blog = $this->Blogs->find('all', [
                 'order' => ['Blogs.created' => 'DESC']])->contain('BlogCategories')->where(['Blogs.status' => '1'])->first();
 
@@ -204,10 +324,13 @@ class SitemapController extends AppController
 
         $purplePlugins = new PurpleProjectPlugins();
         $sitemap       = $purplePlugins->pluginSitemap();
-        foreach ($sitemap as $pluginSitemap) {
-            array_push($urls, $pluginSitemap);
+
+        if ($sitemap != false) {
+            foreach ($sitemap as $pluginSitemap) {
+                array_push($urls, $pluginSitemap);
+            }
         }
-        
+            
         $urlsKey = 0;
         foreach ($urls as $url) {
             if (array_key_exists('image:image', $urls[$urlsKey]) && $urls[$urlsKey]['image:image'] == NULL) {
