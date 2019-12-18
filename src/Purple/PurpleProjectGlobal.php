@@ -111,6 +111,8 @@ class PurpleProjectGlobal
 			if ($mobileDetect->version('Android') !== false) {
 				$version = ' ' . $mobileDetect->version('Android');
 				switch (true) {
+                    case $mobileDetect->version('Android') >= 10.0: $codeName = ' (Android Q)'; break;
+                    case $mobileDetect->version('Android') >= 9.0: $codeName = ' (Pie)'; break;
                     case $mobileDetect->version('Android') >= 8.0: $codeName = ' (Oreo)'; break;
 					case $mobileDetect->version('Android') >= 7.0: $codeName = ' (Nougat)'; break;
                     case $mobileDetect->version('Android') >= 6.0: $codeName = ' (Marshmallow)'; break;
@@ -134,7 +136,11 @@ class PurpleProjectGlobal
 			$os = 'Linux';
 		} 
 		elseif (preg_match('/Mac OS X/', $agent)) {
-			if (preg_match('/Mac OS X 10_13/', $agent) || preg_match('/Mac OS X 10.13/', $agent)) {
+			if (preg_match('/Mac OS X 10_15/', $agent) || preg_match('/Mac OS X 10.15/', $agent)) {
+				$os = 'OS X (Catalina)';
+			} elseif (preg_match('/Mac OS X 10_14/', $agent) || preg_match('/Mac OS X 10.14/', $agent)) {
+				$os = 'OS X (Mojave)';
+			} elseif (preg_match('/Mac OS X 10_13/', $agent) || preg_match('/Mac OS X 10.13/', $agent)) {
 				$os = 'OS X (High Sierra)';
 			} elseif (preg_match('/Mac OS X 10_12/', $agent) || preg_match('/Mac OS X 10.12/', $agent)) {
 				$os = 'OS X (Sierra)';
