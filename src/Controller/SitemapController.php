@@ -180,7 +180,7 @@ class SitemapController extends AppController
 
         $urls[] = [
             'loc'         => Router::url(['_name' => 'home', '_full' => true]),
-            'lastmod'     => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H: i: s') . $timezone,
+            'lastmod'     => $admin->created->format('Y-m-d') . 'T' . $admin->created->format('H:i:s') . $timezone,
             'changefreq'  => 'weekly',
             'priority'    => '0.8',
             'image:image' => ['image:loc' => $logoUrl]
