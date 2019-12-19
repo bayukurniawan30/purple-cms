@@ -42,7 +42,7 @@ class PurpleProjectSeo
 
             // Add logo property
             if ($logo->value != '') {
-                $schema->logo($protocol.$serverRequest->host().$serverRequest->getAttribute("webroot").'uploads/images/original/'.$logo->value);
+                $schema->logo($protocol.$serverRequest->host().$serverRequest->getAttribute("webroot").'/uploads/images/original/'.$logo->value);
             } 
         }
         elseif ($type == 'breadcrumblist') {
@@ -111,7 +111,7 @@ class PurpleProjectSeo
                         ->name($siteName->value)
                         ->logo
                             ->set('@type', 'imageObject')
-                            ->url($protocol.$serverRequest->host().$serverRequest->getAttribute("webroot").'uploads/images/original/'.$logo->value);
+                            ->url($protocol.$serverRequest->host().$serverRequest->getAttribute("webroot").'/uploads/images/original/'.$logo->value);
                 } 
                 else {
                     $schema->publisher
