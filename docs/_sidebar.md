@@ -17,6 +17,5 @@
 
 - **Developer Guide**
     - [Generate Documentation](generate-documentation.md)
-    - [API](purple-cms-api.md)
     - [Creating Theme](creating-theme.md)
     - [Customizing](customizing.md)
