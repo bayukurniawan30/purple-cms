@@ -7,7 +7,6 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
-use Cake\Routing\Router;
 use Cake\Http\ServerRequest;
 use Cake\Utility\Text;
 
@@ -21,7 +20,7 @@ class PurpleCommand extends Command
     protected function buildOptionParser(ConsoleOptionParser $parser)
     {
         $parser->addArguments([
-            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme']],
+            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme', 'deploy', 'https', 'htaccess']],
             'value' => ['help' => 'Command value', 'required' => true]
         ])
         ->addOption('display', [
@@ -238,6 +237,64 @@ class PurpleCommand extends Command
                 }
             }
         }
+        elseif ($type == 'htaccess') {
+            if ($value == 'create') {
+                $fileOld = new File(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess');
+                $fileNew = new File(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess_secure');
+
+                $fileWebrootOld = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess');
+                $fileWebrootNew = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess_secure');
+
+                if ($fileOld->exists() == false) {
+                    $fileOld->write("# Uncomment the following to prevent the httpoxy vulnerability\r\n# See: https://httpoxy.org/\r\n#<IfModule mod_headers.c>\r\n#    RequestHeader unset Proxy\r\n#</IfModule>\r\n\r\n<FilesMatch \"\\.(ico|jpg|jpeg|png|gif|css|js)$\">\r\n    Header set Cache-Control \"max-age=5184000\"\r\n</FilesMatch>\r\n\r\n<IfModule mod_rewrite.c>\r\n    RewriteEngine on\r\n    #RewriteCond %{HTTPS} !=on\r\n    #RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteRule    ^(\\.well-known/.*)$ $1 [L]\r\n    RewriteRule    ^$    webroot/    [L]\r\n    RewriteRule    (.*) webroot/$1    [L]\r\n</IfModule>\r\n");
+                }
+
+                if ($fileNew->exists()) {
+                    $fileNew->write("# Uncomment the following to prevent the httpoxy vulnerability\r\n# See: https://httpoxy.org/\r\n#<IfModule mod_headers.c>\r\n#    RequestHeader unset Proxy\r\n#</IfModule>\r\n\r\n<FilesMatch \"\\.(ico|jpg|jpeg|png|gif|css|js)$\">\r\n    Header set Cache-Control \"max-age=5184000\"\r\n</FilesMatch>\r\n\r\n<IfModule mod_rewrite.c>\r\n    RewriteEngine on\r\n    RewriteCond %{HTTPS} !=on\r\n    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteRule    ^(\\.well-known/.*)$ $1 [L]\r\n    RewriteRule    ^$    webroot/    [L]\r\n    RewriteRule    (.*) webroot/$1    [L]\r\n</IfModule>\r\n");
+                }
+
+                if ($fileWebrootOld->exists() == false) {
+                    $fileWebrootOld->write("<IfModule mod_rewrite.c>\r\n    RewriteEngine On\r\n    #RewriteCond %{HTTPS} !=on\r\n    #RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteCond %{REQUEST_FILENAME} !-f\r\n    RewriteRule ^ index.php [L]\r\n</IfModule>\r\n");
+                }
+
+                if ($fileWebrootNew->exists() == false) {
+                    $fileWebrootNew->write("<IfModule mod_rewrite.c>\r\n    RewriteEngine On\r\n    RewriteCond %{HTTPS} !=on\r\n    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteCond %{REQUEST_FILENAME} !-f\r\n    RewriteRule ^ index.php [L]\r\n</IfModule>\r\n");
+                }
+
+                $io->success('file .htaccess has been created');
+            }
+        }
+        elseif ($type == 'https') {
+            if ($value == 'enable') {
+                $fileOld = new File(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess');
+                $fileNew = new File(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess_secure');
+
+                $fileWebrootOld = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess');
+                $fileWebrootNew = new File(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess_secure');
+
+                if ($fileOld->exists() && $fileNew->exists() && $fileWebrootOld->exists() && $fileWebrootNew->exists()) {
+                    if ($fileNew->copy(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess') && $fileOld->copy(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess_old') && $fileWebrootNew->copy(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess') && $fileWebrootOld->copy(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess_old')) {
+                        $io->success('file .htaccess has been updated');
+                    }
+                    else {
+                        $io->error("Can't update .htaccess");
+                    }
+                }
+                else {
+                    $fileOld->write("# Uncomment the following to prevent the httpoxy vulnerability\r\n# See: https://httpoxy.org/\r\n#<IfModule mod_headers.c>\r\n#    RequestHeader unset Proxy\r\n#</IfModule>\r\n\r\n<FilesMatch \"\\.(ico|jpg|jpeg|png|gif|css|js)$\">\r\n    Header set Cache-Control \"max-age=5184000\"\r\n</FilesMatch>\r\n\r\n<IfModule mod_rewrite.c>\r\n    RewriteEngine on\r\n    #RewriteCond %{HTTPS} !=on\r\n    #RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteRule    ^(\\.well-known/.*)$ $1 [L]\r\n    RewriteRule    ^$    webroot/    [L]\r\n    RewriteRule    (.*) webroot/$1    [L]\r\n</IfModule>\r\n");
+                    $fileNew->write("# Uncomment the following to prevent the httpoxy vulnerability\r\n# See: https://httpoxy.org/\r\n#<IfModule mod_headers.c>\r\n#    RequestHeader unset Proxy\r\n#</IfModule>\r\n\r\n<FilesMatch \"\\.(ico|jpg|jpeg|png|gif|css|js)$\">\r\n    Header set Cache-Control \"max-age=5184000\"\r\n</FilesMatch>\r\n\r\n<IfModule mod_rewrite.c>\r\n    RewriteEngine on\r\n    RewriteCond %{HTTPS} !=on\r\n    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteRule    ^(\\.well-known/.*)$ $1 [L]\r\n    RewriteRule    ^$    webroot/    [L]\r\n    RewriteRule    (.*) webroot/$1    [L]\r\n</IfModule>\r\n");
+                    $fileWebrootOld->write("<IfModule mod_rewrite.c>\r\n    RewriteEngine On\r\n    #RewriteCond %{HTTPS} !=on\r\n    #RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteCond %{REQUEST_FILENAME} !-f\r\n    RewriteRule ^ index.php [L]\r\n</IfModule>\r\n");
+                    $fileWebrootNew->write("<IfModule mod_rewrite.c>\r\n    RewriteEngine On\r\n    RewriteCond %{HTTPS} !=on\r\n    RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R=301,L]\r\n    RewriteCond %{REQUEST_FILENAME} !-f\r\n    RewriteRule ^ index.php [L]\r\n</IfModule>\r\n");
+
+                    if ($fileNew->copy(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess') && $fileOld->copy(__DIR__ . DS . '..' . DS . '..' . DS . '.htaccess_old') && $fileWebrootNew->copy(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess') && $fileWebrootOld->copy(__DIR__ . DS . '..' . DS . '..' . DS . 'webroot' . DS . '.htaccess_old')) {
+                        $io->success('file .htaccess has been updated');
+                    }
+                    else {
+                        $io->error("Can't update .htaccess");
+                    }
+                }
+            }
+        }
         elseif ($type == 'theme') {
             if ($value == 'create') {
                 $path = WWW_ROOT . 'uploads' . DS . 'themes' . DS;
@@ -386,7 +443,6 @@ class PurpleCommand extends Command
                             $openGraphMetaFile->write("<?php\r\n    if (\$logo == '') {\r\n        if (\$metaImage != '') {\r\n            \$metaImage = \$this->cell('Medias::mediaPath', [\$metaImage, 'image', 'original']);\r\n        }\r\n        else {\r\n            \$metaImage = '';\r\n        }\r\n    }\r\n    else {\r\n        \$metaImage = \$this->cell('Medias::mediaPath', [\$logo, 'image', 'original']);\r\n    }\r\n\r\n    // Meta og:locale\r\n    echo \$this->Html->meta(\r\n        'og:locale',\r\n        'en_US'\r\n    );\r\n\r\n    // Meta og:title\r\n    echo \$this->Html->meta(\r\n        'og:title',\r\n        \$this->element('head_title')\r\n    );\r\n\r\n    // Meta og:type\r\n    echo \$this->Html->meta(\r\n        'og:type',\r\n        \$metaOgType\r\n    );\r\n\r\n    // Meta og:image\r\n    echo \$this->Html->meta(\r\n        'og:image',\r\n        \$metaImage\r\n    );\r\n\r\n    // Meta og:video\r\n    echo \$this->Html->meta(\r\n        'og:video',\r\n        ''\r\n    );\r\n\r\n    // Meta og:url\r\n    echo \$this->Html->meta(\r\n        'og:url',\r\n        \$this->Url->build(\$this->request->getRequestTarget(), true)\r\n    );\r\n\r\n    // Meta og:description\r\n    echo \$this->Html->meta(\r\n        'og:description',\r\n        \$metaDescription\r\n    );\r\n\r\n    // Meta og:site_name\r\n    echo \$this->Html->meta(\r\n        'og:site_name',\r\n        \$siteName\r\n    );\r\n?>");
                             $twitterMetaFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'Meta' . DS . 'twitter.ctp', true, 0644);
                             $twitterMetaFile->write("<?php\r\n    if (\$logo == '') {\r\n        if (\$metaImage != '') {\r\n            \$metaImage = \$this->cell('Medias::mediaPath', [\$metaImage, 'image', 'original']);\r\n        }\r\n        else {\r\n            \$metaImage = '';\r\n        }\r\n    }\r\n    else {\r\n        \$metaImage = \$this->cell('Medias::mediaPath', [\$logo, 'image', 'original']);\r\n    }\r\n\r\n    // Meta twitter:card\r\n    echo \$this->Html->meta(\r\n        'twitter:card',\r\n        'summary'\r\n    );\r\n\r\n    // Meta twitter:url\r\n    echo \$this->Html->meta(\r\n        'twitter:url',\r\n        \$this->Url->build(\$this->request->getRequestTarget(), true)\r\n    );\r\n\r\n    // Meta twitter:title\r\n    echo \$this->Html->meta(\r\n        'twitter:title',\r\n        \$this->element('head_title')\r\n    );\r\n\r\n    // Meta twitter:description\r\n    echo \$this->Html->meta(\r\n        'twitter:description',\r\n        \$metaDescription\r\n    );\r\n\r\n    // Meta twitter:image\r\n    echo \$this->Html->meta(\r\n        'twitter:image',\r\n        \$metaImage\r\n    );\r\n?>");
-                            
                             $headTitleElementFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'head_title.ctp', true, 0644);
                             $headTitleElementFile->write("<?php if(isset(\$pageTitle)) { if (\$childPage) echo \$parentPageTitle.' - '; echo \$pageTitle; } ?> - <?= \$siteName ?><?php if(!empty(\$tagLine)) echo ' | '.\$tagLine ?>");
                             $scriptElementFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'script.ctp', true, 0644);
@@ -394,7 +450,6 @@ class PurpleCommand extends Command
                             $navigationElementFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'navigation.ctp', true, 0644);
                             $headElementFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'head.ctp', true, 0644);
                             $headElementFile->write("<head>\r\n    <?= \$this->Html->charset(); ?>\r\n    <title><?= \$this->element('head_title') ?></title>\r\n    <?php \r\n        // Meta Viewport\r\n        echo \$this->Html->meta(\r\n            'viewport',\r\n            'width=device-width, initial-scale=1'\r\n        );\r\n\r\n        // Meta Author\r\n        echo \$this->Html->meta(\r\n            'author',\r\n            \$siteName\r\n        );\r\n\r\n        // Meta Keywords\r\n        echo \$this->Html->meta(\r\n            'keywords',\r\n            \$metaKeywords\r\n        );\r\n\r\n        // Meta Description\r\n        echo \$this->Html->meta(\r\n            'description',\r\n            \$metaDescription\r\n        );\r\n        \r\n        // Meta Open Graph\r\n        echo \$this->element('Meta/open_graph');\r\n\r\n        // Meta Twitter\r\n        echo \$this->element('Meta/twitter') \r\n    ?>\r\n\r\n    <link rel=\"canonical\" href=\"<?= \$this->Url->build(\$this->request->getRequestTarget(), true) ?>\">\r\n    \r\n    <!-- Required Theme Assets -->\r\n\r\n    <!-- Froala Blocks -->\r\n    <?= \$this->Html->css('/master-assets/plugins/froala-blocks/css/froala_blocks.css') ?>\r\n    <!-- UI Kit -->\r\n    <?= \$this->Html->css('/master-assets/plugins/uikit/css/uikit.css') ?>\r\n    <!-- Parsley -->\r\n    <?= \$this->Html->css('/master-assets/plugins/parsley/src/parsley.css') ?>\r\n\r\n    <?= \$this->Html->css('/master-assets/css/bttn.css') ?>\r\n    <?= \$this->Html->css('custom.css') ?>\r\n\r\n    <?php if (\$favicon != ''): ?>\r\n    <!-- Favicon -->\r\n    <link rel=\"shortcut icon\" href=\"<?= \$this->cell('Medias::mediaPath', [\$favicon, 'image', 'original']) ?>\" />\r\n    <?php else: ?>\r\n    <!-- Favicon -->\r\n    <link rel=\"shortcut icon\" href=\"<?= \$this->request->getAttribute(\"webroot\").'master-assets/img/favicon.png' ?>\">\r\n    <?php endif; ?>\r\n\r\n    <?php if (\$formSecurity == 'on'): ?>\r\n    <!-- Google reCaptcha -->\r\n    <?= \$this->Html->script('https://www.google.com/recaptcha/api.js?render='.\$recaptchaSitekey); ?>\r\n    <?php endif; ?>\r\n\r\n    <!-- Schema.org ld+json -->\r\n    <?php\r\n        if (\$this->request->getParam('action') == 'home') {\r\n            echo html_entity_decode(\$ldJsonWebsite);\r\n            echo html_entity_decode(\$ldJsonOrganization);\r\n        }\r\n\r\n        // WebPage\r\n        if (isset(\$webpageSchema)) {\r\n            echo html_entity_decode(\$webpageSchema);\r\n        }\r\n        \r\n        // BreadcrumbList\r\n        if (isset(\$breadcrumbSchema)) {\r\n            echo html_entity_decode(\$breadcrumbSchema);\r\n        }\r\n\r\n        // Article\r\n        if (isset(\$articleSchema)) {\r\n            echo html_entity_decode(\$articleSchema);\r\n        }\r\n    ?>\r\n\r\n    <!-- Purple Timezone -->\r\n    <?= \$this->Html->script('/master-assets/plugins/moment/moment.js'); ?>\r\n    <?= \$this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone.js'); ?>\r\n    <?= \$this->Html->script('/master-assets/plugins/moment-timezone/moment-timezone-with-data.js'); ?>\r\n    <?= \$this->Html->script('/master-assets/js/purple-timezone.js'); ?>\r\n    <script type=\"text/javascript\">\r\n        \$(document).ready(function(){\r\n            clientTimezone('<?= \$timeZone ?>');\r\n        })\r\n    </script>\r\n\r\n    <script type=\"text/javascript\">\r\n        var cakeDebug    = \"<?= \$cakeDebug ?>\",\r\n            formSecurity = \"<?= \$formSecurity ?>\";\r\n        window.cakeDebug    = cakeDebug;\r\n        window.formSecurity = formSecurity;\r\n    </script>\r\n</head>");
-                            $footerElementFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'footer.ctp', true, 0644);
                             
                             // src/Template/Element/Post
                             $tagsElementPostFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Element' . DS . 'Post' . DS . 'tags.ctp', true, 0644);
@@ -418,7 +473,6 @@ class PurpleCommand extends Command
 
                             // src/Template/Layout
                             $defaultLayoutFile = new File($path . $themeName . DS . 'src' . DS . 'Template' . DS . 'Layout' . DS . 'default.ctp', true, 0644);
-                            $defaultLayoutFile->write("<!-- DOCTYPE -->\r\n<?= \$this->Html->docType(); ?>\r\n<html lang=\"en\">\r\n\t<?= \$this->element('head') ?>\r\n  \t<body>\r\n\t  \t<!--CSRF Token-->\r\n\t\t<input id=\"csrf-ajax-token\" type=\"hidden\" name=\"token\" value=<?= json_encode(\$this->request->getParam('_csrfToken')); ?>>\r\n  \t\t<!-- Client Timezone -->\r\n\t\t<input id=\"client-timezone-url\" type=\"hidden\" name=\"clientTimezoneUrl\" value=\"<?= \$this->Url->build(['_name' => 'setClientTimezone']); ?>\">\r\n\r\n\t\t<?= \$this->element('navigation') ?>\r\n  \t\t\r\n  \t\t<!-- Fetch Content -->\r\n\t\t<?= \$this->fetch('content') ?>\r\n\r\n\t\t<?= \$this->element('footer') ?>\r\n\t\t<?= \$this->element('script') ?>\r\n  \t</body>\r\n</html>");
                             $progress->increment(2)->draw();
 
                             // src/Template/Pages
@@ -458,7 +512,7 @@ class PurpleCommand extends Command
                 if ($args->getOption('block_name')) {
                     if (!file_exists($blockFile)) {
                         $jsonFile = new File($blockFile, true, 0644);
-                        $jsonFile->write("{\r\n    \"options\" : [\r\n        {\r\n            \"theme\" : \"Theme name\",\r\n            \"name\" : \"Block name\",\r\n            \"category\" : \"\", \r\n            \"editable\" : \"\",\r\n            \"title\"     : \"\",\r\n            \"content\" : \"\",\r\n            \"block\" : \"<div class='purple-theme-block-preview uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white'>Theme Block - Creative<br><small>Contact Form<br>Visit your website to view the content.</small></div>\",\r\n            \"html\" : \"<section id='fdb-{bind.id}' class='fdb-block purple-theme-block-section remove-padding-in-real' data-fdb-id='{bind.id}'><div class='purple-theme-block'>Put your HTML here</div></section>\"\r\n        }\r\n    ]\r\n}");
+                        $jsonFile->write("{\r\n    \"options\" : [\r\n        {\r\n            \"theme\" : \"Theme name\",\r\n            \"name\" : \"Block name\",\r\n            \"category\" : \"\", \r\n            \"editable\" : \"\",\r\n            \"title\"     : \"\",\r\n            \"content\" : \"\",\r\n            \"block\" : \"<div class='purple-theme-block-preview uk-card uk-card-default uk-card-body uk-text-center bg-primary text-white'>Theme Block - Creative<br><small>Contact Form<br>Visit your website to view the content.</small></div>\",\r\n            \"html\" : \"<section id='fdb-{bind.id}' class='fdb-block non-fdb-block purple-theme-block-section remove-padding-in-real' data-fdb-id='{bind.id}'><div class='purple-theme-block'>Put your HTML here</div></section>\"\r\n        }\r\n    ]\r\n}");
 
                         $io->success('Block file (' . $blockFile . ') has been created');
                     }

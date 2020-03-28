@@ -101,7 +101,16 @@ jobs:
       - run: 
           name: run composer install
           command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; if [ ! -d "$SSH_DEPLOY_PATH_VENDOR" ]; then composer install -n ; else composer update ; fi"
-
+      #- run: 
+      #    name: change database information
+      #    command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; if [ ! -d "$SSH_DEPLOY_PATH_VENDOR" ]; then bin/cake purple database decrypt -i ; else bin/cake purple database migrate -m $DB_NAME,$DB_USER,$DB_PASSWORD; fi"
+      #- run: 
+      #    name: create htaccess file 
+      #    command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; bin/cake purple htaccess create ;"
+      #- run: 
+      #    name: enable https in htaccess
+      #    command: sshpass -p "$SSH_PASSWORD" ssh -t -oStrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" -p $SSH_PORT "cd $SSH_DEPLOY_PATH ; bin/cake purple https enable ;"
+      
 workflows:
   version: 2
   build-deploy:
