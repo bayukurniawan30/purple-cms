@@ -287,6 +287,9 @@
 
         function tuningMode() {
             function toggleTuning1() {
+                $('#bind-fdb-blocks').find('.initialized-editor').froalaEditor();
+                $('#bind-fdb-blocks').find('.initialized-editor').froalaEditor('destroy');
+                $('#bind-fdb-blocks').find('.initialized-editor').removeClass('initialized-editor');
                 $(this).attr('data-purple-active', 'yes');
                 $(this).addClass('active');
                 $("#button-toggle-editing").attr('data-purple-active', 'no');
@@ -647,10 +650,10 @@
                             $("section#fdb-"+id).removeClass('fdb-block-selected');
                             $("section#fdb-"+id).find('.fdb-block-menu-button').remove();
                         });
+                        $(this).addClass('initialized-editor');
                     }
                 },
                 mouseleave: function () {
-                    //$(this).froalaEditor('destroy');
                     setTimeout(function() {
                         treePanelContent();
                     }, 1000);
