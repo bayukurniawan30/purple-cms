@@ -287,7 +287,6 @@
 
         function tuningMode() {
             function toggleTuning1() {
-                $('#bind-fdb-blocks').find('.initialized-editor').froalaEditor();
                 $('#bind-fdb-blocks').find('.initialized-editor').froalaEditor('destroy');
                 $('#bind-fdb-blocks').find('.initialized-editor').removeClass('initialized-editor');
                 $(this).attr('data-purple-active', 'yes');
@@ -1001,6 +1000,7 @@
                                             $("section#fdb-"+id).removeClass('fdb-block-selected');
                                             $("section#fdb-"+id).find('.fdb-block-menu-button').remove();
                                         });
+                                        $(this).addClass('initialized-editor');
                                     }
                                     else {
                                         $(this).on("click", function() {
