@@ -511,20 +511,19 @@
                 mouseenter: function () {
                     if(tuningMode() == 'yes') {
                         var copyBlock = $(this);
-                        var id = $(this).attr('data-fdb-id');
+                        var id        = $(this).attr('data-fdb-id');
+                        var min       = 10000; 
+                        var max       = 99999;  
+                        var random    = Math.floor(Math.random() * (+max - +min)) + +min;
+                        if ($(this).hasClass('uk-filter-hovered')) {
+                        }
+                        else {
+                            $(this).attr('data-tree-id', random);
+                        }
 
                         $(this).addClass('fdb-block-selected');
                         if ($(this).hasClass('uk-block-filter')) {
                             $(this).addClass('uk-block-filter-selected');
-
-                            var min    = 10000; 
-                            var max    = 99999;  
-                            var random = Math.floor(Math.random() * (+max - +min)) + +min;
-                            if ($(this).hasClass('uk-filter-hovered')) {
-                            }
-                            else {
-                                $(this).attr('data-filter-id', random);
-                            }
 
                             var currentId  = $(this).attr('uk-filter-control');
                             var replaceId1 = currentId.replace("[data-category='", '');
@@ -537,15 +536,6 @@
                             $(this).addClass('uk-filter-hovered');
                         }
                         else if ($(this).hasClass('uk-block-filter-item')) {
-                            var min    = 10000; 
-                            var max    = 99999;  
-                            var random = Math.floor(Math.random() * (+max - +min)) + +min;
-                            if ($(this).hasClass('uk-filter-item-hovered')) {
-                            }
-                            else {
-                                $(this).attr('data-filter-item', random);
-                            }
-
                             var currentFilter = $(this).attr('data-category');
 
                             var moveBtn       = '<a id="fdb-block-menu-button-move-'+id+'" class="fdb-block-menu-button-move uk-sortable-handle-filter-item" data-fdb-id="'+id+'" uk-tooltip="title: Move Item"><i class="mdi mdi-cursor-move" id=""></i></a>';
