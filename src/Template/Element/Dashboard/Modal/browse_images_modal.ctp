@@ -233,7 +233,7 @@
                             ajaxType        : 'POST',
                             sendData        : sendData,
                             action          : 'edit',
-                            url             : '<?= $this->Url->build(['controller' => 'Settings', 'action' => 'ajaxUpdate']); ?>',
+                            url             : '<?= $this->Url->build(['plugin' => false, 'controller' => 'Settings', 'action' => 'ajaxUpdate']); ?>',
                             redirectType    : 'redirect',
                             redirect        : '<?= $this->Url->build(['controller' => $this->request->getParam('controller'), 'action' => $this->request->getParam('action')]); ?>',
                             btnNormal       : false,
