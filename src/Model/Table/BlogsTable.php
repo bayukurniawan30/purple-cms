@@ -128,7 +128,7 @@ class BlogsTable extends Table
 	public function archivesList($page = NULL)
 	{
 		$find  = $this->find('all')->contain('BlogCategories')->where(['Blogs.status' => '1']);
-		$query = $find->select(['year' => $find->func()->extract('YEAR', 'Blogs.created'), 'month' => $find->func()->extract('MONTH', 'Blogs.created'), 'count' => $find->func()->count('Blogs.id')])->group(['year DESC', 'month DESC']);
+		$query = $find->select(['year' => 'YEAR(Blogs.created)', 'month' => 'MONTH(Blogs.created)', 'count' => $find->func()->count('Blogs.id')])->group(['year DESC', 'month DESC']);
 		if ($page != NULL) {
 			$query = $query->where(['BlogCategories.page_id' => $page]);
 		}
@@ -180,9 +180,9 @@ class BlogsTable extends Table
 			$explodeDate = explode('-', $data);
 
 			$totalPosts = $this->find();
-			$dateYear   = $this->find()->func()->extract('YEAR', 'created');
-			$dateMonth  = $this->find()->func()->extract('MONTH', 'created');
-			$dateDay    = $this->find()->func()->extract('DAY', 'created');
+			$dateYear   = 'YEAR(created)';
+			$dateMonth  = 'MONTH(created)';
+			$dateDay    = 'DAY(created)';
 			$totalPosts->select([
 				'yearCreated'  => $dateYear,
 				'monthCreated' => $dateMonth,

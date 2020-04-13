@@ -47,9 +47,9 @@ class BlogVisitorsTable extends Table
 		$fullDate = $year.'-'.$month.'-'.$date;
 
 		$query     = $this->find();
-		$dateYear  = $query->func()->extract('YEAR', 'created');
-		$dateMonth = $query->func()->extract('MONTH', 'created');
-		$dateDay   = $query->func()->extract('DAY', 'created');
+		$dateYear  = 'YEAR(created)';
+		$dateMonth = 'MONTH(created)';
+		$dateDay   = 'DAY(created)';
 		$query->select([
 			'yearCreated'  => $dateYear,
 			'monthCreated' => $dateMonth,
@@ -81,9 +81,9 @@ class BlogVisitorsTable extends Table
 			$explodeDate = explode('-', $data);
 
 			$totalVisitors = $this->find();
-			$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
-			$dateMonth = $totalVisitors->func()->extract('MONTH', 'created');
-			$dateDay   = $totalVisitors->func()->extract('DAY', 'created');
+			$dateYear  = 'YEAR(created)';
+			$dateMonth = 'MONTH(created)';
+			$dateDay   = 'DAY(created)';
 			$totalVisitors->select([
 				'yearCreated'  => $dateYear,
 				'monthCreated' => $dateMonth,
@@ -101,9 +101,9 @@ class BlogVisitorsTable extends Table
 		$explodeDate = explode('-', $date);
 
 		$totalVisitors = $this->find();
-		$dateYear  = $totalVisitors->func()->extract('YEAR', 'created');
-		$dateMonth = $totalVisitors->func()->extract('MONTH', 'created');
-		$dateDay   = $totalVisitors->func()->extract('DAY', 'created');
+		$dateYear  = 'YEAR(created)';
+		$dateMonth = 'MONTH(created)';
+		$dateDay   = 'DAY(created)';
 		$totalVisitors->select([
 			'yearCreated'  => $dateYear,
 			'monthCreated' => $dateMonth,

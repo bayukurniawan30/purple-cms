@@ -95,8 +95,8 @@ class VisitorsTable extends Table
             $explodeData = explode('-', $data);
             
             $totalVisitors = $this->find();
-            $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
-            $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+            $dateYear  = 'YEAR(date_created)';
+            $dateMonth = 'MONTH(date_created)';
             $totalVisitors->select([
                 'yearCreated'  => $dateYear,
                 'monthCreated' => $dateMonth
@@ -116,8 +116,8 @@ class VisitorsTable extends Table
 			$explodeData = explode('-', $data);
 
             $totalVisitors = $this->find();
-            $dateYear  = $totalVisitors->func()->extract('YEAR', 'date_created');
-            $dateMonth = $totalVisitors->func()->extract('MONTH', 'date_created');
+            $dateYear  = 'YEAR(date_created)';
+            $dateMonth = 'MONTH(date_created)';
             $totalVisitors->select([
                 'yearCreated'  => $dateYear,
                 'monthCreated' => $dateMonth
@@ -137,8 +137,8 @@ class VisitorsTable extends Table
             $explodeData = explode('-', $data);
 
             $totalVisitors = $this->find();
-            $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
-            $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+            $dateYear  = 'YEAR(date_created)';
+            $dateMonth = 'MONTH(date_created)';
             $totalVisitors->select([
                 'yearCreated'  => $dateYear,
                 'monthCreated' => $dateMonth
@@ -167,8 +167,8 @@ class VisitorsTable extends Table
     	}
 
         $totalVisitors = $this->find();
-        $dateYear  = $this->find()->func()->extract('YEAR', 'date_created');
-        $dateMonth = $this->find()->func()->extract('MONTH', 'date_created');
+        $dateYear  = 'YEAR(date_created)';
+        $dateMonth = 'MONTH(date_created)';
         $totalVisitors->select([
             'yearCreated'  => $dateYear,
             'monthCreated' => $dateMonth
@@ -208,8 +208,8 @@ class VisitorsTable extends Table
             $query = $this->find('all', [
                 'conditions' => ['platform LIKE' => '%'.$browser.'%']
             ]);
-            $dateYear  = $query->func()->extract('YEAR', 'date_created');
-            $dateMonth = $query->func()->extract('MONTH', 'date_created');
+            $dateYear  = 'YEAR(date_created)';
+            $dateMonth = 'MONTH(date_created)';
             $query->select([
                 'yearCreated'  => $dateYear,
                 'monthCreated' => $dateMonth,
