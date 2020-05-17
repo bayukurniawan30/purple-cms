@@ -94,6 +94,7 @@
 <!-- inject:js -->
 <?= $this->Html->script('/master-assets/js/off-canvas.js'); ?>
 <?= $this->Html->script('/master-assets/js/misc.js'); ?>
+<?= $this->Html->script('https://unpkg.com/rsup-progress'); ?>
 <!-- endinject -->
 <!-- Custom js for this page-->
 <?= $this->Html->script('/master-assets/js/dashboard.js'); ?>
@@ -112,6 +113,13 @@
 		echo $this->element('Dashboard/dashboard_script');
 	}
 ?>
+<script>
+	const progress  = new RsupProgress({
+		height: 3,
+		color: '#b66dff'
+	});
+	window.progress = progress;
+</script>
 <script type="text/javascript">
     $(document).ready(function() {
         // Convert NULL photo to initial SVG

@@ -1100,32 +1100,51 @@
                 host     = $(this).data('purple-host'),
                 by       = $(this).data('purple-by'),
                 created  = $(this).data('purple-created'),
-                colors   = $(this).data('purple-colors'),
                 desc     = $(this).data('purple-description'),
                 title    = $(this).attr('title'),
                 nextUrl  = $(this).attr('data-purple-next-url'),
                 prevUrl  = $(this).attr('data-purple-previous-url'),
+                colorUrl = $(this).attr('data-purple-colors-url'),
+                token    = $('#csrf-ajax-token').val(),
                 modal    = $("#modal-full-content");
 
-            // Image colors
-            var colorsArray = colors.split(","),
-                i, setColors = '';
-            for (i = 0; i < colorsArray.length; i++) {
-                setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
-            }
+            modal.find(".bind-background").css('background-color', '#ffffff');
+            modal.find('.bind-colors').html('<i class="fa fa-circle-o-notch fa-spin"></i> Getting image colors...');
 
-            modal.find(".bind-colors").html(setColors);
-            if (colorsArray.length <= 3) {
-                if (lightOrDark(colorsArray[0]) == 'light') {
-                    modal.find(".bind-background").css('background-color', '#0e0e0e');
+            $.ajax({
+                type: "POST",
+                url:  colorUrl,
+                headers : {
+                    'X-CSRF-Token': token
+                },
+                data: { image:image },
+                cache: false,
+                success: function(data){
+                    // Image colors
+                    var colorsArray = data.split(","),
+                        i, setColors = '';
+                    for (i = 0; i < colorsArray.length; i++) {
+                        setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
+                    }
+
+                    setTimeout(() => {
+                        modal.find(".bind-colors").html(setColors);
+
+                        if (colorsArray.length <= 3) {
+                            if (lightOrDark(colorsArray[0]) == 'light') {
+                                modal.find(".bind-background").css('background-color', '#0e0e0e');
+                            }
+                            else {
+                                modal.find(".bind-background").css('background-color', '#ffffff');
+                            }
+                        }
+                        else {
+                            modal.find(".bind-background").css('background-color', colorsArray[0]);
+                        }
+                    }, 1000);
                 }
-                else {
-                    modal.find(".bind-background").css('background-color', '#ffffff');
-                }
-            }
-            else {
-                modal.find(".bind-background").css('background-color', colorsArray[0]);
-            }
+            })
+            
             modal.find(".uk-background-contain").css('background-image', 'url(' + image + ')');
             modal.find("#media-image-next-url").attr('href', nextUrl);
             modal.find("#media-image-previous-url").attr('href', prevUrl);

@@ -199,6 +199,9 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        $('#form-month-of-visit').find('select[name=month] option[value="<?= $selectedMonth ?>"]').attr("selected","selected");
+        $('#form-month-of-visit').find('select[name=year] option[value="<?= $selectedYear ?>"]').attr("selected","selected");
+
         var statisticUpdate = {
             form            : 'form-month-of-visit', 
             button          : 'button-month-of-visit',

@@ -99,6 +99,11 @@ $(document).ready(function() {
                         $inputs.prop("disabled", true);
                         $ajaxButton.html(ajaxButtonLoadingState);
                         $ajaxButton.attr('disabled','disabled');
+
+                        if (action != 'login' && action != 'confirm-email' && action != 'notify') {
+                            // Progress bar
+                            progress.start();
+                        }
                     },
                     data: new FormData(this),
                     contentType: false,
@@ -106,6 +111,11 @@ $(document).ready(function() {
                     processData:false,
                 });
                 ajaxFormSubmit.done(function (msg){
+                    if (action != 'login' && action != 'confirm-email' && action != 'notify') {
+                        // Stop progress bar
+                        progress.end();
+                    }
+
 			    	if (debug == true || cakeDebug == 'on') {
                         console.log(msg);
                     }
@@ -340,9 +350,15 @@ $(document).ready(function() {
                         btn.html(ajaxButtonLoadingState);
                         btn.attr('disabled','disabled');
                     }
+
+                    // Progress bar
+                    progress.start();
                 }
             });
             ajaxProcessing.done(function(msg) {
+                // Stop progress bar
+                progress.end();
+                
                 if (debug == true || cakeDebug == 'on') {
                     console.log(msg);
                 }

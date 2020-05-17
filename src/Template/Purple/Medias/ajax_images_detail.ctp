@@ -16,7 +16,6 @@
             $fullImage   = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
             $previousId  = $this->cell('Medias::previousId', [$media->id]);
             $nextId      = $this->cell('Medias::nextId', [$media->id]);
-            $colors      = $this->cell('Medias::colorExtract', [$fullImage]);
 
             if ($previousId == '0') {
                 $previousUrl = '#';
@@ -31,12 +30,14 @@
             else {
                 $nextUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextId;
             }
+
+            $colorsUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'ajaxGetImageColors']);
     ?>
     <div class="col-6 col-md-2 grid-margin" data-date="<?= date('Y-m-d H:i', strtotime($media->created)) ?>">
         <div>
             <div class="uk-card uk-card-default">
                 <div class="uk-card-media-top">
-                    <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= ucwords($media->admin->display_name) ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>"  data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors="<?= $colors ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
+                    <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= ucwords($media->admin->display_name) ?>" data-purple-host="<?= $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>"  data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors-url="<?= $colorsUrl ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
                 </div>
             </div>
         </div>
@@ -149,35 +150,54 @@
         }
 
         $(".media-link-to-image").click(function () {
-            var id      = $(this).data('purple-id'),
-                image   = $(this).data('purple-image'),
-                host    = $(this).data('purple-host'),
-                by      = $(this).data('purple-by'),
-                created = $(this).data('purple-created'),
-                colors  = $(this).data('purple-colors'),
-                desc    = $(this).data('purple-description'),
-                title   = $(this).attr('title'),
-                modal   = $("#modal-full-content");
+            var id       = $(this).data('purple-id'),
+                image    = $(this).data('purple-image'),
+                host     = $(this).data('purple-host'),
+                by       = $(this).data('purple-by'),
+                created  = $(this).data('purple-created'),
+                colors   = $(this).data('purple-colors'),
+                desc     = $(this).data('purple-description'),
+                title    = $(this).attr('title'),
+                colorUrl = $(this).attr('data-purple-colors-url'),
+                token    = $('#csrf-ajax-token').val(),
+                modal    = $("#modal-full-content");
 
-            // Image colors
-            var colorsArray = colors.split(","),
-                i, setColors = '';
-            for (i = 0; i < colorsArray.length; i++) {
-                setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
-            }
+            modal.find(".bind-background").css('background-color', '#ffffff');
+            modal.find('.bind-colors').html('<i class="fa fa-circle-o-notch fa-spin"></i> Getting image colors...');
 
-            modal.find(".bind-colors").html(setColors);
-            if (colorsArray.length <= 3) {
-                if (lightOrDark(colorsArray[0]) == 'light') {
-                    modal.find(".bind-background").css('background-color', '#0e0e0e');
+            $.ajax({
+                type: "POST",
+                url:  colorUrl,
+                headers : {
+                    'X-CSRF-Token': token
+                },
+                data: { image:image },
+                cache: false,
+                success: function(data){
+                    // Image colors
+                    var colorsArray = data.split(","),
+                        i, setColors = '';
+                    for (i = 0; i < colorsArray.length; i++) {
+                        setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
+                    }
+
+                    setTimeout(() => {
+                        modal.find(".bind-colors").html(setColors);
+                        if (colorsArray.length <= 3) {
+                            if (lightOrDark(colorsArray[0]) == 'light') {
+                                modal.find(".bind-background").css('background-color', '#0e0e0e');
+                            }
+                            else {
+                                modal.find(".bind-background").css('background-color', '#ffffff');
+                            }
+                        }
+                        else {
+                            modal.find(".bind-background").css('background-color', colorsArray[0]);
+                        }
+                    }, 1000);
                 }
-                else {
-                    modal.find(".bind-background").css('background-color', '#ffffff');
-                }
-            }
-            else {
-                modal.find(".bind-background").css('background-color', colorsArray[0]);
-            }
+            })
+            
             modal.find(".uk-background-contain").css('background-image', 'url(' + image + ')');
             modal.find("form input[name=id]").val(id);
             modal.find("form input[name=title]").val(title);

@@ -2,6 +2,7 @@
 namespace App\View\Cell;
 use Cake\View\Cell;
 use Cake\Routing\Router;
+use Cake\Cache\Cache;
 use League\ColorExtractor\Color;
 use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Palette;
@@ -34,24 +35,36 @@ class MediasCell extends Cell
     }   
     public function colorExtract($image)
     {
-        $palette    = Palette::fromFilename($image);
-        $extractor  = new ColorExtractor($palette);
-        $colorCount = count($palette);
-        if ($colorCount >= 5) {
-            $colors = $extractor->extract(5);
-            // $colors = $palette->getMostUsedColors(8);
+        $baseName = basename($image);
+        $baseName = pathinfo($baseName, PATHINFO_FILENAME);
+        
+        if (($colorExtract = Cache::read('color_extract_' . $baseName)) === false) {
+            $palette    = Palette::fromFilename($image);
+            $extractor  = new ColorExtractor($palette);
+            $colorCount = count($palette);
+            if ($colorCount >= 5) {
+                $colors = $extractor->extract(5);
+                // $colors = $palette->getMostUsedColors(8);
+            }
+            else {
+                $colors = $extractor->extract($colorCount);
+                // $colors = $palette->getMostUsedColors($colorCount);
+            }
+
+            $setColors = [];
+            foreach($colors as $color) {
+                array_push($setColors, Color::fromIntToHex($color));
+            }
+
+            $dominateColors = implode(',', $setColors);
+
+            Cache::write('color_extract_' . $baseName, $dominateColors);
         }
         else {
-            $colors = $extractor->extract($colorCount);
-            // $colors = $palette->getMostUsedColors($colorCount);
+            $dominateColors = Cache::read('color_extract_' . $baseName);
         }
 
-        $setColors = [];
-        foreach($colors as $color) {
-            array_push($setColors, Color::fromIntToHex($color));
-        }
-
-        $this->set('colors', implode(',', $setColors));
+        $this->set('colors', $dominateColors);
     }
     /**
      * @param $mediaName = media file name

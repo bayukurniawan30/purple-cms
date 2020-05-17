@@ -613,7 +613,19 @@ class MediasController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
-    }
+	}
+	public function ajaxGetImageColors()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		if ($this->request->is('ajax') || $this->request->is('post')) {
+			$imageName = $this->request->getData('image');
+            $this->set(['image' => $imageName]);
+		}
+		else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+	}
     public function ajaxUploadDocuments()
 	{
 		$this->viewBuilder()->enableAutoLayout(false);

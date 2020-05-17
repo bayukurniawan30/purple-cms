@@ -346,6 +346,9 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
 #media-image-previous-url, #media-image-next-url {
     display: none;
 }
+.bind-background {
+    transition: background-color 0.5s ease;
+}
 
 /* Table */
 .uk-table th {

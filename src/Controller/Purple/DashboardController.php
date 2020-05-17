@@ -189,11 +189,14 @@ class DashboardController extends AppController
 				$monthNumber  = date('m', mktime(0, 0, 0, $m, 10));
 				$monthLatinArray[$monthNumber]  = $monthLatin;
 			}
+			$selectedMonth = date('m');
 
 			$yearArray = array();
 			for ($y = 2015; $y <= date('Y'); $y++) {
 				$yearArray[$y]  = $y;
 			}
+			$selectedYear = date('Y');
+
 
 			$allComments    = $this->Comments->dashboardStatistic();		
 			$unreadComments = $this->Comments->dashboardStatistic('unread');	
@@ -222,7 +225,9 @@ class DashboardController extends AppController
 				'unreadComments'			=> $unreadComments,
 				'allPosts'			     	=> $allPosts,
 				'draftPosts'			    => $draftPosts,
-				'oneMonthPosts'			    => $oneMonthPosts
+				'oneMonthPosts'			    => $oneMonthPosts,
+				'selectedMonth'				=> $selectedMonth,
+				'selectedYear'				=> $selectedYear
 			];
 	    	$this->set($data);
 

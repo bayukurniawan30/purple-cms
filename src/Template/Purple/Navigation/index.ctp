@@ -219,9 +219,15 @@
                         $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-items>li .sortable-remover").show();
+
+                        // Progress bar
+                        progress.start();
                     }
                 });
                 ajaxProcessing.done(function(msg) {
+                    // Stop progress bar
+                    progress.end();
+
                     if (cakeDebug == 'on') {
                         console.log(msg);
                     }
@@ -273,9 +279,15 @@
                         $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-child-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-child-items>li .sortable-remover").show();
+
+                        // Progress bar
+                        progress.start();
                     }
                 });
                 ajaxProcessing.done(function(msg) {
+                    // Stop progress bar
+                    progress.end();
+                    
                     if (cakeDebug == 'on') {
                         console.log(msg);
                     }

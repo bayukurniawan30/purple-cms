@@ -57,27 +57,28 @@
                     $fullImage   = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
                     $previousId  = $this->cell('Medias::previousId', [$media->id]);
                     $nextId      = $this->cell('Medias::nextId', [$media->id]);
-                    $colors      = $this->cell('Medias::colorExtract', [$fullImage]);
 
                     if ($previousId == '0') {
                         $previousUrl = '#';
                     }
                     else {
-                        $previousUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $previousId;
+                        $previousUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . "?id=" . $previousId;
                     }
 
                     if ($nextId == '0') {
                         $nextUrl = '#';
                     }
                     else {
-                        $nextUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextId;
+                        $nextUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . "?id=" . $nextId;
                     }
+
+                    $colorsUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'ajaxGetImageColors']);
                 ?>
                 <div class="col-6 col-md-2 grid-margin" data-date="<?= date($settingsDateFormat.' '.$settingsTimeFormat, strtotime($media->created)) ?>">
                     <div>
                         <div class="uk-card uk-card-default">
                             <div class="uk-card-media-top">
-                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors="<?= $colors ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
+                                <a class="media-link-to-image" href="#modal-full-content" data-purple-id="<?= $media->id ?>" data-purple-by="<?= $media->admin->get('display_name') ?>" data-purple-host="<?= $protocol . $this->request->host() ?>" data-purple-image="<?= $fullImage ?>" data-purple-created="<?= date('F d, Y H:i', strtotime($media->created)) ?>" data-purple-next-url="<?= $nextUrl ?>" data-purple-previous-url="<?= $previousUrl ?>" data-purple-colors-url="<?= $colorsUrl ?>" title="<?= $media->title ?>" data-purple-description="<?= $media->description ?>"><?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?></a>
                             </div>
                         </div>
                     </div>
@@ -251,9 +252,8 @@
             $fullImageDetail   = $this->cell('Medias::mediaPath', [$detail->name, 'image', 'original']);
             $previousIdDetail  = $this->cell('Medias::previousId', [$detail->id]);
             $nextIdDetail      = $this->cell('Medias::nextId', [$detail->id]);
-            $colorsDetail      = $this->cell('Medias::colorExtract', [$fullImageDetail]);
-            $explodeColors     = explode(",", $colorsDetail);
-
+            // $colorsDetail      = $this->cell('Medias::colorExtract', [$fullImageDetail]);
+            // $explodeColors     = explode(",", $colorsDetail);
 
             if ($previousIdDetail == '0') {
                 $previousUrlDetail = '#';
@@ -268,12 +268,14 @@
             else {
                 $nextUrlDetail = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => $this->request->getParam('action')]) . '?id=' . $nextIdDetail;
             }
+
+            $colorsUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'ajaxGetImageColors']);
 ?>
 <div id="modal-full-content-initial" class="uk-modal-full purple-modal" uk-modal>
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
         <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
-            <div class="uk-background-contain uk-animation-slide-left bind-background" style="background-image: url(<?= $fullImageDetail ?>); background-color: <?= $explodeColors[0] ?>" uk-height-viewport>
+            <div class="uk-background-contain uk-animation-slide-left bind-background" style="background-image: url(<?= $fullImageDetail ?>); background-color: #ffffff" uk-height-viewport>
                 <a href="<?= $previousUrlDetail ?>" id="media-image-previous-url">
                     <div class="uk-position-center-left uk-overlay uk-overlay-default"><span uk-icon="chevron-left"></span></div>
                 </a>
@@ -287,12 +289,13 @@
                     <li class="uk-disabled purple-mobile-media-breadcrumb"><a class="bind-created">Uploaded at <?= date('F d, Y H:i', strtotime($media->created)) ?></a></li>
                 </ul>
                 <p class="bind-colors">
+                    <i class="fa fa-circle-o-notch fa-spin"></i> Getting image colors...
                     <?php
-                        foreach ($explodeColors as $colorExtract):
+                        // foreach ($explodeColors as $colorExtract):
                     ?>
-                    <a href="#" class="uk-margin-left-small" style="color: <?= $colorExtract ?>" title="<?= $colorExtract ?>"><i class="fa fa-square"></i></a>
+                    <!-- <a href="#" class="uk-margin-left-small" style="color: <?= $colorExtract ?>" title="<?= $colorExtract ?>"><i class="fa fa-square"></i></a> -->
                     <?php
-                        endforeach;
+                        // endforeach;
                     ?>
                 </p>
                 <?php
@@ -425,20 +428,45 @@
         }
 
         var modal = $('#modal-full-content-initial');
-        var totalColors = <?= count($explodeColors) ?>;
-        if (totalColors <= 3) {
-            if (lightOrDark("<?= $explodeColors[0] ?>") == 'light') {
-                modal.find(".bind-background").css('background-color', '#0e0e0e');
-            }
-            else {
-                modal.find(".bind-background").css('background-color', '#ffffff');
-            }
-        }
-        else {
-            modal.find(".bind-background").css('background-color', '<?= $explodeColors[0] ?>');
-        }
 
         UIkit.modal('#modal-full-content-initial').show();
+
+        var image    = '<?= $fullImageDetail ?>',
+            token    = $('#csrf-ajax-token').val(),
+            colorUrl = '<?= $colorsUrl ?>';
+        $.ajax({
+            type: "POST",
+            url:  colorUrl,
+            headers : {
+                'X-CSRF-Token': token
+            },
+            data: { image:image },
+            cache: false,
+            success: function(data){
+                // Image colors
+                var colorsArray = data.split(","),
+                    i, setColors = '';
+                for (i = 0; i < colorsArray.length; i++) {
+                    setColors += '<a href="#" class="uk-margin-small-right" style="color: ' + colorsArray[i] + '" title="' + colorsArray[i] + '"><i class="fa fa-square"></i></a>';
+                }
+
+                setTimeout(() => {
+                    modal.find(".bind-colors").html(setColors);
+
+                    if (colorsArray.length <= 3) {
+                        if (lightOrDark(colorsArray[0]) == 'light') {
+                            modal.find(".bind-background").css('background-color', '#0e0e0e');
+                        }
+                        else {
+                            modal.find(".bind-background").css('background-color', '#ffffff');
+                        }
+                    }
+                    else {
+                        modal.find(".bind-background").css('background-color', colorsArray[0]);
+                    }
+                }, 1000);
+            }
+        })
 
         var clipboard   = new ClipboardJS('#button-clipboard-js-detail'),
             targetLabel = modal.find("form label[for=path]").html();
