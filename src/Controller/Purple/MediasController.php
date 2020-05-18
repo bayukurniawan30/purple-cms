@@ -7,6 +7,7 @@ use Cake\Core\Configure;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
+use Cake\Cache\Cache;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\MediaImageModalForm;
 use App\Form\Purple\MediaImageDeleteForm;
@@ -501,6 +502,13 @@ class MediasController extends AppController
 				$result = $this->Medias->delete($entity);
 				
 				if ($result) {
+					// Delete color extractor cache
+					$baseName = pathinfo($imagePath, PATHINFO_FILENAME);
+					$colorExtractorCache = Cache::read('color_extract_' . $baseName);
+					if ($colorExtractorCache !== false) {
+						Cache::delete('color_extract_' . $baseName);
+					}
+					
 					// Check for media storage
 					$mediaStorage   = $this->Settings->fetch('mediastorage');
 

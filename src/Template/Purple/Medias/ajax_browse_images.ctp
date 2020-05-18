@@ -35,15 +35,17 @@
 
 <script>
     $(document).ready(function() {
-        <?php
-            if ($multiSelect == false):
-        ?>
-        console.log('multi = false');
-        <?php
-            else:
-        ?>
-        console.log('multi = true');
-        <?php endif; ?>
+        if (debug == true || cakeDebug == 'on') {
+            <?php
+                if ($multiSelect == false):
+            ?>
+            console.log('multi = false');
+            <?php
+                else:
+            ?>
+            console.log('multi = true');
+            <?php endif; ?>
+        }
 
         function clickImage() {
             function toggleClick1() {
@@ -83,7 +85,6 @@
                 <?php
                     endif;
                 ?>
-                console.log('toggleClick1');
                 $(this).one("click", toggleClick2);
             }
 
@@ -106,7 +107,6 @@
                     modal.find(".button-select-image").removeAttr('disabled');
                 }
 
-                console.log('toggleClick2');
                 $(this).one("click", toggleClick1);
             }
             $(".media-image").one("click", toggleClick1);

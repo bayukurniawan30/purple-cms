@@ -1298,7 +1298,7 @@ $(document).ready(function() {
                 redirect  = btn.data('purple-redirect'),
                 modal     = $("#modal-browse-images");
 
-            btn.html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+            btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Images...');
             btn.attr('disabled','disabled');
 
             setTimeout(function() {
