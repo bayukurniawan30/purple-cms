@@ -392,6 +392,12 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
 select.form-control {
     color: #495057!important;
 }
+.uk-radio:checked, .uk-checkbox:checked, .uk-checkbox:indeterminate {
+    background-color: var(--primary);
+}
+.uk-radio:checked:focus, .uk-checkbox:checked:focus, .uk-checkbox:indeterminate:focus {
+    background-color: var(--primary);
+}
 
 /* Pages */
 .purple-page-list li {

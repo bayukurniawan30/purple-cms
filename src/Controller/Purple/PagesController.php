@@ -180,35 +180,38 @@ class PagesController extends AppController
             $pageSave            = new PageSaveForm();
             $pageLoadStylesheets = new PageLoadStylesheetsForm();
 
-            $purpleFroalaBlocks = new PurpleProjectFroalaBlocks();
+            $purpleFroalaBlocks  = new PurpleProjectFroalaBlocks();
 
-            $froalaCallToAction = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'call-to-action');
-            $filesCallToAction  = $froalaCallToAction->find('.*\.jpg', true);
+            $froalaCallToAction  = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'call-to-action');
+            $filesCallToAction   = $froalaCallToAction->find('.*\.jpg', true);
             
-            $froalaContents     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contents');
-            $filesContents      = $froalaContents->find('.*\.jpg', true);
+            $froalaContents      = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contents');
+            $filesContents       = $froalaContents->find('.*\.jpg', true);
             
-            $froalaFeatures     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'features');
-            $filesFeatures      = $froalaFeatures->find('.*\.jpg', true);
-            
-            $froalaTeams        = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'teams');
-            $filesTeams         = $froalaTeams->find('.*\.jpg', true);
+            $froalaFeatures      = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'features');
+            $filesFeatures       = $froalaFeatures->find('.*\.jpg', true);
 
-            $froalaContacts     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contacts');
-            $filesContacts      = $froalaContacts->find('.*\.jpg', true);
+            $froalaFooters       = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'footers');
+            $filesFooters        = $froalaFooters->find('.*\.jpg', true);
             
-            $froalaLightbox     = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'lightbox');
-            $filesLightbox      = $froalaLightbox->find('.*\.jpg', true);
+            $froalaTeams         = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'teams');
+            $filesTeams          = $froalaTeams->find('.*\.jpg', true);
+
+            $froalaContacts      = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'contacts');
+            $filesContacts       = $froalaContacts->find('.*\.jpg', true);
             
-            $froalaSlider       = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'slider');
-            $filesSlider        = $froalaSlider->find('.*\.jpg', true);
+            $froalaLightbox      = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'lightbox');
+            $filesLightbox       = $froalaLightbox->find('.*\.jpg', true);
+            
+            $froalaSlider        = new Folder(WWW_ROOT . 'master-assets' . DS . 'plugins' . DS . 'froala-blocks' . DS . 'images' . DS . 'slider');
+            $filesSlider         = $froalaSlider->find('.*\.jpg', true);
 
-            $themeStylesheet    = new Folder(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'css');
-            $filesStylesheet    = $themeStylesheet->find('.*\.css', true);
+            $themeStylesheet     = new Folder(PLUGINS . 'EngageTheme' . DS . 'webroot' . DS . 'css');
+            $filesStylesheet     = $themeStylesheet->find('.*\.css', true);
 
-            $savedBlocks        = $purpleFroalaBlocks->savedBlocks();
+            $savedBlocks         = $purpleFroalaBlocks->savedBlocks();
 
-            $themeBlocks        = $purpleFroalaBlocks->themeBlocks();
+            $themeBlocks         = $purpleFroalaBlocks->themeBlocks();
 
             $generals = $this->Pages->find('all')->contain('Generals')->where(['Pages.slug' => $slug])->limit(1);
             if ($generals->count() == 0) {
@@ -246,6 +249,7 @@ class PagesController extends AppController
                 'fdbCallToAction'  => $filesCallToAction,
                 'fdbContents'      => $filesContents,
                 'fdbFeatures'      => $filesFeatures,
+                'fdbFooters'       => $filesFooters,
                 'fdbTeams'         => $filesTeams,
                 'fdbContacts'      => $filesContacts,
                 'fdbLightbox'      => $filesLightbox,

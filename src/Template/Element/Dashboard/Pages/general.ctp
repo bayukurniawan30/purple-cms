@@ -45,13 +45,14 @@
                                 <li uk-filter-control=".fdb-call-to-action"><a href="#">Call to Action</a></li>
                                 <li uk-filter-control=".fdb-contents"><a href="#">Contents</a></li>
                                 <li uk-filter-control=".fdb-features"><a href="#">Features</a></li>
+                                <li uk-filter-control=".fdb-footers"><a href="#">Footers</a></li>
                                 <li uk-filter-control=".fdb-teams"><a href="#">Teams</a></li>
                                 <li uk-filter-control=".fdb-contacts"><a href="#">Contacts</a></li>
                                 <li uk-filter-control=".uikit-lightbox"><a href="#">Lightbox</a></li>
                                 <li uk-filter-control=".uikit-slider"><a href="#">Slider</a></li>
                                 <li uk-filter-control=".saved-block"><a href="#">Saved Blocks</a></li>
                                 <li class="uk-nav-divider"></li>
-                                <li uk-filter-control=".theme-blocks"><a href="#">Theme Blocks <span class="mdi mdi-information-outline text-primary" uk-tooltip="Special Blocks from active Theme. The looks of the theme block might be slightly different from what is seen on the front-end page because the .css file from the used theme. Please remove the block if you change the active theme. Only use block from active theme."></span></a></li>
+                                <li uk-filter-control=".theme-blocks"><a href="#">Theme Blocks <span class="mdi mdi-information-outline text-primary" uk-tooltip="Special Blocks from active Theme. The looks of the theme block might be slightly different from what is seen on the front-end page because the .css file from the used theme."></span></a></li>
                             </ul>
                         </div>
                         <button class="uk-button uk-button-link uk-margin-small-left" uk-toggle="target: #block-panel" ><span uk-icon="icon: chevron-down"></span></button>
@@ -92,6 +93,17 @@
                         $number    = str_replace('.jpg', '', $blocksFeatures);
                     ?>
                     <div class="fdb-image-container uk-margin-small-bottom fdb-features fdb-blocks" data-purple-number="<?= $number ?>" data-purple-filter="features" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocks"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
+                        <img src="<?= $fullImage ?>" class="img-fluid" width="100%">
+                    </div>
+                    <?php endforeach; ?>
+
+                    <!-- Froala Blocks => Footers -->
+                    <?php foreach ($fdbFooters as $blocksFooters): ?>
+                    <?php
+                        $fullImage = $this->request->getAttribute("webroot") . 'master-assets/plugins/froala-blocks/images/footers/' . $blocksFooters;
+                        $number    = str_replace('.jpg', '', $blocksFooters);
+                    ?>
+                    <div class="fdb-image-container uk-margin-small-bottom fdb-footers fdb-blocks" data-purple-number="<?= $number ?>" data-purple-filter="footers" data-purple-url="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocks"]); ?>" data-purple-urlreload="<?= $this->Url->build(["controller" => "Pages", "action" => "ajaxFroalaBlocksReload"]); ?>">
                         <img src="<?= $fullImage ?>" class="img-fluid" width="100%">
                     </div>
                     <?php endforeach; ?>
@@ -321,7 +333,6 @@
                 ]);
 
                 echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
                     'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
                     'type'         => 'button',
                     'data-target'  => '.purple-modal'

@@ -64,7 +64,6 @@
                 ]);
 
                 echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
                     'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
                     'type'         => 'button',
                     'data-target'  => '.purple-modal'
@@ -79,6 +78,16 @@
 
 <script>
     $(document).ready(function() {
+        <?php
+            if ($this->request->getParam('type') == 'custom'):
+        ?>
+        window.onbeforeunload = function() {
+            return "Your page is not saved. Are you sure want to leave?";
+        }
+        <?php
+            endif;
+        ?>
+
         var pageSave = {
             form            : 'form-save-page',
             button          : 'button-save-page',

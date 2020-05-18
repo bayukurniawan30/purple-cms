@@ -963,10 +963,10 @@ $(document).ready(function() {
      */
     
     changeFontAwesomeIcon = function() {
-        $('.fdb-font-awesome').on({
-            mouseenter: function () {
+        $('.fdb-font-awesome').on('click', function() {
                 var target    = $(this),
                     current   = target.attr('class'),
+                    parent    = target.parent().get(0).tagName,
                     splitCr   = current.split(' '),
                     faIcon    = splitCr.slice(-1)[0],
                     faValue   = target.attr('data-purple-fa-icon'),
@@ -978,7 +978,8 @@ $(document).ready(function() {
                                         '<i class="mdi mdi-flag" id=""></i>'+
                                     '</a>'+
                                 '</div>';
-                $(this).append(iconBtn);
+                
+                // $(this).append(iconBtn);
 
                 $('.font-awesome-color-container').show();
 
@@ -986,15 +987,7 @@ $(document).ready(function() {
                     $(this).attr('data-purple-identifier', identifier);
                     selectBtn.attr('data-purple-identifier', identifier);
 
-                $(".fdb-block-font-awesome-button").on("click", function() {
-                    UIkit.modal(modal).show();
-
-                    $("#modal-font-awesome-icon-body").animate({
-                        scrollTop: $("#modal-font-awesome-icon-body .fa-" + faValue).offset().top -100
-                    }, 1500);
-                    
-                    return false;
-                })
+                UIkit.modal(modal).show();
 
                 selectBtn.attr('data-purple-icon', faValue);
 
@@ -1032,6 +1025,7 @@ $(document).ready(function() {
                         // target.attr('class', newFontClass);
                         $('.fdb-font-awesome[data-purple-identifier='+id+']').attr('class', newFontClass);
                         $('.fdb-font-awesome[data-purple-identifier='+id+']').css('color', iconColor);
+                        $('.fdb-font-awesome[data-purple-identifier='+id+']').attr('data-purple-fa-icon', $(this).attr('data-purple-icon'));
                         $('.fdb-font-awesome[data-purple-identifier='+id+']').attr('data-purple-fa-color', onlyColor);
                     }
                     
@@ -1044,12 +1038,14 @@ $(document).ready(function() {
                     }, 500);
                     return false;
                 })
-            },
-            mouseleave: function () {
-                $(this).find('.fdb-block-font-awesome-button').remove();
-                // $('#modal-font-awesome-icon').find(".purple-font-awesome-icon").removeClass('selected');
-            }
-        })
+            })
+            // mouseleave: function () {
+            //     $(this).parent().removeClass('hovered-fdb-block-fa');
+
+            //     $(this).find('.fdb-block-font-awesome-button').remove();
+            //     // $('#modal-font-awesome-icon').find(".purple-font-awesome-icon").removeClass('selected');
+            // }
+        // })
     }
 
     /**

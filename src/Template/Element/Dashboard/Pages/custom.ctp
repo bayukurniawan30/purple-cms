@@ -18,10 +18,10 @@
                 <div class="uk-inline uk-align-left" style="margin-bottom: 1.5px; margin-top: 1.5px">
                     <h4 class="card-title" style="margin-bottom: 0;"><small>Code Editor</small></h4>
                 </div>
-                <div class="uk-inline uk-align-right fdb-button-option" style="margin-bottom: 1.5px; margin-top: 1.5px">
+                <div class="uk-inline uk-align-right fdb-button-option" style="margin-bottom: 1.5px; margin-top: 5px">
                     <a id="button-toggle-code-fullscreen" class="uk-margin-small-left" uk-tooltip="title: Toggle Fullscreen"><i class="mdi mdi-fullscreen"></i></a>
                     <span class="fdb-button-option-divider uk-margin-small-left">|</span>
-                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="custom" data-purple-content="#fdb-code-editor-ace" class="uk-margin-small-left"><i class="mdi mdi-content-save"></i> Save</a>
+                    <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="custom" data-purple-content="#fdb-code-editor-ace" class="button-save-block-html uk-margin-small-left"><i class="mdi mdi-content-save"></i> SAVE</a>
                 </div>
             </div>
             <div class="uk-card-body" style="padding: 0">

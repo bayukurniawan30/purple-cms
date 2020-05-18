@@ -293,7 +293,7 @@
                 $(this).addClass('active');
                 $("#button-toggle-editing").attr('data-purple-active', 'no');
                 $("#button-toggle-editing").removeClass('active');
-                $('body .fdb-editor').froalaEditor('destroy');
+                // $('body .fdb-editor').froalaEditor('destroy');
                 $('.fdb-blocks-mode').html('<small>Tuning Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').show();
                 // console.log('toggleTuning1');
@@ -432,6 +432,12 @@
                     '</div>';
 
                     $(this).append(menuBtn);
+
+                    $(this).find('.fdb-font-awesome')
+                    var sticky = UIkit.tooltip('.fdb-font-awesome', {
+                        title: 'Click to change icon',
+                        pos: 'bottom'
+                    });
 
                     UIkit.sortable('#bind-fdb-blocks', {
                         handle: '.uk-sortable-handle'
@@ -636,8 +642,8 @@
 
                         });
                         $(this).on('froalaEditor.initialized', function (e, editor) {
-                            $("section#fdb-"+id).removeClass('fdb-block-selected');
-                            $("section#fdb-"+id).find('.fdb-block-menu-button').remove();
+                            $("#fdb-"+id).removeClass('fdb-block-selected');
+                            $("#fdb-"+id).find('.fdb-block-menu-button').remove();
                         });
                         $(this).addClass('initialized-editor');
                     }
@@ -703,12 +709,12 @@
                         $("#bind-fdb-blocks").append(html);
 
                         $('html, body').animate({
-                            scrollTop: $("section#fdb-"+id).offset().top - 120
+                            scrollTop: $("#fdb-"+id).offset().top - 120
                         }, 1000);
 
                         treePanelContent();
 
-                        $("section#fdb-"+id).on({
+                        $("#fdb-"+id).on({
                                 mouseenter: function () {
                                     if(tuningMode() == 'yes') {
                                         $(this).addClass('fdb-block-selected');
@@ -912,7 +918,7 @@
 
                         blockCopy();
 
-                        $("section#fdb-"+id).find('.fdb-editor').on({
+                        $("#fdb-"+id).find('.fdb-editor').on({
                                 mouseenter: function () {
                                     console.log(editingMode());
                                     if(editingMode() == 'yes') {
@@ -987,8 +993,8 @@
                                           })
 
                                         $(this).on('froalaEditor.initialized', function (e, editor) {
-                                            $("section#fdb-"+id).removeClass('fdb-block-selected');
-                                            $("section#fdb-"+id).find('.fdb-block-menu-button').remove();
+                                            $("#fdb-"+id).removeClass('fdb-block-selected');
+                                            $("#fdb-"+id).find('.fdb-block-menu-button').remove();
                                         });
                                         $(this).addClass('initialized-editor');
                                     }

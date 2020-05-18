@@ -78,7 +78,7 @@
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title uk-margin-remove-bottom">Instagram Posts</h4>
+                <h4 class="card-title uk-margin-remove-bottom">Latest Instagram Posts</h4>
             </div>
             <div class="card-body <?= ($igMedias == NULL || $igMedias == false || count($igMedias) == 0) ? 'uk-padding-remove' : '' ?>">
                 <?php

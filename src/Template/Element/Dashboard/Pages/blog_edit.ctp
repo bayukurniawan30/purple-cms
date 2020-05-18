@@ -296,6 +296,10 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        window.onbeforeunload = function() {
+            return "Your post is not saved. Are you sure want to leave?";
+        }
+
         $('input[name="tags"]').tagEditor({ 
             <?php
                 if ($totalTags > 0):
@@ -555,6 +559,7 @@
 
         var targetButton = $("#"+blogEdit.button);
         targetButton.one('click',function() {
+            window.onbeforeunload = null;
             ajaxSubmit(blogEdit.form, blogEdit.action, blogEdit.redirectType, blogEdit.redirect, blogEdit.btnNormal, blogEdit.btnLoading, true, true);
         })
     })
