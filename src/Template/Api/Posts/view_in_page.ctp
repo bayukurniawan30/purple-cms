@@ -12,9 +12,9 @@
                     $newFeatured = [];
                     $initFeatured = 0;
                     foreach ($explodeFeatured as $featured) {
-                        $newFeatured[$initFeatured]['original'] = $this->cell('Medias::mediaPath', [$featured, 'image', 'original']);
-                        $newFeatured[$initFeatured]['300x300']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::300']);
-                        $newFeatured[$initFeatured]['480x270']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::480']);
+                        $newFeatured[$initFeatured]['original'] = $this->cell('Medias::mediaPath', [$featured, 'image', 'original'])->render();
+                        $newFeatured[$initFeatured]['300x300']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::300'])->render();
+                        $newFeatured[$initFeatured]['480x270']  = $this->cell('Medias::mediaPath', [$featured, 'image', 'thumbnail::480'])->render();
 
                         $initFeatured++;
                     }
@@ -23,9 +23,9 @@
                 }
                 else {
                     $post->featured = [
-                        'original' => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'original']),
-                        '300x300'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::300']),
-                        '480x270'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::480'])
+                        'original' => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'original'])->render(),
+                        '300x300'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::300'])->render(),
+                        '480x270'  => $this->cell('Medias::mediaPath', [$post->featured, 'image', 'thumbnail::480'])->render()
                     ];
                 }
             }
@@ -39,7 +39,7 @@
             ], true);
 
             if ($post->admin->photo != NULL) {
-                $post->admin->photo = $this->cell('Medias::mediaPath', [$post->admin->photo, 'image', 'original']);
+                $post->admin->photo = $this->cell('Medias::mediaPath', [$post->admin->photo, 'image', 'original'])->render();
             }
         }
 

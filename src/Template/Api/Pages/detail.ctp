@@ -10,7 +10,7 @@
         }
 
         if ($decode->page->admin->photo != NULL) {
-            $decode->page->admin->photo = $this->cell('Medias::mediaPath', [$decode->page->admin->photo, 'image', 'original']);
+            $decode->page->admin->photo = $this->cell('Medias::mediaPath', [$decode->page->admin->photo, 'image', 'original'])->render();
         }
 
         echo json_encode($decode, JSON_PRETTY_PRINT);

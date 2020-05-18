@@ -9,7 +9,7 @@
             ], true);
 
             if ($category->admin->photo != NULL) {
-                $category->admin->photo = $this->cell('Medias::mediaPath', [$category->admin->photo, 'image', 'original']);
+                $category->admin->photo = $this->cell('Medias::mediaPath', [$category->admin->photo, 'image', 'original'])->render();
             }
         }
 
