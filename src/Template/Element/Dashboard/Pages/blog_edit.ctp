@@ -81,7 +81,7 @@
                             <dd><?= $this->Purple->plural($totalVisitors, 'reader', 's', true) ?></dd>
 
                             <dt><strong>Purple Tips</strong> <span uk-icon="info"></span></dt>
-                            <dd>Share your post to social media like facebook, instagram, or twitter to get more readers. Enable the Social Sharing Buttons, so reader can share your post to social media. Do not post a duplicate content from another website, make your post unique and interesting to read.
+                            <dd>Share your post to social media like Facebook, Instagram, or Twitter to get more readers. Enable the Social Sharing Buttons, so reader can share your post to social media. Do not post a duplicate content from another website, make your post unique and interesting to read.
                             </dd>
                         </dl>
                     </div>

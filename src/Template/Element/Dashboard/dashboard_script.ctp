@@ -163,6 +163,68 @@
 		    })
 		     
 		    $("#visit-sale-chart-legend").html(myChart.generateLegend());
-	    }
+		}
+		
+		if ($('#bind-top-countries').length > 0) {
+			var targetCountries = $('#bind-top-countries'),
+				data   = { page:'dashboard' },
+				url    = targetCountries.data('purple-url');
+				token  = $('#csrf-ajax-token').val();
+
+			var ajaxProcessing = $.ajax({
+				type: "POST",
+				url:  url,
+				headers : {
+					'X-CSRF-Token': token
+				},
+				data: data,
+				cache: false
+			});
+			ajaxProcessing.done(function(msg) {
+				if (cakeDebug == 'on') {
+					console.log(msg);
+				}
+
+				targetCountries.removeClass('uk-padding-remove');
+				targetCountries.css('min-height', '300px');
+				targetCountries.html(msg);
+			});
+			ajaxProcessing.fail(function(jqXHR, textStatus) {
+				var createToast = notifToast(jqXHR.statusText, 'There is an error when loading top 10 countries. Please refresh the page', 'error', true);
+			});
+			ajaxProcessing.always(function () {
+			});
+		}
+
+		if ($('#bind-top-posts').length > 0) {
+			var targetPosts = $('#bind-top-posts'),
+				data   = { page:'dashboard' },
+				url    = targetPosts.data('purple-url');
+				token  = $('#csrf-ajax-token').val();
+
+			var ajaxProcessing = $.ajax({
+				type: "POST",
+				url:  url,
+				headers : {
+					'X-CSRF-Token': token
+				},
+				data: data,
+				cache: false
+			});
+			ajaxProcessing.done(function(msg) {
+				if (cakeDebug == 'on') {
+					console.log(msg);
+				}
+
+				targetPosts.removeClass('uk-padding-remove');
+				targetPosts.css('min-height', '300px');
+				targetPosts.html(msg);
+			});
+			ajaxProcessing.fail(function(jqXHR, textStatus) {
+				var createToast = notifToast(jqXHR.statusText, 'There is an error when loading top 10 posts. Please refresh the page', 'error', true);
+			});
+			ajaxProcessing.always(function () {
+			});
+		}
     })
 </script>

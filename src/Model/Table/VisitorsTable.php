@@ -4,6 +4,10 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
+use Cake\Log\Log;
+use Cake\Http\Client;
+use Cake\Cache\Cache;
+use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 
@@ -34,6 +38,63 @@ class VisitorsTable extends Table
         if ($entity->isNew()) {
             $entity->date_created = $formattedDate;
             $entity->time_created = $formattedTime;
+        }
+    }
+    public function topCountries($limit = 10) 
+    {
+        $purpleGlobal = new PurpleProjectGlobal();
+        $apiPath      = $purpleGlobal->apiDomain;
+        
+        $http = new Client();
+
+        $countVisitors = $this->find()->count();
+        $visitors      = $this->find()->select(['id', 'ip'])->toArray();
+
+        if ($countVisitors > 0) {
+            $newArray = [];
+            $i = 0;
+            foreach ($visitors as $key => $value) {
+                if ($value['ip'] != '::1' && $value['ip'] != '127.0.0.1') {
+                    if (($cache = Cache::read('visitor_' . $value['ip'])) === false) {
+                        $response     = $http->get($apiPath . '/visitor/look-up/' . $value['ip']);
+                        if ($response->isOk()) {
+                            $verifyResult = $response->body();
+                            $decodeResult = json_decode($verifyResult, true);
+                            $data         = [
+                                'country_code'    => $decodeResult['country_code'],
+                                'country_name'    => $decodeResult['country_name'],
+                                'city'            => $decodeResult['city'],
+                                'zip'             => $decodeResult['zip'],
+                                'flag'            => $decodeResult['location']['country_flag'],
+                            ];
+                            $country = $decodeResult['country_name']; 
+                            $flag    = $decodeResult['location']['country_flag']; 
+
+                            Cache::write('visitor_' . $value['ip'], json_encode($data));
+
+                            array_push($newArray, $country . '::' . $flag);
+                        }
+                    }
+                    else {
+                        $cache       = Cache::read('visitor_' . $value['ip']);
+                        $decodeCache = json_decode($cache, true);
+                        $country     = $decodeCache['country_name'];
+                        $flag        = $decodeCache['flag'];
+                        array_push($newArray, $country . '::' . $flag);
+                    }
+
+                    $i++;
+                }
+            }
+
+            $countValues = array_count_values($newArray);
+            arsort($countValues);
+            $frequentCountry = array_slice($countValues, 0, $limit, true);
+
+            return $frequentCountry;
+        }
+        else {
+            return false;
         }
     }
     public function totalAllVisitors() 
@@ -228,6 +289,28 @@ class VisitorsTable extends Table
     }
     public function checkVisitor($ip, $created, $browser, $platform, $device)
     {
+        $purpleGlobal = new PurpleProjectGlobal();
+        $apiPath      = $purpleGlobal->apiDomain;
+        
+        $http = new Client();
+
+        if (($cache = Cache::read('visitor_' . $ip)) === false) {
+            $response     = $http->get($apiPath . '/visitor/look-up/' . $ip);
+            if ($response->isOk()) {
+                $verifyResult = $response->body();
+                $decodeResult = json_decode($verifyResult, true);
+                $data         = [
+                    'country_code'    => $decodeResult['country_code'],
+                    'country_name'    => $decodeResult['country_name'],
+                    'city'            => $decodeResult['city'],
+                    'zip'             => $decodeResult['zip'],
+                    'flag'            => $decodeResult['location']['country_flag'],
+                ];
+
+                Cache::write('visitor_' . $ip, json_encode($data));
+            }
+        }
+
         $year  = date('Y', strtotime($created));
         $month = date('m', strtotime($created));
         $date  = date('d', strtotime($created));

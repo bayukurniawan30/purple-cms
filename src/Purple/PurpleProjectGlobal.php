@@ -97,7 +97,7 @@ class PurpleProjectGlobal
 		$agent        = $_SERVER['HTTP_USER_AGENT'];
 		$version      = '';
 		$codeName     = '';
-		$os           = 'Unknown OS';
+		$os           = 'Other OS';
 		
 		foreach ($mobileDetect->getOperatingSystems() as $name => $regex) {
 			$check = $mobileDetect->version($name);

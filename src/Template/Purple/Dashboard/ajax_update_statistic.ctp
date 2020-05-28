@@ -17,7 +17,7 @@
 <div id="recent-activity-container" class="col-md-4 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Visitors Platform</h4>
+            <h4 class="card-title">Visitors Platform<br><small id="selected-title-date-range-platform"><?= $current ?></small></h4>
             
             <?php 
             	if ($visitorsWindows > 0):

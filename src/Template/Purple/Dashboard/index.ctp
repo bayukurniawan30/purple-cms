@@ -1,3 +1,15 @@
+<?php
+    $loadTopCountriesUrl = $this->Url->build([
+        '_name'  => 'adminDashboardAction',
+        'action' => 'ajaxGetTopCountries',
+    ]);
+
+    $loadTopPostsUrl = $this->Url->build([
+        '_name'  => 'adminDashboardAction',
+        'action' => 'ajaxGetTopPosts',
+    ]);
+?>
+
 <div class="row">
     <div class="col-md-4 stretch-card grid-margin">
         <div class="card bg-gradient-danger card-img-holder dashboard-statistic-card">
@@ -130,6 +142,30 @@
                     </tbody>
                 </table>
             <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 grid-margin">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Top 10 Countries</h4>
+            </div>
+            <div id="bind-top-countries" class="card-body uk-padding-small uk-inline" style="min-height: 300px; height: auto; padding: 15px 30px" data-purple-url="<?= $loadTopCountriesUrl ?>">
+                <div class="uk-position-center"><div uk-spinner="ratio: 1.5"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 grid-margin">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title uk-margin-remove-bottom">Top 10 Posts</h4>
+            </div>
+            <div id="bind-top-posts" class="card-body uk-padding-small uk-inline" style="min-height: 300px; height: auto; padding: 15px 30px" data-purple-url="<?= $loadTopPostsUrl ?>">
+                <div class="uk-position-center"><div uk-spinner="ratio: 1.5"></div></div>
             </div>
         </div>
     </div>

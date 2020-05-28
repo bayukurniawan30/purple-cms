@@ -4,6 +4,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
@@ -113,5 +114,43 @@ class BlogVisitorsTable extends Table
 		->having(['yearCreated' => $explodeDate[0], 'monthCreated' => $explodeDate[1], 'dayCreated' => $explodeDate[2], 'blog_id' => $blogId]);
 
         return $totalVisitors->count();
-    }
+	}
+	public function topBlogs($limit = 10)
+	{
+        $countVisitors = $this->find()->count();
+		$visitors      = $this->find()->select(['ip', 'blog_id'])->toArray();
+
+		if ($countVisitors > 0) {
+			$newArray = [];
+			$i = 0;
+			foreach ($visitors as $key => $value) {
+				if ($value['ip'] != '::1' && $value['ip'] != '127.0.0.1') {
+					array_push($newArray, $value['blog_id']);
+				}
+			}
+
+			$countValues   = array_count_values($newArray);
+			arsort($countValues);
+			$frequentBlogs = array_slice($countValues, 0, $limit, true);
+			
+			$blogsTable = TableRegistry::get('Blogs');
+			$blogsArray = [];
+			$j = 0;
+			foreach ($frequentBlogs as $key => $value) {
+				$blog = $blogsTable->find('all')->contain('BlogCategories')->where(['Blogs.id' => $key])->first();
+				$blogTitle    = $blog->title;
+				$blogSlug     = $blog->slug;
+				$blogCreated  = $blog->created;
+				$blogCategory = $blog->blog_category->name;
+
+				$blogsArray[$j] = ['title' => $blogTitle, 'slug' => $blogSlug, 'created' => $blogCreated, 'category' => $blogCategory, 'total' => $value];
+				$j++;
+			}
+
+			return $blogsArray;
+		}
+		else {
+			return false;
+		}
+	}
 }

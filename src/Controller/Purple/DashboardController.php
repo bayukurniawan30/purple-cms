@@ -59,6 +59,7 @@ class DashboardController extends AppController
 		$this->loadModel('Admins');
 		$this->loadModel('Comments');
 		$this->loadModel('Blogs');
+		$this->loadModel('BlogVisitors');
 		$this->loadModel('Visitors');
 		$this->loadModel('Settings');
 		$this->loadModel('Histories');
@@ -340,5 +341,21 @@ class DashboardController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
+	}
+	public function ajaxGetTopCountries()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$topCountries = $this->Visitors->topCountries();
+
+		$this->set('topCountries', $topCountries);
+	}
+	public function ajaxGetTopPosts()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$topPosts = $this->BlogVisitors->topBlogs();
+
+		$this->set('topPosts', $topPosts);
 	}
 }
