@@ -93,6 +93,11 @@
 							<h4>Enter 6 Digits Verification Code</h4>
 							<h6 class="font-weight-light">You haven't signed in for <?= $diff == 7 ? '7 days' : 'more than a week' ?>.</h6>
 							<?php
+								elseif ($this->request->getParam('action') == 'authyToken'):
+							?>
+							<h4>Enter Authy Verification Code</h4>
+							<h6 class="font-weight-light">You've signed in with different device.</h6>
+							<?php
 								else:
 							?>
 							<h4>Sign In to feel the Purple</h4>

@@ -8,7 +8,6 @@
     
     echo $this->Form->hidden('id', ['value' => $id]);
 ?>
-<p class="text-center" style="margin-top: 20px">Open Authy app to get the code.</p>
 <div class="form-group">
 	<?php
 		echo $this->Form->text('token', [
