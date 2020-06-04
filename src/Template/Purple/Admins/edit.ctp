@@ -1,3 +1,17 @@
+<?php
+    $verifyUrl = $this->Url->build([
+        '_name'  => 'adminUsersAction',
+        'action' => 'ajaxVerifyPhoneNumber'
+    ]);
+
+    if ($settingTwoFAuth->value == 'enable' && ($adminData->authy_id == NULL || $adminData->authy_id == '' || $adminData->phone_verified != '1')) {
+        $redirectUrl = $this->Url->build(["_name" => "adminUsersAuthyToken", "id" => $adminData->id]);
+    }
+    else {
+        $redirectUrl = $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'index']);
+    }
+?>
+
 <div class="row">
     <div class="col-md-7 grid-margin">
         <div class="card">
@@ -83,6 +97,34 @@
                         );
                     ?>
                 </div>
+                <?php
+                    if ($settingTwoFAuth->value == 'enable'):
+                ?>
+                <div class="form-group">
+                    <?php
+                        $phoneVerified = '';
+                        if ($adminData->authy_id != NULL && $adminData->phone_verified == '1') {
+                            $phoneVerified = '<span class="text-success"><i class="fa fa-check"></i> Verified</span>';
+                        }
+                        echo $this->Form->hidden('calling_code', ['id' => 'calling-code']);
+                        echo $this->Form->label('phone', 'Phone Number ' . $phoneVerified) . '<br>';
+                        echo $this->Form->text('phone', [
+                            'id'         => 'phone-number',
+                            'class'      => 'form-control',
+                            'uk-tooltip' => 'title: Phone number is required if 2FA (Two-Factor Authentication) is enabled.; pos: bottom',
+                            'required'   => 'required',
+                            'value'      => $adminData->phone
+                        ]);
+                    ?>
+                    <small clas="form-text text-muted">Phone number is required if 2FA (Two-Factor Authentication) is enabled.</small>
+                    <!-- <small class="form-text text-muted">
+                        <a href="#" id="button-verify-phone" data-purple-url="<?= $verifyUrl ?>">Verify Phone Number</a>
+                        <a href="#" id="button-already-verified">This number has been verified. Change phone number?</a>
+                    </small> -->
+                </div>
+                <?php
+                    endif;
+                ?>
                 <div class="form-group">
                     <?php
                         echo $this->Form->label('about', 'About This User');
@@ -216,6 +258,58 @@
         </div>
     </div>
 </div>
+
+<?php
+    if ($settingTwoFAuth->value == 'enable'):
+        // echo $this->element('Dashboard/Modal/Users/verify_code_modal', [
+        //     'form'       => $adminVerification,
+        //     'formAction' => 'ajax-approve-phone-number',
+        //     'verifyUrl'  => $verifyUrl
+        // ]);
+?>
+<?= $this->Html->css('/master-assets/plugins/intl-tel-input/css/intlTelInput.css') ?>
+<?= $this->Html->script('/master-assets/plugins/intl-tel-input/js/intlTelInput.min.js'); ?>
+<?= $this->Html->script('/master-assets/plugins/intl-tel-input/js/utils.js', ['id' => 'intl-tel-utils']); ?>
+<?= $this->Html->script('/master-assets/plugins/inputmask/jquery.inputmask.min.js'); ?>
+
+<script>
+    var input  = document.querySelector("#phone-number");
+    var utils  = document.querySelector("#intl-tel-utils").getAttribute('src');
+    var initCc = '<?= $countryCode ?>';
+    var iti    = window.intlTelInput(input, {
+        initialCountry: "id",
+        separateDialCode: true,
+        allowDropdown: true,
+        geoIpLookup: function(callback) {
+            var countryCode = '<?= $countryCode ?>';
+            callback(countryCode);
+        },
+        utilsScript: utils + "?1562189064761"
+    });
+
+    if (initCc != 'ID') {
+        input.addEventListener("countrychange", function() {
+            var formCallingCode   = document.querySelector("#calling-code");
+            formCallingCode.value = iti.getSelectedCountryData().dialCode;
+        });
+    }
+    else {
+        var formCallingCode   = document.querySelector("#calling-code");
+        formCallingCode.value = iti.getSelectedCountryData().dialCode;
+    }
+
+    input.addEventListener("countrychange", function() {
+        var formCallingCode   = document.querySelector("#calling-code");
+        formCallingCode.value = iti.getSelectedCountryData().dialCode;
+    });
+    
+    $(document).ready(function() {
+        $('#phone-number').inputmask("99-999-9999999");
+    })
+</script>
+<?php
+    endif;
+?>
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -434,7 +528,7 @@
             button          : 'button-update-user',
             action          : 'edit',
             redirectType    : 'redirect',
-            redirect        : '<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => 'index']); ?>',
+            redirect        : '<?= $redirectUrl; ?>',
             btnNormal       : false,
             btnLoading      : false
         };

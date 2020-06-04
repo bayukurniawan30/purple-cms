@@ -12,8 +12,10 @@ use App\Form\Purple\AdminLoginForm;
 use App\Form\Purple\ForgotPasswordForm;
 use App\Form\Purple\NewPasswordForm;
 use App\Form\Purple\AdminVerificationSignInForm;
+use App\Form\Purple\AdminAuthyTokenForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
+use App\Purple\PurpleProjectApi;
 use Particle\Filter\Filter;
 use Carbon\Carbon;
 
@@ -111,6 +113,28 @@ class AuthenticateController extends AppController
 		];
 		$this->set($data);
 	}
+	public function authyToken() 
+	{
+		// Set layout
+		$this->viewBuilder()->setLayout('login');
+
+		// Load required forms
+		$adminAuthyToken = new AdminAuthyTokenForm();
+
+		$session = $this->getRequest()->getSession();
+		$admin   = $this->Admins->get($session->read('Admin.id'));
+
+		$queryDefaultBackgroundLogin = $this->Settings->fetch('defaultbackgroundlogin');
+		$queryBackgroundLogin        = $this->Settings->fetch('backgroundlogin');
+
+		$data = [
+			'adminAuthyToken'       => $adminAuthyToken,
+			'settingDefaultBgLogin' => $queryDefaultBackgroundLogin,
+			'settingBgLogin'        => $queryBackgroundLogin,
+			'id'					=> $session->read('Admin.id')
+		];
+		$this->set($data);
+	}
 	public function logout() 
 	{
 		$session = $this->getRequest()->getSession();
@@ -151,6 +175,8 @@ class AuthenticateController extends AppController
 				$filterResult = $filter->filter($this->request->getData());
 				$requestData  = json_decode(json_encode($filterResult), FALSE);
 
+				$purpleApi = new PurpleProjectApi();
+
 				$purpleGlobal    = new PurpleProjectGlobal();
 				$operatingSystem = $purpleGlobal->detectOS();
 				$deviceType      = $purpleGlobal->detectDevice();
@@ -169,6 +195,8 @@ class AuthenticateController extends AppController
 
 				$admin     = $this->Admins->find()->where(['username' => $username])->first();
 				$lastLogin = $admin->last_login;
+
+				$queryTwoFAuth = $this->Settings->find()->where(['name' => '2fa'])->first();
 				
 				$getPassword   = $admin->password;
 				$checkPassword = (new DefaultPasswordHasher())->check($password, $getPassword);
@@ -195,26 +223,40 @@ class AuthenticateController extends AppController
 						$json = json_encode(['status' => 'ok', 'verify' => Router::url(['_name' => 'adminSignInVerification'])]);
 					}
 					else {
-						$session = $this->getRequest()->getSession();
-						$session->write([
-							'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
-							'Admin.id'       => $admin->id,
-							'Admin.password' => $admin->password,
-						]);
+						if ($queryTwoFAuth->value == 'enable' && $admin->last_login != NULL && $admin->phone != NULL && $admin->phone_verified != NULL && $admin->authy_id != NULL && ($admin->login_device != $deviceType || $admin->login_os != $operatingSystem)) {
+							$authyId         = $admin->authy_id;
+							$key             = $this->Settings->settingsPublicApiKey();
+							$authySendSms 	 = $purpleApi->sendAuthySendSms($key, $authyId);
 
-						$admin->last_login    = Carbon::now($timezone);
-						$admin->login_device  = $deviceType;
-						$admin->login_os      = $operatingSystem;
-						$admin->login_browser = $clientBrowser;
-						if ($this->Admins->save($admin)) {
-							// Tell system for new event
-							$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
-							$this->getEventManager()->dispatch($event);
-							
-							$json = json_encode(['status' => 'ok', 'verify' => 'no', 'activity' => $event->getResult()]);
+							if ($authySendSms) {
+								$json = json_encode(['status' => 'ok', 'verify' => Router::url(['_name' => 'adminSignInAuthyToken'])]);
+							}
+							else {
+								$json = json_encode(['status' => 'error', 'error' => "Cannot send verification code. Please try again."]);
+							}
 						}
 						else {
-							$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
+							$session = $this->getRequest()->getSession();
+							$session->write([
+								'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
+								'Admin.id'       => $admin->id,
+								'Admin.password' => $admin->password,
+							]);
+
+							$admin->last_login    = Carbon::now($timezone);
+							$admin->login_device  = $deviceType;
+							$admin->login_os      = $operatingSystem;
+							$admin->login_browser = $clientBrowser;
+							if ($this->Admins->save($admin)) {
+								// Tell system for new event
+								$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
+								$this->getEventManager()->dispatch($event);
+								
+								$json = json_encode(['status' => 'ok', 'verify' => 'no', 'activity' => $event->getResult()]);
+							}
+							else {
+								$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
+							}
 						}
 					}
 				}
@@ -468,5 +510,81 @@ class AuthenticateController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
-    }
+	}
+	public function ajaxVerifyAuthyToken()
+    {
+		$this->viewBuilder()->enableAutoLayout(false);
+
+		$adminAuthyToken = new AdminAuthyTokenForm();
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            if ($adminAuthyToken->execute($this->request->getData())) {
+				$purpleApi = new PurpleProjectApi();
+
+				// Sanitize user input
+				$filter = new Filter();
+				$filter->values(['id'])->int();
+				$filter->values(['token'])->numbers();
+				$filterResult = $filter->filter($this->request->getData());
+				$requestData  = json_decode(json_encode($filterResult), FALSE);
+				
+				$session = $this->getRequest()->getSession();
+				$admin   = $this->Admins->get($session->read('Admin.id'));
+				$authyId = $admin->authy_id;
+				
+				$key = $this->Settings->settingsPublicApiKey();
+				$authyVerifyToken = $purpleApi->sendAuthyVerifyToken($key, $authyId, $requestData->token);
+				
+				if ($authyVerifyToken) {
+					$purpleGlobal    = new PurpleProjectGlobal();
+					$operatingSystem = $purpleGlobal->detectOS();
+					$deviceType      = $purpleGlobal->detectDevice();
+					$clientBrowser   = $purpleGlobal->detectBrowser();
+
+					$purpleSettings = new PurpleProjectSettings();
+					$timezone       = $purpleSettings->timezone();
+
+					$detectIP      = $this->request->clientIp();
+					$detectOS      = $purpleGlobal->detectOS();
+					$detectBrowser = $purpleGlobal->detectBrowser();
+					$detectDevice  = $purpleGlobal->detectDevice();
+
+					$admin = $this->Admins->get($session->read('Admin.id'));
+					
+					$session->write([
+						'Admin.host'     => $this->request->getEnv('HTTP_HOST'),
+						'Admin.id'       => $admin->id,
+						'Admin.password' => $admin->password,
+					]);
+
+					$admin->last_login    = Carbon::now($timezone);
+					$admin->login_device  = $deviceType;
+					$admin->login_os      = $operatingSystem;
+					$admin->login_browser = $clientBrowser;
+					if ($this->Admins->save($admin)) {
+						// Tell system for new event
+						$event = new Event('Model.Admin.afterSignIn', $this, ['admin' => $admin]);
+						$this->getEventManager()->dispatch($event);
+						
+						$json = json_encode(['status' => 'ok', 'verify' => 'no', 'activity' => $event->getResult()]);
+					}
+					else {
+						$json = json_encode(['status' => 'error', 'error' => "Cannot login now. Please try again."]);
+					}
+				}
+				else {
+					$json = json_encode(['status' => 'error', 'error' => "Invalid verification code."]);
+				}
+			}
+            else {
+	        	$errors = $adminAuthyToken->errors();
+                $json  = json_encode(['status' => 'error', 'error' => $errors]);
+	        }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+
+	}
 }

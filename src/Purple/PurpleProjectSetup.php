@@ -184,6 +184,10 @@ class PurpleProjectSetup
 			    api_key VARCHAR( 255 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
 			    photo VARCHAR( 200 ) NULL,
+			    phone VARCHAR( 25 ) NULL,
+				phone_verified VARCHAR( 1 ) NULL,
+				authy_id VARCHAR( 255 ) NULL,
+				authy_remember_token VARCHAR( 100 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    display_name VARCHAR( 100 ) NOT NULL,
@@ -806,6 +810,10 @@ class PurpleProjectSetup
 		$this->conn->insert('settings', [
 			'name'  => 'awss3bucket',
 			'value' => ''
+		]);
+		$this->conn->insert('settings', [
+			'name'  => '2fa',
+			'value' => 'disable'
 		]);
 	}
 }

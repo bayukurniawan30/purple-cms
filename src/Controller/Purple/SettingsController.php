@@ -166,6 +166,7 @@ class SettingsController extends AppController
     {
         $queryRecaptchaSitekey = $this->Settings->find()->where(['name' => 'recaptchasitekey'])->first();
         $queryRecaptchaSecret  = $this->Settings->find()->where(['name' => 'recaptchasecret'])->first();
+        $queryTwoFAuth         = $this->Settings->find()->where(['name' => '2fa'])->first();
 
         $keyFile = new File(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . 'config' . DS . 'production_key.php');
         if (empty($keyFile->read()) || $keyFile->read() == '') {
@@ -182,6 +183,7 @@ class SettingsController extends AppController
             'pageBreadcrumb'          => 'Settings::Security',
             'settingRecaptchaSitekey' => $queryRecaptchaSitekey,
             'settingRecaptchaSecret'  => $queryRecaptchaSecret,
+            'settingTwoFAuth'         => $queryTwoFAuth,
             'productionKey'           => $key
         ];
         $this->set($data);

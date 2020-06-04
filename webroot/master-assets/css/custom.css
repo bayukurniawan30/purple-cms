@@ -530,3 +530,7 @@ select.form-control {
 .jsonld-accordion .uk-accordion-title {
     font-size: 1rem;
 }
+
+.iti {
+    width: 100%;
+}

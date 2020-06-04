@@ -64,6 +64,8 @@ class AdminEditForm extends Form
                         ]
                     ])
                   ->allowEmpty('photo')
+                  ->allowEmpty('phone')
+                  ->allowEmpty('calling_code')
                   ->allowEmpty('about')
                   ->requirePresence('level')
                   ->notEmpty('level', 'Please fill this field')

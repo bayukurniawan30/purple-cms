@@ -104,6 +104,25 @@
                         );
                     ?>
                 </div>
+                <?php
+                    if ($settingTwoFAuth->value == 'enable'):
+                ?>
+                <div class="form-group">
+                    <?php
+                        echo $this->Form->hidden('calling_code', ['id' => 'calling-code']);
+                        echo $this->Form->label('phone', 'Phone Number' . '<br>');
+                        echo $this->Form->text('phone', [
+                            'id'         => 'phone-number',
+                            'class'      => 'form-control',
+                            'uk-tooltip' => 'title: Phone number is required if 2FA (Two-Factor Authentication is enabled).; pos: bottom',
+                            'required'   => 'required'
+                        ]);
+                    ?>
+                    <small clas="form-text text-muted">Phone number is required if 2FA (Two-Factor Authentication) is enabled.</small>
+                </div>
+                <?php
+                    endif;
+                ?>
                 <div class="form-group">
                     <?php
                         echo $this->Form->label('about', 'About This User');
@@ -205,6 +224,40 @@
         </div>
     </div>
 </div>
+
+<?php
+    if ($settingTwoFAuth->value == 'enable'):
+?>
+<?= $this->Html->script('/master-assets/plugins/intl-tel-input/js/intlTelInput.min.js'); ?>
+<?= $this->Html->script('/master-assets/plugins/intl-tel-input/js/utils.js', ['id' => 'intl-tel-utils']); ?>
+<?= $this->Html->script('/master-assets/plugins/inputmask/jquery.inputmask.min.js'); ?>
+
+<script>
+    var input = document.querySelector("#phone-number");
+    var utils = document.querySelector("#intl-tel-utils").getAttribute('src');
+    var iti   = window.intlTelInput(input, {
+        initialCountry: "id",
+        separateDialCode: true,
+        allowDropdown: true,
+        geoIpLookup: function(callback) {
+            var countryCode = '<?= $countryCode ?>';
+            callback(countryCode);
+        },
+        utilsScript: utils + "?1562189064761"
+    });
+
+    input.addEventListener("countrychange", function() {
+        var formCallingCode   = document.querySelector("#calling-code");
+        formCallingCode.value = iti.getSelectedCountryData().dialCode;
+    });
+
+    $(document).ready(function() {
+        $('#phone-number').inputmask("99-999-9999999");
+    })
+</script>
+<?php
+    endif;
+?>
 
 <script type="text/javascript">
     $(document).ready(function() {

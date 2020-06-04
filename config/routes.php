@@ -309,6 +309,9 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/sign-in-code', 
 			['controller' => 'Authenticate', 'action' => 'verificationCode'], 
 			['_name' => 'adminSignInVerification']);
+	$routes->connect('/sign-in-token', 
+			['controller' => 'Authenticate', 'action' => 'authyToken'], 
+			['_name' => 'adminSignInAuthyToken']);
 	$routes->connect('/', 
 			['controller' => 'Authenticate', 'action' => 'loginApi'], 
 			['_name' => 'adminLoginApi']);
@@ -337,6 +340,9 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/ajax-verify-code', 
 			['controller' => 'Authenticate', 'action' => 'ajaxVerifyCode'], 
 			['_name' => 'adminAjaxVerifyCode']);
+	$routes->connect('/ajax-verify-token', 
+			['controller' => 'Authenticate', 'action' => 'ajaxVerifyAuthyToken'], 
+			['_name' => 'adminAjaxVerifyAuthyToken']);
 	$routes->connect('/ajax-resend-sign-in-code', 
 			['controller' => 'Authenticate', 'action' => 'ajaxResendVerificationCode'], 
 			['_name' => 'adminAjaxResendSignInVerification']);
@@ -567,6 +573,11 @@ Router::prefix('purple', function ($routes) {
 	$routes->connect('/users/edit/:id', 
 			['controller' => 'Admins', 'action' => 'edit'], 
 			['_name' => 'adminUsersEdit'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['id']);
+	$routes->connect('/users/authy-token/:id', 
+			['controller' => 'Admins', 'action' => 'authyToken'], 
+			['_name' => 'adminUsersAuthyToken'])
 		->setPatterns(['id' => '\d+'])
 		->setPass(['id']);
 	$routes->connect('/users/change-password/:id', 

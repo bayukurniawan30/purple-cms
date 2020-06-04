@@ -301,6 +301,19 @@
                     ]
                 );
             }
+            elseif ($name == '2fa') {
+                echo $this->Form->select(
+                    'value',
+                    [
+                        'disable' => 'Disable',
+                        'enable'  => 'Enable'
+                    ],
+                    [
+                        'empty' => 'Select 2FA (Two Factor Authentication)', 
+                        'class' => 'form-control'
+                    ]
+                );
+            }
             else {
                 echo $this->Form->text('value', [
                     'class'                  => 'form-control', 
@@ -338,7 +351,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         <?php
-            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink' || $name == 'ldjson' || $name == 'mediastorage'):
+            if ($name == 'dateformat' || $name == 'timeformat' || $name == 'timezone' || $name == 'smtpsecure' || $name == 'smtpport' || $name == 'defaultbackgroundlogin' || $name == 'comingsoon' || $name == 'postpermalink' || $name == 'ldjson' || $name == 'mediastorage' || $name == '2fa'):
         ?>
         $('#form-update-setting').find('select[name=value] option[value="<?= $value ?>"]').attr("selected","selected");
         <?php

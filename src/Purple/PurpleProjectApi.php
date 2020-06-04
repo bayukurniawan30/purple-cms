@@ -380,4 +380,154 @@ class PurpleProjectApi
 	    	return true;
 	    }
 	}
+	public function sendVerifyNumberTwoFactorAuth($key, $country, $number)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/verify/2fa/verify-number', 
+								[
+									'key'	  => $key,
+									'country' => $country,
+									'number'  => $number
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return false;
+	    }
+	}
+	public function sendApproveNumberTwoFactorAuth($key, $code, $number)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/verify/2fa/approve-number', 
+								[
+									'key'    => $key,
+									'code'   => $code,
+									'number' => $number
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return false;
+	    }
+	}
+	public function sendAuthyRegisterUser($key, $email, $number, $countryCode)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/authy/register-user', 
+								[
+									'key'	  => $key,
+									'email'   => $email,
+									'number'  => $number,
+									'country' => $countryCode
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return $decodeResult['id'];
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return false;
+	    }
+	}
+	public function sendAuthySendSms($key, $id)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/authy/send-sms', 
+								[
+									'key' => $key,
+									'id'  => $id
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return false;
+	    }
+	}
+	public function sendAuthyVerifyToken($key, $id, $token)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/authy/verify-token', 
+								[
+									'key'   => $key,
+									'id'    => $id,
+									'token' => $token
+								]
+							);
+			$verifyResult = $response->body();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return false;
+	    }
+	}
 }

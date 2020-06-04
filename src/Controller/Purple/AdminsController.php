@@ -5,6 +5,8 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Routing\Router;
+use Cake\Http\Client;
+use Cake\Cache\Cache;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
@@ -13,6 +15,7 @@ use App\Form\Purple\AdminAddForm;
 use App\Form\Purple\AdminEditForm;
 use App\Form\Purple\AdminEditPasswordForm;
 use App\Form\Purple\AdminDeleteForm;
+use App\Form\Purple\AdminAuthyTokenForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
@@ -136,10 +139,43 @@ class AdminsController extends AppController
 	{
         $adminAdd = new AdminAddForm();
 
+        $queryTwoFAuth = $this->Settings->find()->where(['name' => '2fa'])->first();
+
+        if ($queryTwoFAuth->value == 'enable') {
+            $purpleGlobal      = new PurpleProjectGlobal();
+            $apiPath           = $purpleGlobal->apiDomain;
+            
+            $countryCode  = 'ID';
+
+            if ($purpleGlobal->isConnected()) {
+                $http      = new Client();
+                $ipAddress = $this->request->clientIp();
+
+                if ($ipAddress != '::1' && $ipAddress != '127.0.0.1') {
+                    if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
+                        $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
+                        if ($response->isOk()) {
+                            $verifyResult = $response->body();
+                            $decodeResult = json_decode($verifyResult, true);
+                            $countryCode  = $decodeResult['country_code'];
+                        }
+                    }
+                    else {
+                        $cache       = Cache::read('visitor_' . $ipAddress);
+                        $decodeCache = json_decode($cache, true);
+                        $countryCode = $decodeCache['country_code'];
+                    }
+                }
+            }
+
+            $this->set('countryCode', $countryCode);
+        }
+
 		$data = [
-            'pageTitle'      => 'Users',
-            'pageBreadcrumb' => 'Users::Add',
-            'adminAdd'       => $adminAdd
+            'pageTitle'       => 'Users',
+            'pageBreadcrumb'  => 'Users::Add',
+            'adminAdd'        => $adminAdd,
+            'settingTwoFAuth' => $queryTwoFAuth
 		];
 
 		$this->set($data);
@@ -148,16 +184,48 @@ class AdminsController extends AppController
 	{
         $adminEdit = new AdminEditForm();
 
-        $query = $this->Admins->find()->where(['id' => $id]);
+        $query         = $this->Admins->find()->where(['id' => $id]);
+        $queryTwoFAuth = $this->Settings->find()->where(['name' => '2fa'])->first();
+
+        if ($queryTwoFAuth->value == 'enable') {
+            $purpleGlobal      = new PurpleProjectGlobal();
+            $apiPath           = $purpleGlobal->apiDomain;
+            
+            $countryCode  = 'ID';
+
+            if ($purpleGlobal->isConnected()) {
+                $http      = new Client();
+                $ipAddress = $this->request->clientIp();
+
+                if ($ipAddress != '::1' && $ipAddress != '127.0.0.1') {
+                    if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
+                        $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
+                        if ($response->isOk()) {
+                            $verifyResult = $response->body();
+                            $decodeResult = json_decode($verifyResult, true);
+                            $countryCode  = $decodeResult['country_code'];
+                        }
+                    }
+                    else {
+                        $cache       = Cache::read('visitor_' . $ipAddress);
+                        $decodeCache = json_decode($cache, true);
+                        $countryCode = $decodeCache['country_code'];
+                    }
+                }
+            }
+
+            $this->set('countryCode', $countryCode);
+        }
 
         if ($query->count() == 1) {
         	$adminData = $query->first();
 
         	$data = [
-                'pageTitle'      => 'Users',
-                'pageBreadcrumb' => 'Users::Edit',
-                'adminEdit'      => $adminEdit,
-                'adminData'      => $adminData
+                'pageTitle'       => 'Users',
+                'pageBreadcrumb'  => 'Users::Edit',
+                'adminEdit'       => $adminEdit,
+                'adminData'       => $adminData,
+                'settingTwoFAuth' => $queryTwoFAuth
 			];
 
 			$this->set($data);
@@ -165,28 +233,59 @@ class AdminsController extends AppController
         else {
         	$this->setAction('index');
         }
-	}
-    public function changePassword($id)
+    }
+    public function newAuthyToken()
     {
-        $adminEditPassword = new AdminEditPasswordForm();
+        $adminAuthyToken = new AdminAuthyTokenForm();
 
-        $query = $this->Admins->find()->where(['id' => $id]);
+        $session = $this->getRequest()->getSession();
+        $id      = $session->read('Admin.recordId');
 
-        if ($query->count() == 1) {
-            $adminData = $query->first();
+        if ($session->check('Admin.recordId')) {
+            $adminData = $this->Admins->find()->where(['id' => $id])->firstOrFail();
 
             $data = [
-                'pageTitle'         => 'Users',
-                'pageBreadcrumb'    => 'Users::Change Password',
-                'adminEditPassword' => $adminEditPassword,
-                'adminData'         => $adminData
+                'pageTitle'       => 'Users',
+                'pageBreadcrumb'  => 'Users::Authy Token',
+                'adminAuthyToken' => $adminAuthyToken,
+                'adminData'       => $adminData
             ];
 
             $this->set($data);
         }
         else {
-            $this->setAction('index');
+            throw new NotFoundException(__('Page not found'));
         }
+    }
+    public function authyToken($id)
+    {
+        $adminAuthyToken = new AdminAuthyTokenForm();
+
+        $adminData = $this->Admins->find()->where(['id' => $id])->firstOrFail();
+
+        $data = [
+            'pageTitle'       => 'Users',
+            'pageBreadcrumb'  => 'Users::Authy Token',
+            'adminAuthyToken' => $adminAuthyToken,
+            'adminData'       => $adminData
+        ];
+
+        $this->set($data);
+    }
+    public function changePassword($id)
+    {
+        $adminEditPassword = new AdminEditPasswordForm();
+
+        $adminData = $this->Admins->find()->where(['id' => $id])->firstOrFail();
+
+        $data = [
+            'pageTitle'         => 'Users',
+            'pageBreadcrumb'    => 'Users::Change Password',
+            'adminEditPassword' => $adminEditPassword,
+            'adminData'         => $adminData
+        ];
+
+        $this->set($data);
     }
 	public function ajaxSaveProfilePicture() 
     {
@@ -279,14 +378,29 @@ class AdminsController extends AppController
         $adminAdd = new AdminAddForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminAdd->execute($this->request->getData())) {
+                $purpleApi = new PurpleProjectApi();
+
+                $queryTwoFAuth = $this->Settings->find()->where(['name' => '2fa'])->first();
+
                 // Sanitize user input
-				$filter = new Filter();
+                $filter = new Filter();
+                if ($queryTwoFAuth->value == 'enable') {
+                    $filter->values(['phone'])->trim()->stripHtml();
+                    $filter->values(['calling_code'])->int();
+                }
 				$filter->values(['email', 'username', 'password', 'repeatpassword', 'about', 'photo', 'ds'])->trim()->stripHtml();
 				$filter->values(['display_name'])->trim()->alnum()->stripHtml();
 				$filter->values(['level'])->int();
 				$filterResult = $filter->filter($this->request->getData());
                 $requestData  = json_decode(json_encode($filterResult), FALSE);
                 $requestArray = json_decode(json_encode($filterResult), TRUE);
+
+                if ($queryTwoFAuth->value == 'enable') {
+                    $phoneNumber = '+' . $requestData->calling_code . '' . $requestData->phone;
+                    $phoneNumber = str_replace('-', '', $phoneNumber);
+                    $phoneNumber = trim(str_replace('_', '', $phoneNumber));
+                    $phoneNumberWithoutCountryCode = str_replace('+' . $requestData->calling_code, '', $phoneNumber);
+                }
                 
                 if ($requestData->password == $requestData->repeatpassword) {
                     $purpleApi = new PurpleProjectApi();
@@ -312,48 +426,117 @@ class AdminsController extends AppController
                             else {
                                 $admin = $this->Admins->newEntity();
                                 $admin = $this->Admins->patchEntity($admin, $requestArray);
-                            
-                                if ($this->Admins->save($admin)) {
-                                    $recordId = $admin->id;
-                                    $admin     = $this->Admins->get($recordId);
+                                if ($queryTwoFAuth->value == 'enable') {
+                                    $admin->phone = $phoneNumber;
 
-                                    // Tell system for new event
-                                    $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'new']);
-                                    $this->getEventManager()->dispatch($event);
+                                    $key = $this->Settings->settingsPublicApiKey();
+                                    $authyRegisterUser = $purpleApi->sendAuthyRegisterUser($key, $requestData->email, $phoneNumberWithoutCountryCode, $requestData->calling_code);
 
-                                    // Send Email to User to Notify author
-                                    $key    = $this->Settings->settingsPublicApiKey();
-                                    $dashboardLink = $this->request->getData('ds').'/edit/'.$recordId;
-                                    $userData      = array(
-                                        'sitename'    => $this->Settings->settingsSiteName(),
-                                        'username'    => $admin->username,
-                                        'password'    => $requestData->password,
-                                        'email'       => $admin->email,
-                                        'displayName' => $admin->display_name,
-                                        'level'       => $admin->level
-                                    );
-                                    $senderData   = array(
-                                        'name'   => $queryAdmin->first()->display_name,
-                                        'domain' => $this->request->host()
-                                    );
-                                    $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+                                    if ($authyRegisterUser !== false) {
+                                        $authyId = $authyRegisterUser;
+                                        $admin->authy_id = $authyId;
 
-                                    if ($notifyUser == true) {
-                                        $emailNotification = true;
+                                        $authySendSms = $purpleApi->sendAuthySendSms($key, $authyId);
+
+                                        if ($authySendSms) {
+                                            if ($this->Admins->save($admin)) {
+                                                $recordId = $admin->id;
+                                                $admin     = $this->Admins->get($recordId);
+
+                                                $session->write('Admin.recordId', $recordId);
+
+                                                // Tell system for new event
+                                                $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'new']);
+                                                $this->getEventManager()->dispatch($event);
+
+                                                // Send Email to User to Notify author
+                                                $key    = $this->Settings->settingsPublicApiKey();
+                                                $dashboardLink = $this->request->getData('ds').'/edit/'.$recordId;
+                                                $userData      = array(
+                                                    'sitename'    => $this->Settings->settingsSiteName(),
+                                                    'username'    => $admin->username,
+                                                    'password'    => $requestData->password,
+                                                    'email'       => $admin->email,
+                                                    'displayName' => $admin->display_name,
+                                                    'level'       => $admin->level
+                                                );
+                                                $senderData   = array(
+                                                    'name'   => $queryAdmin->first()->display_name,
+                                                    'domain' => $this->request->host()
+                                                );
+                                                $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+
+                                                if ($notifyUser == true) {
+                                                    $emailNotification = true;
+                                                }
+                                                else {
+                                                    $emailNotification = false;
+                                                }
+
+                                                if ($event->getResult()) {
+                                                    $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => [$admin->email => $emailNotification]]);
+                                                }
+                                                else {
+                                                    $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
+                                                }
+                                            }
+                                            else {
+                                                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                            }
+                                        }
+                                        else {
+                                            $json = json_encode(['status' => 'error', 'error' => "Can't send verification code. Please try again."]);
+                                        }
                                     }
                                     else {
-                                        $emailNotification = false;
-                                    }
-
-                                    if ($event->getResult()) {
-                                        $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => [$admin->email => $emailNotification]]);
-                                    }
-                                    else {
-                                        $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
+                                        $json = json_encode(['status' => 'error', 'error' => "Can't register Authy account. Please try again."]);
                                     }
                                 }
                                 else {
-                                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                    if ($this->Admins->save($admin)) {
+                                        $recordId = $admin->id;
+                                        $admin     = $this->Admins->get($recordId);
+
+                                        $session->write('Admin.recordId', $recordId);
+
+                                        // Tell system for new event
+                                        $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'new']);
+                                        $this->getEventManager()->dispatch($event);
+
+                                        // Send Email to User to Notify author
+                                        $key    = $this->Settings->settingsPublicApiKey();
+                                        $dashboardLink = $this->request->getData('ds').'/edit/'.$recordId;
+                                        $userData      = array(
+                                            'sitename'    => $this->Settings->settingsSiteName(),
+                                            'username'    => $admin->username,
+                                            'password'    => $requestData->password,
+                                            'email'       => $admin->email,
+                                            'displayName' => $admin->display_name,
+                                            'level'       => $admin->level
+                                        );
+                                        $senderData   = array(
+                                            'name'   => $queryAdmin->first()->display_name,
+                                            'domain' => $this->request->host()
+                                        );
+                                        $notifyUser = $purpleApi->sendEmailNewUser($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+
+                                        if ($notifyUser == true) {
+                                            $emailNotification = true;
+                                        }
+                                        else {
+                                            $emailNotification = false;
+                                        }
+
+                                        if ($event->getResult()) {
+                                            $json = json_encode(['status' => 'ok', 'activity' => true, 'email' => [$admin->email => $emailNotification]]);
+                                        }
+                                        else {
+                                            $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
+                                        }
+                                    }
+                                    else {
+                                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                    }
                                 }
                             }
                         }
@@ -384,8 +567,16 @@ class AdminsController extends AppController
         $adminEdit = new AdminEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($adminEdit->execute($this->request->getData())) {
+                $purpleApi = new PurpleProjectApi();
+
+                $queryTwoFAuth = $this->Settings->find()->where(['name' => '2fa'])->first();
+
                 // Sanitize user input
-				$filter = new Filter();
+                $filter = new Filter();
+                if ($queryTwoFAuth->value == 'enable') {
+                    $filter->values(['phone'])->trim()->stripHtml();
+                    $filter->values(['calling_code'])->int();
+                }
 				$filter->values(['email', 'username', 'about', 'photo'])->trim()->stripHtml();
 				$filter->values(['display_name'])->trim()->alnum()->stripHtml();
 				$filter->values(['level', 'id'])->int();
@@ -393,12 +584,18 @@ class AdminsController extends AppController
                 $requestData  = json_decode(json_encode($filterResult), FALSE);
                 $requestArray = json_decode(json_encode($filterResult), TRUE);
 
+                if ($queryTwoFAuth->value == 'enable') {
+                    $phoneNumber = '+' . $requestData->calling_code . '' . $requestData->phone;
+                    $phoneNumber = str_replace('-', '', $phoneNumber);
+                    $phoneNumber = trim(str_replace('_', '', $phoneNumber));
+                    $phoneNumberWithoutCountryCode = str_replace('+' . $requestData->calling_code, '', $phoneNumber);
+                }
+
                 $admin = $this->Admins->get($requestData->id);
                 if ($requestData->email == $admin->email) {
                     $verifyEmail = true;
                 }
                 else {
-                    $purpleApi = new PurpleProjectApi();
                     $verifyEmail = $purpleApi->verifyEmail($requestData->email);
                 }
 
@@ -420,22 +617,62 @@ class AdminsController extends AppController
                             $json = json_encode(['status' => 'error', 'error' => "Please use lowercase letter for username."]);
                         }
                         else {
-        					$this->Admins->patchEntity($admin, $requestArray);
+                            $this->Admins->patchEntity($admin, $requestArray);
+                            if ($queryTwoFAuth->value == 'enable') {
+                                $admin->phone = $phoneNumber;
 
-                            if ($this->Admins->save($admin)) {
-                                // Tell system for new event
-                                $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'update']);
-                                $this->getEventManager()->dispatch($event);
+                                if ($admin->authy_id == NULL) {
+                                    $key = $this->Settings->settingsPublicApiKey();
+                                    $authyRegisterUser = $purpleApi->sendAuthyRegisterUser($key, $admin->email, $phoneNumberWithoutCountryCode, $requestData->calling_code);
 
-                                if ($event->getResult()) {
-                                    $json = json_encode(['status' => 'ok', 'activity' => true]);
-                                }
-                                else {
-                                    $json = json_encode(['status' => 'ok', 'activity' => false]);
+                                    if ($authyRegisterUser !== false) {
+                                        $authyId = $authyRegisterUser;
+                                        $admin->authy_id = $authyId;
+
+                                        $authySendSms = $purpleApi->sendAuthySendSms($key, $authyId);
+
+                                        if ($authySendSms) {
+                                            if ($this->Admins->save($admin)) {
+                                                // Tell system for new event
+                                                $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'update']);
+                                                $this->getEventManager()->dispatch($event);
+                
+                                                if ($event->getResult()) {
+                                                    $json = json_encode(['status' => 'ok', 'activity' => true]);
+                                                }
+                                                else {
+                                                    $json = json_encode(['status' => 'ok', 'activity' => false]);
+                                                }
+                                            }
+                                            else {
+                                                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                            }
+                                        }
+                                        else {
+                                            $json = json_encode(['status' => 'error', 'error' => "Can't send verification code. Please try again."]);
+                                        }
+                                    }
+                                    else {
+                                        $json = json_encode(['status' => 'error', 'error' => "Can't register Authy account. Please try again."]);
+                                    }
                                 }
                             }
                             else {
-                                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                if ($this->Admins->save($admin)) {
+                                    // Tell system for new event
+                                    $event = new Event('Model.Admin.afterSave', $this, ['user' => $admin, 'admin' => $signedInadmin, 'save' => 'update']);
+                                    $this->getEventManager()->dispatch($event);
+
+                                    if ($event->getResult()) {
+                                        $json = json_encode(['status' => 'ok', 'activity' => true]);
+                                    }
+                                    else {
+                                        $json = json_encode(['status' => 'ok', 'activity' => false]);
+                                    }
+                                }
+                                else {
+                                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                                }
                             }
                         }
                     }	
@@ -581,5 +818,179 @@ class AdminsController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
+    }
+    public function ajaxVerifyPhoneNumber()
+    {
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            // Sanitize user input
+            $filter = new Filter();
+            $filter->values(['phone'])->trim()->stripHtml();
+            $filterResult = $filter->filter($this->request->getData());
+            $requestData  = json_decode(json_encode($filterResult), FALSE);
+            $requestArray = json_decode(json_encode($filterResult), TRUE);
+
+            $phoneNumber = $requestData->phone;
+            $phoneNumber = str_replace('-', '', $phoneNumber);
+            $phoneNumber = trim(str_replace('_', '', $phoneNumber));
+
+            $purpleGlobal = new PurpleProjectGlobal();
+            $apiPath      = $purpleGlobal->apiDomain;
+            
+            $countryCode  = 'ID';
+
+            if ($purpleGlobal->isConnected()) {
+                $http      = new Client();
+                $ipAddress = $this->request->clientIp();
+
+                if ($ipAddress != '::1' && $ipAddress != '127.0.0.1') {
+                    if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
+                        $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
+                        if ($response->isOk()) {
+                            $verifyResult = $response->body();
+                            $decodeResult = json_decode($verifyResult, true);
+                            $countryCode  = $decodeResult['country_code'];
+                        }
+                    }
+                    else {
+                        $cache       = Cache::read('visitor_' . $ipAddress);
+                        $decodeCache = json_decode($cache, true);
+                        $countryCode = $decodeCache['country_code'];
+                    }
+                }
+            }
+
+            $purpleApi = new PurpleProjectApi();
+
+            // Send Verification Code
+            $key    = $this->Settings->settingsPublicApiKey();
+            $verify = $purpleApi->sendVerifyNumberTwoFactorAuth($key, strtolower($countryCode), $phoneNumber);
+
+            if ($verify) {
+                $session = $this->getRequest()->getSession();
+                $session->write('Admin.phone', $phoneNumber);
+                $session->write('Admin.phone_verified', '1');
+                $json = json_encode(['status' => 'ok', 'phone' => $phoneNumber]);
+            }
+            else {
+                $json = json_encode(['status' => 'error', 'error' => "Can't send verification code to your phone."]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxApprovePhoneNumber()
+    {
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        $adminVerification = new AdminPhoneNumberVerificationCodeForm();
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            if ($adminVerification->execute($this->request->getData())) {
+                // Sanitize user input
+                $filter = new Filter();
+                $filter->values(['code'])->int();
+                $filter->values(['phone'])->trim()->stripHtml();
+                $filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+                $requestArray = json_decode(json_encode($filterResult), TRUE);
+
+                $phoneNumber = $requestData->phone;
+                $phoneNumber = str_replace('-', '', $phoneNumber);
+                $phoneNumber = trim(str_replace('_', '', $phoneNumber));
+
+                $json = json_encode(['status' => 'ok', 'phone' => $phoneNumber]);
+
+                $purpleApi = new PurpleProjectApi();
+
+                // Send Verification Code
+                $key    = $this->Settings->settingsPublicApiKey();
+                $verify = $purpleApi->sendApproveNumberTwoFactorAuth($key, $requestData->code, $phoneNumber);
+
+                if ($verify) {
+                    $session = $this->getRequest()->getSession();
+                    $session->write('Admin.phone', $phoneNumber);
+                    $session->write('Admin.phone_verified', '1');
+                    $json = json_encode(['status' => 'ok', 'phone' => $phoneNumber]);
+                }
+                else {
+                    $json = json_encode(['status' => 'error', 'error' => "Can't verify code. Please enter the correct code."]);
+                }
+            }
+            else {
+            	$errors = $adminVerification->errors();
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+        }
+    }
+    public function ajaxVerifyAuthyToken()
+    {
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        $adminAuthyToken = new AdminAuthyTokenForm();
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            if ($adminAuthyToken->execute($this->request->getData())) {
+                $purpleApi = new PurpleProjectApi();
+
+                $session       = $this->getRequest()->getSession();
+                $sessionID     = $session->read('Admin.id');
+                $signedInadmin = $this->Admins->get($sessionID);
+
+                // Sanitize user input
+				$filter = new Filter();
+				$filter->values(['id'])->int();
+				$filter->values(['token'])->numbers();
+				$filterResult = $filter->filter($this->request->getData());
+                $requestData  = json_decode(json_encode($filterResult), FALSE);
+
+                $admin   = $this->Admins->get($requestData->id);
+                $authyId = $admin->authy_id;
+
+                $key = $this->Settings->settingsPublicApiKey();
+                $authyVerifyToken = $purpleApi->sendAuthyVerifyToken($key, $authyId, $requestData->token);
+
+                if ($authyVerifyToken) {
+                    $admin->phone_verified = '1';
+                    if ($this->Admins->save($admin)) {
+                        $session = $this->getRequest()->getSession();
+                        $session->delete('Admin.recordId');
+
+                        // Tell system for new event
+                        $event = new Event('Model.Admin.afterAuthyVerify', $this, ['user' => $admin, 'admin' => $signedInadmin]);
+                        $this->getEventManager()->dispatch($event);
+
+                        if ($event->getResult()) {
+                            $json = json_encode(['status' => 'ok', 'activity' => true]);
+                        }
+                        else {
+                            $json = json_encode(['status' => 'ok', 'activity' => false]);
+                        }
+                    }
+                    else {
+                        $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
+                    }
+                }
+                else {
+                    $json = json_encode(['status' => 'error', 'error' => "Can't verify code. Please enter the correct code."]);
+                }
+            }
+            else {
+            	$errors = $adminAuthyToken->errors();
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
+            }
+
+            $this->set(['json' => $json]);
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+        }
     }
 }

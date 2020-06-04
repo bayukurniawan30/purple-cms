@@ -21,6 +21,7 @@ class AdminListener implements EventListenerInterface
             'Model.Admin.afterSave'               => 'afterSave',
             'Model.Admin.afterUpdatePassword'     => 'afterUpdatePassword',
             'Model.Admin.afterDelete'             => 'afterDelete',
+            'Model.Admin.afterAuthyVerify'        => 'afterAuthyVerify'
         );
     }
     public function checkLastSignIn($event, $admin, $data)
@@ -217,6 +218,25 @@ class AdminListener implements EventListenerInterface
         $options = [
             'title'    => 'Deletion of a User',
             'detail'   => ' delete '.$user.' from users data.',
+            'admin_id' => $admin['id']
+        ];
+
+        $tableHistories = TableRegistry::get('Histories');
+        $saveActivity   = $tableHistories->saveActivity($options);
+        if ($saveActivity) {
+            $result = true;
+        }
+        else {
+            $result = false;
+        }
+        
+        $event->setResult($result);
+    }
+    public function afterAuthyVerify($event, $user, $admin) 
+    {
+        $options = [
+            'title'    => 'Verify Authy User',
+            'detail'   => ' verify '.$user.' Authy user.',
             'admin_id' => $admin['id']
         ];
 
