@@ -26,7 +26,7 @@
         "nesbot/carbon": "^2.25",
         "particle/filter": "^1.5",
         "php-http/curl-client": "^1.7",
-        "raiym/instagram-php-scraper": "^0.9.0",
+        "raiym/instagram-php-scraper": "^0.9.11",
         "samayo/bulletproof": "4.0.*"
     },
     "require-dev": {
