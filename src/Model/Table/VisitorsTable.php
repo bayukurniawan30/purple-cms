@@ -297,7 +297,7 @@ class VisitorsTable extends Table
         if (($cache = Cache::read('visitor_' . $ip)) === false) {
             $response     = $http->get($apiPath . '/visitor/look-up/' . $ip);
             if ($response->isOk()) {
-                $verifyResult = $response->body();
+                $verifyResult = $response->getStringBody();
                 $decodeResult = json_decode($verifyResult, true);
                 $data         = [
                     'country_code'    => $decodeResult['country_code'],

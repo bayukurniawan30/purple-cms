@@ -253,6 +253,8 @@
 
         fullscreenMode();
 
+        $('#note-to-save').hide();
+
         function editingMode() {
             function toggleEditing1() {
                 $(this).attr('data-purple-active', 'yes');
@@ -261,6 +263,7 @@
                 $("#button-toggle-tuning").removeClass('active');
                 $('.fdb-blocks-mode').html('<small>Editing Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').hide();
+                $('#note-to-save').show();
                 // console.log('toggleEditing1');
                 $(this).one("click", toggleEditing2);
             }
@@ -273,6 +276,7 @@
                 $('body .fdb-editor').froalaEditor('destroy');
                 $('.fdb-blocks-mode').html('<small>Tuning Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').show();
+                $('#note-to-save').hide();
                 // console.log('toggleEditing2');
                 $(this).one("click", toggleEditing1);
 
@@ -296,6 +300,7 @@
                 // $('body .fdb-editor').froalaEditor('destroy');
                 $('.fdb-blocks-mode').html('<small>Tuning Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').show();
+                $('#note-to-save').hide();
                 // console.log('toggleTuning1');
                 $(this).one("click", toggleTuning2);
 
@@ -309,6 +314,7 @@
                 $("#button-toggle-editing").addClass('active');
                 $('.fdb-blocks-mode').html('<small>Editing Mode</small>');
                 $('#button-save-page, .fdb-button-option-divider').hide();
+                $('#note-to-save').show();
                 // console.log('toggleTuning2');
                 $(this).one("click", toggleTuning1);
             }

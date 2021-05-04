@@ -132,7 +132,7 @@
         <div id="modal-setup-purple" class="uk-modal-full" uk-modal>
             <div class="uk-modal-dialog">
                 <div class="uk-grid-collapse uk-flex-middle" uk-grid>
-                    <div class="uk-width-1-2@m uk-hidden@xl uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
+                    <div class="uk-width-1-2@m uk-visible@m uk-background-contain setup-information" style="background-image: linear-gradient(120deg, #63cfb3 0%, #9f5eff 100%)" uk-height-viewport>
                         <div class="uk-overlay uk-overlay-default" uk-height-viewport>
                             <?= $this->Html->image('/master-assets/img/'.$vectorImg, ['alt' => $currentStep]) ?>
                             <div class="uk-position-bottom uk-padding">

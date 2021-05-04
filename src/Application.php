@@ -48,6 +48,8 @@ class Application extends BaseApplication
             $this->addPlugin('Migrations');
         }
 
+        $this->addPlugin('EngageTheme', ['bootstrap' => true, 'routes' => true]);
+
         /*
          * Only try to load DebugKit in development mode
          * Debug Kit should not be installed on a production system
@@ -55,7 +57,6 @@ class Application extends BaseApplication
         if (Configure::read('debug')) {
             $this->addPlugin(\DebugKit\Plugin::class);
         }
-
     }
 
     /**

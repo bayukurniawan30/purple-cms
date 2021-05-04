@@ -45,7 +45,7 @@
                 ]);
 
                 echo $this->Form->button('Cancel', [
-                    'id'           => 'button-close-modal',
+                    'id'           => 'button-close-add-category-modal',
                     'class'        => 'btn btn-outline-primary uk-margin-left uk-modal-close',
                     'type'         => 'button',
                     'data-target'  => '.purple-modal'

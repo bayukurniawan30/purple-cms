@@ -61,6 +61,10 @@
             </div>
 
             <div id="block-panel" class="uk-card-body">
+                <div class="uk-alert-primary uk-alert" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>Click block to add it to Block Editor.</p>
+                </div>
                 <div class="js-filter uk-height-large" style="overflow-y: scroll">
                     <!-- Froala Blocks => Call to Action -->
                     <?php foreach ($fdbCallToAction as $blocksCallToAction): ?>
@@ -280,6 +284,7 @@
 
                     <span class="fdb-button-option-divider uk-margin-small-left">|</span>
                     <a id="button-save-page" uk-tooltip="title: Save Content" data-purple-modal="#modal-save-page" data-purple-page="general" data-purple-content="#bind-fdb-blocks" class="button-save-block-html uk-margin-small-left"><i class="mdi mdi-content-save"></i> SAVE</a>
+                    <a id="note-to-save" class="uk-margin-small-left uk-text-muted uk-text-small" onclick="return false">Enter tuning mode to save</a>
                 </div>
                 <span class="uk-align-right fdb-blocks-mode"><small>Tuning Mode</small></span>
             </div>
