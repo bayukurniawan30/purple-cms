@@ -7,7 +7,7 @@
     "require": {
         "php": ">=7.2",
         "aws/aws-sdk-php": "^3.115",
-        "cakephp/cakephp": "3.8.*",
+        "cakephp/cakephp": "3.9.*",
         "cakephp/migrations": "^2.0.0",
         "cakephp/plugin-installer": "^1.0",
         "css-crush/css-crush": "dev-master",
