@@ -316,7 +316,7 @@
                     $('.purple-check-exif').find('.purple-check-exif-icon').attr('uk-icon', 'icon: warning');
 
                     // Text
-                    $('.purple-check-exif').find('.purple-check-exif-text').text('Please enable intl PHP extension');
+                    $('.purple-check-exif').find('.purple-check-exif-text').text('Please enable exif PHP extension');
                 <?php
                     endif;
                 ?>
