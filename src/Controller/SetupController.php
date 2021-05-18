@@ -198,20 +198,13 @@ class SetupController extends AppController
 							} 
 							catch (Exception $connectionError) {
 								$connected = false;
-								$errorMsg = $connectionError->getMessage();
-								if (method_exists($connectionError, 'getAttributes')) :
-									$attributes = $connectionError->getAttributes();
-									if (isset($errorMsg['message'])) :
-										$errorMsg .= '. ' . $attributes['message'];
-									endif;
-								endif;
 							}
 
 							if ($connected) {
 								$json = json_encode(['status' => 'ok']);
 							}
 							else {
-								$json = json_encode(['status' => 'error', 'error' => $errorMsg]);
+								$json = json_encode(['status' => 'error', 'error' => 'Purple is not able to connect to the database']);
 							}
 						}
 						else {
@@ -231,20 +224,14 @@ class SetupController extends AppController
 							} 
 							catch (Exception $connectionError) {
 								$connected = false;
-								$errorMsg = $connectionError->getMessage();
-								if (method_exists($connectionError, 'getAttributes')) :
-									$attributes = $connectionError->getAttributes();
-									if (isset($errorMsg['message'])) :
-										$errorMsg .= '. ' . $attributes['message'];
-									endif;
-								endif;
 							}
 
 							if ($connected) {
 								$json = json_encode(['status' => 'ok']);
 							}
 							else {
-								$json = json_encode(['status' => 'error', 'error' => $errorMsg]);
+								$resetDatabaseFile = $file->write('default');
+								$json = json_encode(['status' => 'error', 'error' => 'Purple is not able to connect to the database']);
 							}
 						}
 						else {
