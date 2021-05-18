@@ -9,13 +9,13 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSetup;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
+use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Text;
 use Cake\Utility\Security;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
 use Cake\ORM\Table;
 use Carbon\Carbon;
@@ -192,7 +192,27 @@ class SetupController extends AppController
 						}
 
 						if ($envDbName == $name && $envDbUser == $username && $envDbPass == $password) {
-							$json = json_encode(['status' => 'ok']);
+							try {
+								$connection = ConnectionManager::get('default');
+								$connected  = $connection->connect();
+							} 
+							catch (Exception $connectionError) {
+								$connected = false;
+								$errorMsg = $connectionError->getMessage();
+								if (method_exists($connectionError, 'getAttributes')) :
+									$attributes = $connectionError->getAttributes();
+									if (isset($errorMsg['message'])) :
+										$errorMsg .= '. ' . $attributes['message'];
+									endif;
+								endif;
+							}
+
+							if ($connected) {
+								$json = json_encode(['status' => 'ok']);
+							}
+							else {
+								$json = json_encode(['status' => 'error', 'error' => $errorMsg]);
+							}
 						}
 						else {
 							$json = json_encode(['status' => 'error', 'error' => "Database information is incorrect."]);
@@ -205,7 +225,27 @@ class SetupController extends AppController
 						$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
 
 						if ($file->write($encrypted)) {
-							$json = json_encode(['status' => 'ok']);
+							try {
+								$connection = ConnectionManager::get('default');
+								$connected  = $connection->connect();
+							} 
+							catch (Exception $connectionError) {
+								$connected = false;
+								$errorMsg = $connectionError->getMessage();
+								if (method_exists($connectionError, 'getAttributes')) :
+									$attributes = $connectionError->getAttributes();
+									if (isset($errorMsg['message'])) :
+										$errorMsg .= '. ' . $attributes['message'];
+									endif;
+								endif;
+							}
+
+							if ($connected) {
+								$json = json_encode(['status' => 'ok']);
+							}
+							else {
+								$json = json_encode(['status' => 'error', 'error' => $errorMsg]);
+							}
 						}
 						else {
 							$json = json_encode(['status' => 'error', 'error' => "Can't save database configuration."]);

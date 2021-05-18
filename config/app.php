@@ -407,24 +407,6 @@ return [
             'url' => env('DATABASE_URL', null),
         ],
 
-        'debug_kit' => [
-            'className' => 'Cake\Database\Connection',
-            'driver' => CRDBDRIVER,
-            'persistent' => false,
-            'host' => CRDBHOST,
-            'port' => CRDBPORT,
-            'username' => CRDBUSERNAME,
-            'password' => CRDBPASSWORD,
-            'database' => 'debug_kit', //leave it empty - without tables
-            'encoding' => 'utf8',
-            'timezone' => 'UTC',
-            'flags' => [],
-            'cacheMetadata' => true,
-            'log' => false,
-            'quoteIdentifiers' => false,
-            'url' => env('DATABASE_URL', null),
-        ],
-
         /**
          * The test connection is used during the test suite.
          */
