@@ -30,7 +30,7 @@
                                 <td>Meta Description</td>
                                 <td><?= $settingMetaDescription->value == '' ? 'None' : $settingMetaDescription->value ?></td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-link btn-sm btn-fw button-link-to-modal-setting" data-purple-title="Meta Keywords" data-purple-target="#modal-edit-settings" data-purple-id="<?= $settingMetaDescription->id ?>" data-purple-url="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxFormStandardSetting"]); ?>" data-purple-redirect="seo" uk-tooltip="Change Meta Keywords"><i class="mdi mdi-pencil"></i> Change</button>
+                                    <button type="button" class="btn btn-link btn-sm btn-fw button-link-to-modal-setting" data-purple-title="Meta Description" data-purple-target="#modal-edit-settings" data-purple-id="<?= $settingMetaDescription->id ?>" data-purple-url="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxFormStandardSetting"]); ?>" data-purple-redirect="seo" uk-tooltip="Change Meta Description"><i class="mdi mdi-pencil"></i> Change</button>
                                 </td>
                             </tr>
                         </tbody>
