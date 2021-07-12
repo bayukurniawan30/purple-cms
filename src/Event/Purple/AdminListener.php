@@ -1,7 +1,6 @@
 <?php
 namespace App\Event\Purple;
 
-use Cake\Log\Log;
 use Cake\Event\EventListenerInterface;
 use Cake\ORM\TableRegistry;
 use Cake\Http\ServerRequest;
@@ -41,7 +40,7 @@ class AdminListener implements EventListenerInterface
             $randomCode = rand(100000, 999999);
             $session->write('Admin.verify', $randomCode);
 
-            $tableSettings = TableRegistry::get('Settings');
+            $tableSettings = TableRegistry::getTableLocator()->get('Settings');
             $key           = $tableSettings->settingsPublicApiKey();
             $userData = array(
                 'sitename'    => $tableSettings->settingsSiteName(),
@@ -79,7 +78,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;
@@ -98,7 +97,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;
@@ -111,7 +110,7 @@ class AdminListener implements EventListenerInterface
     }
     public function sendEmailForgotPassword($event, $admin, $data)
     {
-        $tableSettings = TableRegistry::get('Settings');
+        $tableSettings = TableRegistry::getTableLocator()->get('Settings');
         $key           = $tableSettings->settingsPublicApiKey();
         $resetLink     = $data['link'].'/reset-password/token/'.md5(trim($admin['email']));
         $userData = array(
@@ -139,7 +138,7 @@ class AdminListener implements EventListenerInterface
     }
     public function sendEmailResetPassword($event, $admin, $data)
     {
-        $tableSettings = TableRegistry::get('Settings');
+        $tableSettings = TableRegistry::getTableLocator()->get('Settings');
         $key           = $tableSettings->settingsPublicApiKey();
         $dashboardLink = $data['link'];
         $userData      = array(
@@ -183,7 +182,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;
@@ -202,7 +201,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;
@@ -221,7 +220,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;
@@ -240,7 +239,7 @@ class AdminListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;

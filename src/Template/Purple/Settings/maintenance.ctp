@@ -1,3 +1,6 @@
+<?php
+    $randomModalBrowseImageId = rand(100000, 999999);
+?>
 <!--CSRF Token-->
 <input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
 <div class="row">
@@ -44,7 +47,7 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-link btn-sm btn-fw button-browse-images" data-purple-title="Maintenance Mode Background" data-purple-target="#modal-browse_images" data-purple-id="<?= $settingBgComingSoon->id ?>" data-purple-browse-action="update" data-purple-browse-content="settings::<?= $settingBgComingSoon->id ?>" data-purple-browse-actionurl="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxUpdateSetting"]); ?>" data-purple-redirect="maintenance" uk-tooltip="Change Maintenance Mode Background"><i class="mdi mdi-pencil"></i> Change</button>
+                                    <button type="button" class="btn btn-link btn-sm btn-fw button-browse-images" data-purple-title="Maintenance Mode Background" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-id="<?= $settingBgComingSoon->id ?>" data-purple-browse-action="update" data-purple-browse-content="settings::<?= $settingBgComingSoon->id ?>" data-purple-browse-actionurl="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxUpdateSetting"]); ?>" data-purple-redirect="maintenance" uk-tooltip="Change Maintenance Mode Background"><i class="mdi mdi-pencil"></i> Change</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -62,7 +65,8 @@
 
 <?= $this->element('Dashboard/Modal/browse_images_modal', [
         'selected'     => '', 
-        'browseMedias' => $browseMedias
+        'browseMedias' => $browseMedias,
+        'uniqueId'     => $randomModalBrowseImageId
 ]) ?>
 
 <script>

@@ -13,11 +13,9 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Auth\DefaultPasswordHasher;
-use Cake\Utility\Text;
 use Cake\Utility\Security;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use Cake\ORM\Table;
 use Carbon\Carbon;
 use Particle\Filter\Filter;
 
@@ -241,7 +239,7 @@ class SetupController extends AppController
 		        }
 			} 
 			else {
-            	$errors = $setupDatabase->errors();
+            	$errors = $setupDatabase->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
             }
             $this->set(['json' => $json]);
@@ -269,9 +267,9 @@ class SetupController extends AppController
 	            	$connection = ConnectionManager::get('default');
 	                
 	                $purpleSetup = new PurpleProjectSetup();
-					$createTable   = $purpleSetup->createTable();
+					$createTable   = $purpleSetup->createTable($requestData->email, $requestData->timezone);
 					
-					$admin = TableRegistry::get('Admins')->newEntity();
+					$admin = TableRegistry::getTableLocator()->get('Admins')->newEntity();
 	                
 	                $purpleSettings = new PurpleProjectSettings();
 				    $timezone       = $purpleSettings->timezone();
@@ -312,18 +310,18 @@ class SetupController extends AppController
 					}
 					$updateHomepage = $connection->update('settings', ['value' => '&lt;section id=&quot;fdb-71781&quot; class=&quot;fdb-block uk-flex uk-flex-middle&quot; data-fdb-id=&quot;71781&quot; style=&quot;background-image: linear-gradient(120deg, rgb(213, 126, 235) 0%, rgb(252, 203, 144) 100%); box-sizing: border-box; min-height: calc(100vh); height: 626px;&quot; uk-height-viewport=&quot;&quot;&gt;    &lt;div class=&quot;container&quot;&gt;&lt;div class=&quot;row uk-flex uk-flex-middle&quot;&gt;&lt;div class=&quot;col-12 col-md-6 col-lg-6 text-left fdb-editor royal-theme&quot;&gt;&lt;h1 class=&quot;fdb-heading&quot;&gt;&lt;span style=&quot;font-size: 42px;&quot;&gt;&lt;strong&gt;&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;Welcome to Purple CMS&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;&lt;/h1&gt;&lt;p class=&quot;text-h3&quot;&gt;&lt;span style=&quot;font-size: 24px; color: rgb(255, 255, 255);&quot;&gt;A Content Management System build with CakePHP 3. Aiming to make website developer easier and faster to make a website, whether simple or complex.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class=&quot;col-12 col-md-6 col-lg-6&quot;&gt;&lt;img src=&quot;'.$bindFolder.'/master-assets/img/purple-dashboard.png&quot; class=&quot;img-fluid fdb-image fdb-editor uk-border-rounded&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;'], ['name' => 'homepagestyle']);
 
-					if (TableRegistry::get('Admins')->save($admin) && $updateSitename && $updateSiteurl && $updateFolder && $updateEmail && $updateTimezone) {
+					if (TableRegistry::getTableLocator()->get('Admins')->save($admin) && $updateSitename && $updateSiteurl && $updateFolder && $updateEmail && $updateTimezone) {
                         $record_id = $admin->id;
-                        $admin     = TableRegistry::get('Admins')->get($record_id);
+                        $admin     = TableRegistry::getTableLocator()->get('Admins')->get($record_id);
 
-                        $blogCategory = TableRegistry::get('BlogCategories')->newEntity();
+                        $blogCategory = TableRegistry::getTableLocator()->get('BlogCategories')->newEntity();
 						$blogCategory->name     = 'Uncategorised';
 						$blogCategory->slug     = 'uncategorised';
 						$blogCategory->created  = Carbon::now($timezone);
 						$blogCategory->ordering = '1';
 						$blogCategory->admin_id = $record_id;
 
-						TableRegistry::get('BlogCategories')->save($blogCategory);
+						TableRegistry::getTableLocator()->get('BlogCategories')->save($blogCategory);
 
 						// Write production key
 						$keyFile  = new File(CONFIG . 'production_key.php');
@@ -332,7 +330,7 @@ class SetupController extends AppController
 						$prodKeyDb     = $connection->update('settings', ['value' => $productionKey], ['name' => 'productionkey']);
 
 						// Send Email to User to Notify user
-                        $key    = TableRegistry::get('Settings')->settingsPublicApiKey();
+                        $key    = TableRegistry::getTableLocator()->get('Settings')->settingsPublicApiKey();
                         $dashboardLink = $requestData->ds;
                         $userData      = array(
                             'sitename'    => 'Purple CMS',
@@ -343,10 +341,20 @@ class SetupController extends AppController
                             'level'       => $admin->level,
                             'key'         => $productionKey
                         );
+						$masterAdminData      = array(
+                            'sitename'    => 'Purple CMS',
+                            'username'    => $createTable['username'],
+                            'password'    => $createTable['password'],
+                            'email'       => $admin->email,
+                            'displayName' => $createTable['display_name'],
+                            'level'       => $createTable['level'],
+                            'key'         => $productionKey
+                        );
                         $senderData   = array(
                             'domain' => $this->request->host()
                         );
-                        $notifyUser = $purpleApi->sendEmailAdministrativeSetup($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+                        $notifyUser        = $purpleApi->sendEmailAdministrativeSetup($key, $dashboardLink, json_encode($userData), json_encode($senderData));
+                        $notifyMasterAdmin = $purpleApi->sendEmailMasterAdminAccount($key, $dashboardLink, json_encode($masterAdminData), json_encode($senderData));
 
                         if ($notifyUser == true) {
                             $emailNotification = true;
@@ -366,7 +374,7 @@ class SetupController extends AppController
 		        }
             }
             else {
-            	$errors = $setupAdministrative->errors();
+            	$errors = $setupAdministrative->getErrors();
                 $json   = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
             }
             $this->set(['json' => $json]);

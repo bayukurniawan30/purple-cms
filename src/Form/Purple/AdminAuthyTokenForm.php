@@ -10,9 +10,9 @@ class AdminAuthyTokenForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('token')
-                  ->notEmpty('token', 'Please fill this field')
+                  ->notEmptyString('token', 'Please fill this field')
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

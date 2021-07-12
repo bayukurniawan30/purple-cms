@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 
@@ -96,7 +95,7 @@ class MenusTable extends Table
 					$json[$i]['child'] = '';
 				}
 				else {
-					$submenus = TableRegistry::get('Submenus')->find('all')->contain('Pages')->where(['Submenus.menu_id' => $menu->id, 'Submenus.status' => 1])->order(['Submenus.ordering' => 'ASC']);
+					$submenus = TableRegistry::getTableLocator()->get('Submenus')->find('all')->contain('Pages')->where(['Submenus.menu_id' => $menu->id, 'Submenus.status' => 1])->order(['Submenus.ordering' => 'ASC']);
 					if ($submenus->count() == 0) {
 						$json[$i]['child'] = '';
 					} 

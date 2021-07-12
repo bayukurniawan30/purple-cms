@@ -1,4 +1,6 @@
 <?php 
+    $randomModalBrowseImageId = rand(100000, 999999);
+
     $currentUrl = $this->request->getAttribute('params');
     
     if ($currentUrl['_name'] == 'adminPagesBlogsAdd' || $currentUrl['_name'] == 'adminPagesBlogsEdit') {
@@ -12,7 +14,7 @@
     else {
         $submitRedirect = $this->Url->build([
             '_name' => 'adminBlogs'
-        ]);;
+        ]);
     }
 ?>
 
@@ -153,6 +155,7 @@
                         'inputTarget'  => 'featured',
                         'browseMedias' => $browseMedias,
                         'multiple'     => true,
+                        'uniqueId'     => $randomModalBrowseImageId,
                         'modalParams'  => [
                             'browseContent' => 'blogs::0',
                             'browseAction'  => 'send-to-input',

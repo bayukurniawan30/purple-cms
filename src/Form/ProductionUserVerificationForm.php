@@ -10,7 +10,7 @@ class ProductionUserVerificationForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
@@ -18,7 +18,7 @@ class ProductionUserVerificationForm extends Form
                         ]
                     ])
                   ->requirePresence('key')
-                  ->notEmpty('key', 'Please fill this field');
+                  ->notEmptyString('key', 'Please fill this field');
 
         return $validator;
     }

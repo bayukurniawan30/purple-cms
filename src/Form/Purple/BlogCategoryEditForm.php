@@ -10,7 +10,7 @@ class BlogCategoryEditForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please fill this field')
+                  ->notEmptyString('name', 'Please fill this field')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -22,9 +22,9 @@ class BlogCategoryEditForm extends Form
                         ]
                         
                     ])
-                  ->allowEmpty('page_id')
+                  ->allowEmptyString('page_id')
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

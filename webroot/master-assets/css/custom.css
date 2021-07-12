@@ -520,6 +520,10 @@ select.form-control {
 }
 
 /* Utilities */
+.uk-text-italic {
+    font-style: italic;
+}
+
 @media(min-width: 767px) {
     .uk-overflow-auto {
         overflow-x: hidden;
@@ -533,4 +537,50 @@ select.form-control {
 
 .iti {
     width: 100%;
+}
+
+/* json editor */
+.json-editor-blackbord {
+    color: #343a40!important;
+    background: #ffffff!important;
+    border: 1px solid #ebedf2;
+}
+.json-string.json-property {
+    color: var(--primary)!important;
+}
+.json-string {
+    color: #229483!important;
+}
+
+/* markdown editor */
+.mdeditor_drop .dz-remove {
+    display: none!important;
+}
+.mdeditor_drop {
+    overflow-y: scroll;
+}
+.mdeditor_drop .dz-preview {
+    width: 85px!important;
+    height: 85px!important;
+}
+.mdeditor_drop .dz-insert {
+    background: linear-gradient(to right, #da8cff, #9a55ff)!important;
+    color: #ffffff!important;
+    top: 50%!important;
+    margin-top: -12px!important;
+}
+.dz-details {
+    height: 85px!important;
+}
+.mdeditor_drop .dz-preview img {
+    max-width: none!important;
+    position: absolute!important;
+    left: 50%!important;
+    top: 50%!important;
+    transform: translate(-50%, -50%)!important;
+}
+
+/* Datepicker */
+.datepicker table tr td.active, .datepicker table tr td.active.disabled, .datepicker table tr td.active.disabled:hover, .datepicker table tr td.active:hover {
+    background-image: linear-gradient(to right, #da8cff, #9a55ff)!important;
 }

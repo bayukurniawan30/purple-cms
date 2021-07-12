@@ -10,7 +10,7 @@ class CommentReplyForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('blog_id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -18,7 +18,7 @@ class CommentReplyForm extends Form
                         ]
                     ])
                   ->requirePresence('reply')
-                  ->notEmpty('reply', 'Please fill this field')
+                  ->notEmptyString('reply', 'Please fill this field')
                   ->add('reply', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -26,7 +26,7 @@ class CommentReplyForm extends Form
                         ]
                     ])
                   ->requirePresence('content')
-                  ->notEmpty('content', 'Please fill this field')
+                  ->notEmptyString('content', 'Please fill this field')
                   ->add('title', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],

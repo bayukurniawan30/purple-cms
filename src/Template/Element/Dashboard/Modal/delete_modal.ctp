@@ -22,7 +22,7 @@
             <?php
                 echo $this->Form->button('Cancel', [
                     'id'           => 'button-close-modal',
-                    'class'        => 'btn btn-outline-primary uk-modal-close',
+                    'class'        => 'btn btn-outline-secondary uk-modal-close',
                     'type'         => 'button',
                     'data-target'  => '.purple-modal'
                 ]);

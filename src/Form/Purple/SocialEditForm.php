@@ -10,9 +10,9 @@ class SocialEditForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please select social media')
+                  ->notEmptyString('name', 'Please select social media')
                   ->requirePresence('link')
-                  ->notEmpty('link', 'Please fill this field')
+                  ->notEmptyString('link', 'Please fill this field')
                   ->add('link', [
                         'url' => [
                             'rule'    => ['url'],
@@ -20,7 +20,7 @@ class SocialEditForm extends Form
                         ]
                     ])
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

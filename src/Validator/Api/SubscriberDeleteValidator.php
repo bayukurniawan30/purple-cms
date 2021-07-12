@@ -11,7 +11,7 @@ class SubscriberDeleteValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Subscriber id is required',
                     ]])
-                  ->notEmpty('id', 'Subscriber id is required')
+                  ->notEmptyString('id', 'Subscriber id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

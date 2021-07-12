@@ -1,7 +1,6 @@
 <?php
 namespace App\Event;
 
-use Cake\Log\Log;
 use Cake\Event\EventListenerInterface;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectApi;
@@ -16,8 +15,8 @@ class PageListener implements EventListenerInterface
     }
     public function afterSentContactMessage($event, $data)
     {
-        $tableAdmins   = TableRegistry::get('Admins');
-        $tableSettings = TableRegistry::get('Settings');
+        $tableAdmins   = TableRegistry::getTableLocator()->get('Admins');
+        $tableSettings = TableRegistry::getTableLocator()->get('Settings');
         
         // Send Email to User to Notify user
         $users     = $tableAdmins->find()->where(['username <> ' => 'creatifycore'])->order(['id' => 'ASC']);
@@ -58,7 +57,7 @@ class PageListener implements EventListenerInterface
     } 
     public function afterSaveContactMessage($event, $data)
     {
-        $tableNotifications = TableRegistry::get('Notifications');
+        $tableNotifications = TableRegistry::getTableLocator()->get('Notifications');
 
         // Save notification
         $notification = $tableNotifications->newEntity();

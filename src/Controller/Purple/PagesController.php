@@ -18,7 +18,6 @@ use App\Form\Purple\PageDeleteForm;
 use App\Form\Purple\PageLoadStylesheetsForm;
 use App\Form\Purple\BlogDeleteForm;
 use App\Form\Purple\SearchForm;
-use App\Form\PageContactForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectFroalaBlocks;
 use App\Purple\PurpleProjectPlugins;
@@ -432,7 +431,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageAdd->errors();
+                $errors = $pageAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same title and please fill all field."]);
             }
 
@@ -613,7 +612,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageSave->errors();
+                $errors = $pageSave->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -663,7 +662,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageStatus->errors();
+                $errors = $pageStatus->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -721,7 +720,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageBlogEdit->errors();
+                $errors = $pageBlogEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -901,7 +900,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageCustomSave->errors();
+                $errors = $pageCustomSave->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -1018,7 +1017,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageDelete->errors();
+                $errors = $pageDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -1312,7 +1311,7 @@ class PagesController extends AppController
                 $json = json_encode(['status' => 'ok']);
             }
             else {
-                $errors = $pageLoadStylesheets->errors();
+                $errors = $pageLoadStylesheets->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

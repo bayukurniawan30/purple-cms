@@ -4,7 +4,6 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\Utility\Text;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;
@@ -12,8 +11,6 @@ use App\Form\Purple\ThemeApplyForm;
 use App\Form\Purple\ThemeDeleteForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
 use Particle\Filter\Filter;
 
@@ -280,7 +277,7 @@ class ThemesController extends AppController
 	            }
         	}
             else {
-            	$errors = $themeApply->errors();
+            	$errors = $themeApply->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Can't apply theme. Please try again."]);
             }
 
@@ -383,7 +380,7 @@ class ThemesController extends AppController
                 }
             }
             else {
-            	$errors = $themeDelete->errors();
+            	$errors = $themeDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

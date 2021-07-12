@@ -4,7 +4,6 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
-use Cake\Utility\Text;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\SubscriberAddForm;
@@ -13,7 +12,6 @@ use App\Form\Purple\SubscriberDeleteForm;
 use App\Form\Purple\SubscriberMailchimpSettingsForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
 use \DrewM\MailChimp\MailChimp;
@@ -241,7 +239,7 @@ class SubscribersController extends AppController
                 }
             }
             else {
-            	$errors = $subscriberAdd->errors();
+            	$errors = $subscriberAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
@@ -304,7 +302,7 @@ class SubscribersController extends AppController
                 }
 			}
 			else {
-				$errors = $subscriberEdit->errors();
+				$errors = $subscriberEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -382,7 +380,7 @@ class SubscribersController extends AppController
                 }
             }
             else {
-            	$errors = $subscriberDelete->errors();
+            	$errors = $subscriberDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -452,7 +450,7 @@ class SubscribersController extends AppController
 				}
 			}
 			else {
-            	$errors = $mailchimpSettings->errors();
+            	$errors = $mailchimpSettings->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

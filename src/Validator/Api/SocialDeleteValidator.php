@@ -11,7 +11,7 @@ class SocialDeleteValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Social media id is required',
                     ]])
-                  ->notEmpty('id', 'Social media id is required')
+                  ->notEmptyString('id', 'Social media id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

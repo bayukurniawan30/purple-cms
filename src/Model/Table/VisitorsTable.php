@@ -4,12 +4,9 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
-use Cake\Log\Log;
 use Cake\Http\Client;
 use Cake\Cache\Cache;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
-use Carbon\Carbon;
 
 class VisitorsTable extends Table
 {
@@ -58,7 +55,7 @@ class VisitorsTable extends Table
                     if (($cache = Cache::read('visitor_' . $value['ip'])) === false) {
                         $response     = $http->get($apiPath . '/visitor/look-up/' . $value['ip']);
                         if ($response->isOk()) {
-                            $verifyResult = $response->body();
+                            $verifyResult = $response->getStringBody();
                             $decodeResult = json_decode($verifyResult, true);
                             $data         = [
                                 'country_code'    => $decodeResult['country_code'],

@@ -265,7 +265,7 @@ class AuthenticateController extends AppController
 				}
 			}
 			else {
-            	$errors = $adminLogin->errors();
+            	$errors = $adminLogin->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -332,7 +332,7 @@ class AuthenticateController extends AppController
 				}
 			}
 			else {
-            	$errors = $adminVerificationCode->errors();
+            	$errors = $adminVerificationCode->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -403,7 +403,7 @@ class AuthenticateController extends AppController
 	            }
 	        }
 	        else {
-	        	$errors = $forgotPassword->errors();
+	        	$errors = $forgotPassword->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
 
@@ -501,7 +501,7 @@ class AuthenticateController extends AppController
 				}
             }
             else {
-	        	$errors = $newPassword->errors();
+	        	$errors = $newPassword->getErrors();
                 $json  = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
 
@@ -576,7 +576,7 @@ class AuthenticateController extends AppController
 				}
 			}
             else {
-	        	$errors = $adminAuthyToken->errors();
+	        	$errors = $adminAuthyToken->getErrors();
                 $json  = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
 

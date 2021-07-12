@@ -21,7 +21,7 @@
         <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
         <?= $this->Html->css('/master-assets/plugins/datatables/Responsive-2.2.3/css/responsive.dataTables.min.css') ?>
     <?php endif; ?>
-    <?php if (($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || $this->request->getParam('controller') == 'Themes'): ?>
+    <?php if (($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && ($this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'editData')) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || $this->request->getParam('controller') == 'Themes'): ?>
         <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
     <?php endif; ?>
     <?php if ($this->request->getParam('controller') == 'Pages'): ?>
@@ -30,7 +30,11 @@
             <?= $this->Html->css('/master-assets/plugins/jstree/themes/default/style.css', ['id' => 'tree-css-path']) ?>
         <?php endif; ?>
     <?php endif; ?>
-    <?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
+    <?php if (($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')))): ?>
+        <?= $this->Html->css('/master-assets/plugins/switchery/switchery.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>
+    <?php endif; ?>
+    <?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'editData'))) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_editor.pkgd.min.css') ?>
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/froala_style.min.css') ?>
         <?= $this->Html->css('/master-assets/plugins/froala-editor/css/themes/royal.min.css') ?>
@@ -93,6 +97,14 @@
     <?= $this->Html->script('/master-assets/plugins/jstree/jstree.min.js', ['id' => 'tree-js-path']); ?>
     <?= $this->Html->script('/master-assets/plugins/html2json/htmlparser.js'); ?>
     <?= $this->Html->script('/master-assets/plugins/html2json/html2json.js'); ?>
+    <?php endif; ?>
+    <?php if (($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'editData')))): ?>
+        <?= $this->Html->script('/master-assets/plugins/json-editor/jquery.json-editor.min.js'); ?>
+        <?= $this->Html->css('/master-assets/plugins/mdeditor/mdeditor.css'); ?>
+        <?= $this->Html->script('/master-assets/plugins/mdeditor/mdeditor.min.js'); ?>
+        <?= $this->Html->css('/master-assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css') ?>
+        <?= $this->Html->css('/master-assets/plugins/bootstrap-datepicker/bootstrap-datepicker3.min.css') ?>
+        <?= $this->Html->script('/master-assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js') ?>
     <?php endif; ?>
 
     <!-- Purple Timezone Check -->

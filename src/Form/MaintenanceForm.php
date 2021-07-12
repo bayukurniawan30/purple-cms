@@ -10,7 +10,7 @@ class MaintenanceForm extends Form
     protected function _buildValidator(Validator $validator)
     {
     	$validator->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',

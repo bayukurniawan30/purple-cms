@@ -10,9 +10,9 @@ class SocialAddForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please select social media')
+                  ->notEmptyString('name', 'Please select social media')
                   ->requirePresence('link')
-                  ->notEmpty('link', 'Please fill this field')
+                  ->notEmptyString('link', 'Please fill this field')
                   ->add('link', [
                         'url' => [
                             'rule'    => ['url'],

@@ -4,17 +4,9 @@ namespace App\Controller\Api;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\ORM\Query;
-use Cake\Utility\Text;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 use App\Validator\Api\SocialAddValidator;
 use App\Validator\Api\SocialUpdateValidator;
 use App\Validator\Api\SocialDeleteValidator;
@@ -208,7 +200,7 @@ class SocialAccountsController extends AppController
                 $availableAccount = ['facebook', 'instagram', 'twitter', 'google-plus', 'youtube', 'pinterest', 'github'];
                 if (in_array(trim($this->request->getData('name')), $availableAccount)) {
                     $socialAddValidator = new SocialAddValidator();
-                    $errorValidate      = $socialAddValidator->validate()->errors($this->request->getData());
+                    $errorValidate      = $socialAddValidator->validate($this->request->getData());
                     if (empty($errorValidate)) {
                         $social = $this->Socials->newEntity();
                         $social = $this->Socials->patchEntity($social, $this->request->getData());
@@ -305,7 +297,7 @@ class SocialAccountsController extends AppController
                 $availableAccount = ['facebook', 'instagram', 'twitter', 'google-plus', 'youtube', 'pinterest', 'github'];
                 if (in_array(trim($this->request->getData('name')), $availableAccount)) {
                     $socialUpdateValidator = new SocialUpdateValidator();
-                    $errorValidate         = $socialUpdateValidator->validate()->errors($this->request->getData());
+                    $errorValidate         = $socialUpdateValidator->validate($this->request->getData());
                     if (empty($errorValidate)) {
                         $checkExist = $this->Socials->find()->where(['id' => $this->request->getData('id')]);
                         if ($checkExist->count() == 1) {
@@ -405,7 +397,7 @@ class SocialAccountsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $socialDeleteValidator = new SocialDeleteValidator();
-                $errorValidate         = $socialDeleteValidator->validate()->errors($this->request->getData());
+                $errorValidate         = $socialDeleteValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Socials->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {

@@ -11,7 +11,7 @@ class PostCommentSendValidator
         $validator->requirePresence(['name' => [
                         'message' => 'Name is required',
                     ]])
-                  ->notEmpty('name', 'Name is required')
+                  ->notEmptyString('name', 'Name is required')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -25,7 +25,7 @@ class PostCommentSendValidator
                   ->requirePresence(['email' => [
                         'message' => 'Email is required',
                     ]])
-                  ->notEmpty('email', 'Email is required')
+                  ->notEmptyString('email', 'Email is required')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
@@ -35,7 +35,7 @@ class PostCommentSendValidator
                   ->requirePresence(['content' => [
                         'message' => 'Comment is required',
                     ]])
-                  ->notEmpty('content', 'Comment is required')
+                  ->notEmptyString('content', 'Comment is required')
                   ->add('content', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],
@@ -49,7 +49,7 @@ class PostCommentSendValidator
                   ->requirePresence(['blog_id' => [
                         'message' => 'Post id is required',
                     ]])
-                  ->notEmpty('blog_id', 'Post id is required')
+                  ->notEmptyString('blog_id', 'Post id is required')
                   ->add('blog_id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

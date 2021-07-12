@@ -11,7 +11,7 @@ class PostCommentDeleteValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Comment id is required',
                     ]])
-                  ->notEmpty('id', 'Comment id is required')
+                  ->notEmptyString('id', 'Comment id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

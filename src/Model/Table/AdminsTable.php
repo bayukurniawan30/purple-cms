@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use Cake\Auth\DefaultPasswordHasher;
-use Cake\Utility\Text;
 use Cake\Utility\Security;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;

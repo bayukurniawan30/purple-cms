@@ -404,7 +404,7 @@ class AppearanceController extends AppController
 						'_name' => 'home'
 					], true);
 
-					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+					$path = $baseUrl . 'uploads/images/original/' . $type . '.png';
 				}
 
 				// Tell system for new event
@@ -507,7 +507,7 @@ class AppearanceController extends AppController
 						'_name' => 'home'
 					], true);
 
-					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+					$path = $baseUrl . 'uploads/images/original/' . $saveType . '.png';
 				}
 
             	// Tell system for new event
@@ -547,7 +547,9 @@ class AppearanceController extends AppController
 	            $setting       = $this->Settings->get($requestData->id);
 	            $filePath      = $setting->value;
 	            
-	            $fullSizeImage = WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS . $filePath;
+	            $fullSizeImage     			= WWW_ROOT . 'uploads' . DS .'images' . DS .'original' . DS . $filePath;
+				$uploadedThumbnailSquare    = WWW_ROOT . 'uploads' . DS .'images' . DS .'thumbnails' . DS . '300x300' . DS;
+				$uploadedThumbnailLandscape = WWW_ROOT . 'uploads' . DS .'images' . DS .'thumbnails' . DS . '480x270' . DS;
 	            
 	            $readImageFile = new File($fullSizeImage);
 	            
@@ -634,7 +636,7 @@ class AppearanceController extends AppController
 	            $this->set(['json' => $json]);
 	        }
 	        else {
-	        	$errors = $appearanceDelete->errors();
+	        	$errors = $appearanceDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
         }
@@ -680,7 +682,7 @@ class AppearanceController extends AppController
 	            $this->set(['json' => $json]);
 	        }
 	        else {
-	        	$errors = $sfooterEdit->errors();
+	        	$errors = $sfooterEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
         }

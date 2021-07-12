@@ -6,15 +6,9 @@ use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\Utility\Text;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 use App\Validator\Api\PostCategoryAddValidator;
 use App\Validator\Api\PostCategoryUpdateValidator;
 use App\Validator\Api\PostCategoryDeleteValidator;
@@ -441,7 +435,7 @@ class PostCategoriesController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCategoryAddValidator = new PostCategoryAddValidator();
-                $errorValidate            = $postCategoryAddValidator->validate()->errors($this->request->getData());
+                $errorValidate            = $postCategoryAddValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $slug = Text::slug(strtolower($this->request->getData('name')));
                     $findDuplicate = $this->BlogCategories->find()->where(['slug' => $slug]);
@@ -539,7 +533,7 @@ class PostCategoriesController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCategoryUpdateValidator = new PostCategoryUpdateValidator();
-                $errorValidate               = $postCategoryUpdateValidator->validate()->errors($this->request->getData());
+                $errorValidate               = $postCategoryUpdateValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->BlogCategories->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {
@@ -645,7 +639,7 @@ class PostCategoriesController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCategoryDeleteValidator = new PostCategoryDeleteValidator();
-                $errorValidate               = $postCategoryDeleteValidator->validate()->errors($this->request->getData());
+                $errorValidate               = $postCategoryDeleteValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->BlogCategories->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {

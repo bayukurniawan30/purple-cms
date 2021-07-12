@@ -5,7 +5,6 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Text;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
 
@@ -133,7 +132,7 @@ class BlogVisitorsTable extends Table
 			arsort($countValues);
 			$frequentBlogs = array_slice($countValues, 0, $limit, true);
 			
-			$blogsTable = TableRegistry::get('Blogs');
+			$blogsTable = TableRegistry::getTableLocator()->get('Blogs');
 			$blogsArray = [];
 			$j = 0;
 			foreach ($frequentBlogs as $key => $value) {

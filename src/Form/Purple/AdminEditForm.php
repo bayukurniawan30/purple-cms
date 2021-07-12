@@ -10,7 +10,7 @@ class AdminEditForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('display_name')
-                  ->notEmpty('display_name', 'Please fill this field')
+                  ->notEmptyString('display_name', 'Please fill this field')
                   ->add('display_name', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],
@@ -26,7 +26,7 @@ class AdminEditForm extends Form
                         ]
                     ])
                   ->requirePresence('username')
-                  ->notEmpty('username', 'Please fill this field')
+                  ->notEmptyString('username', 'Please fill this field')
                   ->add('username', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],
@@ -41,14 +41,14 @@ class AdminEditForm extends Form
                             'message' => 'Username is alpha numeric'
                         ]
                     ])
-                  ->allowEmpty('password')
+                  ->allowEmptyString('password')
                   ->add('password', [
                         'size' => [
                             'rule'    => ['lengthBetween', 6, 20],
                             'message' => 'Password need to be at least 6 characters and maximum 20 characters'
                         ]
                     ])
-                  ->allowEmpty('repeatpassword')
+                  ->allowEmptyString('repeatpassword')
                   ->add('repeatpassword', [
                         'size'    => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -56,21 +56,21 @@ class AdminEditForm extends Form
                         ]
                     ])
                   ->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
                             'message' => 'Email must be in valid format',
                         ]
                     ])
-                  ->allowEmpty('photo')
-                  ->allowEmpty('phone')
-                  ->allowEmpty('calling_code')
-                  ->allowEmpty('about')
+                  ->allowEmptyString('photo')
+                  ->allowEmptyString('phone')
+                  ->allowEmptyString('calling_code')
+                  ->allowEmptyString('about')
                   ->requirePresence('level')
-                  ->notEmpty('level', 'Please fill this field')
+                  ->notEmptyString('level', 'Please fill this field')
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

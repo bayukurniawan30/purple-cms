@@ -22,7 +22,6 @@ use App\Purple\PurpleProjectPlugins;
 use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
-use Particle\Filter\Filter;
 use Aws\S3\S3Client;  
 use Aws\Exception\AwsException;
 
@@ -466,7 +465,7 @@ class MediasController extends AppController
                 }
             }
 			else {
-            	$errors = $mediaImageModal->errors();
+            	$errors = $mediaImageModal->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -612,7 +611,7 @@ class MediasController extends AppController
                 }
             }
             else {
-            	$errors = $mediaImageDelete->errors();
+            	$errors = $mediaImageDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -782,7 +781,7 @@ class MediasController extends AppController
                 }
             }
             else {
-            	$errors = $mediaDocumentModal->errors();
+            	$errors = $mediaDocumentModal->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -887,7 +886,7 @@ class MediasController extends AppController
                 }
             }
             else {
-            	$errors = $mediaDocumentDelete->errors();
+            	$errors = $mediaDocumentDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -1045,7 +1044,7 @@ class MediasController extends AppController
                 }
             }
             else {
-            	$errors = $mediaVideoModal->errors();
+            	$errors = $mediaVideoModal->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -1149,7 +1148,7 @@ class MediasController extends AppController
                 }
             }
             else {
-            	$errors = $mediaVideoDelete->errors();
+            	$errors = $mediaVideoDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

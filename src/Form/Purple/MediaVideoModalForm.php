@@ -10,16 +10,16 @@ class MediaVideoModalForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('title')
-                  ->notEmpty('title', 'Please fill this field')
+                  ->notEmptyString('title', 'Please fill this field')
                   ->add('title', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 100],
                             'message' => 'Video title is maximum 100 characters'
                         ]
                     ])
-                  ->allowEmpty('description')
+                  ->allowEmptyString('description')
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

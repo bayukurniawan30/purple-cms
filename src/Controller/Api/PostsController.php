@@ -7,15 +7,9 @@ use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 use App\Validator\Api\PostAddValidator;
 use App\Validator\Api\PostUpdateValidator;
 use App\Validator\Api\PostDeleteValidator;
@@ -565,7 +559,7 @@ class PostsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postAddValidator = new PostAddValidator();
-                $errorValidate    = $postAddValidator->validate()->errors($this->request->getData());
+                $errorValidate    = $postAddValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $slug = Text::slug(strtolower(trim($this->request->getData('title'))));
                     $findDuplicate = $this->Blogs->find()->where(['slug' => $slug]);
@@ -708,7 +702,7 @@ class PostsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postUpdateValidator = new PostUpdateValidator();
-                $errorValidate       = $postUpdateValidator->validate()->errors($this->request->getData());
+                $errorValidate       = $postUpdateValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Blogs->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {
@@ -863,7 +857,7 @@ class PostsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postDeleteValidator = new PostDeleteValidator();
-                $errorValidate       = $postDeleteValidator->validate()->errors($this->request->getData());
+                $errorValidate       = $postDeleteValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Blogs->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {

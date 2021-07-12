@@ -7,15 +7,9 @@ use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
 use Bulletproof;
 use Gregwar\Image\Image;
@@ -584,7 +578,7 @@ class MediasController extends AppController
                         $readImageLandscape->delete();
                     }
                     else {
-                        $fullPath = WWW_ROOT . 'uploads' . DS . strtolower($mediasName) . DS . $filePath;
+                        $fullPath = WWW_ROOT . 'uploads' . DS . strtolower($mediasName) . DS . $name;
                         $readFile = new File($fullPath);
                     }
 

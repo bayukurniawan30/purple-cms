@@ -9,10 +9,7 @@ use App\Form\Purple\CommentReplyForm;
 use App\Form\Purple\CommentStatusForm;
 use App\Form\Purple\CommentDeleteForm;
 use App\Form\Purple\SearchForm;
-use Cake\Utility\Text;
-use Cake\I18n\Time;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 
 class CommentsController extends AppController
@@ -225,7 +222,7 @@ class CommentsController extends AppController
                 }
 			}
 			else {
-				$errors = $commentStatus->errors();
+				$errors = $commentStatus->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -284,7 +281,7 @@ class CommentsController extends AppController
                 }
 			}
 			else {
-				$errors = $commentReply->errors();
+				$errors = $commentReply->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -351,7 +348,7 @@ class CommentsController extends AppController
                 }
             }
             else {
-            	$errors = $commentDelete->errors();
+            	$errors = $commentDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

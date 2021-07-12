@@ -12,7 +12,7 @@
             echo $this->Form->hidden('page_id');
         ?>
         <div class="uk-modal-header">
-            <h3 class="uk-modal-title">Add Category</h3>
+            <h3 class="uk-modal-title">Edit Category</h3>
         </div>
         <div class=" uk-modal-body">
             <div class="form-group">

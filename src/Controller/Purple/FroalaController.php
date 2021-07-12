@@ -4,10 +4,8 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Filesystem\Folder;
 use Cake\Utility\Text;
 use Cake\Filesystem\File;
-use Cake\I18n\Time;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use Carbon\Carbon;
@@ -323,7 +321,7 @@ class FroalaController extends AppController
                         $video->size     = $fileSize;
                         $video->admin_id = $sessionID;
 
-                        if ($videosTable->save($video)) {
+                        if ($this->MediaVideos->save($video)) {
                             $link = $this->request->getAttribute("webroot") . 'uploads/videos/' . $generatedName;
 
                             $this->loadModel('Settings');

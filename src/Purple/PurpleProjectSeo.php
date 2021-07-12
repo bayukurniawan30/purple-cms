@@ -14,11 +14,11 @@ class PurpleProjectSeo
 		$serverRequest = new ServerRequest();
         $purpleGlobal  = new PurpleProjectGlobal();
         $protocol      = $purpleGlobal->protocol();
-		$socialsList   = TableRegistry::get('Socials')->find('all')->select(['link'])->order(['ordering' => 'ASC'])->toArray();
-		$ldJson        = TableRegistry::get('Settings')->find()->where(['name' => 'ldjson'])->first();
-		$siteName      = TableRegistry::get('Settings')->find()->where(['name' => 'sitename'])->first();
-		$metaDesc      = TableRegistry::get('Settings')->find()->where(['name' => 'metadescription'])->first();
-		$logo          = TableRegistry::get('Settings')->find()->where(['name' => 'websitelogo'])->first();
+		$socialsList   = TableRegistry::getTableLocator()->get('Socials')->find('all')->select(['link'])->order(['ordering' => 'ASC'])->toArray();
+		$ldJson        = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'ldjson'])->first();
+		$siteName      = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'sitename'])->first();
+		$metaDesc      = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'metadescription'])->first();
+		$logo          = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'websitelogo'])->first();
 
         if ($type == 'website') {
             $schema = Factory::schema('WebSite')

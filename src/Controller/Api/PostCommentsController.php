@@ -5,13 +5,8 @@ use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\ORM\Query;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Validator\Api\PostCommentSendValidator;
@@ -215,7 +210,7 @@ class PostCommentsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCommentSendValidator = new PostCommentSendValidator();
-                $errorValidate            = $postCommentSendValidator->validate()->errors($this->request->getData());
+                $errorValidate            = $postCommentSendValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $purpleApi = new PurpleProjectApi();
                     $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
@@ -335,7 +330,7 @@ class PostCommentsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCommentChangeStatusValidator = new PostCommentChangeStatusValidator();
-                $errorValidate                    = $postCommentChangeStatusValidator->validate()->errors($this->request->getData());
+                $errorValidate                    = $postCommentChangeStatusValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Comments->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {
@@ -434,7 +429,7 @@ class PostCommentsController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $postCommentDeleteValidator = new PostCommentDeleteValidator();
-                $errorValidate              = $postCommentDeleteValidator->validate()->errors($this->request->getData());
+                $errorValidate              = $postCommentDeleteValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Comments->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {

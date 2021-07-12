@@ -11,7 +11,7 @@ class PostCategoryUpdateValidator
         $validator->requirePresence(['name' => [
                         'message' => 'Category name is required',
                     ]])
-                  ->notEmpty('name', 'Category name is required')
+                  ->notEmptyString('name', 'Category name is required')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -23,11 +23,11 @@ class PostCategoryUpdateValidator
                         ]
                         
                     ])
-                  ->allowEmpty('page_id')
+                  ->allowEmptyString('page_id')
                   ->requirePresence(['id' => [
                         'message' => 'Category id is required',
                     ]])
-                  ->notEmpty('id', 'Category id is required')
+                  ->notEmptyString('id', 'Category id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

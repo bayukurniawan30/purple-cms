@@ -10,7 +10,7 @@ class SetupAdministrativeForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('sitename')
-                  ->notEmpty('sitename', 'Please fill this field')
+                  ->notEmptyString('sitename', 'Please fill this field')
                   ->add('sitename', [
                         'minLength' => [
                             'rule'    => ['minLength', 1],
@@ -22,7 +22,7 @@ class SetupAdministrativeForm extends Form
                         ]
                     ])
                   ->requirePresence('username')
-                  ->notEmpty('username', 'Please fill this field')
+                  ->notEmptyString('username', 'Please fill this field')
                   ->add('username', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],
@@ -38,7 +38,7 @@ class SetupAdministrativeForm extends Form
                         ]
                     ])
                   ->requirePresence('password')
-                  ->notEmpty('password', 'Please fill this field')
+                  ->notEmptyString('password', 'Please fill this field')
                   ->add('password', [
                         'size' => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -46,7 +46,7 @@ class SetupAdministrativeForm extends Form
                         ]
                     ])
                   ->requirePresence('repeatpassword')
-                  ->notEmpty('repeatpassword', 'Please fill this field')
+                  ->notEmptyString('repeatpassword', 'Please fill this field')
                   ->add('repeatpassword', [
                         'size'    => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -54,7 +54,7 @@ class SetupAdministrativeForm extends Form
                         ]
                     ])
                   ->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
@@ -62,7 +62,7 @@ class SetupAdministrativeForm extends Form
                         ]
                     ])
                   ->requirePresence('timezone')
-                  ->notEmpty('timezone', 'Please fill this field');
+                  ->notEmptyString('timezone', 'Please fill this field');
 
         return $validator;
     }

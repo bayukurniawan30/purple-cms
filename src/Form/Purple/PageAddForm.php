@@ -10,7 +10,7 @@ class PageAddForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('title')
-                  ->notEmpty('title', 'Please fill this field')
+                  ->notEmptyString('title', 'Please fill this field')
                   ->add('title', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 100],
@@ -18,10 +18,10 @@ class PageAddForm extends Form
                         ]
                     ])
                   ->requirePresence('status')
-                  ->notEmpty('status', 'Please select status of the menu')
+                  ->notEmptyString('status', 'Please select status of the menu')
                   ->requirePresence('page_template_id')
-                  ->notEmpty('page_template_id', 'Please select template')
-                  ->allowEmpty('parent');
+                  ->notEmptyString('page_template_id', 'Please select template')
+                  ->allowEmptyString('parent');
 
         return $validator;
     }

@@ -1,10 +1,8 @@
 <?php
 namespace App\Event\Purple;
 
-use Cake\Log\Log;
 use Cake\Event\EventListenerInterface;
 use Cake\ORM\TableRegistry;
-use App\Purple\PurpleProjectApi;
 
 class SettingListener implements EventListenerInterface 
 {
@@ -21,7 +19,7 @@ class SettingListener implements EventListenerInterface
             'admin_id' => $admin['id']
         ];
 
-        $tableHistories = TableRegistry::get('Histories');
+        $tableHistories = TableRegistry::getTableLocator()->get('Histories');
         $saveActivity   = $tableHistories->saveActivity($options);
         if ($saveActivity) {
             $result = true;

@@ -1,7 +1,6 @@
 <?php
 namespace App\Event;
 
-use Cake\Log\Log;
 use Cake\Event\EventListenerInterface;
 use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectApi;
@@ -16,9 +15,9 @@ class BlogListener implements EventListenerInterface
     }
     public function afterSentComment($event, $data)
     {
-        $tableAdmins   = TableRegistry::get('Admins');
-        $tableBlogs    = TableRegistry::get('Blogs');
-        $tableSettings = TableRegistry::get('Settings');
+        $tableAdmins   = TableRegistry::getTableLocator()->get('Admins');
+        $tableBlogs    = TableRegistry::getTableLocator()->get('Blogs');
+        $tableSettings = TableRegistry::getTableLocator()->get('Settings');
 
         // Send Email to author to Notify author
         $blog   = $tableBlogs->get($data['blog_id']);
@@ -54,7 +53,7 @@ class BlogListener implements EventListenerInterface
     }
     public function afterSaveComment($event, $data)
     {
-        $tableNotifications = TableRegistry::get('Notifications');
+        $tableNotifications = TableRegistry::getTableLocator()->get('Notifications');
 
         // Save notification
         $notification = $tableNotifications->newEntity();

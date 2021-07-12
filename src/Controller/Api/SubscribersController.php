@@ -4,15 +4,8 @@ namespace App\Controller\Api;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\ORM\Query;
-use Cake\Utility\Text;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Validator\Api\SubscriberAddValidator;
@@ -197,7 +190,7 @@ class SubscribersController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $subscriberAddValidator = new SubscriberAddValidator();
-                $errorValidate          = $subscriberAddValidator->validate()->errors($this->request->getData());
+                $errorValidate          = $subscriberAddValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $purpleApi = new PurpleProjectApi();
                     $verifyEmail = $purpleApi->verifyEmail($this->request->getData('email'));
@@ -303,7 +296,7 @@ class SubscribersController extends AppController
 
             if ($apiAccessKey == $apiKey) {
                 $subscriberDeleteValidator = new SubscriberDeleteValidator();
-                $errorValidate             = $subscriberDeleteValidator->validate()->errors($this->request->getData());
+                $errorValidate             = $subscriberDeleteValidator->validate($this->request->getData());
                 if (empty($errorValidate)) {
                     $checkExist = $this->Subscribers->find()->where(['id' => $this->request->getData('id')]);
                     if ($checkExist->count() == 1) {

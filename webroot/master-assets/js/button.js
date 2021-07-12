@@ -1290,9 +1290,10 @@ $(document).ready(function() {
                 action    = btn.data('purple-browse-action'),
                 content   = btn.data('purple-browse-content'),
                 actionurl = btn.data('purple-browse-actionurl'),
-                target    = btn.data('purple-browse-target'),
+                brsTarget = btn.data('purple-browse-target'),
+                target    = btn.data('purple-target'),
                 redirect  = btn.data('purple-redirect'),
-                modal     = $("#modal-browse-images");
+                modal     = $(target);
 
             btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Images...');
             btn.attr('disabled','disabled');
@@ -1312,7 +1313,7 @@ $(document).ready(function() {
                     modal.find(".button-select-image").attr('data-purple-action', 'send-to-input');
                     modal.find(".button-select-image").attr('data-purple-table', table);
                     modal.find(".button-select-image").attr('data-purple-id', id);
-                    modal.find(".button-select-image").attr('data-purple-target', target);
+                    modal.find(".button-select-image").attr('data-purple-target', brsTarget);
                 }
                 else if (action == 'froala-section-bg') {
                     var sectionId = btn.attr('data-fdb-id');
@@ -1324,7 +1325,7 @@ $(document).ready(function() {
                         $(".button-remove-background").on("click", function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
-                                modal = "#modal-browse-images";
+                                modal = target;
                                 // console.log(block);
 
                             $(block).css('background', 'none');
@@ -1345,7 +1346,7 @@ $(document).ready(function() {
                         $(".button-remove-background").on("click", function() {
                             var block = $(this).attr('data-purple-froala-block'),
                                 image = $(".choose-image"),
-                                modal = "#modal-browse-images";
+                                modal = target;
                                 // console.log(block);
 
                             $(block).css('background', 'none');
@@ -1357,7 +1358,7 @@ $(document).ready(function() {
                     }
                 }
 
-                UIkit.modal('#modal-browse-images').show();
+                UIkit.modal(target).show();
                 btn.removeAttr('disabled');
                 btn.html(btnTxt);
             }, 1000);
@@ -1391,16 +1392,19 @@ $(document).ready(function() {
                 return false;
             }
             else {
-                $("#modal-browse-images").find('button').attr('disabled', 'disabled');
+                var modal         = target.closest('.purple-modal');
+                var loadMediaList = modal.find('.uk-modal-body');
+
+                modal.find('button').attr('disabled', 'disabled');
 
                 var btn  = $(this),
                     link = btn.attr('data-purple-url');
                     pageLink  = link.split('?id='),
                     number    = parseInt(pageLink[1]),
-                    totalPage = $('#load-media-list').data('purple-page-total'),
-                    limit     = $('#load-media-list').data('purple-page-limit'),
-                    multiple  = $('#load-media-list').data('purple-multiple'),
-                    images    = $("#modal-browse-images").find('.button-select-image').attr('data-purple-image'),
+                    totalPage = loadMediaList.data('purple-page-total'),
+                    limit     = loadMediaList.data('purple-page-limit'),
+                    multiple  = loadMediaList.data('purple-multiple'),
+                    images    = modal.find('.button-select-image').attr('data-purple-image'),
                     data      = {page: number, limit: limit, multiple: multiple, images: images},
                     token     = $('#csrf-ajax-token').val();
 
@@ -1426,16 +1430,16 @@ $(document).ready(function() {
                         data: data,
                         cache: false,
                         beforeSend: function() {
-                            $('#load-media-list').append('<div class="uk-overlay-default uk-position-cover selected-overlay">' +
+                            loadMediaList.append('<div class="uk-overlay-default uk-position-cover selected-overlay">' +
                                 '<div class="uk-position-center">' +
                                     '<div uk-spinner></div>' +
                                 '</div>' +
                              '</div>');
                         },
                         success: function(data) {
-                            $("#modal-browse-images").find('button').removeAttr('disabled');
+                            modal.find('button').removeAttr('disabled');
 
-                            $('#load-media-list').find(".selected-overlay").remove();
+                            loadMediaList.find(".selected-overlay").remove();
                             reverseParent.removeClass('disabled');
 
                             if (action == 'prev') {
@@ -1473,7 +1477,7 @@ $(document).ready(function() {
                                 reverseParent.removeClass('disabled');
                                 browseImagePaging(action);
                             }
-                            $('#load-media-list').html(data);
+                            loadMediaList.html(data);
                         }
                     })
                 }

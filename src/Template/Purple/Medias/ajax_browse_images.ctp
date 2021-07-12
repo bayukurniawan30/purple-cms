@@ -12,8 +12,9 @@
     <?php foreach ($medias as $media): ?>
     <?php
         $thumbSquare = '/uploads/images/thumbnails/300x300/' . $media->name;
+        $original    = $this->cell('Medias::mediaPath', [$media->name, 'image', 'original']);
     ?>
-    <div class="media-image choose-image" data-purple-image="<?= $media->name ?>">
+    <div class="media-image choose-image" data-purple-image="<?= $media->name ?>" data-purple-path="<?= $original ?>">
         <div class="uk-card uk-card-default">
             <?= $this->Html->image($thumbSquare, ['alt' => $media->title, 'width' => '100%']) ?>
             <?php
@@ -35,7 +36,7 @@
 
 <script>
     $(document).ready(function() {
-        if (debug == true || cakeDebug == 'on') {
+        if (cakeDebug == 'on') {
             <?php
                 if ($multiSelect == false):
             ?>
@@ -51,8 +52,11 @@
             function toggleClick1() {
                 var image     = $(this),
                     container = image.parent(),
-                    modal     = $("#modal-browse-images"),
-                    filename  = image.data('purple-image');
+                    modal     = image.closest(".purple-modal"),
+                    filename  = image.data('purple-image'),
+                    filePath  = image.data('purple-path');
+
+                    console.log(modal);
 
                 <?php
                     if ($multiSelect == false):
@@ -67,21 +71,28 @@
                                 '</div>' +
                              '</div>');
                 modal.find(".button-select-image").removeAttr('disabled');
+                modal.find(".button-select-image").prop('disabled', true);
+                modal.find("button").removeAttr('disabled');
+                modal.find("button").prop('disabled', false);
 
                 <?php
                     if ($multiSelect == true):
                 ?>
                     var imageList = modal.find(".button-select-image").attr('data-purple-image');
+                    var pathList  = modal.find(".button-select-image").attr('data-purple-path');
                     if (imageList == '') {
                         modal.find(".button-select-image").attr('data-purple-image', filename);
+                        modal.find(".button-select-image").attr('data-purple-path', filePath);
                     }
                     else {
                         modal.find(".button-select-image").attr('data-purple-image', imageList + ',' + filename);   
+                        modal.find(".button-select-image").attr('data-purple-path', pathList + ',' + filePath);   
                     }
                 <?php
                     else:
                 ?>
                     modal.find(".button-select-image").attr('data-purple-image', filename);
+                    modal.find(".button-select-image").attr('data-purple-path', filePath);
                 <?php
                     endif;
                 ?>
@@ -91,20 +102,29 @@
             function toggleClick2() {
                 var image     = $(this),
                     container = image.parent(),
-                    modal     = $("#modal-browse-images"),
+                    modal     = image.closest(".purple-modal"),
                     filename  = image.data('purple-image'),
+                    filePath  = image.data('purple-path'),
                     imageList = modal.find(".button-select-image").attr('data-purple-image');
+                    pathList  = modal.find(".button-select-image").attr('data-purple-path');
 
                 image.find(".selected-overlay").remove();
                 var newImageList  = imageList.replace(',' + filename, '');
                 var newImageList2 = newImageList.replace(filename, '');
                 modal.find(".button-select-image").attr('data-purple-image', newImageList2);
 
+                var newPathList  = pathList.replace(',' + filePath, '');
+                var newPathList2 = newPathList.replace(filePath, '');
+                modal.find(".button-select-image").attr('data-purple-path', newPathList2);
+
                 if (modal.find(".button-select-image").attr('data-purple-image') == '') {
                     modal.find(".button-select-image").attr('disabled', 'disabled');
                 }
                 else {
                     modal.find(".button-select-image").removeAttr('disabled');
+                    modal.find(".button-select-image").prop('disabled', false);
+                    modal.find("button").removeAttr('disabled');
+                    modal.find("button").prop('disabled', false);
                 }
 
                 $(this).one("click", toggleClick1);
@@ -116,12 +136,15 @@
 
         $(".button-select-image").on({
             mouseenter: function () {
-                var selectAction = $(this).data('purple-action'),
-                    actionTable  = $(this).data('purple-table'),
-                    actionId     = $(this).data('purple-id'),
+                var btn          = $(this),
+                    selectAction = btn.data('purple-action'),
+                    actionTable  = btn.data('purple-table'),
+                    actionId     = btn.data('purple-id'),
+                    actionTarget = btn.data('purple-target'),
                     image        = $(".choose-image"),
-                    filename     = $(this).attr('data-purple-image'),
-                    modal        = $("#modal-browse-images");
+                    filename     = btn.attr('data-purple-image'),
+                    filePath     = btn.attr('data-purple-path'),
+                    modal        = btn.closest('.purple-modal');
 
                 if (selectAction == 'update') {
                     if (actionTable == 'settings') {
@@ -161,17 +184,17 @@
                             }
                         }
 
-                        var slideshow = '<div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>' +
+                        var slideshow = '<div class="uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)"><div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>' +
                                 '<ul class="uk-slideshow-items">' + init +
                                 '</ul>' +
                                 '<a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>' +
                                 '<a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>' +
-                            '</div>';
+                            '</div></div>';
                         $('.browse-image-preview').html(slideshow);
                         <?php
                             else:
                         ?>
-                        $('.browse-image-preview').html('<img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + filename + '" class="img-fluid">');
+                        $('.browse-image-preview').html('<div class="uk-flex uk-flex-center" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)" uk-lightbox><a href="' + filePath + '"><img src="<?= $this->request->getAttribute("webroot") . 'uploads/images/original/' ?>' + filename + '" class="img-fluid"></div></div>');
                         <?php
                             endif;
                         ?>

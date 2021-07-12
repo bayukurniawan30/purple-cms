@@ -7,8 +7,6 @@ use Cake\Core\Configure;
 use Cake\ORM\Query;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\SearchForm;
-use Cake\Utility\Text;
-use Cake\I18n\Time;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;

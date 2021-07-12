@@ -11,7 +11,7 @@ class PostDeleteValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Post id is required',
                     ]])
-                  ->notEmpty('id', 'Post id is required')
+                  ->notEmptyString('id', 'Post id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

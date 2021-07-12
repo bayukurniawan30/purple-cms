@@ -10,7 +10,7 @@ class AdminLoginForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('username')
-                  ->notEmpty('username', 'Please fill this field')
+                  ->notEmptyString('username', 'Please fill this field')
                   ->add('username', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],
@@ -26,7 +26,7 @@ class AdminLoginForm extends Form
                         ]
                     ])
                   ->requirePresence('password')
-                  ->notEmpty('password', 'Please fill this field')
+                  ->notEmptyString('password', 'Please fill this field')
                   ->add('password', [
                         'size' => [
                             'rule'    => ['lengthBetween', 6, 20],

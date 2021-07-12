@@ -2,19 +2,10 @@
 namespace App\Controller\Api;
 
 use App\Controller\AppController;
-use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\ORM\Query;
-use Cake\Utility\Text;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Http\ServerRequest;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
-use App\Purple\PurpleProjectApi;
 
 class SettingsController extends AppController
 {

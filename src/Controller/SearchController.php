@@ -3,18 +3,12 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Log\Log;
-use Cake\Filesystem\File;
-use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Form\SearchForm;
 use Carbon\Carbon;
-use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 
 class SearchController extends AppController
@@ -162,6 +156,8 @@ class SearchController extends AppController
 
             $socials = $this->Socials->find('all')->order(['ordering' => 'ASC']);
             $this->set(compact('socials'));
+
+            $protocol = $purpleGlobal->protocol();
 
             // Generate Schema.org ld+json
             $purpleSeo     = new PurpleProjectSeo();

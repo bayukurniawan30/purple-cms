@@ -11,7 +11,7 @@ class PostCommentChangeStatusValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Comment id is required',
                     ]])
-                  ->notEmpty('id', 'Comment id is required')
+                  ->notEmptyString('id', 'Comment id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -21,7 +21,7 @@ class PostCommentChangeStatusValidator
                   ->requirePresence(['status' => [
                         'message' => 'Comment status is required',
                     ]])
-                  ->notEmpty('status', 'Comment status is required')
+                  ->notEmptyString('status', 'Comment status is required')
                   ->add('status', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

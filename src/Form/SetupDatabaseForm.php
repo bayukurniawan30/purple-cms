@@ -10,7 +10,7 @@ class SetupDatabaseForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please fill this field')
+                  ->notEmptyString('name', 'Please fill this field')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 1],
@@ -22,8 +22,8 @@ class SetupDatabaseForm extends Form
                         ]
                     ])
                   ->requirePresence('username')
-                  ->notEmpty('username', 'Please fill this field')
-                  ->allowEmpty('password');
+                  ->notEmptyString('username', 'Please fill this field')
+                  ->allowEmptyString('password');
 
         return $validator;
     }

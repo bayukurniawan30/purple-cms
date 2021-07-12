@@ -5,11 +5,9 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Utility\Text;
 use App\Form\Purple\MessageDeleteForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 
 class MessagesController extends AppController
@@ -260,7 +258,7 @@ class MessagesController extends AppController
 				$this->set(['json' => $json]);
 			}
 			else {
-            	$errors = $messageDelete->errors();
+            	$errors = $messageDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 		}

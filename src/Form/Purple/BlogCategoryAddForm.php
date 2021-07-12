@@ -10,7 +10,7 @@ class BlogCategoryAddForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please fill this field')
+                  ->notEmptyString('name', 'Please fill this field')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -22,7 +22,7 @@ class BlogCategoryAddForm extends Form
                         ]
                         
                     ])
-                  ->allowEmpty('page_id');
+                  ->allowEmptyString('page_id');
 
         return $validator;
     }

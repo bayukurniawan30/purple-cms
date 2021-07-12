@@ -9,7 +9,7 @@ class PageLoadStylesheetsForm extends Form
 {
     protected function _buildValidator(Validator $validator)
     {
-        $validator->allowEmpty('stylesheet');
+        $validator->allowEmptyString('stylesheet');
 
         return $validator;
     }

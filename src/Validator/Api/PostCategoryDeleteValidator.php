@@ -11,7 +11,7 @@ class PostCategoryDeleteValidator
         $validator->requirePresence(['id' => [
                         'message' => 'Category id is required',
                     ]])
-                  ->notEmpty('id', 'Category id is required')
+                  ->notEmptyString('id', 'Category id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

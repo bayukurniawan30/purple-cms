@@ -10,7 +10,7 @@ class AdminPhoneNumberVerificationCodeForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('code')
-                  ->notEmpty('code', 'Please fill this field')
+                  ->notEmptyString('code', 'Please fill this field')
                   ->add('code', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],
@@ -22,7 +22,7 @@ class AdminPhoneNumberVerificationCodeForm extends Form
                         ]
                     ])
                     ->requirePresence('phone')
-                    ->notEmpty('phone', 'Please fill this field');
+                    ->notEmptyString('phone', 'Please fill this field');
 
         return $validator;
     }

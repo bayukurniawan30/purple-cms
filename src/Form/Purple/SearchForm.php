@@ -10,7 +10,7 @@ class SearchForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('search')
-                  ->notEmpty('title', 'Please fill this field')
+                  ->notEmptyString('title', 'Please fill this field')
                   ->add('title', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],

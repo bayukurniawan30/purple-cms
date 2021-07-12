@@ -10,13 +10,13 @@ class SocialSharingButtonsForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('theme')
-                  ->notEmpty('theme', 'Please select theme')
+                  ->notEmptyString('theme', 'Please select theme')
                   ->requirePresence('fontsize')
-                  ->notEmpty('theme', 'Please select font size')
+                  ->notEmptyString('theme', 'Please select font size')
                   ->requirePresence('label')
-                  ->notEmpty('theme', 'Please select label')
+                  ->notEmptyString('theme', 'Please select label')
                   ->requirePresence('count')
-                  ->notEmpty('theme', 'Please select count');
+                  ->notEmptyString('theme', 'Please select count');
 
         return $validator;
     }

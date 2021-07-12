@@ -307,7 +307,7 @@ class BlogsController extends AppController
 	            }
 			}
 			else {
-				$errors = $blogAdd->errors();
+				$errors = $blogAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -394,7 +394,7 @@ class BlogsController extends AppController
 	            }
 			}
 			else {
-				$errors = $blogEdit->errors();
+				$errors = $blogEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -438,7 +438,7 @@ class BlogsController extends AppController
                 }
             }
             else {
-            	$errors = $blogDelete->errors();
+            	$errors = $blogDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

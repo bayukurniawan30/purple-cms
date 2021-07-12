@@ -10,7 +10,7 @@ class NewPasswordForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('password')
-                  ->notEmpty('password', 'Please fill this field')
+                  ->notEmptyString('password', 'Please fill this field')
                   ->add('password', [
                         'size' => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -18,14 +18,14 @@ class NewPasswordForm extends Form
                         ]
                     ])
                   ->requirePresence('repeatpassword')
-                  ->notEmpty('repeatpassword', 'Please fill this field')
+                  ->notEmptyString('repeatpassword', 'Please fill this field')
                   ->add('repeatpassword', [
                         'size'    => [
                             'rule'    => ['lengthBetween', 6, 20],
                             'message' => 'Password need to be at least 6 characters and maximum 20 characters'
                         ]
                     ])
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

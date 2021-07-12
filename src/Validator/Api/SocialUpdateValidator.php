@@ -11,11 +11,11 @@ class SocialUpdateValidator
         $validator->requirePresence(['name' => [
                         'message' => 'Social media is required',
                     ]])
-                  ->notEmpty('name', 'Social media is required')
+                  ->notEmptyString('name', 'Social media is required')
                   ->requirePresence(['link' => [
                         'message' => 'Link is required',
                     ]])
-                  ->notEmpty('link', 'Link is required')
+                  ->notEmptyString('link', 'Link is required')
                   ->add('link', [
                         'url' => [
                             'rule'    => ['url'],
@@ -25,7 +25,7 @@ class SocialUpdateValidator
                   ->requirePresence(['id' => [
                         'message' => 'Social media id is required',
                     ]])
-                  ->notEmpty('id', 'Social media id is required')
+                  ->notEmptyString('id', 'Social media id is required')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

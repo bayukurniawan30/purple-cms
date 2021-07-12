@@ -28,9 +28,12 @@
 	<?= $this->Html->script('/master-assets/plugins/datatables/Responsive-2.2.3/js/dataTables.responsive.min.js'); ?>
 <?php endif; ?>
 
-<?php if (($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || $this->request->getParam('controller') == 'Themes'): ?>
+<?php if (($this->request->getParam('controller') == 'Admins' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && ($this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || $this->request->getParam('controller') == 'Themes'): ?>
 	<?= $this->Html->script('/master-assets/plugins/dmuploader/js/jquery.dm-uploader.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/dmuploader/js/dmuploader-helper.js'); ?>
+	<?= $this->Html->script('/master-assets/plugins/jscolor/jscolor.js'); ?>
+	<?= $this->Html->script('/master-assets/plugins/datatables/datatables.min.js'); ?>
+	<?= $this->Html->script('/master-assets/plugins/datatables/Responsive-2.2.3/js/dataTables.responsive.min.js'); ?>
 <?php endif; ?>
 
 <?php if ($this->request->getParam('controller') == 'Pages'): ?>
@@ -39,7 +42,7 @@
 	<?= $this->Html->script('/master-assets/plugins/stylesheet/jquery-cssrule.js'); ?>
 <?php endif; ?>
 
-<?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
+<?php if ($this->request->getParam('controller') == 'Pages' || ($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'editData'))) || ($this->request->getParam('controller') == 'Blogs' && ($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit')) || ($this->request->getParam('controller') == 'Settings' && $this->request->getParam('action') == 'seo')): ?>
 	<?= $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/codemirror.min.js'); ?>
 	<?= $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.3.0/mode/xml/xml.min.js'); ?>
 	<?= $this->Html->script('/master-assets/plugins/froala-editor/js/froala_editor.pkgd.min.js'); ?>

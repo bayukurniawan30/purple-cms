@@ -1,3 +1,7 @@
+
+<?php
+    $randomModalBrowseImageId = rand(100000, 999999);
+?>
 <!--CSRF Token-->
 <input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
 <div class="row">
@@ -44,7 +48,7 @@
                                     ?>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-link btn-sm btn-fw button-browse-images" data-purple-title="Login Background" data-purple-target="#modal-browse_images" data-purple-id="<?= $settingBgLogin->id ?>" data-purple-browse-action="update" data-purple-browse-content="settings::<?= $settingBgLogin->id ?>" data-purple-browse-actionurl="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxUpdateSetting"]); ?>" data-purple-redirect="personalize" uk-tooltip="Change Image Background Login"><i class="mdi mdi-pencil"></i> Change</button>
+                                    <button type="button" class="btn btn-link btn-sm btn-fw button-browse-images" data-purple-title="Login Background" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-id="<?= $settingBgLogin->id ?>" data-purple-browse-action="update" data-purple-browse-content="settings::<?= $settingBgLogin->id ?>" data-purple-browse-actionurl="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxUpdateSetting"]); ?>" data-purple-redirect="personalize" uk-tooltip="Change Image Background Login"><i class="mdi mdi-pencil"></i> Change</button>
                                 </td>
                             </tr>
                             <?php endif; ?>
@@ -66,7 +70,8 @@
 ?>
 <?= $this->element('Dashboard/Modal/browse_images_modal', [
         'selected'     => '', 
-        'browseMedias' => $browseMedias
+        'browseMedias' => $browseMedias,
+        'uniqueId'     => $randomModalBrowseImageId
 ]) ?>
 <?php endif; ?>
 

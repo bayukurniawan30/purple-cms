@@ -64,9 +64,18 @@ class PurpleProjectSetup
 
 		for ($i = 0; $i < $length; $i++)
 		{
-			$key .= $inputs{mt_rand(0,61)};
+			$key .= $inputs[mt_rand(0,61)];
 		}
 		return $key;
+	}
+	private function generateRandomString($length = 10) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$charactersLength = strlen($characters);
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, $charactersLength - 1)];
+		}
+		return $randomString;
 	}
 	private function mysqlForeignKey($key, $column, $referenceTable, $referenceColumn, $next = false, $first = false)
 	{
@@ -128,8 +137,10 @@ class PurpleProjectSetup
 		else {
 			$generatedForeignKey = '';
 		}
+
+		return $generatedForeignKey;
 	}
-	public function createTable()
+	public function createTable($email, $timezone)
 	{
 		if (getenv("PURPLE_DATABASE_NAME") !== false && getenv("PURPLE_DATABASE_USER") !== false && file_exists(CONFIG . '.env')) {
 			if (getenv("PURPLE_DEPLOY_PLATFORM") == 'heroku') {
@@ -257,6 +268,29 @@ class PurpleProjectSetup
 			    sender_folder VARCHAR( 20 ) NOT NULL,
 			    receiver_folder VARCHAR( 20 ) NOT NULL,
 			    type VARCHAR( 10 ) NOT NULL)' . $storageEngine . ';');
+
+		$this->conn->execute('CREATE table collections (
+			    id ' . $autoIncrement . ' PRIMARY KEY,
+				name VARCHAR( 100 ) NOT NULL,
+				slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
+			    fields TEXT NOT NULL,
+			    status CHAR( 1 ) NOT NULL,
+			    sorting VARCHAR( 50 ) NOT NULL,
+			    sorting_order VARCHAR( 10 ) NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . '
+			    ' . $this->mysqlForeignKey('admin_collection', 'admin_id', 'admins', 'id', false, true) . ')' . $storageEngine . ';');
+
+		$this->conn->execute('CREATE table collection_datas (
+			    id ' . $autoIncrement . ' PRIMARY KEY,
+			    content MEDIUMTEXT NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
+			    collection_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('collections', 'id') . ',
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . '
+				' . $this->mysqlForeignKey('admin_collection_data', 'admin_id', 'admins', 'id', true, true) . '
+                ' . $this->mysqlForeignKey('collection_collection_data', 'collection_id', 'collections', 'id') . ')' . $storageEngine . ';');
 
 		$this->conn->execute('CREATE table fonts(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
@@ -453,6 +487,28 @@ class PurpleProjectSetup
 			    ' . $this->mysqlForeignKey('admin_custom_page', 'admin_id', 'admins', 'id', true, true) . '
                 ' . $this->mysqlForeignKey('page_custom_page', 'page_id', 'pages', 'id') . ')' . $storageEngine . ';');
 
+		$this->conn->execute('CREATE table singletons (
+			    id ' . $autoIncrement . ' PRIMARY KEY,
+				name VARCHAR( 100 ) NOT NULL,
+				slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
+			    content TEXT NULL,
+			    fields TEXT NOT NULL,
+			    status CHAR( 1 ) NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . '
+			    ' . $this->mysqlForeignKey('admin_singleton', 'admin_id', 'admins', 'id', false, true) . ')' . $storageEngine . ';');
+
+		$this->conn->execute('CREATE table singleton_datas (
+			    id ' . $autoIncrement . ' PRIMARY KEY,
+			    content MEDIUMTEXT NOT NULL,
+			    created ' . $typeDatetime . ' NOT NULL,
+			    modified ' . $typeDatetime . ' NULL,
+			    singleton_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('singletons', 'id') . ',
+                admin_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('admins', 'id') . '
+				' . $this->mysqlForeignKey('admin_singleton_data', 'admin_id', 'admins', 'id', true, true) . '
+                ' . $this->mysqlForeignKey('singleton_singleton_data', 'singleton_id', 'singletons', 'id') . ')' . $storageEngine . ';');
+
 		$this->conn->execute('CREATE table socials(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 100 ) NOT NULL,
@@ -508,18 +564,26 @@ class PurpleProjectSetup
 		// Bcrypt the token so BasicAuthenticate can check
 		// it during login.
 		$apiKey = $hasher->hash($apiKeyPlain);
+		$randomPassword = $this->generateRandomString();
+
+		$returnData = [
+			'username'     => 'purplecore',
+			'password'     => $randomPassword,
+			'display_name' => 'Core',
+			'level'        => '1',
+		];
 
 		$this->conn->insert('admins', [
-			'username'      => 'creatifycore',
-			'password'      => $this->hashPassword('altair'),
+			'username'      => 'purplecore',
+			'password'      => $this->hashPassword($randomPassword),
 			'api_key_plain' => $apiKeyPlain,
 			'api_key'       => $apiKey,
-			'email'         => 'creatifycms@gmail.com',
+			'email'         => $email,
 			'photo'         => NULL,
 			'display_name'  => 'Core',
 			'level'         => '1',
 			'first_login'   => 'yes',
-			'created'       => Carbon::now('Asia/Makassar')
+			'created'       => Carbon::now($timezone)
 		]);
 
 		/**
@@ -815,5 +879,7 @@ class PurpleProjectSetup
 			'name'  => '2fa',
 			'value' => 'disable'
 		]);
+
+		return $returnData;
 	}
 }

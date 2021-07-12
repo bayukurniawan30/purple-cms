@@ -77,13 +77,26 @@
                 <i class="mdi mdi-file-multiple menu-icon"></i>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item <?php if (($this->request->getParam('controller') == 'Collections' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')))) echo 'active' ?>">
             <a class="nav-link" data-toggle="collapse" href="#purple-media" aria-expanded="false" aria-controls="purple-media">
+                <span class="menu-title">Components</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-checkbox-multiple-blank-outline menu-icon"></i>
+            </a>
+            <div class="collapse <?php if (($this->request->getParam('controller') == 'Collections' || $this->request->getParam('controller') == 'Singletons'  && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')))) echo 'show' ?>" id="purple-media">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link <?php if (($this->request->getParam('controller') == 'Collections' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')))) echo 'active' ?>" href="<?= $this->Url->build(['_name' => 'adminCollections']); ?>">Collections</a></li>
+                    <li class="nav-item"> <a class="nav-link <?php if (($this->request->getParam('controller') == 'Singletons' && (($this->request->getParam('action') == 'add' || $this->request->getParam('action') == 'edit' || $this->request->getParam('action') == 'data' || $this->request->getParam('action') == 'viewData' || $this->request->getParam('action') == 'editData')))) echo 'active' ?>" href="<?= $this->Url->build(['_name' => 'adminSingletons']); ?>">Singletons</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#purple-medias" aria-expanded="false" aria-controls="purple-media">
                 <span class="menu-title">Medias</span>
                 <i class="menu-arrow"></i>
                 <i class="mdi mdi-folder-image menu-icon"></i>
             </a>
-            <div class="collapse" id="purple-media">
+            <div class="collapse" id="purple-medias">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminMediasAction', 'action' => 'documents']); ?>">Documents</a></li>
                     <li class="nav-item"> <a class="nav-link" href="<?= $this->Url->build(['_name' => 'adminMediasAction', 'action' => 'images']); ?>">Images</a></li>
@@ -93,7 +106,6 @@
         </li>
         <?php
             if ($adminLevel == 1):
-
                 foreach ($plugins as $plugin):
                     if ($plugin['yes'] == true) {
                         $pluginNamespace   = $plugin['namespace'];

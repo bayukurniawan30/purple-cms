@@ -10,9 +10,9 @@ class SubscriberMailchimpSettingsForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('key')
-                  ->notEmpty('key', 'Please fill this field')
+                  ->notEmptyString('key', 'Please fill this field')
                   ->requirePresence('list')
-                  ->notEmpty('list', 'Please fill this field');
+                  ->notEmptyString('list', 'Please fill this field');
 
         return $validator;
     }

@@ -10,7 +10,7 @@ class AdminVerificationSignInForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('code')
-                  ->notEmpty('code', 'Please fill this field')
+                  ->notEmptyString('code', 'Please fill this field')
                   ->add('code', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],

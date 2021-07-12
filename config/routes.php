@@ -392,6 +392,64 @@ Router::prefix('purple', function ($routes) {
 		->setPass(['parent']);
 
 	/**
+	 * Components Route
+	 * Controller : Collections
+	 */
+	$routes->connect('/components/collections', 
+			['controller' => 'Collections'], 
+			['_name' => 'adminCollections']);
+	$routes->connect('/components/collections/:action', 
+			['controller' => 'Collections'], 
+			['_name' => 'adminCollectionsAction']);
+	$routes->connect('/components/collections/data/:data',
+			['controller' => 'Collections', 'action' => 'data'], 
+			['_name' => 'adminCollectionsData'])
+		->setPass(['data']);
+	$routes->connect('/components/collections/view-data/:data',
+			['controller' => 'Collections', 'action' => 'viewData'], 
+			['_name' => 'adminCollectionsViewData'])
+		->setPass(['data']);
+	$routes->connect('/components/collections/view-data/:data/:id',
+			['controller' => 'Collections', 'action' => 'editData'], 
+			['_name' => 'adminCollectionsEditData'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['data', 'id']);
+	$routes->connect('/components/collections/edit/:id',
+			['controller' => 'Collections', 'action' => 'edit'], 
+			['_name' => 'adminCollectionsEdit'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['id']);
+
+	/**
+	 * Components Route
+	 * Controller : Singletons
+	 */
+	$routes->connect('/components/singletons', 
+			['controller' => 'Singletons'], 
+			['_name' => 'adminSingletons']);
+	$routes->connect('/components/singletons/:action', 
+			['controller' => 'Singletons'], 
+			['_name' => 'adminSingletonsAction']);
+	$routes->connect('/components/singletons/data/:data',
+			['controller' => 'Singletons', 'action' => 'data'], 
+			['_name' => 'adminSingletonsData'])
+		->setPass(['data']);
+	$routes->connect('/components/singletons/view-data/:data',
+			['controller' => 'Singletons', 'action' => 'viewData'], 
+			['_name' => 'adminSingletonsViewData'])
+		->setPass(['data']);
+	$routes->connect('/components/singletons/view-data/:data/:id',
+			['controller' => 'Singletons', 'action' => 'editData'], 
+			['_name' => 'adminSingletonsEditData'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['data', 'id']);
+	$routes->connect('/components/singletons/edit/:id',
+			['controller' => 'Singletons', 'action' => 'edit'], 
+			['_name' => 'adminSingletonsEdit'])
+		->setPatterns(['id' => '\d+'])
+		->setPass(['id']);
+
+	/**
 	 * Blogs Route
 	 * Controller : Admins
 	 */
@@ -1043,5 +1101,48 @@ Router::prefix('api', function ($routes) {
 	$routes->connect('/' . $apiVersion . '/visitors/view', 
 			['controller' => 'Visitors', 'action' => 'view'], 
 			['_name' => $routeName . 'ViewVisitors'])
+		->setMethods(['GET']);
+
+	// Fetch All Collections
+	/**
+	 * Query String
+	 * order_by => name, created, modified  default is created
+	 * order    => asc, desc   default is desc
+	 */
+	$routes->connect('/' . $apiVersion . '/collections/view', 
+			['controller' => 'Collections', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewCollections'])
+		->setMethods(['GET']);
+
+	// Fetch Collection data by slug
+	/**
+	 * Query String
+	 * order_by => created, modified  default is created
+	 * order    => asc, desc   default is desc
+	 * paging
+	 * limit
+	 */
+	$routes->connect('/' . $apiVersion . '/collections/data/:slug', 
+			['controller' => 'Collections', 'action' => 'data'], 
+			['_name' => $routeName . 'ViewCollectionDatas'])
+		->setPass(['slug'])
+		->setMethods(['GET']);
+
+	// Fetch All Singletons
+	/**
+	 * Query String
+	 * order_by => name, created, modified  default is created
+	 * order    => asc, desc   default is desc
+	 */
+	$routes->connect('/' . $apiVersion . '/singletons/view', 
+			['controller' => 'Singletons', 'action' => 'view'], 
+			['_name' => $routeName . 'ViewSingletons'])
+		->setMethods(['GET']);
+
+	// Fetch Singletons data by slug
+	$routes->connect('/' . $apiVersion . '/singletons/data/:slug', 
+			['controller' => 'Singletons', 'action' => 'data'], 
+			['_name' => $routeName . 'ViewSingletonnDatas'])
+		->setPass(['slug'])
 		->setMethods(['GET']);
 });

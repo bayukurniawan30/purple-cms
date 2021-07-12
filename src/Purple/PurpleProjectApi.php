@@ -25,7 +25,7 @@ class PurpleProjectApi
 
 		        // Check email is valid or not
 		        $response     = $http->get($this->apiPath() . '/verify/email/'.$email.'.json');
-		        $verifyResult = $response->body();
+		        $verifyResult = $response->getStringBody();
 		        $decodeResult = json_decode($verifyResult, true);
 
 		        if ($decodeResult['message'] == 'success' && $decodeResult['isValid'] == true) {
@@ -58,7 +58,38 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
+	        $decodeResult = json_decode($verifyResult, true);
+
+	        // Log::write('debug', $decodeResult);
+
+	        if ($decodeResult['message'] == 'success') {
+	        	return true;
+	        }
+	        else {
+	        	return false;
+	        }
+		}
+	    else {
+	    	return true;
+	    }
+	}
+	public function sendEmailMasterAdminAccount($key, $dashboardLink, $userData, $senderData)
+	{	
+		$purpleGlobal = new PurpleProjectGlobal();
+		$checkConnection = $purpleGlobal->isConnected();
+
+		if ($checkConnection == true) {
+			$http         = new Client();
+			$response     = $http->post($this->apiPath() . '/action/master-admin-account', 
+								[
+									'key'			=> $key,
+									'dashboardLink' => $dashboardLink,
+									'userData'      => $userData,
+									'senderData'    => $senderData
+								]
+							);
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -89,7 +120,7 @@ class PurpleProjectApi
 									'senderData' => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -120,7 +151,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -151,7 +182,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -181,7 +212,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -213,7 +244,7 @@ class PurpleProjectApi
 									'commentData'   => $commentData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -244,7 +275,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -274,7 +305,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -304,7 +335,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -334,7 +365,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -364,7 +395,7 @@ class PurpleProjectApi
 									'senderData'    => $senderData
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        // Log::write('debug', $decodeResult);
@@ -394,7 +425,7 @@ class PurpleProjectApi
 									'number'  => $number
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        Log::write('debug', $decodeResult);
@@ -424,7 +455,7 @@ class PurpleProjectApi
 									'number' => $number
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        Log::write('debug', $decodeResult);
@@ -455,7 +486,7 @@ class PurpleProjectApi
 									'country' => $countryCode
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        Log::write('debug', $decodeResult);
@@ -484,7 +515,7 @@ class PurpleProjectApi
 									'id'  => $id
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        Log::write('debug', $decodeResult);
@@ -514,7 +545,7 @@ class PurpleProjectApi
 									'token' => $token
 								]
 							);
-			$verifyResult = $response->body();
+			$verifyResult = $response->getStringBody();
 	        $decodeResult = json_decode($verifyResult, true);
 
 	        Log::write('debug', $decodeResult);

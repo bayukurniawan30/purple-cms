@@ -11,7 +11,6 @@ use App\Form\Purple\BlogCategoryDeleteForm;
 use App\Form\Purple\SearchForm;
 use Cake\Utility\Text;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 use Particle\Filter\Filter;
 
@@ -218,7 +217,7 @@ class BlogCategoriesController extends AppController
 	            }
 			}
 			else {
-				$errors = $blogCategoryAdd->errors();
+				$errors = $blogCategoryAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -275,7 +274,7 @@ class BlogCategoriesController extends AppController
 	            }
 			}
 			else {
-				$errors = $blogCategoryEdit->errors();
+				$errors = $blogCategoryEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -319,7 +318,7 @@ class BlogCategoriesController extends AppController
                 }
             }
             else {
-            	$errors = $blogCategoryDelete->errors();
+            	$errors = $blogCategoryDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

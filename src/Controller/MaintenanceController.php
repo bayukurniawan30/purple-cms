@@ -4,15 +4,10 @@ namespace App\Controller;
 use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Filesystem\File;
-use Cake\ORM\TableRegistry;
 use App\Form\MaintenanceForm;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSeo;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
-use Carbon\Carbon;
-use Melbahja\Seo\Factory;
 use Particle\Filter\Filter;
 
 class MaintenanceController extends AppController
@@ -127,7 +122,7 @@ class MaintenanceController extends AppController
                 }
             }
             else {
-            	$errors = $maintenance->errors();
+            	$errors = $maintenance->getErrors();
                 $json   = json_encode(['status' => 'error', 'error' => $errors]);
             }
             $this->set(['json' => $json]);

@@ -11,7 +11,7 @@ class SubscriberAddValidator
         $validator->requirePresence(['email' => [
                         'message' => 'Email is required',
                     ]])
-                  ->notEmpty('email', 'Email is required')
+                  ->notEmptyString('email', 'Email is required')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',

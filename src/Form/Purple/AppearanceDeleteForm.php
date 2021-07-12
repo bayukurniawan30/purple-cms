@@ -10,7 +10,7 @@ class AppearanceDeleteForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -18,7 +18,7 @@ class AppearanceDeleteForm extends Form
                         ]
                     ])
                   ->requirePresence('type')
-                  ->notEmpty('type', 'Please fill this field');
+                  ->notEmptyString('type', 'Please fill this field');
 
         return $validator;
     }

@@ -233,7 +233,7 @@ class NavigationController extends AppController
 				}
 			}
 			else {
-				$errors = $menuAdd->errors();
+				$errors = $menuAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -265,11 +265,11 @@ class NavigationController extends AppController
 				$admin     = $this->Admins->get($sessionID);
 
                 if ($this->request->getData('navtype') == 'menu') {
-	                $navTable = TableRegistry::get('Menus');
+	                $navTable = TableRegistry::getTableLocator()->get('Menus');
 
                 }
                 elseif ($this->request->getData('navtype') == 'submenu') {
-	                $navTable = TableRegistry::get('Submenus');
+	                $navTable = TableRegistry::getTableLocator()->get('Submenus');
                 }
 
                 $navigation = $navTable->get($this->request->getData('id'));
@@ -296,7 +296,7 @@ class NavigationController extends AppController
                 }
 			}
 			else {
-				$errors = $menuEdit->errors();
+				$errors = $menuEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
@@ -325,11 +325,11 @@ class NavigationController extends AppController
 				$admin     = $this->Admins->get($sessionID);
 
                 if ($requestData->navtype == 'menu') {
-	                $navTable = TableRegistry::get('Menus');
+	                $navTable = TableRegistry::getTableLocator()->get('Menus');
 
                 }
                 elseif ($requestData->navtype == 'submenu') {
-					$navTable = TableRegistry::get('Submenus');
+					$navTable = TableRegistry::getTableLocator()->get('Submenus');
 					$submenu  = $navTable->get($requestData->id);
 					$parent   = $submenu->menu_id;
 				}
@@ -346,7 +346,7 @@ class NavigationController extends AppController
                 		// Check total submenu for related parent
 						$submenus = $navTable->find()->where(['menu_id' => $parent]);
                 		if ($submenus->count() == 0) {
-							$menusTable    = TableRegistry::get('Menus');
+							$menusTable    = TableRegistry::getTableLocator()->get('Menus');
 							$menu          = $menusTable->get($parent);
 							$menu->has_sub = '0';
 							if($menusTable->save($menu)) {
@@ -381,7 +381,7 @@ class NavigationController extends AppController
                 }
             }
             else {
-            	$errors = $menuDelete->errors();
+            	$errors = $menuDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

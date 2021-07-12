@@ -1299,15 +1299,15 @@
          * Purple Settings / General, Email, SEO, Coming Soon
          *
          */
-        $(".button-link-to-modal-setting").click(function () {
+        $(".button-link-to-modal-setting").on("click", function() {
             var btn      = $(this),
-                btnTxt   = $(this).html(),
-                id       = $(this).data('purple-id'),
-                target   = $(this).data('purple-target'),
-                modal    = $($(this).data('purple-target')),
-                title    = $(this).data('purple-title'),
-                url      = $(this).data('purple-url'),
-                redirect = $(this).data('purple-redirect'),
+                btnTxt   = btn.html(),
+                id       = btn.data('purple-id'),
+                target   = btn.data('purple-target'),
+                modal    = $(btn.data('purple-target')),
+                title    = btn.data('purple-title'),
+                url      = btn.data('purple-url'),
+                redirect = btn.data('purple-redirect'),
                 token    = $('#csrf-ajax-token').val();
 
             btn.html('<i class="fa fa-circle-o-notch fa-spin"></i>');
@@ -1338,5 +1338,171 @@
 
             return false;
         })
+
+        $(".button-add-component-field").on("click", function() {
+            var btn    = $(this),
+                compt  = btn.data('purple-component'),
+                modal  = btn.data('purple-modal'),
+                url    = btn.data('purple-url'),
+                field  = $(modal).find('#field_type').val(),
+                token  = $('#csrf-ajax-token').val();
+
+            $(modal).find('#error-get-' + compt + '-options').prop('hidden', false);
+
+            $.ajax({
+                type: "POST",
+                url:  url,
+                headers : {
+                    'X-CSRF-Token': token
+                },
+                data: { key:field },
+                cache: false,
+                beforeSend: function(){
+                },
+                success: function(data){
+                    var json    = $.parseJSON(data),
+				        status  = (json.status);
+
+                    if (status == 'ok') {
+                        $(modal).find('#error-get-' + compt + '-options').prop('hidden', true);
+
+                        var options = (json.options);
+                        var jsonEditor = new JsonEditor('#json-display', JSON.parse(JSON.stringify(options)));
+                    }
+                    else {
+                        $(modal).find('#error-get-' + compt + '-options').prop('hidden', false);
+                    }
+
+                    UIkit.modal(modal).show();
+                    btn.removeAttr('disabled');
+                    $(modal).find('#field_type').focus();
+                }
+            })
+
+            return false;
+        })
+
+        $('#field_type').on("change", function() {
+            var value = this.value,
+                compt = $(this).data('purple-component'),
+                url   = $('.button-add-component-field').data('purple-url'),
+                token = $('#csrf-ajax-token').val();
+
+            $.ajax({
+                type: "POST",
+                url:  url,
+                headers : {
+                    'X-CSRF-Token': token
+                },
+                data: { key:value },
+                cache: false,
+                beforeSend: function(){
+                },
+                success: function(data){
+                    console.log(data);
+                    var json    = $.parseJSON(data),
+				        status  = (json.status);
+
+                    if (status == 'ok') {
+                        $('#modal-add-field').find('#error-get-' + compt + '-options').prop('hidden', true);
+
+                        var options = (json.options);
+                        var jsonEditor = new JsonEditor('#json-display', JSON.parse(JSON.stringify(options)));
+                    }
+                    else {
+                        $('#modal-add-field').find('#error-get-' + compt + '-options').prop('hidden', false);
+                    }
+                }
+            })
+        })
+
+        if ($('#field_label').length > 0) {
+            $('#field_label').keyup(function(){
+                var text = $(this).val();
+                text = text.toLowerCase();
+                text = text.replace(/[^a-zA-Z0-9]+/g,'-');
+                $("#field_slug").val(text);        
+            });
+        }
+
+        if ($('.button-edit-component-field').length > 0) {
+            $(".button-edit-component-field").on("click", function() {
+                var btn          = $(this),
+                    compt        = btn.data('purple-component'),
+                    modal        = btn.data('purple-modal'),
+                    action       = btn.data('purple-action'),
+                    target       = btn.data('purple-target'),
+                    options      = $(target).find('input[type=hidden]').val(),
+                    parseOptions = $.parseJSON(options),
+                    url          = btn.data('purple-url'),
+                    field        = (parseOptions.field_type),
+                    token        = $('#csrf-ajax-token').val();
+
+                $(modal).find('#error-get-' + compt + '-options').prop('hidden', false);
+                $(modal).find('#field_action').val(target);
+
+                $.ajax({
+                    type: "POST",
+                    url:  url,
+                    headers : {
+                        'X-CSRF-Token': token
+                    },
+                    data: { key:field },
+                    cache: false,
+                    beforeSend: function(){
+                    },
+                    success: function(data){
+                        var json    = $.parseJSON(data),
+                            status  = (json.status);
+
+                        var jsonEditor = new JsonEditor('#json-display', []);
+
+                        if (status == 'ok') {
+                            $(modal).find('#error-get-' + compt + '-options').prop('hidden', true);
+                            $(modal).find('#field_type').val(parseOptions.field_type);
+                            $(modal).find('#field_label').val(parseOptions.label);
+                            $(modal).find('#field_info').val(parseOptions.info);
+                            $(modal).find('#field_required').val(parseOptions.required);
+                            
+                            var jsonEditor = new JsonEditor('#json-display', (parseOptions.options));
+                        }
+                        else {
+                            $(modal).find('#error-get-' + compt + '-options').prop('hidden', false);
+                        }
+
+                        UIkit.modal(modal).show();
+                        btn.removeAttr('disabled');
+                        $(modal).find('#field_type').focus();
+                    }
+                })
+
+                return false;
+            })
+        }
+
+        if ($('.button-delete-added-field').length > 0) {
+            $('.button-delete-added-field').on('click', function() {
+                var btn = $(this),
+                    compt  = btn.data('purple-component'),
+                    target = btn.data('purple-target');
+
+                $(target).remove();
+
+                if ($('#sortable-items li').length == 0) {
+                    $('#bind-added-field').html('');
+                }
+                else {
+                    $('#sortable-items li').each(function(index, element) {
+                        var newIndex = index + 1;
+                        $(this).attr('id', 'sortable-' + newIndex);
+                        $(this).attr('data-order', newIndex);
+                        $(this).find('.button-edit-' + compt + '-field').attr('data-purple-target', '#sortable-' + newIndex);
+                        $(this).find('.button-delete-added-field').attr('data-purple-target', '#sortable-' + newIndex);
+                    })
+                }
+
+                return false;
+            })
+        }
 	});
 })(jQuery);

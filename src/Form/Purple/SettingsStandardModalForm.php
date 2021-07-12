@@ -10,7 +10,7 @@ class SettingsStandardModalForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('value')
-                  ->notEmpty('value', 'Please fill this field')
+                  ->notEmptyString('value', 'Please fill this field')
                   ->add('value', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 500],
@@ -18,7 +18,7 @@ class SettingsStandardModalForm extends Form
                         ]
                     ])
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

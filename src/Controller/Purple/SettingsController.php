@@ -5,7 +5,6 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
-use Cake\I18n\Time;
 use Cake\Filesystem\File;
 use Cake\Mailer\Email;
 use App\Form\Purple\SettingsStandardModalForm;
@@ -15,7 +14,6 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
-use Carbon\Carbon;
 use Melbahja\Seo\Factory;
 
 class SettingsController extends AppController
@@ -492,9 +490,9 @@ class SettingsController extends AppController
 
 
                 $email = new Email();
-                $email->from([ $senderEmail => $querySenderName->value])
-                    ->to($this->request->getData('email'))
-                    ->subject($emailSubject);
+                $email->setFrom([$senderEmail => $querySenderName->value])
+                    ->setTo($this->request->getData('email'))
+                    ->setSubject($emailSubject);
 
                 if ($email->send($emailBody)) {
                     $json = json_encode(['status' => 'ok']);
@@ -504,7 +502,7 @@ class SettingsController extends AppController
                 }
             }
             else {
-                $errors = $pageSave->errors();
+                $errors = $settingsTestEmail->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

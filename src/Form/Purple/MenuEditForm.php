@@ -10,7 +10,7 @@ class MenuEditForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('title')
-                  ->notEmpty('title', 'Please fill this field')
+                  ->notEmptyString('title', 'Please fill this field')
                   ->add('title', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 100],
@@ -18,13 +18,13 @@ class MenuEditForm extends Form
                         ]
                     ])
                   ->requirePresence('status')
-                  ->notEmpty('status', 'Please select status of the menu')
+                  ->notEmptyString('status', 'Please select status of the menu')
                   ->requirePresence('point')
-                  ->notEmpty('point', 'Please select where the menu will be pointed')
+                  ->notEmptyString('point', 'Please select where the menu will be pointed')
                   ->requirePresence('target')
-                  ->notEmpty('target', 'Please select page or create custom link')
+                  ->notEmptyString('target', 'Please select page or create custom link')
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

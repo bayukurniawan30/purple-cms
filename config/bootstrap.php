@@ -57,6 +57,8 @@ use App\Event\Purple\NavigationListener;
 use App\Event\Purple\ThemeListener;
 use App\Event\Purple\BlogCategoryListener;
 use App\Event\Purple\BlogListener;
+use App\Event\Purple\CollectionListener;
+use App\Event\Purple\SingletonListener;
 use App\Event\Purple\PageListener;
 use App\Event\Purple\MediaListener;
 use App\Event\Purple\SocialListener;
@@ -247,6 +249,12 @@ EventManager::instance()->on($purpleBlogCategoryListener);
 
 $purpleBlogListener = new BlogListener();
 EventManager::instance()->on($purpleBlogListener);
+
+$purpleCollectionListener = new CollectionListener();
+EventManager::instance()->on($purpleCollectionListener);
+
+$purpleSingletonListener = new SingletonListener();
+EventManager::instance()->on($purpleSingletonListener);
 
 $purplePageListener = new PageListener();
 EventManager::instance()->on($purplePageListener);

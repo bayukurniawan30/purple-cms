@@ -3,12 +3,7 @@ namespace App\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Log\Log;
-use Cake\Filesystem\File;
-use Cake\ORM\TableRegistry;
 use App\Form\PostCommentForm;
 use App\Form\SearchForm;
 use App\Purple\PurpleProjectGlobal;
@@ -16,7 +11,6 @@ use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
-use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 use Particle\Filter\Filter;
 
@@ -639,7 +633,7 @@ class BlogsController extends AppController
                 }
 			}
 			else {
-				$errors = $postComment->errors();
+				$errors = $postComment->getErrors();
                 $purpleGlobal = new PurpleProjectGlobal();
                 $generateErrorValidation = $purpleGlobal->showUserValidateErrors($errors);
 

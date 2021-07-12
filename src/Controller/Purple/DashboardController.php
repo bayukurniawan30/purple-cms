@@ -5,7 +5,6 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
-use App\Form\Purple\AdminLoginForm;
 use App\Form\Purple\DashboardMonthOfVisitForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
@@ -333,7 +332,7 @@ class DashboardController extends AppController
 		    	$this->set($data);
             }
             else {
-            	$errors = $dashboardMonthOfVisit->errors();
+            	$errors = $dashboardMonthOfVisit->getErrors();
             }
 
             $this->render();

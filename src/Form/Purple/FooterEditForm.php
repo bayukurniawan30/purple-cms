@@ -9,14 +9,14 @@ class FooterEditForm extends Form
 {
     protected function _buildValidator(Validator $validator)
     {
-        $validator->allowEmpty('left')
+        $validator->allowEmptyString('left')
                   ->add('left', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 255],
                             'message' => 'Content of left column footer is maximum 255 characters'
                         ]
                     ])
-                  ->allowEmpty('right')
+                  ->allowEmptyString('right')
                   ->add('right', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 255],
@@ -24,7 +24,7 @@ class FooterEditForm extends Form
                         ]
                     ])
                   ->requirePresence('id')
-                  ->notEmpty('id', 'Please fill this field')
+                  ->notEmptyString('id', 'Please fill this field')
                   ->add('id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],

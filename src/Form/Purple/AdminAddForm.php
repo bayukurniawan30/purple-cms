@@ -10,7 +10,7 @@ class AdminAddForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('display_name')
-                  ->notEmpty('display_name', 'Please fill this field')
+                  ->notEmptyString('display_name', 'Please fill this field')
                   ->add('display_name', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],
@@ -26,7 +26,7 @@ class AdminAddForm extends Form
                         ]
                     ])
                   ->requirePresence('username')
-                  ->notEmpty('username', 'Please fill this field')
+                  ->notEmptyString('username', 'Please fill this field')
                   ->add('username', [
                         'minLength' => [
                             'rule'    => ['minLength', 6],
@@ -42,7 +42,7 @@ class AdminAddForm extends Form
                         ]
                     ])
                   ->requirePresence('password')
-                  ->notEmpty('password', 'Please fill this field')
+                  ->notEmptyString('password', 'Please fill this field')
                   ->add('password', [
                         'size' => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -50,7 +50,7 @@ class AdminAddForm extends Form
                         ]
                     ])
                   ->requirePresence('repeatpassword')
-                  ->notEmpty('repeatpassword', 'Please fill this field')
+                  ->notEmptyString('repeatpassword', 'Please fill this field')
                   ->add('repeatpassword', [
                         'size'    => [
                             'rule'    => ['lengthBetween', 6, 20],
@@ -58,19 +58,19 @@ class AdminAddForm extends Form
                         ]
                     ])
                   ->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
                             'message' => 'Email must be in valid format',
                         ]
                     ])
-                  ->allowEmpty('photo')
-                  ->allowEmpty('phone')
-                  ->allowEmpty('calling_code')
-                  ->allowEmpty('about')
+                  ->allowEmptyString('photo')
+                  ->allowEmptyString('phone')
+                  ->allowEmptyString('calling_code')
+                  ->allowEmptyString('about')
                   ->requirePresence('level')
-                  ->notEmpty('level', 'Please fill this field');
+                  ->notEmptyString('level', 'Please fill this field');
 
         return $validator;
     }

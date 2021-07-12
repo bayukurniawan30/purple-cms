@@ -10,7 +10,7 @@ class BlogAddForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('title')
-                  ->notEmpty('title', 'Please fill this field')
+                  ->notEmptyString('title', 'Please fill this field')
                   ->add('title', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -22,9 +22,9 @@ class BlogAddForm extends Form
                         ]
                     ])
                   ->requirePresence('content')
-                  ->notEmpty('content', 'Please fill this field')
+                  ->notEmptyString('content', 'Please fill this field')
                   ->requirePresence('blog_category_id')
-                  ->notEmpty('blog_category_id', 'Please fill this field')
+                  ->notEmptyString('blog_category_id', 'Please fill this field')
                   ->add('blog_category_id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -32,11 +32,11 @@ class BlogAddForm extends Form
                         ]
                     ])
                   ->requirePresence('comment')
-                  ->notEmpty('comment', 'Please fill this field')
-                  ->allowEmpty('featured')
-                  ->allowEmpty('tags')
-                  ->allowEmpty('meta_keywords')
-                  ->allowEmpty('meta_description')
+                  ->notEmptyString('comment', 'Please fill this field')
+                  ->allowEmptyString('featured')
+                  ->allowEmptyString('tags')
+                  ->allowEmptyString('meta_keywords')
+                  ->allowEmptyString('meta_description')
                   ->add('meta_description', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 150],
@@ -44,9 +44,9 @@ class BlogAddForm extends Form
                         ]
                     ])
                   ->requirePresence('status')
-                  ->notEmpty('status', 'Please select status of the post')
+                  ->notEmptyString('status', 'Please select status of the post')
                   ->requirePresence('social_share')
-                  ->notEmpty('status', 'Please select social share option');
+                  ->notEmptyString('status', 'Please select social share option');
 
         return $validator;
     }

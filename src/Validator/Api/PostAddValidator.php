@@ -11,7 +11,7 @@ class PostAddValidator
         $validator->requirePresence(['title' => [
                         'message' => 'Post title is required.',
                     ]])
-                  ->notEmpty('title', 'Post title is required')
+                  ->notEmptyString('title', 'Post title is required')
                   ->add('title', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -25,11 +25,11 @@ class PostAddValidator
                   ->requirePresence(['content' => [
                         'message' => 'Post content is required.',
                     ]])
-                  ->notEmpty('content', 'Post content is required')
+                  ->notEmptyString('content', 'Post content is required')
                   ->requirePresence(['blog_category_id' => [
                         'message' => 'Post category id is required.',
                     ]])
-                  ->notEmpty('blog_category_id', 'Post category id is required')
+                  ->notEmptyString('blog_category_id', 'Post category id is required')
                   ->add('blog_category_id', [
                         'isInteger' => [
                             'rule'    => ['isInteger'],
@@ -39,11 +39,11 @@ class PostAddValidator
                   ->requirePresence(['comment' => [
                         'message' => 'Allow comment is required.',
                     ]])
-                  ->notEmpty('comment', 'Allow comment is required')
-                  ->allowEmpty('featured')
-                  ->allowEmpty('tags')
-                  ->allowEmpty('meta_keywords')
-                  ->allowEmpty('meta_description')
+                  ->notEmptyString('comment', 'Allow comment is required')
+                  ->allowEmptyString('featured')
+                  ->allowEmptyString('tags')
+                  ->allowEmptyString('meta_keywords')
+                  ->allowEmptyString('meta_description')
                   ->add('meta_description', [
                         'maxLength' => [
                             'rule'    => ['maxLength', 150],
@@ -53,11 +53,11 @@ class PostAddValidator
                   ->requirePresence(['status' => [
                         'message' => 'status of the post is required.',
                     ]])
-                  ->notEmpty('status', 'Please select status of the post')
+                  ->notEmptyString('status', 'Please select status of the post')
                   ->requirePresence(['social_share' => [
                         'message' => 'Social share option is required.',
                     ]])
-                  ->notEmpty('status', 'Please select social share option');
+                  ->notEmptyString('status', 'Please select social share option');
 
         return $validator;
     }

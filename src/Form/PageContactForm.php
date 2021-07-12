@@ -10,7 +10,7 @@ class PageContactForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('name')
-                  ->notEmpty('name', 'Please fill this field')
+                  ->notEmptyString('name', 'Please fill this field')
                   ->add('name', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -22,7 +22,7 @@ class PageContactForm extends Form
                         ]
                     ])
                   ->requirePresence('email')
-                  ->notEmpty('email', 'Please fill this field')
+                  ->notEmptyString('email', 'Please fill this field')
                   ->add('email', [
                         'validFormat' => [
                             'rule'    => 'email',
@@ -30,7 +30,7 @@ class PageContactForm extends Form
                         ]
                     ])
                   ->requirePresence('subject')
-                  ->notEmpty('subject', 'Please fill this field')
+                  ->notEmptyString('subject', 'Please fill this field')
                   ->add('subject', [
                         'minLength' => [
                             'rule'    => ['minLength', 2],
@@ -42,7 +42,7 @@ class PageContactForm extends Form
                         ]
                     ])
                   ->requirePresence('content')
-                  ->notEmpty('content', 'Please fill this field')
+                  ->notEmptyString('content', 'Please fill this field')
                   ->add('content', [
                         'minLength' => [
                             'rule'    => ['minLength', 3],

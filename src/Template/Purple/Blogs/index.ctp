@@ -17,6 +17,13 @@
 <input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
 
 <div class="row">
+    <div class="col-md-12">
+        <div class="uk-alert-primary" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>To view posts inside Pages, go to <a href="<?= $this->Url->build(['_name' => 'adminPages']); ?>">Pages</a> and Edit the page with Blog type.</p>
+        </div>
+    </div>
+    
     <div class="col-md-12 grid-margin stretch-card">
         <div id="page-detail-card" class="card">
             <div class="card-header">

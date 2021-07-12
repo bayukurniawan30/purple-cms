@@ -141,7 +141,7 @@ class ProductionController extends AppController
 				}
 			}
 			else {
-				$errors = $userVerification->errors();
+				$errors = $userVerification->getErrors();
 				$json = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
 			}
 			$this->set(['json' => $json]);
@@ -176,7 +176,7 @@ class ProductionController extends AppController
                 }
             }
             else {
-                $errors = $codeVerification->errors();
+                $errors = $codeVerification->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
             }
             $this->set(['json' => $json]);
@@ -219,7 +219,7 @@ class ProductionController extends AppController
 		        }
 			}
 			else {
-            	$errors = $setupDatabase->errors();
+            	$errors = $setupDatabase->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors, 'error_type' => 'form']);
             }
             $this->set(['json' => $json]);

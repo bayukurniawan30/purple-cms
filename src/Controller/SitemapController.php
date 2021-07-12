@@ -1,19 +1,11 @@
 <?php
 namespace App\Controller;
 
-use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Log\Log;
 use Cake\Routing\Router;
-use Cake\Http\Exception\ForbiddenException;
-use Cake\Http\Exception\NotFoundException;
-use Cake\View\Exception\MissingTemplateException;
-use Cake\Filesystem\Folder;
-use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
-use Carbon\Carbon;
 use Aws\S3\S3Client;  
 use Aws\Exception\AwsException;
 

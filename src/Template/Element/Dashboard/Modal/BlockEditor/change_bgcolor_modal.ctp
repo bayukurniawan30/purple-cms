@@ -12,7 +12,7 @@
                 </select>
             </div>
             <div class="form-group solid-selector" style="display: none">
-                <input name="solid-color" class="jscolor {hash:true} form-control" value=""FFFFFF>
+                <input name="solid-color" class="jscolor {hash:true} form-control" value="FFFFFF">
             </div>
             <div class="row gradient-selector" style="display: none">
                 <div class="col"><div class="gradient-container" style="background-image: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);" data-purple-gradient="linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)"></div></div>

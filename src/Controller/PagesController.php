@@ -6,9 +6,7 @@ use Cake\Event\Event;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\View\Exception\MissingTemplateException;
-use Cake\Log\Log;
 use Cake\Filesystem\File;
-use Cake\ORM\TableRegistry;
 use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
@@ -16,7 +14,6 @@ use App\Purple\PurpleProjectApi;
 use App\Form\PageContactForm;
 use App\Form\SearchForm;
 use Carbon\Carbon;
-use Melbahja\Seo\Factory;
 use EngageTheme\Functions\ThemeFunction;
 use Particle\Filter\Filter;
 use Aws\S3\S3Client;  
@@ -747,7 +744,7 @@ class PagesController extends AppController
                 }
             }
             else {
-                $errors = $pageContact->errors();
+                $errors = $pageContact->getErrors();
                 $purpleGlobal = new PurpleProjectGlobal();
                 $generateErrorValidation = $purpleGlobal->showUserValidateErrors($errors);
 

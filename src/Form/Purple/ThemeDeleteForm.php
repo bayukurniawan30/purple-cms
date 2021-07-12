@@ -10,9 +10,9 @@ class ThemeDeleteForm extends Form
     protected function _buildValidator(Validator $validator)
     {
         $validator->requirePresence('folder')
-                  ->notEmpty('folder', 'Please fill this field')
+                  ->notEmptyString('folder', 'Please fill this field')
                   ->requirePresence('name')
-                  ->notEmpty('name', 'Please fill this field');
+                  ->notEmptyString('name', 'Please fill this field');
 
         return $validator;
     }

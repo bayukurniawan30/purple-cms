@@ -1,13 +1,28 @@
+<?php
+    $randomModalBrowseImageId = rand(100000, 999999);
+
+    if (!isset($allowedFormat)) {
+        $allowedUploadFormat = ['jpg', 'jpeg', 'png'];
+    }
+    else {
+        if (strpos($allowedFormat, ',') !== false) {
+            $allowedUploadFormat = explode(',', $allowedFormat);
+        }
+        else {
+            $allowedUploadFormat = [$allowedFormat];
+        }
+    }
+?>
 <div class="card">
     <div class="card-header">
         <h4 class="card-title uk-margin-remove-bottom"><?= $widgetTitle ?></h4>
     </div>
     <div class="card-body">
         <p class="card-description">
-            Upload image files with format .jpg, .jpeg, or .png
+            Upload image files with format <?= $this->Text->toList($allowedUploadFormat, 'or') ?>
         </p>
 
-        <div id="drag-and-drop-zone" class="dm-uploader text-center">
+        <div id="drag-and-drop-zone" class="dm-uploader text-center drag-and-drop-zone-<?= $randomModalBrowseImageId ?>">
             <h4 class="uk-margin-bottom uk-margin-top text-muted">Drag &amp; drop files here</h4>
 
             <div class="btn btn-primary btn-sm uk-margin-bottom">
@@ -19,39 +34,41 @@
         
         <div class="upload-image-progress uk-margin-top"></div>
 
-        <button type="button" class="btn btn-gradient-primary btn-sm btn-icon-text btn-block button-browse-images" data-purple-target="#modal-browse_images" data-purple-browse-content="<?= $modalParams['browseContent'] ?>" data-purple-browse-action="<?= $modalParams['browseAction'] ?>" data-purple-browse-target="<?= $modalParams['browseTarget'] ?>">
+        <button type="button" class="btn btn-gradient-primary btn-sm btn-icon-text btn-block button-browse-images" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-browse-content="<?= $modalParams['browseContent'] ?>" data-purple-browse-action="<?= $modalParams['browseAction'] ?>" data-purple-browse-target="<?= $modalParams['browseTarget'] ?>">
             <i class="mdi mdi-file-find btn-icon-prepend"></i>
             Browse Uploaded Image
         </button>
 
-        <div class="browse-image-preview uk-margin-top">
+        <div class="browse-image-preview-<?= $randomModalBrowseImageId ?> uk-margin-top">
             <?php
                 if ($selected != NULL):
                     if (strpos($selected, ',') !== false):
                         $imageArray = explode(',', $selected);
 
             ?>
-                <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>
-                    <ul class="uk-slideshow-items">
-                        <?php
-                            foreach ($imageArray as $image):
-                                $fullImage = $this->cell('Medias::mediaPath', [$image, 'image', 'original']);
-                        ?>
-                        <li>
-                            <img src="<?= $fullImage ?>" alt="<?= $image ?>" uk-cover>
-                        </li>
-                        <?php
-                            endforeach;
-                        ?>
-                    </ul>
-                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
-                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+                <div class="uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)">
+                    <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>
+                        <ul class="uk-slideshow-items">
+                            <?php
+                                foreach ($imageArray as $image):
+                                    $fullImage = $this->cell('Medias::mediaPath', [$image, 'image', 'original']);
+                            ?>
+                            <li>
+                                <img src="<?= $fullImage ?>" alt="<?= $image ?>" uk-cover>
+                            </li>
+                            <?php
+                                endforeach;
+                            ?>
+                        </ul>
+                        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+                        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+                    </div>
                 </div>
             <?php 
                     else:
                         $fullSelectedImage = $this->cell('Medias::mediaPath', [$selected, 'image', 'original']);
             ?>
-                <img src="<?= $fullSelectedImage ?>" class="img-fluid">
+                <div class="uk-flex uk-flex-center uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)" uk-lightbox><a href="<?= $fullSelectedImage ?>"><img src="<?= $fullSelectedImage ?>" class="img-fluid"></a></div>
             <?php
                     endif; 
                 endif; 
@@ -63,7 +80,8 @@
 <?= $this->element('Dashboard/Modal/browse_images_modal', [
         'selected'     => $selected, 
         'browseMedias' => $browseMedias,
-        'multiple'     => $multiple
+        'multiple'     => $multiple,
+        'uniqueId'     => $randomModalBrowseImageId
 ]) ?>
 
 <script type="text/javascript">
@@ -71,16 +89,17 @@
         // Trigger browse image button to fire modal
         var browseImageBtn = browseImageButton();
 
-        $('#drag-and-drop-zone').dmUploader({
+        $('.drag-and-drop-zone-<?= $randomModalBrowseImageId ?>').dmUploader({
             url: '<?= $this->Url->build(["_name" => 'adminMediasAction', "action" => "ajaxUploadImages"]); ?>',
             maxFileSize: 3000000,
             multiple: <?php if ($multiple == true): ?>true<?php else: ?>false<?php endif; ?>,
-            extFilter: ['jpg', 'jpeg', 'png'],
+            extFilter: [<?php foreach ($allowedUploadFormat as $allowed) { if (end($allowedUploadFormat) === $allowed) echo '"' . $allowed . '"'; else echo '"' . $allowed . '",';} ?>],
             headers: {
                 'X-CSRF-TOKEN': <?= json_encode($this->request->getParam('_csrfToken')); ?>
             },
             onInit: function() {
                 var console_response = 'Plugin initialized correctly';
+                console.log(console_response)
             },
             onBeforeUpload: function(id) {
                 var console_response = 'Starting the upload of #' + id;
@@ -191,17 +210,31 @@
                         var arrayLength = split.length;
                         var init        = '';
 
-                        for (var i = 0; i < arrayLength; i++) {
-                            init += '<li><img src="' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
+                        var getPreviewWidth = $('.browse-image-preview-<?= $randomModalBrowseImageId ?>').outerWidth();
+
+                        if (getPreviewWidth < 768) {
+                            for (var i = 0; i < arrayLength; i++) {
+                                init += '<li><img src="' + split[i] + '" alt="' + split[i] + '" uk-cover></li>';
+                            }
+
+                            var slideshow = '<div class="uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)"><div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>' +
+                                        '<ul class="uk-slideshow-items">' + init +
+                                        '</ul>' +
+                                        '<a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>' +
+                                        '<a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>' +
+                                    '</div></div>';
+                            $('.browse-image-preview-<?= $randomModalBrowseImageId ?>').html(slideshow);
+                        }
+                        else {
+                            for (var i = 0; i < arrayLength; i++) {
+                                var newFilePath = split[i].replace("original/", "thumbnails/300x300/");
+                                init += '<div><a href="' + newFilePath + '"><img src="' + newFilePath + '" alt="' + split[i] + '"></a></div>';
+                            }
+
+                            var grid = '<div class="uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)"><div class="uk-child-width-1-1 uk-child-width-1-6@m" uk-grid uk-lightbox>' + init + '</div></div>';
+                            $('.browse-image-preview-<?= $randomModalBrowseImageId ?>').html(grid);
                         }
 
-                        var slideshow = '<div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>' +
-                                    '<ul class="uk-slideshow-items">' + init +
-                                    '</ul>' +
-                                    '<a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>' +
-                                    '<a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>' +
-                                '</div>';
-                        $('.browse-image-preview').html(slideshow);
                         $('input[name=<?= $inputTarget ?>]').val(inputValue);
                         $('input[name=<?= $inputTarget ?>]').attr('data-purple-path', newValue);
 
@@ -209,7 +242,7 @@
                     else {
                         $('input[name=<?= $inputTarget ?>]').val(image);
                         $('input[name=<?= $inputTarget ?>]').attr('data-purple-path', path);
-                        $('.browse-image-preview').html('<img src="' + path + '" class="img-fluid">');
+                        $('.browse-image-preview-<?= $randomModalBrowseImageId ?>').html('<div class="uk-flex uk-flex-center uk-padding" style="background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAJXrlz5zwjjgzg6OjqMYAEYB8RmROaABAD+tQ+ACU9dmwAAAABJRU5ErkJggg==)" uk-lightbox><a href="' + path + '"><img src="' + path + '" class="img-fluid"></a></div>');
                     }
                 }
 

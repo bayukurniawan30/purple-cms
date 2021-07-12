@@ -5,10 +5,8 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
-use Cake\Utility\Text;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
 
 class NotificationsController extends AppController

@@ -11,9 +11,7 @@ use App\Form\Purple\SocialDeleteForm;
 use App\Form\Purple\SocialSharingButtonsForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectPlugins;
-use Carbon\Carbon;
 use Particle\Filter\Filter;
 
 class SocialsController extends AppController
@@ -203,7 +201,7 @@ class SocialsController extends AppController
                 }
             }
             else {
-            	$errors = $socialAdd->errors();
+            	$errors = $socialAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -247,7 +245,7 @@ class SocialsController extends AppController
                 }
             }
             else {
-            	$errors = $socialEdit->errors();
+            	$errors = $socialEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
@@ -291,7 +289,7 @@ class SocialsController extends AppController
                 }
             }
             else {
-            	$errors = $socialDelete->errors();
+            	$errors = $socialDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -397,7 +395,7 @@ class SocialsController extends AppController
                 }
             }
             else {
-                $errors = $socialButtons->errors();
+                $errors = $socialButtons->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

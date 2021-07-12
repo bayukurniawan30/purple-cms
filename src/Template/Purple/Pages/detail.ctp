@@ -28,9 +28,14 @@
     </div>
 </div>
 
+<?php
+    $randomModalBrowseImageId = rand(100000, 999999);
+?>
+
 <?= $this->element('Dashboard/Modal/browse_images_modal', [
         'selected'     => '',
-        'browseMedias' => $browseMedias
+        'browseMedias' => $browseMedias,
+        'uniqueId'     => $randomModalBrowseImageId
 ]) ?>
 
 <?php

@@ -7,8 +7,6 @@ use Cake\Core\Configure;
 use Cake\Routing\Router;
 use Cake\Http\Client;
 use Cake\Cache\Cache;
-use Cake\Auth\DefaultPasswordHasher;
-use Cake\Utility\Text;
 use Cake\Filesystem\File;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\AdminAddForm;
@@ -18,11 +16,8 @@ use App\Form\Purple\AdminDeleteForm;
 use App\Form\Purple\AdminAuthyTokenForm;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
-use App\Purple\PurpleProjectSettings;
 use App\Purple\PurpleProjectApi;
 use App\Purple\PurpleProjectPlugins;
-use Carbon\Carbon;
-use Bulletproof;
 use Particle\Filter\Filter;
 use Aws\S3\S3Client;  
 use Aws\Exception\AwsException;
@@ -155,7 +150,7 @@ class AdminsController extends AppController
                     if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
                         $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
                         if ($response->isOk()) {
-                            $verifyResult = $response->body();
+                            $verifyResult = $response->getStringBody();
                             $decodeResult = json_decode($verifyResult, true);
                             $countryCode  = $decodeResult['country_code'];
                         }
@@ -201,7 +196,7 @@ class AdminsController extends AppController
                     if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
                         $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
                         if ($response->isOk()) {
-                            $verifyResult = $response->body();
+                            $verifyResult = $response->getStringBody();
                             $decodeResult = json_decode($verifyResult, true);
                             $countryCode  = $decodeResult['country_code'];
                         }
@@ -343,7 +338,7 @@ class AdminsController extends AppController
 							'ACL'        => 'public-read',
 						]);
 
-						$readImageFile = new File($fullSizeImage . $saveType . '.png');
+						$readImageFile = new File($fullSizeImage . $name . '.png');
 						$readImageFile->delete();
 					} 
 					catch (AwsException $e) {
@@ -357,7 +352,7 @@ class AdminsController extends AppController
 						'_name' => 'home'
 					], true);
 
-					$path = $baseUrl . 'uploads/images/original/' . $generatedName;
+					$path = $baseUrl . 'uploads/images/original/' . $name.'.png';
                 }
                 
                 $json = json_encode(['status' => 'ok', 'image' => $name.'.png']);
@@ -550,7 +545,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-            	$errors = $adminAdd->errors();
+            	$errors = $adminAdd->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
@@ -682,7 +677,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-            	$errors = $adminEdit->errors();
+            	$errors = $adminEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
@@ -736,7 +731,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-                $errors = $adminEditPassword->errors();
+                $errors = $adminEditPassword->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => "Make sure your password and repeat password is same and please fill all field."]);
             }
 
@@ -809,7 +804,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-            	$errors = $adminDelete->errors();
+            	$errors = $adminDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -848,7 +843,7 @@ class AdminsController extends AppController
                     if (($cache = Cache::read('visitor_' . $ipAddress)) === false) {
                         $response     = $http->get($apiPath . '/visitor/look-up/' . $ipAddress);
                         if ($response->isOk()) {
-                            $verifyResult = $response->body();
+                            $verifyResult = $response->getStringBody();
                             $decodeResult = json_decode($verifyResult, true);
                             $countryCode  = $decodeResult['country_code'];
                         }
@@ -921,7 +916,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-            	$errors = $adminVerification->errors();
+            	$errors = $adminVerification->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
@@ -983,7 +978,7 @@ class AdminsController extends AppController
                 }
             }
             else {
-            	$errors = $adminAuthyToken->errors();
+            	$errors = $adminAuthyToken->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 

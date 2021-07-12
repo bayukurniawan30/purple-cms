@@ -12,7 +12,7 @@ class PurpleProjectSettings
 {
 	public function timezone($return = 'area') 
 	{
-		$query = TableRegistry::get('Settings')->find()->where(['name' => 'timezone'])->first();
+		$query = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'timezone'])->first();
 		
 		if ($return == 'area') {
 			$area = preg_replace("/\([^)]+\)/","", $query->value);
@@ -78,7 +78,7 @@ class PurpleProjectSettings
     }
     public function maintenanceMode()
     {
-        $query = TableRegistry::get('Settings')->find()->where(['name' => 'comingsoon'])->first();
+        $query = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'comingsoon'])->first();
         return $query->value;
     }
 }
