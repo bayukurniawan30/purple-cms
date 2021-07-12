@@ -216,21 +216,7 @@ class SetupController extends AppController
 						$encrypted = \Dcrypt\Aes256Gcm::encrypt($databaseInfo, CIPHER);
 
 						if ($file->write($encrypted)) {
-							try {
-								$connection = ConnectionManager::get('default');
-								$connected  = $connection->connect();
-							} 
-							catch (Exception $connectionError) {
-								$connected = false;
-							}
-
-							if ($connected) {
-								$json = json_encode(['status' => 'ok']);
-							}
-							else {
-								$resetDatabaseFile = $file->write('default');
-								$json = json_encode(['status' => 'error', 'error' => 'Purple is not able to connect to the database']);
-							}
+							$json = json_encode(['status' => 'ok']);
 						}
 						else {
 							$json = json_encode(['status' => 'error', 'error' => "Can't save database configuration."]);
@@ -267,7 +253,7 @@ class SetupController extends AppController
 	            	$connection = ConnectionManager::get('default');
 	                
 	                $purpleSetup = new PurpleProjectSetup();
-					$createTable   = $purpleSetup->createTable($requestData->email, $requestData->timezone);
+					$createTable   = $purpleSetup->createTable($requestData->email, trim(preg_replace("/\([^)]+\)/","", $requestData->timezone)));
 					
 					$admin = TableRegistry::getTableLocator()->get('Admins')->newEntity();
 	                
