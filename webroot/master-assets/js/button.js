@@ -1298,6 +1298,8 @@ $(document).ready(function() {
             btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Images...');
             btn.attr('disabled','disabled');
 
+            console.log(modal);
+
             setTimeout(function() {
                 if (action == 'update') {
                     var split = content.split('::'),

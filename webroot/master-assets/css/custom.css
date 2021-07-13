@@ -584,3 +584,9 @@ select.form-control {
 .datepicker table tr td.active, .datepicker table tr td.active.disabled, .datepicker table tr td.active.disabled:hover, .datepicker table tr td.active:hover {
     background-image: linear-gradient(to right, #da8cff, #9a55ff)!important;
 }
+
+/* Label */
+.label-purple {
+    background: #9a55ff;
+    font-size: 0.7rem;
+}

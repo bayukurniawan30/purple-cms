@@ -10,7 +10,7 @@
     $defaultOptions = [
         'selected'      => $image,
         'widgetTitle'   => $label,
-        'inputTarget'   => $uid,
+        'inputTarget'   => $uid . '\\\[value\\\]',
         'browseMedias'  => $browseMedias,
         'multiple'      => false,
         'modalParams'   => [

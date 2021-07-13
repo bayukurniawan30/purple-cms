@@ -64,6 +64,13 @@
 
 <?= $this->element('Dashboard/Modal/browse_images_modal', $newArray->toArray()) ?>
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Trigger browse image button to fire modal
+        var browseImageBtn = browseImageButton();
+    })
+</script>
+
 <?php
     if (isset($value)):
 ?>

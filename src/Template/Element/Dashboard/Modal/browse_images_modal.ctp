@@ -320,8 +320,8 @@
                 else if (selectAction == 'send-to-input') {
                     btn.click(function() {
                         var getPreviewWidth = $('.browse-image-preview-<?= $uniqueId ?>').outerWidth();
-                        console.log(getPreviewWidth);
                         $('input[name=' + actionTarget + ']').val(filename);
+                        $('input[name=' + actionTarget + ']').attr('data-purple-path', filePath);
                         <?php
                             if ($multiSelect == true):
                         ?>
