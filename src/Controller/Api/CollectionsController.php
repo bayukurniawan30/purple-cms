@@ -116,6 +116,7 @@ class CollectionsController extends AppController
                             $fieldArray = [
                                 'field_type' => $decodeField['field_type'],
                                 'label'      => $decodeField['label'],
+                                'slug'       => $decodeField['slug'],
                                 'info'       => $decodeField['info'],
                                 'required'   => $decodeField['required'] == '1' ? true : false,
                                 'options'    => $decodeField['options']
@@ -256,9 +257,7 @@ class CollectionsController extends AppController
 
                             $content = [];
                             foreach ($decodeContent as $key => $value) {
-                                array_push($content, [
-                                    $uidSlugArray[$key] => $value
-                                ]);
+                                $content[$uidSlugArray[$key]] = $value;
                             }
 
                             array_push($return['data'], $content);

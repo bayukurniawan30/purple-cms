@@ -234,9 +234,7 @@ class SingletonsController extends AppController
 
                         $content = [];
                         foreach ($decodeContent as $key => $value) {
-                            array_push($content, [
-                                $uidSlugArray[$key] => $value
-                            ]);
+                            $content[$uidSlugArray[$key]] = $value;
                         }
 
                         $return['data'] = $content;
