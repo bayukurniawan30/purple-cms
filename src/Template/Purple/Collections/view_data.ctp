@@ -8,6 +8,11 @@
         '_name' => 'adminCollectionsData',
         'data'  => $collection->slug
     ]);
+
+    $apiEndpointUrl = $this->Url->build([
+        '_name' => 'apiv1ViewCollectionDatas',
+        'slug'  => $collection->slug
+    ], true);
 ?>
 
 <?= $this->Flash->render('flash', [
@@ -15,6 +20,16 @@
 ]); ?>
 
 <div class="row">
+    <div class="col-md-12 uk-margin-bottom">
+        <button type="button" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text uk-margin-right" onclick="location.href='<?= $addDataUrl ?>'">
+        <i class="mdi mdi-pencil btn-icon-prepend"></i>
+            Add Data
+        </button>
+        <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text" uk-toggle="target: #modal-api-endpoint">
+        <i class="mdi mdi-link-variant btn-icon-prepend"></i>
+            API Endpoint
+        </button>
+    </div>
     <div class="col-md-12 grid-margin">
         <div class="card">
             <div class="card-header">
@@ -194,6 +209,11 @@
             'formAction' => 'ajax-delete-data'
         ]);
     endif;
+
+    echo $this->element('Dashboard/Modal/api_endpoint_modal', [
+        'url'         => $apiEndpointUrl,
+        'apiResponse' => $apiResult
+    ]);
 ?>
 
 <script type="text/javascript">

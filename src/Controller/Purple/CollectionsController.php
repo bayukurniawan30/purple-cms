@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Http\Client;
 use Cake\Routing\Router;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\CollectionAddForm;
@@ -212,11 +213,26 @@ class CollectionsController extends AppController
 		$collectionDatas = $this->CollectionDatas->find()->where(['collection_id' => $collection->id]);
 		$this->set(compact('collectionDatas'));
 
+		// API Response
+		$endpointUrl = Router::url([
+			'_name' => 'apiv1ViewCollectionDatas',
+			'slug'  => $collection->slug
+		], true);
+
+        $apiAccessKey = $this->Settings->find()->where(['name' => 'apiaccesskey'])->first();
+
+		$http = new Client();
+		$response = $http->get($endpointUrl, NULL, [
+			'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
+		]);
+		$apiResult = $response->getStringBody();
+
 		$data = [
 			'pageTitle'            => $collection->name,
 			'pageBreadcrumb'       => 'Collections::' . $collection->name . '::View',
 			'collection'           => $collection,
-			'collectionDataDelete' => $collectionDataDelete
+			'collectionDataDelete' => $collectionDataDelete,
+			'apiResult'            => $apiResult
 		];
 
 		$this->set($data);

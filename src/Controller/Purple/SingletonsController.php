@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Routing\Router;
+use Cake\Http\Client;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\SingletonAddForm;
 use App\Form\Purple\SingletonEditForm;
@@ -218,11 +219,26 @@ class SingletonsController extends AppController
 		$singletonDatas = $this->SingletonDatas->find()->where(['singleton_id' => $singleton->id]);
 		$this->set(compact('singletonDatas'));
 
+		// API Response
+		$endpointUrl = Router::url([
+			'_name' => 'apiv1ViewSingletonnDatas',
+			'slug'  => $singleton->slug
+		], true);
+
+        $apiAccessKey = $this->Settings->find()->where(['name' => 'apiaccesskey'])->first();
+
+		$http = new Client();
+		$response = $http->get($endpointUrl, NULL, [
+			'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
+		]);
+		$apiResult = $response->getStringBody();
+
 		$data = [
-			'pageTitle'            => $singleton->name,
-			'pageBreadcrumb'       => 'Singletons::' . $singleton->name . '::View',
+			'pageTitle'           => $singleton->name,
+			'pageBreadcrumb'      => 'Singletons::' . $singleton->name . '::View',
 			'singleton'           => $singleton,
-			'singletonDataDelete' => $singletonDataDelete
+			'singletonDataDelete' => $singletonDataDelete,
+			'apiResult'           => $apiResult  
 		];
 
 		$this->set($data);
