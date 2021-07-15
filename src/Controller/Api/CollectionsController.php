@@ -332,7 +332,7 @@ class CollectionsController extends AppController
                                 'name' => $selectedCollection->name,
                                 'slug' => $selectedCollection->slug
                             ],
-                            'data'        => [],
+                            'data'        => NULL,
                             'total'       => $collectionData->count(),
                             'error'       => $error
                         ];
@@ -358,7 +358,7 @@ class CollectionsController extends AppController
                             $content[$uidSlugArray[$key]] = $value;
                         }
 
-                        array_push($return['data'], $content + $moreArray);
+                        $return['data'] = $content + $moreArray;
                     }
                     else {
                         $return = [
