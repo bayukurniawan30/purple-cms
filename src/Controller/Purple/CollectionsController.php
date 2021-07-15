@@ -592,6 +592,8 @@ class CollectionsController extends AppController
 			$data    = $this->request->getData();
 			$setData = $data;
 			unset($setData['collection_id']);
+			unset($setData['create_slug']);
+			unset($setData['slug_target']);
 			$collectionId = $this->request->getData('collection_id');
 			
 			$session   = $this->getRequest()->getSession();
@@ -662,8 +664,19 @@ class CollectionsController extends AppController
 				];
 			}
 
+			if ($this->request->getData('create_slug') == '1' && !empty($this->request->getData('slug_target'))) {
+				$createSlug = Text::slug(strtolower($this->request->getData($this->request->getData('slug_target'))['value']));
+				$slugTarget = trim($this->request->getData('slug_target'));
+			}
+			else {
+				$createSlug = NULL;
+				$slugTarget = NULL;
+			}
+
 			$collectionData = $this->CollectionDatas->newEntity();
 			$collectionData->content       = json_encode($newData);
+			$collectionData->slug          = $createSlug;
+			$collectionData->slug_target   = $slugTarget;
 			$collectionData->collection_id = $collectionId;
 			$collectionData->admin_id      = $sessionID;
 
@@ -701,6 +714,8 @@ class CollectionsController extends AppController
 			$setData = $data;
 			unset($setData['collection_id']);
 			unset($setData['id']);
+			unset($setData['create_slug']);
+			unset($setData['slug_target']);
 			$collectionId = $this->request->getData('collection_id');
 			$dataId       = $this->request->getData('id');
 			
@@ -773,8 +788,19 @@ class CollectionsController extends AppController
 				];
 			}
 
+			if ($this->request->getData('create_slug') == '1' && !empty($this->request->getData('slug_target'))) {
+				$createSlug = Text::slug(strtolower($this->request->getData($this->request->getData('slug_target'))['value']));
+				$slugTarget = trim($this->request->getData('slug_target'));
+			}
+			else {
+				$createSlug = NULL;
+				$slugTarget = NULL;
+			}
+
 			$collectionData = $this->CollectionDatas->get($dataId);
 			$collectionData->content       = json_encode($newData);
+			$collectionData->slug          = $createSlug;
+			$collectionData->slug_target   = $slugTarget;
 			$collectionData->collection_id = $collectionId;
 			$collectionData->admin_id      = $sessionID;
 

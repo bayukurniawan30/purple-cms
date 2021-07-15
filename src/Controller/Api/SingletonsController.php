@@ -232,12 +232,17 @@ class SingletonsController extends AppController
                         $singletonData = $singletonData->first();
                         $decodeContent = json_decode($singletonData->content, true);
 
+                        $dateArray = [
+                            'created'  => $singletonData->created,
+                            'modified' => $singletonData->modified,
+                        ];
+
                         $content = [];
                         foreach ($decodeContent as $key => $value) {
                             $content[$uidSlugArray[$key]] = $value;
                         }
 
-                        $return['data'] = $content;
+                        $return['data'] = $content + $dateArray;
                     }
                     else {
                         $return = [

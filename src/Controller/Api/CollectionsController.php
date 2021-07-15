@@ -255,12 +255,17 @@ class CollectionsController extends AppController
                         foreach ($collectionData as $data) {
                             $decodeContent = json_decode($data->content, true);
 
+                            $dateArray = [
+                                'created'  => $data->created,
+                                'modified' => $data->modified,
+                            ];
+
                             $content = [];
                             foreach ($decodeContent as $key => $value) {
                                 $content[$uidSlugArray[$key]] = $value;
                             }
 
-                            array_push($return['data'], $content);
+                            array_push($return['data'], $content + $dateArray);
                         }
                     }
                     else {

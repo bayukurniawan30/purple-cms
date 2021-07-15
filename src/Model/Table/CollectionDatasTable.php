@@ -26,10 +26,6 @@ class CollectionDatasTable extends Table
 		$timezone       = $purpleSettings->timezone();
 		$date           = Carbon::now($timezone);
 
-		// Sanitize name, email, and content
-		$entity->name    = trim(strip_tags($entity->name));
-		$entity->email   = trim($entity->email);
-
 		if ($entity->isNew()) {
 			$entity->created  = $date;
 		}

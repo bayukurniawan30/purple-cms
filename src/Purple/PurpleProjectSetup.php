@@ -285,6 +285,8 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table collection_datas (
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    content MEDIUMTEXT NOT NULL,
+				slug VARCHAR( 191 ) NULL ' . $pgsqlTableUnique . ',
+				slug_target VARCHAR( 100 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    collection_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('collections', 'id') . ',

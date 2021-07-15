@@ -19,12 +19,17 @@
     <div class="col-md-8 grid-margin">
         <div class="uk-child-width-1-1" uk-grid>
             <?php
+                $textInput = [];
                 $decodeContent = json_decode($collectionData->content, true);
                 $decodeFields  = json_decode($collection->fields, true);
                 if (count($decodeFields) > 0):
                     foreach ($decodeFields as $field):
                         $decodeField = json_decode($field, true);
                         $printElement = $this->element('Dashboard/Collections/Fields/' . $decodeField['field_type'], ['uid' => $decodeField['uid'], 'field_type' => $decodeField['field_type'], 'label' => $decodeField['label'], 'info' => $decodeField['info'], 'required' => $decodeField['required'], 'value' => $decodeContent[$decodeField['uid']]['value'], 'options' => $decodeField['options']]);
+            
+                        if ($decodeField['field_type'] == 'text') {
+                            $textInput[$decodeField['uid']] = $decodeField['label'];
+                        }
             ?>
             <div>
                 <?php
@@ -74,6 +79,49 @@
             </div>
 
             <?php
+                if (count($textInput) > 0):
+            ?>
+            <div class="uk-grid-small uk-margin-medium-bottom" uk-grid>
+                <div class="uk-width-1-1">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title uk-margin-remove-bottom">Generate Safe URL</h4>
+                        </div>
+                        <div class="card-body uk-padding-remove">
+                            <ul class="uk-list uk-list-divider uk-margin-remove">
+                                <li class="uk-padding-small uk-margin-remove-top">
+                                    Create Slug
+                                    <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                                        <?php
+                                            echo $this->Form->checkbox('create_slug', ['class' => 'slug-switch', 'value' => '1', 'checked' => $collectionData->slug == NULL || $collectionData->slug == '' ? false : true, 'required' => false]);
+                                        ?>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div id="toggle-slug-target" class="form-group uk-padding-small" <?= $collectionData->slug == NULL || $collectionData->slug == '' ? 'hidden' : '' ?>>
+                                <?php
+                                    echo $this->Form->select('slug_target',
+                                        $textInput,
+                                        [
+                                            'id'       => 'select-slug-target',
+                                            'empty'    => 'Select Target Field',
+                                            'class'    => 'form-control',
+                                            'required' => $collectionData->slug == NULL || $collectionData->slug == '' ? false : true,
+                                            'value'    => $collectionData->slug_target
+                                        ]
+                                    );
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+                endif;
+            ?>
+
+            <?php
                 $jsonView = [];
                 $decodeFields = json_decode($collection->fields, true);
                 if (count($decodeFields) > 0):
@@ -94,6 +142,30 @@
 <?php
     echo $this->Form->end();
 ?>
+
+<?= $this->Html->script('/master-assets/plugins/switchery/switchery.min.js'); ?>
+<script type="text/javascript">
+    var elems = Array.prototype.slice.call(document.querySelectorAll('.slug-switch'));
+
+    elems.forEach(function(html) {
+        var switchery = new Switchery(html, { color: '#9a55ff', jackColor: '#ffffff', size: 'small' });
+    });
+
+    var changeCheckbox   = document.querySelector('.slug-switch'),
+        toggleSlugTarget = document.getElementById('toggle-slug-target'),
+        selectSlugTarget = document.getElementById('select-slug-target');
+
+    changeCheckbox.onchange = function() {
+        if (changeCheckbox.checked == true) {
+            toggleSlugTarget.removeAttribute('hidden');
+            selectSlugTarget.setAttribute('required', true);
+        }
+        else {
+            toggleSlugTarget.setAttribute('hidden', true);
+            selectSlugTarget.removeAttribute('required');
+        }
+    };
+</script>
 
 <script type="text/javascript">
     $(document).ready(function() {
