@@ -5,6 +5,7 @@
 Content Management System Base on CakePHP 3
 
 [English version](README.md)
+
 [Read Full Documentaion](https://bayukurniawan30.github.io/purple-cms/)
 
 ### Memperkenalkan Purple CMS API v1
