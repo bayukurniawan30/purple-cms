@@ -1128,6 +1128,13 @@ Router::prefix('api', function ($routes) {
 		->setPass(['slug'])
 		->setMethods(['GET']);
 
+	// Fetch Collection data by collection slug and data slug
+	$routes->connect('/' . $apiVersion . '/collections/detail/:slug/:dataSlug', 
+			['controller' => 'Collections', 'action' => 'detail'], 
+			['_name' => $routeName . 'ViewCollectionDataDetails'])
+		->setPass(['slug', 'dataSlug'])
+		->setMethods(['GET']);
+
 	// Fetch All Singletons
 	/**
 	 * Query String

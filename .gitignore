@@ -17,7 +17,6 @@
 /tmp/uploads/images*
 /tmp/uploads/themes*
 
-/logs/*
 !/logs/empty
 
 /webroot/uploads/documents/*

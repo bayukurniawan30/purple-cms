@@ -62,10 +62,28 @@
         <div uk-sticky="offset: 100">
             <div class="uk-grid-small uk-flex uk-flex-right" uk-grid>
                 <div class="uk-width-1-1 uk-width-auto@m">
+                    <?php
+                        if ($collectionData->slug == NULL || $collectionData->slug == ''):
+                    ?>
                     <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text" onclick="location.href='<?= $backUrl ?>'">
                     <i class="mdi mdi-pencil btn-icon-prepend"></i>
                         Back
                     </button>
+                    <?php
+                        else:
+                            $apiEndpointUrl = $this->Url->build([
+                                '_name'    => 'apiv1ViewCollectionDataDetails',
+                                'slug'     => $collection->slug,
+                                'dataSlug' => $collectionData->slug
+                            ], true);
+                    ?>
+                    <button type="button" class="btn btn-gradient-success btn-toolbar-card btn-sm btn-icon-text" uk-toggle="target: #modal-api-endpoint">
+                    <i class="mdi mdi-link-variant btn-icon-prepend"></i>
+                        API Endpoint
+                    </button>
+                    <?php
+                        endif;
+                    ?>
                 </div>
                 <div class="uk-width-1-1 uk-width-auto@m">
                     <?php
@@ -141,6 +159,16 @@
 </div>
 <?php
     echo $this->Form->end();
+?>
+
+<?php
+    if ($collectionData->slug == NULL || $collectionData->slug == ''):
+    else:
+        echo $this->element('Dashboard/Modal/api_endpoint_modal', [
+            'url'         => $apiEndpointUrl,
+            'apiResponse' => $apiResult
+        ]);
+    endif;
 ?>
 
 <?= $this->Html->script('/master-assets/plugins/switchery/switchery.min.js'); ?>

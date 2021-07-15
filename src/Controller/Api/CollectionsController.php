@@ -307,4 +307,89 @@ class CollectionsController extends AppController
 	        throw new NotFoundException(__('Page not found'));
         }
     }
+    public function detail($slug, $dataSlug)
+    {
+        if ($this->request->is('get') && $this->request->hasHeader('X-Purple-Api-Key')) {
+            $apiKey = trim($this->request->getHeaderLine('X-Purple-Api-Key'));
+            $slug   = trim($slug);
+            $apiAccessKey = $this->Settings->settingsApiAccessKey();
+
+            $error = NULL;
+
+            if ($apiAccessKey == $apiKey) {
+                $collection     = $this->Collections->findBySlug($slug);
+                $collectionData = $this->CollectionDatas->findBySlug($dataSlug);
+
+                if ($collection->count() > 0) {
+                    if ($collectionData->count() > 0) {
+                        $selectedCollection     = $collection->first();
+                        $selectedCollectionData = $collectionData->first();
+
+                        $return = [
+                            'status'      => 'ok',
+                            'collection'  => [
+                                'name' => $selectedCollection->name,
+                                'slug' => $selectedCollection->slug
+                            ],
+                            'data'        => [],
+                            'total'       => $collectionData->count(),
+                            'error'       => $error
+                        ];
+
+                        $uidSlugArray = [];
+                        $decodeFields = json_decode($selectedCollection->fields, true);
+                        foreach ($decodeFields as $field) {
+                            $decodeField = json_decode($field, true);
+
+                            $uidSlugArray[$decodeField['uid']] = $decodeField['slug'];
+                        }
+
+                        $decodeContent = json_decode($selectedCollectionData->content, true);
+
+                        $moreArray = [
+                            'slug'     => $selectedCollectionData->slug,
+                            'created'  => $selectedCollectionData->created,
+                            'modified' => $selectedCollectionData->modified,
+                        ];
+
+                        $content = [];
+                        foreach ($decodeContent as $key => $value) {
+                            $content[$uidSlugArray[$key]] = $value;
+                        }
+
+                        array_push($return['data'], $content + $moreArray);
+                    }
+                    else {
+                        $return = [
+                            'status' => 'error',
+                            'error'  => 'Collection data is not exist'
+                        ];
+                    }
+                }
+                else {
+                    $return = [
+                        'status' => 'error',
+                        'error'  => 'Collection is not exist'
+                    ];
+                }
+            }
+            else {
+                $return = [
+                    'status' => 'error',
+                    'error'  => 'Invalid access key'
+                ];
+            }
+
+            $json = json_encode($return, JSON_PRETTY_PRINT);
+
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+        }
+    }
 }

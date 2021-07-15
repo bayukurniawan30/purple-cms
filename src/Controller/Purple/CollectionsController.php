@@ -290,12 +290,31 @@ class CollectionsController extends AppController
 			$medias = $this->Medias->find('all', [
 				'order' => ['Medias.id' => 'DESC']])->contain('Admins');
 
+			if ($savedData->slug == NULL || $savedData->slug == '') {}
+			else {
+				// API Response
+				$endpointUrl = Router::url([
+					'_name'    => 'apiv1ViewCollectionDataDetails',
+					'slug'     => $collectionData->slug,
+					'dataSlug' => $savedData->slug
+				], true);
+
+				$apiAccessKey = $this->Settings->find()->where(['name' => 'apiaccesskey'])->first();
+
+				$http = new Client();
+				$response = $http->get($endpointUrl, NULL, [
+					'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
+				]);
+				$apiResult = $response->getStringBody();
+			}
+
 			$data = [
 				'pageTitle'      => $collectionData->name,
 				'pageBreadcrumb' => 'Collections::' . $collectionData->name . '::Edit Data',
 				'collection'     => $collectionData,
 				'collectionData' => $savedData,
-				'mediasForMd'    => $medias        
+				'mediasForMd'    => $medias,
+				'apiResult'      => $apiResult      
 			];
 
 			$this->set($data);
