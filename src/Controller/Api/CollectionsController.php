@@ -255,7 +255,8 @@ class CollectionsController extends AppController
                         foreach ($collectionData as $data) {
                             $decodeContent = json_decode($data->content, true);
 
-                            $dateArray = [
+                            $moreArray = [
+                                'slug'     => $data->slug,
                                 'created'  => $data->created,
                                 'modified' => $data->modified,
                             ];
@@ -265,7 +266,7 @@ class CollectionsController extends AppController
                                 $content[$uidSlugArray[$key]] = $value;
                             }
 
-                            array_push($return['data'], $content + $dateArray);
+                            array_push($return['data'], $content + $moreArray);
                         }
                     }
                     else {
