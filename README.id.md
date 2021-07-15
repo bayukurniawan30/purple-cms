@@ -45,14 +45,14 @@ Setup Purple CMS dalam 3 langkah :
  - ***Administrative***, isikan Site Name, dan data anda untuk membuat user administrator.
  - ***Finishing Setup***, selesaikan setup dengan menekan tombol Start Purple. Jika anda terhubung ke internet, anda akan menerima email data Sign In ke halaman Purple.
 
-### Sign In to Purple
+### Masuk ke Purple
 Untuk masuk ke halaman administrator Purple CMS, silahkan buka halaman :
 ```sh
 http://localhost/folder-name/purple
 ```
 Gunakan username dan password yang anda buat pada setup bagian administrative untuk sign in.
 
-### Deploy to Production
+### Deploy ke Production
 Untuk memindahkan Purple CMS ke production atau ke server, bisa dengan proses instalasi yang tertulis di atas, atau dengan membuat archive .zip dari Purple CMS yang terinstal di localhost, kemudian diupload ke server production.
 Hal-hal yang harus dipastikan setelah memindahkan Purple CMS ke server production adalah :
  - Ubah debug mode menjadi ***false*** pada file ***config/app.php***

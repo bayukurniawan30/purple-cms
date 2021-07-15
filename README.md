@@ -13,10 +13,10 @@ This API is used for external application like mobile app. Not all action in Pur
 
 [API Documentation](https://documenter.getpostman.com/view/13404470/Tzm8FFSv)
 
-### Tentang Purple CMS
+### About Purple CMS
 Purple CMS is a Content Management System built with the CakePHP 3 framework. The goal is to make it easier for developers to create a website, either simple or complex.
 
-### Fitur
+### Features
  - ***Easy Setup***, setup Purple CMS only in 3 steps.
  - ***Block Editor***, a live html editor that can be edited live directly from the CMS.
  - ***Visitors Statistics***, displaying website visitor data in a user-friendly display.
@@ -24,7 +24,7 @@ Purple CMS is a Content Management System built with the CakePHP 3 framework. Th
  - ***Notification***, send notification to email if there is notification, even if installed on localhost (must be connected to internet).
  - ***Customizable***, can add features according to developer needs.
 
-### Instalasi
+### Installation
 Download zip from this repo or clone
 ```sh
 $ git clone https://github.com/bayukurniawan30/purple-cms.git
