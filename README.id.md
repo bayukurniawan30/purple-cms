@@ -16,6 +16,11 @@ API ini digunakan untuk aplikasi eksternal seperti aplikasi seluler. Tidak semua
 ### Tentang Purple CMS
 Purple CMS adalah sebuah Content Management System yang dibuat dengan framework CakePHP 3. Tujuannya adalah untuk memudahkan developer dalam membuat suatu website, baik yang sederhana ataupun kompleks.
 
+### Fitur Baru
+Purple CMS sekarang bisa menjadi Headless CMS untuk framework front-end seperti Nextjs. Buat dan atur konten di Purple CMS, tarik datanya ke framework front-end melalui Purple CMS API.
+
+[Demo dengan Nextjs](https://github.com/bayukurniawan30/nextjs-purple-cms)
+
 ### Fitur
  - ***Easy Setup***, setup Purple CMS hanya dalam 3 langkah.
  - ***Block Editor***, sebuah live html editor yang bisa diedit secara live langsung dari CMS.
