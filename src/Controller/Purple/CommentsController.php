@@ -30,7 +30,9 @@ class CommentsController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-        $this->loadComponent('RequestHandler');
+
+		$this->loadComponent('Flash');
+
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
@@ -216,6 +218,10 @@ class CommentsController extends AppController
 	                else {
 	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
 	                }
+
+					$this->Flash->set('Comment from ' . $comment->name . ' has been change to ' . $status . '.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -275,6 +281,10 @@ class CommentsController extends AppController
 	                else {
 	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
 	                }
+
+					$this->Flash->set('Comment from ' . $comment->name . ' has been replied.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -342,6 +352,10 @@ class CommentsController extends AppController
                     else {
                         $json = json_encode(['status' => 'ok', 'activity' => false]);
                     }
+
+					$this->Flash->set('Comment from ' . $name . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

@@ -1504,5 +1504,19 @@
                 return false;
             })
         }
+
+        if ($('.purple-success-flash').length > 0) {
+            setTimeout(() => {
+                $('.purple-success-flash').addClass('uk-animation-fade uk-animation-reverse');
+            }, 5000);
+
+            setTimeout(() => {
+                $('.purple-success-flash').slideUp();
+            }, 5500);
+
+            setTimeout(() => {
+                $('.purple-success-flash').remove();
+            }, 6000);
+        }
 	});
 })(jQuery);

@@ -63,6 +63,8 @@ class PagesController extends AppController
     {
         parent::initialize();
 
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
         $session = $this->getRequest()->getSession();
         $sessionHost     = $session->read('Admin.host');
@@ -423,6 +425,10 @@ class PagesController extends AppController
                     
                         if ($this->Pages->save($page)) {
                             $json = json_encode(['status' => 'ok']);
+
+                            $this->Flash->set($page->title . ' has been added.', [
+                                'element' => 'Flash/Purple/success'
+                            ]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -656,6 +662,10 @@ class PagesController extends AppController
                     $this->getEventManager()->dispatch($event);
 
                     $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                    $this->Flash->set($title . ' has been updated to ' . $statusText . '.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -713,6 +723,10 @@ class PagesController extends AppController
                         $this->getEventManager()->dispatch($event);
 
                         $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                        $this->Flash->set($newTitle . ' has been updated.', [
+                            'element' => 'Flash/Purple/success'
+                        ]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -825,6 +839,10 @@ class PagesController extends AppController
                             $this->getEventManager()->dispatch($event);
 
                             $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                            $this->Flash->set($title . ' has been updated.', [
+                                'element' => 'Flash/Purple/success'
+                            ]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -891,6 +909,10 @@ class PagesController extends AppController
                                 $this->getEventManager()->dispatch($event);
 
                                 $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                                $this->Flash->set($title . ' has been updated.', [
+                                    'element' => 'Flash/Purple/success'
+                                ]);
                             }
                             else {
                                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -985,6 +1007,10 @@ class PagesController extends AppController
                             $this->getEventManager()->dispatch($event);
 
                             $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                            $this->Flash->set($title . ' has been deleted.', [
+                                'element' => 'Flash/Purple/success'
+                            ]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -997,6 +1023,10 @@ class PagesController extends AppController
                             $this->getEventManager()->dispatch($event);
 
                             $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                            $this->Flash->set($title . ' has been deleted.', [
+                                'element' => 'Flash/Purple/success'
+                            ]);
                         }
                         else {
                             $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -1010,6 +1040,10 @@ class PagesController extends AppController
                         $this->getEventManager()->dispatch($event);
 
                         $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                        $this->Flash->set($title . ' has been deleted.', [
+                            'element' => 'Flash/Purple/success'
+                        ]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

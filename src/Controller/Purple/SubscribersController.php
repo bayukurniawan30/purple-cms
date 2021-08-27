@@ -53,6 +53,8 @@ class SubscribersController extends AppController
 	{
 		parent::initialize();
 
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
@@ -228,6 +230,10 @@ class SubscribersController extends AppController
 							$this->getEventManager()->dispatch($event);
 		
 							$json = json_encode(['status' => 'ok', 'id' => $recordId, 'activity' => $event->getResult()]);
+
+							$this->Flash->set($subscriber->email . ' has been added.', [
+								'element' => 'Flash/Purple/success'
+							]);
     	                }
 		                else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -291,6 +297,10 @@ class SubscribersController extends AppController
 							$this->getEventManager()->dispatch($event);
 		
 							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+							$this->Flash->set($subscriber->email . ' has been updated.', [
+								'element' => 'Flash/Purple/success'
+							]);
 		                }
 		                else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -374,6 +384,10 @@ class SubscribersController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult(), 'mailchimp' => $checkDeletedMailchimp]);
+
+					$this->Flash->set($email . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -447,6 +461,10 @@ class SubscribersController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set('Mailchimp settings has been updated.', [
+						'element' => 'Flash/Purple/success'
+					]);
 				}
 			}
 			else {
@@ -501,6 +519,10 @@ class SubscribersController extends AppController
 
 					if ($result) {
 						$json = json_encode(['status' => 'ok']);
+
+						$this->Flash->set('Data has been exported to Mailchimp.', [
+							'element' => 'Flash/Purple/success'
+						]);
 					}
 					else {
 						$json = json_encode(['status' => 'error', 'error' => "Can't add subscribers to Mailchimp. Please try again."]);

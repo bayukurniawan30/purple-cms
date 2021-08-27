@@ -51,6 +51,8 @@ class BlogCategoriesController extends AppController
 	{
 		parent::initialize();
 
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
@@ -210,6 +212,10 @@ class BlogCategoriesController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'id' => $recordId, 'activity' => $event->getResult()]);
+
+						$this->Flash->set($blogCategory->name . ' has been added.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -267,6 +273,10 @@ class BlogCategoriesController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'id' => $recordId, 'activity' => $event->getResult()]);
+
+						$this->Flash->set($category->name . ' has been updated.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -278,7 +288,11 @@ class BlogCategoriesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
-			$this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -312,6 +326,10 @@ class BlogCategoriesController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set($name . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

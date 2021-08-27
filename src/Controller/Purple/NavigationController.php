@@ -49,6 +49,8 @@ class NavigationController extends AppController
 	{
 		parent::initialize();
 		
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
@@ -191,6 +193,10 @@ class NavigationController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+						$this->Flash->set($menu->title . ' has been added.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -226,6 +232,10 @@ class NavigationController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+						$this->Flash->set('Submenu ' . $submenu->title . ' has been added.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -290,6 +300,10 @@ class NavigationController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set($navigation->title . ' has been updated.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -375,6 +389,10 @@ class NavigationController extends AppController
 
 						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
 	                }
+
+					$this->Flash->set($navData->title . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

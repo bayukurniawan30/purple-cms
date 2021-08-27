@@ -10,9 +10,6 @@
     }
 ?>
 
-<!--CSRF Token-->
-<input id="csrf-ajax-token" type="hidden" name="token" value=<?= json_encode($this->request->getParam('_csrfToken')); ?>>
-
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">

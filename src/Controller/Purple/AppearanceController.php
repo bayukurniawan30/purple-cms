@@ -55,6 +55,8 @@ class AppearanceController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
+
+		$this->loadComponent('Flash');
 		
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
@@ -460,7 +462,7 @@ class AppearanceController extends AppController
             $setting->value = $saveType.'.png';
             if ($this->Settings->save($setting)) {
 				// Check for media storage
-				$mediaStorage   = $this->Settings->fetch('mediastorage');
+				$mediaStorage = $this->Settings->fetch('mediastorage');
 				
 				// If media storage is Amazon AWS S3
 				if ($mediaStorage->value == 'awss3') {
@@ -515,6 +517,10 @@ class AppearanceController extends AppController
 				$this->getEventManager()->dispatch($event);
 
                 $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+				$this->Flash->set(ucwords($saveType) . ' has been updated.', [
+					'element' => 'Flash/Purple/success'
+				]);
             }
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
@@ -529,7 +535,7 @@ class AppearanceController extends AppController
 	{
 		$this->viewBuilder()->enableAutoLayout(false);
         
-        $appearanceDelete  = new AppearanceDeleteForm();
+        $appearanceDelete = new AppearanceDeleteForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($appearanceDelete->execute($this->request->getData())) {
 				// Sanitize user input
@@ -610,6 +616,10 @@ class AppearanceController extends AppController
 							$this->getEventManager()->dispatch($event);
 
 							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+							$this->Flash->set(ucwords($type) . ' has been deleted.', [
+								'element' => 'Flash/Purple/success'
+							]);
 						}
 						else {
 							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -623,6 +633,10 @@ class AppearanceController extends AppController
 							$this->getEventManager()->dispatch($event);
 
 							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+							$this->Flash->set(ucwords($type) . ' has been deleted.', [
+								'element' => 'Flash/Purple/success'
+							]);
 						}
 						else {
 							$json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -648,7 +662,7 @@ class AppearanceController extends AppController
 	{
         $this->viewBuilder()->enableAutoLayout(false);
 
-        $sfooterEdit    = new FooterEditForm();
+        $sfooterEdit = new FooterEditForm();
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($sfooterEdit->execute($this->request->getData())) {
 				// Sanitize user input
@@ -674,6 +688,10 @@ class AppearanceController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set('Footer has been updated.', [
+						'element' => 'Flash/Purple/success'
+					]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);

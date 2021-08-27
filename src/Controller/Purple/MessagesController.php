@@ -28,7 +28,9 @@ class MessagesController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-        $this->loadComponent('RequestHandler');
+
+		$this->loadComponent('Flash');
+
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
@@ -250,6 +252,10 @@ class MessagesController extends AppController
 	                else {
 	                    $json = json_encode(['status' => 'ok', 'activity' => false]);
 	                }
+
+					$this->Flash->set('Contact message from ' . $record_from . ' has moved to trash.', [
+						'element' => 'Flash/Purple/success'
+					]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);

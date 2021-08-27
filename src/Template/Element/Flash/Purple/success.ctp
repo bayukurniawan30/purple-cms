@@ -3,7 +3,7 @@ if (!isset($params['escape']) || $params['escape'] !== false) {
     $message = h($message);
 }
 ?>
-<div class="row">
+<div class="row purple-success-flash">
     <div class="col-md-12 uk-margin-small-bottom">
         <div class="uk-alert-success" uk-alert>
             <a class="uk-alert-close" uk-close></a>

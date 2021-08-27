@@ -48,6 +48,9 @@ class ThemesController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
+
+		$this->loadComponent('Flash');
+
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
@@ -271,6 +274,10 @@ class ThemesController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set($requestData->name . ' has been applied.', [
+						'element' => 'Flash/Purple/success'
+					]);
 	            }
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't delete folder. Please try again."]);
@@ -326,6 +333,10 @@ class ThemesController extends AppController
 							$this->getEventManager()->dispatch($event);
 
 							$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+							$this->Flash->set($onlyName . ' has been uploaded.', [
+								'element' => 'Flash/Purple/success'
+							]);
 	                	}
 	                	else {
 		                    $json = json_encode(['status' => 'error', 'error' => "Can't upload file. Please try again."]);
@@ -374,6 +385,10 @@ class ThemesController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set($requestData->name . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);

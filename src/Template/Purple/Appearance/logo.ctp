@@ -1,3 +1,7 @@
+<?= $this->Flash->render('flash', [
+    'element' => 'Flash/Purple/success'
+]); ?>
+
 <div class="row">
     <?php
         if ($logo->value == ''):

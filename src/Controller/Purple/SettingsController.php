@@ -52,6 +52,8 @@ class SettingsController extends AppController
 	public function initialize()
 	{
         parent::initialize();
+
+		$this->loadComponent('Flash');
         
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
@@ -445,6 +447,10 @@ class SettingsController extends AppController
                 $this->getEventManager()->dispatch($event);
 
                 $json = json_encode(['status' => 'ok', 'activity' => $event->getResult(), 'notification' => $emailStatus]);
+
+                $this->Flash->set('Setting has been updated.', [
+                    'element' => 'Flash/Purple/success'
+                ]);
             }
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);

@@ -49,6 +49,8 @@ class SocialsController extends AppController
 	{
         parent::initialize();
         
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
@@ -195,6 +197,10 @@ class SocialsController extends AppController
                     $this->getEventManager()->dispatch($event);
 
                     $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                    $this->Flash->set($requestData->name . ' has been added.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -239,6 +245,10 @@ class SocialsController extends AppController
                     $this->getEventManager()->dispatch($event);
 
                     $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                    $this->Flash->set($requestData->name . ' has been updated.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -283,6 +293,10 @@ class SocialsController extends AppController
                     $this->getEventManager()->dispatch($event);
 
                     $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                    $this->Flash->set($name . ' has been deleted.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -389,6 +403,10 @@ class SocialsController extends AppController
                     $this->getEventManager()->dispatch($event);
 
                     $json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+                    $this->Flash->set('Sharing buttons has been updated.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't edit content sharing buttons. Please try again."]);

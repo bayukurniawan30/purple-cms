@@ -53,6 +53,8 @@ class BlogsController extends AppController
 	{
 		parent::initialize();
 
+		$this->loadComponent('Flash');
+
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
@@ -300,6 +302,10 @@ class BlogsController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+						$this->Flash->set($blog->title . ' has been added.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -387,6 +393,10 @@ class BlogsController extends AppController
 						$this->getEventManager()->dispatch($event);
 
 						$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+						$this->Flash->set($blog->title . ' has been updated.', [
+							'element' => 'Flash/Purple/success'
+						]);
 	                }
 	                else {
 	                    $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -432,6 +442,10 @@ class BlogsController extends AppController
 					$this->getEventManager()->dispatch($event);
 
 					$json = json_encode(['status' => 'ok', 'activity' => $event->getResult()]);
+
+					$this->Flash->set($title . ' has been deleted.', [
+						'element' => 'Flash/Purple/success'
+					]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
