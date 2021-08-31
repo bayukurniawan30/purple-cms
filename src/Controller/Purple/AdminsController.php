@@ -56,6 +56,8 @@ class AdminsController extends AppController
 	public function initialize()
 	{
         parent::initialize();
+
+		$this->loadComponent('Flash');
         
 		// Get Admin Session data
 		$session = $this->getRequest()->getSession();
@@ -360,7 +362,12 @@ class AdminsController extends AppController
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
             }
-            $this->set(['json' => $json]);
+            
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
             throw new NotFoundException(__('Page not found'));
@@ -474,6 +481,10 @@ class AdminsController extends AppController
                                                 else {
                                                     $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
                                                 }
+
+                                                $this->Flash->set($admin->display_name . '(' . $admin->email . ') has been added.', [
+                                                    'element' => 'Flash/Purple/success'
+                                                ]);
                                             }
                                             else {
                                                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -528,6 +539,10 @@ class AdminsController extends AppController
                                         else {
                                             $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => [$admin->email => $emailNotification]]);
                                         }
+
+                                        $this->Flash->set($admin->display_name . '(' . $admin->email . ') has been added.', [
+                                            'element' => 'Flash/Purple/success'
+                                        ]);
                                     }
                                     else {
                                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -549,7 +564,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -638,6 +657,10 @@ class AdminsController extends AppController
                                                 else {
                                                     $json = json_encode(['status' => 'ok', 'activity' => false]);
                                                 }
+
+                                                $this->Flash->set($admin->display_name . '(' . $admin->email . ') has been updated.', [
+                                                    'element' => 'Flash/Purple/success'
+                                                ]);
                                             }
                                             else {
                                                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -664,6 +687,10 @@ class AdminsController extends AppController
                                     else {
                                         $json = json_encode(['status' => 'ok', 'activity' => false]);
                                     }
+
+                                    $this->Flash->set($admin->display_name . '(' . $admin->email . ') has been updated.', [
+                                        'element' => 'Flash/Purple/success'
+                                    ]);
                                 }
                                 else {
                                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -681,7 +708,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -721,6 +752,10 @@ class AdminsController extends AppController
                         else {
                             $json = json_encode(['status' => 'ok', 'activity' => false]);
                         }
+
+                        $this->Flash->set($admin->display_name . '\'s password has been updated.', [
+                            'element' => 'Flash/Purple/success'
+                        ]);
                     }
                     else {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
@@ -735,7 +770,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Make sure your password and repeat password is same and please fill all field."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
             throw new NotFoundException(__('Page not found'));
@@ -798,6 +837,10 @@ class AdminsController extends AppController
                     else {
                         $json = json_encode(['status' => 'ok', 'activity' => false, 'email' => $emailNotification]);
                     }
+
+                    $this->Flash->set($admin->display_name . ' has been deleted.', [
+                        'element' => 'Flash/Purple/success'
+                    ]);
                 }
                 else {
                     $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
@@ -808,7 +851,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -872,7 +919,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Can't send verification code to your phone."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -920,7 +971,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -982,7 +1037,11 @@ class AdminsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));

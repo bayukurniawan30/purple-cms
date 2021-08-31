@@ -125,9 +125,9 @@ class CommentsController extends AppController
 		$session   = $this->getRequest()->getSession();
         $sessionID = $session->read('Admin.id');
         
-		$commentReply  = new CommentReplyForm();
-		$commentStatus = new CommentStatusForm();
-		$commentDelete = new CommentDeleteForm();
+		$commentReply       = new CommentReplyForm();
+		$commentStatus      = new CommentStatusForm();
+		$commentDelete      = new CommentDeleteForm();
 		$commentDeleteReply = new CommentDeleteForm();
 
         $comments = $this->Comments->find('all')->contain('Admins')->where(['Comments.blog_id' => $blogid, 'Comments.id' => $id]);
@@ -232,7 +232,11 @@ class CommentsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -295,7 +299,11 @@ class CommentsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -366,7 +374,11 @@ class CommentsController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));

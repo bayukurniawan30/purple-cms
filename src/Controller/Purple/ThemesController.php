@@ -288,7 +288,11 @@ class ThemesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Can't apply theme. Please try again."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -354,7 +358,11 @@ class ThemesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "File extension is not allowed. Please try again with zip file."]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -399,7 +407,11 @@ class ThemesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));

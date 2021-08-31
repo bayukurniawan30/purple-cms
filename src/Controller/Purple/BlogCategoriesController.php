@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\BlogCategoryAddForm;
 use App\Form\Purple\BlogCategoryEditForm;
@@ -43,7 +44,7 @@ class BlogCategoriesController extends AppController
 
 		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
 			return $this->redirect(
-				['_name' => 'adminLogin']
+				['_name' => 'adminLogin', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 			);
 		}
 	}
@@ -111,7 +112,7 @@ class BlogCategoriesController extends AppController
 		}
 		else {
 			return $this->redirect(
-				['controller' => 'Authenticate', 'action' => 'login']
+				['controller' => 'Authenticate', 'action' => 'login', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 			);
 		}
 	}
@@ -227,7 +228,11 @@ class BlogCategoriesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -340,7 +345,11 @@ class BlogCategoriesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -384,7 +393,11 @@ class BlogCategoriesController extends AppController
 				$json = json_encode(['status' => 'error',]);
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
 		else {
 	        throw new NotFoundException(__('Page not found'));

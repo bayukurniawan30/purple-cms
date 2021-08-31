@@ -180,12 +180,17 @@ class HistoriesController extends AppController
         if ($this->request->is('ajax') || $this->request->is('post')) {
             if ($historyFilter->execute($this->request->getData())) {
                 $json = json_encode(['status' => 'ok', 'activity' => false]);
-				$this->set(['json' => $json]);
 			}
 			else {
             	$errors = $historyFilter->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));

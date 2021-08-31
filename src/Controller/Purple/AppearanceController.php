@@ -326,7 +326,12 @@ class AppearanceController extends AppController
 	            	}
 				}
 			}
-            $this->set(['json' => $json]);
+            
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
 		else {
 	        throw new NotFoundException(__('Page not found'));
@@ -418,7 +423,13 @@ class AppearanceController extends AppController
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
             }
-            $this->set(['json' => $json]);
+            
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
             throw new NotFoundException(__('Page not found'));
@@ -525,7 +536,12 @@ class AppearanceController extends AppController
             else {
                 $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
             }
-            $this->set(['json' => $json]);
+            
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
             throw new NotFoundException(__('Page not found'));
@@ -646,13 +662,17 @@ class AppearanceController extends AppController
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't delete data. Please try again."]);
 	            }
-
-	            $this->set(['json' => $json]);
 	        }
 	        else {
 	        	$errors = $appearanceDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -696,13 +716,17 @@ class AppearanceController extends AppController
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't update data. Please try again."]);
 	            }
-
-	            $this->set(['json' => $json]);
 	        }
 	        else {
 	        	$errors = $sfooterEdit->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 	        }
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));

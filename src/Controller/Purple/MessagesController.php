@@ -206,7 +206,11 @@ class MessagesController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
             }
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -260,13 +264,17 @@ class MessagesController extends AppController
 	            else {
 	                $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please try again."]);
 	            }
-
-				$this->set(['json' => $json]);
 			}
 			else {
             	$errors = $messageDelete->getErrors();
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));

@@ -246,10 +246,14 @@ class SubscribersController extends AppController
             }
             else {
             	$errors = $subscriberAdd->getErrors();
-                $json = json_encode(['status' => 'error', 'error' => "Make sure you don't enter the same username or email and please fill all field."]);
+                $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -316,7 +320,11 @@ class SubscribersController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
     	else {
 	        throw new NotFoundException(__('Page not found'));
@@ -398,7 +406,11 @@ class SubscribersController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -420,7 +432,11 @@ class SubscribersController extends AppController
 				$json = json_encode(['status' => 'error', 'error' => "Can't export subscribers data. Empty data."]);
 			}
 			
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
 		}
 		else {
 			throw new NotFoundException(__('Page not found'));
@@ -472,7 +488,11 @@ class SubscribersController extends AppController
                 $json = json_encode(['status' => 'error', 'error' => $errors]);
             }
 
-            $this->set(['json' => $json]);
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
@@ -533,7 +553,11 @@ class SubscribersController extends AppController
 				}
 			}
 
-			$this->set(['json' => $json]);
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
         }
         else {
 	        throw new NotFoundException(__('Page not found'));
