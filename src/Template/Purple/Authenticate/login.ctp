@@ -5,6 +5,7 @@
 	}
 </style>
 <?php
+	echo $this->Form->hidden('ref', ['value' => $this->request->getQuery('ref')]);
 	echo $this->Form->create($adminLogin, [
 		'id'                    => 'form-login-admin', 
 		'class'                 => '', 
@@ -111,7 +112,7 @@
             button          : 'button-login-admin',
             action          : 'login', 
             redirectType    : 'redirect', 
-            redirect        : '<?= $this->Url->build(['_name' => 'adminDashboard']) ?>', 
+            redirect        : '<?= $this->request->getQuery('ref') === NULL ? $this->Url->build(['_name' => 'adminDashboard']) : $this->request->getQuery('ref') ?>', 
             btnNormal       : false, 
             btnLoading      : false 
         };

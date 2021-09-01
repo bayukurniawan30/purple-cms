@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Http\Exception\NotFoundException;
 use App\Form\Purple\SearchForm;
 use App\Purple\PurpleProjectGlobal;
@@ -35,7 +36,7 @@ class NotificationsController extends AppController
 
 		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
 			return $this->redirect(
-	            ['controller' => 'Authenticate', 'action' => 'login']
+	            ['controller' => 'Authenticate', 'action' => 'login', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 	        );
 		}
 		else {
@@ -86,7 +87,7 @@ class NotificationsController extends AppController
 			}
 			else {
 				return $this->redirect(
-		            ['controller' => 'Authenticate', 'action' => 'login']
+		            ['controller' => 'Authenticate', 'action' => 'login', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 		        );
 			}
 	    }

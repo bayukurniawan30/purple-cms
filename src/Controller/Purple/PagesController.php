@@ -4,6 +4,7 @@ namespace App\Controller\Purple;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
+use Cake\Routing\Router;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
@@ -55,7 +56,7 @@ class PagesController extends AppController
 
 		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
 			return $this->redirect(
-				['_name' => 'adminLogin']
+				['_name' => 'adminLogin', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 			);
 		}
 	}
@@ -131,7 +132,7 @@ class PagesController extends AppController
         }
         else {
             return $this->redirect(
-                ['controller' => 'Authenticate', 'action' => 'login']
+                ['controller' => 'Authenticate', 'action' => 'login', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
             );
         }
     }

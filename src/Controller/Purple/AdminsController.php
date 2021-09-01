@@ -49,7 +49,7 @@ class AdminsController extends AppController
 
 		if ($this->request->getEnv('HTTP_HOST') != $sessionHost || !$session->check('Admin.id')) {
 			return $this->redirect(
-				['_name' => 'adminLogin']
+				['_name' => 'adminLogin', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
 			);
 		}
 	}
@@ -114,7 +114,7 @@ class AdminsController extends AppController
         }
         else {
             return $this->redirect(
-                ['controller' => 'Authenticate', 'action' => 'login']
+                ['controller' => 'Authenticate', 'action' => 'login', '?' => ['ref' => Router::url($this->getRequest()->getRequestTarget(), true)]]
             );
         }
 	}

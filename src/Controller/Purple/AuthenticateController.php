@@ -185,8 +185,9 @@ class AuthenticateController extends AppController
             	$purpleSettings = new PurpleProjectSettings();
 			    $timezone       = $purpleSettings->timezone();
 
-				$username = $requestData->username;
-				$password = $requestData->password;
+				$username  = $requestData->username;
+				$password  = $requestData->password;
+				$reference = $requestData->ref;
 
 				$detectIP      = $this->request->clientIp();
 				$detectOS      = $purpleGlobal->detectOS();
@@ -220,7 +221,13 @@ class AuthenticateController extends AppController
 					}
 
 					if ($lastSignedInUser >= 7) {
-						$json = json_encode(['status' => 'ok', 'verify' => Router::url(['_name' => 'adminSignInVerification'])]);
+						if (empty($reference)) {
+							$verifyUrl = Router::url(['_name' => 'adminSignInVerification']);
+						}
+						else {
+							$verifyUrl = Router::url(['_name' => 'adminSignInVerification', '?' => ['ref' => $reference]]);
+						}
+						$json = json_encode(['status' => 'ok', 'verify' => $verifyUrl]);
 					}
 					else {
 						if ($queryTwoFAuth->value == 'enable' && $admin->last_login != NULL && $admin->phone != NULL && $admin->phone_verified != NULL && $admin->authy_id != NULL && ($admin->login_device != $deviceType || $admin->login_os != $operatingSystem)) {
@@ -229,7 +236,14 @@ class AuthenticateController extends AppController
 							$authySendSms 	 = $purpleApi->sendAuthySendSms($key, $authyId);
 
 							if ($authySendSms) {
-								$json = json_encode(['status' => 'ok', 'verify' => Router::url(['_name' => 'adminSignInAuthyToken'])]);
+								if (empty($reference)) {
+									$verifyUrl = Router::url(['_name' => 'adminSignInAuthyToken']);
+								}
+								else {
+									$verifyUrl = Router::url(['_name' => 'adminSignInAuthyToken', '?' => ['ref' => $reference]]);
+								}
+
+								$json = json_encode(['status' => 'ok', 'verify' => $verifyUrl]);
 							}
 							else {
 								$json = json_encode(['status' => 'error', 'error' => "Cannot send verification code. Please try again."]);

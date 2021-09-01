@@ -7,6 +7,7 @@
     ]);
     
     echo $this->Form->hidden('id', ['value' => $id]);
+	echo $this->Form->hidden('ref', ['value' => $this->request->getQuery('ref')]);
 ?>
 <div class="form-group">
 	<?php
@@ -37,7 +38,7 @@
             button          : 'button-code-admin',
             action          : 'login', 
             redirectType    : 'redirect', 
-            redirect        : '<?= $this->Url->build(['_name' => 'adminDashboard']) ?>', 
+            redirect        : '<?= $this->request->getQuery('ref') === NULL ? $this->Url->build(['_name' => 'adminDashboard']) : $this->request->getQuery('ref') ?>', 
             btnNormal       : false, 
             btnLoading      : false 
         };
