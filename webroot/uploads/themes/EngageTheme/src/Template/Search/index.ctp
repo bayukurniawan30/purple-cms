@@ -52,7 +52,7 @@
                     <?php
                             else:
                     ?>
-                    <a href="<?= $url ?>" title="" class="box-masonry-image with-hover-overlay with-hover-icon"><img src="<?= $this->cell('Medias::mediaPath', [$blog->featured, 'image', 'original']) ?>" alt="<?= $blog->title ?>" class="img-fluid"></a>
+                    <a href="<?= $url ?>" title="" class="box-masonry-image with-hover-overlay with-hover-icon"><img src="<?= $this->cell('Medias::mediaPath', [$result->featured, 'image', 'original']) ?>" alt="<?= $result->title ?>" class="img-fluid"></a>
                     <?php 
                             endif;
                         endif; 

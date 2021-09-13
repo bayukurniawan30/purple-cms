@@ -1,5 +1,5 @@
 <!-- DOCTYPE -->
-<?= $this->Html->docType(); ?>
+<!DOCTYPE html>
 <html lang="en">
 	<?= $this->element('head') ?>
   	<body>

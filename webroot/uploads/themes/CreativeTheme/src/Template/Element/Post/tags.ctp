@@ -9,9 +9,14 @@
   				'tag'   => $tag->slug
   			]);
 
-            $text = '<a class="non-uikit" href="'.$url.'">' . $tag->title . '</a>';
+			if ($i == $total) {
+				$text = '<a class="non-uikit" href="'.$url.'">' . $tag->title . '</a>';
+			}
+			else {
+				$text = '<a class="non-uikit" href="'.$url.'">' . $tag->title . '</a>, ';
+			}
 
-            echo $this->Purple->loopingList($text, ', ', ['initial' => $i, 'total' => $total]);
+			echo $text;
 
             $i++;
    		endforeach;
