@@ -1420,7 +1420,7 @@
             $('#field_label').keyup(function(){
                 var text = $(this).val();
                 text = text.toLowerCase();
-                text = text.replace(/[^a-zA-Z0-9]+/g,'-');
+                text = text.replace(/[^a-zA-Z0-9]+/g,'_');
                 $("#field_slug").val(text);        
             });
         }
