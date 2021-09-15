@@ -24,7 +24,7 @@
         <?php
             if ($singletonDatas->count() == 0):
         ?>
-        <button type="button" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text uk-margin-right" onclick="location.href='<?= $newSingletonUrl ?>'">
+        <button type="button" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text uk-margin-right" onclick="location.href='<?= $addDataUrl ?>'">
         <i class="mdi mdi-pencil btn-icon-prepend"></i>
             Add Data
         </button>

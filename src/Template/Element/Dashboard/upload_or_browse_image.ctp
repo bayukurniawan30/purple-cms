@@ -32,7 +32,7 @@
         </div>
         <!-- /uploader -->
         
-        <div class="upload-image-progress uk-margin-top"></div>
+        <div class="upload-image-progress upload-image-progress-<?= $randomModalBrowseImageId ?>  uk-margin-top"></div>
 
         <button type="button" class="btn btn-gradient-primary btn-sm btn-icon-text btn-block button-browse-images" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-browse-content="<?= $modalParams['browseContent'] ?>" data-purple-browse-action="<?= $modalParams['browseAction'] ?>" data-purple-browse-target="<?= $modalParams['browseTarget'] ?>">
             <i class="mdi mdi-file-find btn-icon-prepend"></i>
@@ -106,13 +106,13 @@
                 $.danidemo.addLog('#demo-debug', 'default', console_response);
 
                 $.danidemo.updateFileStatus(id, 'default', '<i class="fa fa-circle-o-notch fa-spin"></i> Uploading...');
-                $('.upload-image-progress').css('padding-bottom', '20px');
+                $('.upload-image-progress-<?= $randomModalBrowseImageId ?>').css('padding-bottom', '20px');
             },
             onNewFile: function(id, file) {
                 $('button').attr('disabled','disabled');
 
                 var extArray = ['jpg', 'jpeg', 'png'];
-                $.danidemo.addFile('.upload-image-progress', id, file);
+                $.danidemo.addFile('.upload-image-progress-<?= $randomModalBrowseImageId ?>', id, file);
 
                 /*** Begins Image preview loader ***/
                 if (typeof FileReader !== "undefined") {
@@ -120,7 +120,7 @@
                     var reader = new FileReader();
 
                     // Last image added
-                    var img = $('.upload-image-progress').find('.demo-image-preview').eq(0);
+                    var img = $('.upload-image-progress-<?= $randomModalBrowseImageId ?>').find('.demo-image-preview').eq(0);
 
                     reader.onload = function(e) {
                         // img.attr('src', e.target.result);
@@ -144,7 +144,7 @@
 
                 } else {
                     // Hide/Remove all Images if FileReader isn't supported
-                    $('.upload-image-progress').find('.demo-image-preview').remove();
+                    $('.upload-image-progress-<?= $randomModalBrowseImageId ?>').find('.demo-image-preview').remove();
                 }
                 /*** Ends Image preview loader ***/
             },
