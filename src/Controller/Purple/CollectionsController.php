@@ -66,6 +66,8 @@ class CollectionsController extends AppController
 		// Set layout
 		$this->viewBuilder()->setLayout('dashboard');
 
+		$this->loadComponent('Image');
+
 		// Load other models
 		$this->loadModel('Admins');
 		$this->loadModel('Medias');
@@ -658,7 +660,8 @@ class CollectionsController extends AppController
 						'thumbnail' => [
 							'300x300' => $thumbnailSquarePath,
 							'480x270' => $thumbnailLscapePath
-						]
+						],
+						'base64' => $this->Image->convertToBase64($value['value'])
 					];
 				}
 				elseif ($value['field_type'] == 'gallery') {
@@ -675,7 +678,8 @@ class CollectionsController extends AppController
 								'thumbnail' => [
 									'300x300' => $thumbnailSquarePath,
 									'480x270' => $thumbnailLscapePath
-								]
+								],
+								'base64' => $this->Image->convertToBase64($gallery)
 							]);
 						}
 					}
@@ -689,7 +693,8 @@ class CollectionsController extends AppController
 							'thumbnail' => [
 								'300x300' => $thumbnailSquarePath,
 								'480x270' => $thumbnailLscapePath
-							]
+							],
+							'base64' => $this->Image->convertToBase64($value['value'])
 						];
 					}
 				}
@@ -786,7 +791,8 @@ class CollectionsController extends AppController
 						'thumbnail' => [
 							'300x300' => $thumbnailSquarePath,
 							'480x270' => $thumbnailLscapePath
-						]
+						],
+						'base64' => $this->Image->convertToBase64($value['value'])
 					];
 				}
 				elseif ($value['field_type'] == 'gallery') {
@@ -803,7 +809,8 @@ class CollectionsController extends AppController
 								'thumbnail' => [
 									'300x300' => $thumbnailSquarePath,
 									'480x270' => $thumbnailLscapePath
-								]
+								],
+								'base64' => $this->Image->convertToBase64($gallery)
 							]);
 						}
 					}
@@ -817,7 +824,8 @@ class CollectionsController extends AppController
 							'thumbnail' => [
 								'300x300' => $thumbnailSquarePath,
 								'480x270' => $thumbnailLscapePath
-							]
+							],
+							'base64' => $this->Image->convertToBase64($value['value'])
 						];
 					}
 				}
