@@ -646,7 +646,7 @@ class SingletonsController extends AppController
 							'300x300' => $thumbnailSquarePath,
 							'480x270' => $thumbnailLscapePath
 						],
-						'base64' => $this->Image->convertToBase64($value['value'])
+						'color_palette' => $this->Image->getColorPalette($value['value'])
 					];
 				}
 				elseif ($value['field_type'] == 'gallery') {
@@ -664,7 +664,7 @@ class SingletonsController extends AppController
 									'300x300' => $thumbnailSquarePath,
 									'480x270' => $thumbnailLscapePath
 								],
-								'base64' => $this->Image->convertToBase64($gallery)
+								'color_palette' => $this->Image->getColorPalette($gallery)
 							]);
 						}
 					}
@@ -679,7 +679,7 @@ class SingletonsController extends AppController
 								'300x300' => $thumbnailSquarePath,
 								'480x270' => $thumbnailLscapePath
 							],
-							'base64' => $this->Image->convertToBase64($value['value'])
+							'color_palette' => $this->Image->getColorPalette($value['value'])
 						];
 					}
 				}
@@ -764,7 +764,7 @@ class SingletonsController extends AppController
 							'300x300' => $thumbnailSquarePath,
 							'480x270' => $thumbnailLscapePath
 						],
-						'base64' => $this->Image->convertToBase64($value['value'])
+						'color_palette' => $this->Image->getColorPalette($value['value'])
 					];
 				}
 				elseif ($value['field_type'] == 'gallery') {
@@ -782,7 +782,7 @@ class SingletonsController extends AppController
 									'300x300' => $thumbnailSquarePath,
 									'480x270' => $thumbnailLscapePath
 								],
-								'base64' => $this->Image->convertToBase64($gallery)
+								'color_palette' => $this->Image->getColorPalette($gallery)
 							]);
 						}
 					}
@@ -797,7 +797,7 @@ class SingletonsController extends AppController
 								'300x300' => $thumbnailSquarePath,
 								'480x270' => $thumbnailLscapePath
 							],
-							'base64' => $this->Image->convertToBase64($value['value'])
+							'color_palette' => $this->Image->getColorPalette($value['value'])
 						];
 					}
 				}

@@ -3,6 +3,10 @@ namespace App\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Filesystem\File;
+use League\ColorExtractor\Color;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Palette;
+use Cake\Cache\Cache;
 
 class ImageComponent extends Component
 {
@@ -39,5 +43,41 @@ class ImageComponent extends Component
         ];
 
         return $result;
+    }
+    public function getColorPalette($image)
+    {
+        $thumbnail = WWW_ROOT . 'uploads' . DS .'images' . DS .'thumbnails' . DS . '300x300' . DS . $image;
+        $baseName  = basename($thumbnail);
+        $baseName  = pathinfo($baseName, PATHINFO_FILENAME);
+        
+        if (($colorExtract = Cache::read('color_extract_' . $baseName)) === false) {
+            $palette    = Palette::fromFilename($thumbnail);
+            $extractor  = new ColorExtractor($palette);
+            $colorCount = count($palette);
+            if ($colorCount >= 5) {
+                $colors = $extractor->extract(5);
+                // $colors = $palette->getMostUsedColors(8);
+            }
+            else {
+                $colors = $extractor->extract($colorCount);
+                // $colors = $palette->getMostUsedColors($colorCount);
+            }
+
+            $setColors = [];
+            foreach($colors as $color) {
+                array_push($setColors, Color::fromIntToHex($color));
+            }
+
+            $dominateColors = implode(',', $setColors);
+
+            Cache::write('color_extract_' . $baseName, $dominateColors);
+        }
+        else {
+            $dominateColors = Cache::read('color_extract_' . $baseName);
+        }
+
+        $explodeColors = explode(',', $dominateColors);
+
+        return $explodeColors;
     }
 }

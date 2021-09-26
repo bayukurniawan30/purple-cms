@@ -34,7 +34,7 @@
         
         <div class="upload-image-progress upload-image-progress-<?= $randomModalBrowseImageId ?>  uk-margin-top"></div>
 
-        <button type="button" class="btn btn-gradient-primary btn-sm btn-icon-text btn-block button-browse-images" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-browse-content="<?= $modalParams['browseContent'] ?>" data-purple-browse-action="<?= $modalParams['browseAction'] ?>" data-purple-browse-target="<?= $modalParams['browseTarget'] ?>">
+        <button type="button" class="btn btn-gradient-primary btn-sm btn-icon-text btn-block button-browse-images button-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-init="button-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-target="#modal-browse-images-<?= $randomModalBrowseImageId ?>" data-purple-browse-content="<?= $modalParams['browseContent'] ?>" data-purple-browse-action="<?= $modalParams['browseAction'] ?>" data-purple-browse-target="<?= $modalParams['browseTarget'] ?>">
             <i class="mdi mdi-file-find btn-icon-prepend"></i>
             Browse Uploaded Image
         </button>

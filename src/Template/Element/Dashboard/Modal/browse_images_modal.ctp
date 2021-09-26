@@ -291,6 +291,7 @@
                     actionTable  = btn.data('purple-table'),
                     actionId     = btn.data('purple-id'),
                     actionTarget = btn.data('purple-target'),
+                    btnInit      = btn.data('purple-init'),
                     image        = $(".choose-image"),
                     filename     = btn.attr('data-purple-image'),
                     filePath     = btn.attr('data-purple-path'),
@@ -316,6 +317,8 @@
 
                         ajaxButton(selectImage.button, selectImage.ajaxType, selectImage.sendData, selectImage.action, selectImage.url, selectImage.redirectType, selectImage.redirect, selectImage.btnNormal, selectImage.btnLoading);
                     }
+
+                    $('.' + btnInit).html('<i class="mdi mdi-file-find btn-icon-prepend"></i> Browse Uploaded Image');
                 }
                 else if (selectAction == 'send-to-input') {
                     btn.click(function() {
@@ -375,6 +378,7 @@
                             endif;
                         ?>
                         UIkit.modal(modal).hide();
+                        $('.' + btnInit).html('<i class="mdi mdi-file-find btn-icon-prepend"></i> Browse Uploaded Image');
                         return false;
                     })
                 }

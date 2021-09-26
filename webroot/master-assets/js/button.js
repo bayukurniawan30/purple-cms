@@ -1286,6 +1286,7 @@ $(document).ready(function() {
     browseImageButton = function() {
         $(".button-browse-images").on("click", function() {
             var btn       = $(this),
+                btnFetch  = btn.data('purple-init')
                 btnTxt    = btn.html(),
                 action    = btn.data('purple-browse-action'),
                 content   = btn.data('purple-browse-content'),
@@ -1295,10 +1296,8 @@ $(document).ready(function() {
                 redirect  = btn.data('purple-redirect'),
                 modal     = $(target);
 
-            btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Images...');
-            btn.attr('disabled','disabled');
-
-            console.log(modal);
+            $('.' + btnFetch).html('<i class="fa fa-circle-o-notch fa-spin"></i> Fetching Images...');
+            $('.' + btnFetch).attr('disabled','disabled');
 
             setTimeout(function() {
                 if (action == 'update') {
@@ -1310,15 +1309,17 @@ $(document).ready(function() {
                     modal.find(".button-select-image").attr('data-purple-table', table);
                     modal.find(".button-select-image").attr('data-purple-id', id);
                     modal.find(".button-select-image").attr('data-purple-redirect', redirect);
+                    modal.find(".button-select-image").attr('data-purple-init', btnFetch);
                 }
                 else if (action == 'send-to-input') {
                     modal.find(".button-select-image").attr('data-purple-action', 'send-to-input');
                     modal.find(".button-select-image").attr('data-purple-table', table);
                     modal.find(".button-select-image").attr('data-purple-id', id);
                     modal.find(".button-select-image").attr('data-purple-target', brsTarget);
+                    modal.find(".button-select-image").attr('data-purple-init', btnFetch);
                 }
                 else if (action == 'froala-section-bg') {
-                    var sectionId = btn.attr('data-fdb-id');
+                    var sectionId = $('.' + btnFetch).attr('data-fdb-id');
                     modal.find(".button-select-image").attr('data-purple-action', 'froala-section-bg');
                     modal.find(".button-select-image").attr('data-purple-froala-block', '#fdb-' + sectionId);
                     if (modal.find(".button-remove-background").length < 1) {
@@ -1339,7 +1340,7 @@ $(document).ready(function() {
                     }
                 }
                 else if (action == 'froala-block-bg') {
-                    var sectionId = btn.attr('data-fdb-id');
+                    var sectionId = $('.' + btnFetch).attr('data-fdb-id');
                     modal.find(".button-select-image").attr('data-purple-action', 'froala-block-bg');
                     modal.find(".button-select-image").attr('data-purple-froala-block', '#fdb-block-background-' + sectionId);
                     if (modal.find(".button-remove-background").length < 1) {
@@ -1361,8 +1362,8 @@ $(document).ready(function() {
                 }
 
                 UIkit.modal(target).show();
-                btn.removeAttr('disabled');
-                btn.html(btnTxt);
+                $('.' + btnFetch).removeAttr('disabled');
+                $('.' + btnFetch).html(btnTxt);
             }, 1000);
 
             return false;
