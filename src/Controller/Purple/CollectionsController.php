@@ -216,6 +216,10 @@ class CollectionsController extends AppController
 		$this->set(compact('collectionDatas'));
 
 		// API Response
+		$apiResult = NULL;
+		/**
+		 *  Some host can't resolve domain, but try it in Postman
+		 *
 		$endpointUrl = Router::url([
 			'_name' => 'apiv1ViewCollectionDatas',
 			'slug'  => $collection->slug
@@ -228,6 +232,7 @@ class CollectionsController extends AppController
 			'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
 		]);
 		$apiResult = $response->getStringBody();
+		*/
 
 		$data = [
 			'pageTitle'            => $collection->name,
@@ -295,6 +300,10 @@ class CollectionsController extends AppController
 			if ($savedData->slug == NULL || $savedData->slug == '') {}
 			else {
 				// API Response
+				$apiResult = NULL;
+				/**
+				 *  Some host can't resolve domain, but try it in Postman
+				 *
 				$endpointUrl = Router::url([
 					'_name'    => 'apiv1ViewCollectionDataDetails',
 					'slug'     => $collectionData->slug,
@@ -308,6 +317,7 @@ class CollectionsController extends AppController
 					'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
 				]);
 				$apiResult = $response->getStringBody();
+				*/
 			}
 
 			$data = [

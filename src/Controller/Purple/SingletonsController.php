@@ -222,6 +222,10 @@ class SingletonsController extends AppController
 		$this->set(compact('singletonDatas'));
 
 		// API Response
+		$apiResult = NULL;
+		/**
+		 *  Some host can't resolve domain, but try it in Postman
+		 *
 		$endpointUrl = Router::url([
 			'_name' => 'apiv1ViewSingletonnDatas',
 			'slug'  => $singleton->slug
@@ -234,6 +238,7 @@ class SingletonsController extends AppController
 			'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
 		]);
 		$apiResult = $response->getStringBody();
+		*/
 
 		$data = [
 			'pageTitle'           => $singleton->name,

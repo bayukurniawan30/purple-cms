@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <pre><?= $apiResponse ?></pre>
+            <!--<pre><?= $apiResponse ?></pre>-->
         </div>
         <div class="uk-modal-footer uk-text-right">
             <button class="btn btn-outline-primary uk-margin-left uk-modal-close" type="button">Close</button>
