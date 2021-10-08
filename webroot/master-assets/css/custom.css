@@ -590,3 +590,7 @@ select.form-control {
     background: #9a55ff;
     font-size: 0.7rem;
 }
+
+.display-list .uk-card-body:hover {
+    background: rgb(240, 240, 240);
+}

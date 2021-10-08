@@ -90,9 +90,6 @@
                         inputs.prop("disabled", true);
                         btn.html(btnLoading);
                         btn.attr('disabled','disabled');
-
-                        // Progress bar
-                        progress.start();
                     },
                     data: serializedData,
                     // contentType: false,
@@ -100,9 +97,6 @@
                     // processData:false,
                 });
                 formSubmit.done(function (msg){
-                    // Stop progress bar
-                    progress.end();
-
 			    	if (cakeDebug == 'on') {
                         console.log(msg);
                     }
@@ -161,15 +155,9 @@
                 beforeSend: function() {
                     $('button').prop("disabled", true);
                     btn.html('<i class="fa fa-circle-o-notch fa-spin"></i> Sending code...');
-
-                    // Progress bar
-                    progress.start();
                 }
 			});
 			ajaxProcessing.done(function(msg) {
-                // Stop progress bar
-                progress.end();
-
 				if (cakeDebug == 'on') {
 					console.log(msg);
                 }

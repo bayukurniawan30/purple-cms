@@ -187,7 +187,9 @@ class AuthenticateController extends AppController
 
 				$username  = $requestData->username;
 				$password  = $requestData->password;
-				$reference = $requestData->ref;
+				if (!empty($this->request->getData('ref'))) {
+					$reference = $requestData->ref;
+				}
 
 				$detectIP      = $this->request->clientIp();
 				$detectOS      = $purpleGlobal->detectOS();

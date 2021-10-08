@@ -106,7 +106,7 @@
                     $decodeFields = json_decode($collection->fields, true);
                     if (count($decodeFields) > 0):
                 ?>
-                <ul id="sortable-items" class="" uk-sortable="handle: .uk-sortable-handle" uk-grid>
+                <ul id="sortable-items" class="display-list" uk-sortable="handle: .uk-sortable-handle" uk-grid>
                 <?php
                         $countList = 1;
                         foreach ($decodeFields as $field):

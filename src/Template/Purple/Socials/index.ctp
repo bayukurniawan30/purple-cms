@@ -20,7 +20,7 @@
                 <?php
                     if ($socials->count() > 0):
                 ?>
-                <ul id="sortable-items" class="" uk-sortable="handle: .uk-sortable-handle" data-purple-url="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxReorder"]); ?>" uk-grid>
+                <ul id="sortable-items" class="display-list" uk-sortable="handle: .uk-sortable-handle" data-purple-url="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxReorder"]); ?>" uk-grid>
                     <?php
                         $order = 1;
                         $instagramAccount = false;
@@ -97,7 +97,7 @@
                         foreach ($igMedias as $igMedia):
                     ?>
                     <div>
-                        <a href="<?= $igMedia->getLink() ?>" target="_blank"><div class="uk-background-contain uk-height-medium uk-panel uk-box-shadow-small <?= $i == 1 ? 'target-height' : '' ?> ig-post" style="background-image: url(<?= $igMedia->getImageHighResolutionUrl() ?>);">
+                        <a href="<?= $igMedia->getLink() ?>" target="_blank"><div class="uk-background-contain uk-height-medium uk-panel uk-box-shadow-small <?= $i == 1 ? 'target-height' : '' ?> ig-post" style="background-image: url(<?= 'data:image/jpg;base64,' . base64_encode(file_get_contents($igMedia->getImageHighResolutionUrl())) ?>);">
                         </div></a>
                     </div>
                     <?php

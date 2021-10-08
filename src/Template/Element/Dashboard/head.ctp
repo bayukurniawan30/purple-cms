@@ -9,6 +9,7 @@
     <?= $this->Html->css('/master-assets/css/vendor.bundle.base.css') ?>
     <?= $this->Html->css('/master-assets/plugins/toast/jquery.toast.min.css') ?>
     <?= $this->Html->css('/master-assets/plugins/parsley/src/parsley.css') ?>
+    <?= $this->Html->css('/master-assets/plugins/nprogress/nprogress.css') ?>
     <?php if ($this->request->getParam('controller') == 'Medias' || $this->request->getParam('controller') == 'Appearance'): ?>
         <?= $this->Html->css('/master-assets/plugins/dmuploader/css/jquery.dm-uploader.css') ?>
         <?= $this->Html->css('/master-assets/plugins/datatables/datatables.min.css') ?>

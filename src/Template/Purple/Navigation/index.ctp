@@ -18,7 +18,7 @@
                 <?php
                     if ($menus->count() > 0):
                 ?>
-                <ul id="sortable-items" class="" uk-sortable="handle: .uk-sortable-handle" data-purple-url="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxReorderMenu"]); ?>" uk-grid>
+                <ul id="sortable-items" class="display-list" uk-sortable="handle: .uk-sortable-handle" data-purple-url="<?= $this->Url->build(["controller" => $this->request->getParam('controller'), "action" => "ajaxReorderMenu"]); ?>" uk-grid>
                     <?php
                         $order = 1;
                         foreach ($menus as $menu):
@@ -220,15 +220,9 @@
                         $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-items>li .sortable-remover").show();
-
-                        // Progress bar
-                        progress.start();
                     }
                 });
                 ajaxProcessing.done(function(msg) {
-                    // Stop progress bar
-                    progress.end();
-
                     if (cakeDebug == 'on') {
                         console.log(msg);
                     }
@@ -280,15 +274,9 @@
                         $('input, button, textarea, select').prop("disabled", true);
                         $("#sortable-child-items>li .uk-sortable-handle").html('<i class="fa fa-circle-o-notch fa-spin"></i>');
                         $("#sortable-child-items>li .sortable-remover").show();
-
-                        // Progress bar
-                        progress.start();
                     }
                 });
                 ajaxProcessing.done(function(msg) {
-                    // Stop progress bar
-                    progress.end();
-                    
                     if (cakeDebug == 'on') {
                         console.log(msg);
                     }

@@ -5,13 +5,13 @@
 	}
 </style>
 <?php
-	echo $this->Form->hidden('ref', ['value' => $this->request->getQuery('ref')]);
 	echo $this->Form->create($adminLogin, [
 		'id'                    => 'form-login-admin', 
 		'class'                 => '', 
 		'data-parsley-validate' => '',
 		'url' 					=> ['action' => 'ajax-login']
 	]);
+	echo $this->Form->hidden('ref', ['value' => $this->request->getQuery('ref')]);
 ?>
 <div class="form-group">
 	<?php

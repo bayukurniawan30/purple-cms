@@ -144,7 +144,6 @@
                             inputs.prop("disabled", true);
                             submitAddFieldButton.html(submitAddFieldButtonLoadingState);
                             submitAddFieldButton.attr('disabled','disabled');
-                            progress.start();
                         },
                         data: serializedData,
                         contentType: false,
@@ -152,8 +151,6 @@
                         processData:false,
                     });
                     submitAddField.done(function (data){
-                        progress.end();
-
                         if (cakeDebug == 'on') {
                             console.log(data);
                         }
@@ -181,7 +178,7 @@
                                 else {
                                     var countList = 1;
 
-                                    bindingTarget.html('<ul id="sortable-items" class="" uk-sortable="handle: .uk-sortable-handle" uk-grid><li id="sortable-' + countList + '" class="uk-width-1-1 uk-margin-remove-top" data-order="' + countList + '" style="position: relative"><div class="sortable-remover" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 5; display: none; background: rgba(255,255,255,.4)"></div><div class="uk-card uk-card-default uk-card-small uk-card-body"><span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: menu"></span><span class="field-label">' + fieldLabel + '</span><span class="field-type uk-text-muted uk-text-italic uk-text-small uk-margin-left">' + selectedFieldType + '</span><input type="hidden" name="fields[]" value=\'' + JSON.stringify(result) + '\'><div class="uk-inline uk-align-right"><a href="#" class="uk-margin-small-right button-edit-component-field" data-purple-component="singleton" data-purple-target="#sortable-' + countList + '" data-purple-modal="#modal-add-field" data-purple-action="edit" data-purple-url="<?= $fieldOptionsUrl ?>" uk-icon="icon: pencil" uk-tooltip="Edit field"></a><a href="#" class="text-danger button-delete-added-field" uk-icon="icon: close" data-purple-component="singleton" data-purple-target="#sortable-' + countList + '" uk-tooltip="Delete field"></a></div></div></li></ul>');
+                                    bindingTarget.html('<ul id="sortable-items" class="display-list" uk-sortable="handle: .uk-sortable-handle" uk-grid><li id="sortable-' + countList + '" class="uk-width-1-1 uk-margin-remove-top" data-order="' + countList + '" style="position: relative"><div class="sortable-remover" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 5; display: none; background: rgba(255,255,255,.4)"></div><div class="uk-card uk-card-default uk-card-small uk-card-body"><span class="uk-sortable-handle uk-margin-small-right" uk-icon="icon: menu"></span><span class="field-label">' + fieldLabel + '</span><span class="field-type uk-text-muted uk-text-italic uk-text-small uk-margin-left">' + selectedFieldType + '</span><input type="hidden" name="fields[]" value=\'' + JSON.stringify(result) + '\'><div class="uk-inline uk-align-right"><a href="#" class="uk-margin-small-right button-edit-component-field" data-purple-component="singleton" data-purple-target="#sortable-' + countList + '" data-purple-modal="#modal-add-field" data-purple-action="edit" data-purple-url="<?= $fieldOptionsUrl ?>" uk-icon="icon: pencil" uk-tooltip="Edit field"></a><a href="#" class="text-danger button-delete-added-field" uk-icon="icon: close" data-purple-component="singleton" data-purple-target="#sortable-' + countList + '" uk-tooltip="Delete field"></a></div></div></li></ul>');
                                 }
                             }
                             else {
