@@ -35,6 +35,10 @@ class CollectionsTable extends Table
             $entity->slug = substr($sluggedTitle, 0, 191);
         }
 
+        if ($entity->connecting != '1') {
+            $entity->connecting = '0';
+        }
+
 		if ($entity->isNew()) {
 			$entity->created  = $date;
 		}

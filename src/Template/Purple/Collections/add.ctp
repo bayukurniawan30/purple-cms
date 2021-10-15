@@ -130,6 +130,14 @@
                             ?>
                         </div>
                     </li>
+                    <li class="uk-padding-small uk-margin-remove-top">
+                        Set as Connecting Collection
+                        <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                            <?php
+                                echo $this->Form->checkbox('connecting', ['class' => 'js-switch', 'value' => '1', 'checked' => false, 'required' => false]);
+                            ?>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>

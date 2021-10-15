@@ -78,6 +78,9 @@
                 <div id="error-get-collection-options" class="uk-alert-danger" uk-alert hidden>
                     <p>Can't load field options. Please close this modal and try again.</p>
                 </div>
+                <div id="helper-collection-options" class="uk-alert-primary" uk-alert hidden>
+                    <p></p>
+                </div>
                 <?php
                     echo $this->Form->label('options', 'Additional Options');
                 ?>

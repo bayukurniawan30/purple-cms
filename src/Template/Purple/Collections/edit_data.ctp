@@ -25,7 +25,20 @@
                 if (count($decodeFields) > 0):
                     foreach ($decodeFields as $field):
                         $decodeField = json_decode($field, true);
-                        $printElement = $this->element('Dashboard/Collections/Fields/' . $decodeField['field_type'], ['uid' => $decodeField['uid'], 'field_type' => $decodeField['field_type'], 'label' => $decodeField['label'], 'info' => $decodeField['info'], 'required' => $decodeField['required'], 'value' => $decodeContent[$decodeField['uid']]['value'], 'options' => $decodeField['options']]);
+                        if (array_key_exists($decodeField['uid'], $decodeContent)) {
+                            $fieldValue = $decodeContent[$decodeField['uid']]['value'];
+                        }
+                        else {
+                            $fieldValue = NULL;
+                        }
+
+                        if (strpos($decodeField['field_type'], 'connecting_') !== false) {
+                            $collectionId = (int)str_replace('connecting_', '', $decodeField['field_type']);
+                            $printElement = $this->element('Dashboard/Collections/Fields/connecting', ['uid' => $decodeField['uid'], 'id' => $collectionId, 'field_type' => $decodeField['field_type'], 'label' => $decodeField['label'], 'info' => $decodeField['info'], 'required' => $decodeField['required'], 'value' => $fieldValue, 'options' => $decodeField['options']]);
+                        }
+                        else {
+                            $printElement = $this->element('Dashboard/Collections/Fields/' . $decodeField['field_type'], ['uid' => $decodeField['uid'], 'field_type' => $decodeField['field_type'], 'label' => $decodeField['label'], 'info' => $decodeField['info'], 'required' => $decodeField['required'], 'value' => $fieldValue, 'options' => $decodeField['options']]);
+                        }
             
                         if ($decodeField['field_type'] == 'text') {
                             $textInput[$decodeField['uid']] = $decodeField['label'];

@@ -20,7 +20,7 @@
                 $decodeFields = json_decode($singleton->fields, true);
                 if (count($decodeFields) > 0):
                     foreach ($decodeFields as $field):
-                        $decodeField = json_decode($field, true);
+                        $decodeField  = json_decode($field, true);
                         $printElement = $this->element('Dashboard/Collections/Fields/' . $decodeField['field_type'], ['uid' => $decodeField['uid'], 'field_type' => $decodeField['field_type'], 'label' => $decodeField['label'], 'info' => $decodeField['info'], 'required' => $decodeField['required'], 'options' => $decodeField['options']]);
             ?>
             <div>

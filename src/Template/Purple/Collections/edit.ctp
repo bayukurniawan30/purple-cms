@@ -4,6 +4,11 @@
 		'action' => 'ajaxGetOptions'
     ]);
 
+    $connectingCollFieldssUrl = $this->Url->build([
+		'_name'  => 'adminCollectionsAction',
+		'action' => 'ajaxGetConnectingFields'
+    ]);
+
     $submitRedirect = $this->Url->build([
         '_name' => 'adminCollections'
     ]);;
@@ -111,7 +116,14 @@
                         $countList = 1;
                         foreach ($decodeFields as $field):
                             $decodeField   = json_decode($field);
-                            $fieldTypeName = $this->cell('Collections::fieldTypeName', [$decodeField->field_type])->render();
+                            if (strpos($decodeField->field_type, 'connecting_') !== false) {
+                                $fieldTypeName = 'Connecting Collection';
+                                $connecting    = 1;
+                            }
+                            else {
+                                $fieldTypeName = $this->cell('Collections::fieldTypeName', [$decodeField->field_type])->render();
+                                $connecting    = 0;
+                            }
                 ?>
                     <li id="sortable-<?= $countList ?>" class="uk-width-1-1 uk-margin-remove-top" data-order="<?= $countList ?>" style="position: relative">
                         <div class="sortable-remover" style="position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 5; display: none; background: rgba(255,255,255,.4)"></div>
@@ -121,7 +133,7 @@
                             <input type="hidden" name="fields[]" value='<?= $field ?>'>
                             
                             <div class="uk-inline uk-align-right">
-                                <a href="#" class="uk-margin-small-right button-edit-component-field" data-purple-target="#sortable-<?= $countList ?>" data-purple-component="collection" data-purple-modal="#modal-add-field" data-purple-action="edit" data-purple-url="<?= $fieldOptionsUrl ?>" uk-icon="icon: pencil" uk-tooltip="Edit field"></a>
+                                <a href="#" class="uk-margin-small-right button-edit-component-field" data-purple-target="#sortable-<?= $countList ?>" data-purple-component="collection" data-purple-modal="#modal-add-field" data-purple-action="edit" data-purple-connecting="<?= $connecting ?>" data-purple-url="<?= $fieldOptionsUrl ?>" data-purple-conn-url="<?= $connectingCollFieldssUrl ?>" uk-icon="icon: pencil" uk-tooltip="Edit field"></a>
                                 <a href="#" class="text-danger button-delete-added-field" uk-icon="icon: close" data-purple-component="collection" data-purple-target="#sortable-<?= $countList ?>" uk-tooltip="Delete field"></a>
                             </div>
                         </div>
@@ -163,6 +175,14 @@
                         <div class="uk-inline uk-align-right" style="margin-bottom: 0">
                             <?php
                                 echo $this->Form->checkbox('status', ['class' => 'js-switch', 'value' => '1', 'checked' => $collection->status == '1' ? true : false, 'required' => false]);
+                            ?>
+                        </div>
+                    </li>
+                    <li class="uk-padding-small uk-margin-remove-top">
+                        Set as Connecting Collection
+                        <div class="uk-inline uk-align-right" style="margin-bottom: 0">
+                            <?php
+                                echo $this->Form->checkbox('connecting', ['class' => 'js-switch', 'value' => '1', 'checked' => $collection->connecting == '1' ? true : false, 'required' => false]);
                             ?>
                         </div>
                     </li>

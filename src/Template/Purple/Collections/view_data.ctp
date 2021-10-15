@@ -78,92 +78,106 @@
                                     $decodeContent = json_decode($data->content, true);
                                     echo '<tr>';
                                     echo '<td>' . $i . '</td>';
-
                                     $j = 1;
                                     $decodeFields = json_decode($collection->fields, true);
                                     foreach ($decodeFields as $field):
                                         $decodeField = json_decode($field, true);
-                                        if ($decodeContent[$decodeField['uid']]['field_type'] == 'text' ||
-                                            $decodeContent[$decodeField['uid']]['field_type'] == 'textarea' ||
-                                            $decodeContent[$decodeField['uid']]['field_type'] == 'time' ||
-                                            $decodeContent[$decodeField['uid']]['field_type'] == 'date'
-                                        ) {
-                                            echo '<td>' . $decodeContent[$decodeField['uid']]['value'] . '</td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'html') {
-                                            echo '<td>' . $this->Text->truncate(
-                                                html_entity_decode($decodeContent[$decodeField['uid']]['value']),
-                                                50,
-                                                [
-                                                    'ellipsis' => '...',
-                                                    'exact' => false,
-                                                    'html' => true
-                                                ]
-                                        ) . '</td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'markdown') {
-                                            echo '<td>Markdown content</td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'image') {
-                                            echo '<td><img src="' . $decodeContent[$decodeField['uid']]['value']['thumbnail']['300x300'] . '" alt="' . $decodeContent[$decodeField['uid']]['value']['thumbnail']['300x300'] . '" width="50" ></td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'gallery') {
-                                            echo '<td><div class="uk-child-width-expand@s uk-text-center uk-grid-small" uk-grid>';
-                                            $totalImage   = 1;
-                                            $totalGallery = count($decodeContent[$decodeField['uid']]['value']);
-                                            $moreImages   = $totalGallery - 2;
-                                            foreach ($decodeContent[$decodeField['uid']]['value'] as $gallery) {
-                                                if ($totalImage < 3) {
-                                                    echo '<div><img src="' . $gallery['thumbnail']['300x300'] . '" alt="' . $gallery['thumbnail']['300x300'] . '" width="100%"></div>';
+                                        if (array_key_exists($decodeField['uid'], $decodeContent)) {
+                                            if (strpos($decodeContent[$decodeField['uid']]['field_type'], 'connecting_') !== false) {
+                                                $collectionId         = (int)str_replace('connecting_', '', $decodeContent[$decodeField['uid']]['field_type']);
+                                                $connectingCollection = $this->cell('Collections::getConnectingCollectionDataValue', [$decodeContent[$decodeField['uid']]['value'], $decodeField['uid'], $collection->id])->render();
+                                                echo '<td>' . $connectingCollection . '</td>';
+                                            }
+                                            else {
+                                                if ($decodeContent[$decodeField['uid']]['field_type'] == 'text' ||
+                                                    $decodeContent[$decodeField['uid']]['field_type'] == 'textarea' ||
+                                                    $decodeContent[$decodeField['uid']]['field_type'] == 'time' ||
+                                                    $decodeContent[$decodeField['uid']]['field_type'] == 'date'
+                                                ) {
+                                                    echo '<td>' . $decodeContent[$decodeField['uid']]['value'] . '</td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'html') {
+                                                    echo '<td>' . $this->Text->truncate(
+                                                        html_entity_decode($decodeContent[$decodeField['uid']]['value']),
+                                                        50,
+                                                        [
+                                                            'ellipsis' => '...',
+                                                            'exact' => false,
+                                                            'html' => true
+                                                        ]
+                                                ) . '</td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'markdown') {
+                                                    echo '<td>Markdown content</td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'image') {
+                                                    echo '<td><img src="' . $decodeContent[$decodeField['uid']]['value']['thumbnail']['300x300'] . '" alt="' . $decodeContent[$decodeField['uid']]['value']['thumbnail']['300x300'] . '" width="50" ></td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'gallery') {
+                                                    echo '<td><div class="uk-child-width-expand@s uk-text-center uk-grid-small" uk-grid>';
+                                                    $totalImage   = 1;
+                                                    $totalGallery = count($decodeContent[$decodeField['uid']]['value']);
+                                                    $moreImages   = $totalGallery - 2;
+                                                    foreach ($decodeContent[$decodeField['uid']]['value'] as $gallery) {
+                                                        if ($totalImage < 3) {
+                                                            echo '<div><img src="' . $gallery['thumbnail']['300x300'] . '" alt="' . $gallery['thumbnail']['300x300'] . '" width="100%"></div>';
+                                                        }
+                                                        else {
+                                                            echo '<div><div class="uk-inline"><img src="' . $gallery['thumbnail']['300x300'] . '" alt="' . $gallery['thumbnail']['300x300'] . '" width="100%"><div class="uk-position-cover uk-overlay uk-overlay-primary uk-text-large uk-flex uk-flex-center uk-flex-middle">' . $moreImages . '</div></div></div>';
+                                                        }
+                                                        
+                                                        $totalImage++;
+
+                                                        if ($totalImage == 4) break;
+                                                    }
+                                                    echo '</div></td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'boolean') {
+                                                    if ($decodeContent[$decodeField['uid']]['value'] == '1') {
+                                                        echo '<td>True</td>';
+                                                    }
+                                                    else {
+                                                        echo '<td>False</td>';
+                                                    }
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'link') {
+                                                    if ($decodeContent[$decodeField['uid']]['value']['target'] == '_self') {
+                                                        $openLinkIn = '(Open in current tab)';
+                                                    }
+                                                    elseif ($decodeContent[$decodeField['uid']]['value']['target'] == '_blank') {
+                                                        $openLinkIn = '(Open in new tab)';
+                                                    }
+
+                                                    echo '<td>' . $decodeContent[$decodeField['uid']]['value']['url'] . ' ' . $openLinkIn .  '</td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'tags') {
+                                                    echo '<td>';
+                                                    if (strpos($decodeContent[$decodeField['uid']]['value'], ',') !== false) {
+                                                        $explodeTags = explode(',', $decodeContent[$decodeField['uid']]['value']);
+                                                    }
+                                                    else {
+                                                        $explodeTags = [$decodeContent[$decodeField['uid']]['value']];
+                                                    }
+
+                                                    foreach ($explodeTags as $tag) {
+                                                        $marginTag = '';
+                                                        if (end($explodeTags) !== $tag) {
+                                                            $marginTag = ' uk-margin-small-right';
+                                                        }
+                                                        echo '<span class="uk-label label-purple ' . $marginTag . '">' . $tag . '</span>';
+                                                    }
+                                                    echo '</td>';
+                                                }
+                                                elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'colorpicker') {
+                                                    echo '<td>' . $decodeContent[$decodeField['uid']]['value'] . ' <span uk-icon="icon: paint-bucket; ratio: .8" class="uk-margin-small-left" style="color: ' . $decodeContent[$decodeField['uid']]['value'] . '"></span></td>';
                                                 }
                                                 else {
-                                                    echo '<div><div class="uk-inline"><img src="' . $gallery['thumbnail']['300x300'] . '" alt="' . $gallery['thumbnail']['300x300'] . '" width="100%"><div class="uk-position-cover uk-overlay uk-overlay-primary uk-text-large uk-flex uk-flex-center uk-flex-middle">' . $moreImages . '</div></div></div>';
+                                                    echo '<td>' . $decodeContent[$decodeField['uid']]['value'] . '</td>';
                                                 }
-                                                
-                                                $totalImage++;
-
-                                                if ($totalImage == 4) break;
                                             }
-                                            echo '</div></td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'boolean') {
-                                            if ($decodeContent[$decodeField['uid']]['value'] == '1') {
-                                                echo '<td>True</td>';
-                                            }
-                                            else {
-                                                echo '<td>False</td>';
-                                            }
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'link') {
-                                            if ($decodeContent[$decodeField['uid']]['value']['target'] == '_self') {
-                                                $openLinkIn = '(Open in current tab)';
-                                            }
-                                            elseif ($decodeContent[$decodeField['uid']]['value']['target'] == '_blank') {
-                                                $openLinkIn = '(Open in new tab)';
-                                            }
-
-                                            echo '<td>' . $decodeContent[$decodeField['uid']]['value']['url'] . ' ' . $openLinkIn .  '</td>';
-                                        }
-                                        elseif ($decodeContent[$decodeField['uid']]['field_type'] == 'tags') {
-                                            echo '<td>';
-                                            if (strpos($decodeContent[$decodeField['uid']]['value'], ',') !== false) {
-                                                $explodeTags = explode(',', $decodeContent[$decodeField['uid']]['value']);
-                                            }
-                                            else {
-                                                $explodeTags = [$decodeContent[$decodeField['uid']]['value']];
-                                            }
-
-                                            foreach ($explodeTags as $tag) {
-                                                $marginTag = '';
-                                                if (end($explodeTags) !== $tag) {
-                                                    $marginTag = ' uk-margin-small-right';
-                                                }
-                                                echo '<span class="uk-label label-purple ' . $marginTag . '">' . $tag . '</span>';
-                                            }
-                                            echo '</td>';
                                         }
                                         else {
-                                            echo '<td>' . $decodeContent[$decodeField['uid']]['value'] . '</td>';
+                                            echo '<td></td>';
                                         }
 
                                         if ($j == 4) break;

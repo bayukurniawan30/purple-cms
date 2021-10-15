@@ -1407,7 +1407,32 @@
                         $('#modal-add-field').find('#error-get-' + compt + '-options').prop('hidden', true);
 
                         var options = (json.options);
+                        var helper  = (json.helper);
                         var jsonEditor = new JsonEditor('#json-display', JSON.parse(JSON.stringify(options)));
+
+                        if (helper != null) {
+                            $('#modal-add-field').find('#helper-collection-options').prop('hidden', false);
+                            $('#modal-add-field').find('#helper-collection-options p').html(helper);
+
+                            $('.connecting-collection-field-to-show').on('click', function() {
+                                var btn   = $(this),
+                                    uid   = btn.data('uid'),
+                                    label = btn.data('label'),
+                                    options = { showFieldUid: uid, showFieldLabel: label };
+                    
+                                var jsonEditor = new JsonEditor('#json-display', JSON.parse(JSON.stringify(options)));
+                    
+                                console.log(uid)
+                                console.log(label)
+                    
+                                return false;
+                            })
+                        }
+                        else {
+                            $('#modal-add-field').find('#helper-collection-options').prop('hidden', true);
+                            $('#modal-add-field').find('#helper-collection-options p').html('');
+                        }
+
                     }
                     else {
                         $('#modal-add-field').find('#error-get-' + compt + '-options').prop('hidden', false);
@@ -1432,9 +1457,11 @@
                     modal        = btn.data('purple-modal'),
                     action       = btn.data('purple-action'),
                     target       = btn.data('purple-target'),
+                    connecting   = btn.data('purple-connecting'),
                     options      = $(target).find('input[type=hidden]').val(),
                     parseOptions = $.parseJSON(options),
                     url          = btn.data('purple-url'),
+                    connUrl      = btn.data('purple-conn-url'),
                     field        = (parseOptions.field_type),
                     token        = $('#csrf-ajax-token').val();
 
@@ -1465,6 +1492,53 @@
                             $(modal).find('#field_required').val(parseOptions.required);
                             
                             var jsonEditor = new JsonEditor('#json-display', (parseOptions.options));
+
+                            if (connecting == '1') {
+                                $.ajax({
+                                    type: "POST",
+                                    url:  connUrl,
+                                    headers : {
+                                        'X-CSRF-Token': token
+                                    },
+                                    data: { key:field },
+                                    cache: false,
+                                    beforeSend: function(){
+                                    },
+                                    success: function(data){
+                                        var json    = $.parseJSON(data),
+                                            status  = json.status;
+
+                                        if (status == 'ok') {
+                                            var helper = json.helper;
+
+                                            $(modal).find('#helper-collection-options').prop('hidden', false);
+                                            $(modal).find('#helper-collection-options p').html(helper);
+
+                                            $('.connecting-collection-field-to-show').on('click', function() {
+                                                var btn   = $(this),
+                                                    uid   = btn.data('uid'),
+                                                    label = btn.data('label'),
+                                                    options = { showFieldUid: uid, showFieldLabel: label };
+                                    
+                                                var jsonEditor = new JsonEditor('#json-display', JSON.parse(JSON.stringify(options)));
+                                    
+                                                console.log(uid)
+                                                console.log(label)
+                                    
+                                                return false;
+                                            })
+                                        }
+                                        else {
+                                            $(modal).find('#helper-collection-options').prop('hidden', true);
+                                            $(modal).find('#helper-collection-options p').html('');
+                                        }
+                                    }
+                                })
+                            }
+                            else {
+                                $(modal).find('#helper-collection-options').prop('hidden', true);
+                                $(modal).find('#helper-collection-options p').html('');
+                            }
                         }
                         else {
                             $(modal).find('#error-get-' + compt + '-options').prop('hidden', false);

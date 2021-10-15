@@ -251,8 +251,22 @@ class CollectionsController extends AppController
 		$fieldTypes = $this->PurpleProjectComponents->fieldTypes();
 
 		$selectboxFieldTypes = [];
+
+		$connectingCollections = $this->Collections->find()->where(['status' => '1', 'connecting' => '1'])->order(['name' => 'ASC']);
+
 		foreach ($fieldTypes as $key => $value) {
-			$selectboxFieldTypes[$key] = $value['text'];
+			if ($connectingCollections->count() > 0) {
+				$selectboxFieldTypes['Default Fields'][$key] = $value['text'];
+			}
+			else {
+				$selectboxFieldTypes[$key] = $value['text'];
+			}
+		}
+
+		if ($connectingCollections->count() > 0) {
+			foreach ($connectingCollections as $cn) {
+				$selectboxFieldTypes['Connecting Collections']['connecting_' . $cn->id] = $cn->name;
+			}
 		}
 
 		$data = [
@@ -271,8 +285,22 @@ class CollectionsController extends AppController
 		$fieldTypes = $this->PurpleProjectComponents->fieldTypes();
 
 		$selectboxFieldTypes = [];
+
+		$connectingCollections = $this->Collections->find()->where(['status' => '1', 'connecting' => '1'])->order(['name' => 'ASC']);
+
 		foreach ($fieldTypes as $key => $value) {
-			$selectboxFieldTypes[$key] = $value['text'];
+			if ($connectingCollections->count() > 0) {
+				$selectboxFieldTypes['Default Fields'][$key] = $value['text'];
+			}
+			else {
+				$selectboxFieldTypes[$key] = $value['text'];
+			}
+		}
+
+		if ($connectingCollections->count() > 0) {
+			foreach ($connectingCollections as $cn) {
+				$selectboxFieldTypes['Connecting Collections']['connecting_' . $cn->id] = $cn->name;
+			}
 		}
 
 		$collection = $this->Collections->get($this->request->getParam('id'));
@@ -569,20 +597,99 @@ class CollectionsController extends AppController
 
 			$fieldTypes = $this->PurpleProjectComponents->fieldTypes();
 
-			if (array_key_exists($requestData->key, $fieldTypes)) {
-				$options = $fieldTypes[$requestData->key]['options'];
-				if ($options == NULL) {
-					$result = [];
+			if (array_key_exists($requestData->key, $fieldTypes) || strpos($requestData->key, 'connecting_') !== false) {
+				if (strpos($requestData->key, 'connecting_') !== false) {
+					$collectionId = (int)str_replace('connecting_', '', $requestData->key);
+					
+
+					$collectionDetail = $this->Collections->get($collectionId);
+					$fields = $collectionDetail->fields;
+					$decodeFields = json_decode($fields, true);
+
+					$fieldArray = [];
+					$uidArray   = [];
+					foreach ($decodeFields as $field) {
+						$decodeValue = json_decode($field);
+						array_push($fieldArray, '<a href="#" class="connecting-collection-field-to-show" data-uid="' . $decodeValue->uid . '" data-label="' . $decodeValue->label . '"><span class="uk-label" style="text-transform: none">' . $decodeValue->label . '</span></a>');
+						array_push($uidArray, $decodeValue->uid);
+					}
+
+					if (count($decodeFields) > 1) {
+						$helper = 'Choose which field to show between ' . Text::toList($fieldArray);
+						$result = [
+							'showFieldUid'   => '',
+							'showFieldLabel' => ''
+						];
+					}
+					else {
+						$helper = NULL;
+						$result = [
+							'showFieldUid'   => $uidArray[0],
+							'showFieldLabel' => $fieldArray[0]
+						];
+					}
 				}
 				else {
-					$result = $options;
+					$options = $fieldTypes[$requestData->key]['options'];
+					if ($options == NULL) {
+						$result = [];
+					}
+					else {
+						$result = $options;
+					}
+
+					$helper = NULL;
 				}
 
-				$json = json_encode(['status' => 'ok', 'options' => $result]);
+				$json = json_encode(['status' => 'ok', 'options' => $result, 'helper' => $helper]);
 			}
 			else {
 				$json = json_encode(['status' => 'error', 'error' => "Can't find options for that value."]);
 			}
+
+			$this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
+		}
+    	else {
+	        throw new NotFoundException(__('Page not found'));
+	    }
+	}
+	public function ajaxGetConnectingFields()
+	{
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+			// Sanitize user input
+			$filter = new Filter();
+			$filter->values(['key'])->trim()->stripHtml();
+			$filterResult = $filter->filter($this->request->getData());
+			$requestData  = json_decode(json_encode($filterResult), FALSE);
+
+			$collectionId = (int)str_replace('connecting_', '', $requestData->key);
+
+			$collectionDetail = $this->Collections->get($collectionId);
+			$fields = $collectionDetail->fields;
+			$decodeFields = json_decode($fields, true);
+
+			$fieldArray = [];
+			$uidArray   = [];
+			foreach ($decodeFields as $field) {
+				$decodeValue = json_decode($field);
+				array_push($fieldArray, '<a href="#" class="connecting-collection-field-to-show" data-uid="' . $decodeValue->uid . '" data-label="' . $decodeValue->label . '"><span class="uk-label" style="text-transform: none">' . $decodeValue->label . '</span></a>');
+				array_push($uidArray, $decodeValue->uid);
+			}
+
+			if (count($decodeFields) > 1) {
+				$helper = 'Choose which field to show between ' . Text::toList($fieldArray);
+			}
+			else {
+				$helper = NULL;
+			}
+
+			$json = json_encode(['status' => 'ok', 'helper' => $helper]);
 
 			$this->response = $this->response->withType('json');
             $this->response = $this->response->withStringBody($json);
@@ -608,7 +715,7 @@ class CollectionsController extends AppController
 
 			$fieldTypes = $this->PurpleProjectComponents->fieldTypes();
 
-			if (array_key_exists($requestData->field_type, $fieldTypes)) {
+			if (array_key_exists($requestData->field_type, $fieldTypes) || strpos($requestData->field_type, 'connecting_') !== false) {
 				$result = [
 					'uid'        => Text::uuid(),
 					'field_type' => $requestData->field_type,

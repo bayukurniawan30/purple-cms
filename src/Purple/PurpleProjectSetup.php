@@ -275,6 +275,7 @@ class PurpleProjectSetup
 				slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    fields TEXT NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
+			    connecting CHAR( 1 ) NOT NULL,
 			    sorting VARCHAR( 50 ) NOT NULL,
 			    sorting_order VARCHAR( 10 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
