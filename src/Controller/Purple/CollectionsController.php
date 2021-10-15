@@ -606,12 +606,14 @@ class CollectionsController extends AppController
 					$fields = $collectionDetail->fields;
 					$decodeFields = json_decode($fields, true);
 
-					$fieldArray = [];
-					$uidArray   = [];
+					$labelArray  = [];
+					$fieldArray  = [];
+					$uidArray    = [];
 					foreach ($decodeFields as $field) {
 						$decodeValue = json_decode($field);
 						array_push($fieldArray, '<a href="#" class="connecting-collection-field-to-show" data-uid="' . $decodeValue->uid . '" data-label="' . $decodeValue->label . '"><span class="uk-label" style="text-transform: none">' . $decodeValue->label . '</span></a>');
 						array_push($uidArray, $decodeValue->uid);
+						array_push($labelArray, $decodeValue->label);
 					}
 
 					if (count($decodeFields) > 1) {
@@ -625,7 +627,7 @@ class CollectionsController extends AppController
 						$helper = NULL;
 						$result = [
 							'showFieldUid'   => $uidArray[0],
-							'showFieldLabel' => $fieldArray[0]
+							'showFieldLabel' => $labelArray[0]
 						];
 					}
 				}
