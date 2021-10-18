@@ -241,8 +241,10 @@ class CollectionsController extends AppController
                         ];
 
                         if ($paging !== NULL && $limit !== NULL && filter_var($paging, FILTER_VALIDATE_INT) && filter_var($limit, FILTER_VALIDATE_INT)) {
-                            $return['page']  = $paging;
-                            $return['limit'] = $limit;
+                            $totalPage = ceil($totalAllData / $limit);
+                            $return['page']       = $paging;
+                            $return['total_page'] = $totalPage;
+                            $return['limit']      = $limit;
                         }
 
                         $uidSlugArray = [];
@@ -436,8 +438,10 @@ class CollectionsController extends AppController
                         ];
 
                         if ($paging !== NULL && $limit !== NULL && filter_var($paging, FILTER_VALIDATE_INT) && filter_var($limit, FILTER_VALIDATE_INT)) {
-                            $return['page']  = $paging;
-                            $return['limit'] = $limit;
+                            $totalPage = ceil($totalAllData / $limit);
+                            $return['page']       = $paging;
+                            $return['total_page'] = $totalPage;
+                            $return['limit']      = $limit;
                         }
 
                         $uidSlugArray = [];
