@@ -90,6 +90,7 @@
                                             }
                                             else {
                                                 if ($decodeContent[$decodeField['uid']]['field_type'] == 'text' ||
+                                                    $decodeContent[$decodeField['uid']]['field_type'] == 'number' ||
                                                     $decodeContent[$decodeField['uid']]['field_type'] == 'textarea' ||
                                                     $decodeContent[$decodeField['uid']]['field_type'] == 'time' ||
                                                     $decodeContent[$decodeField['uid']]['field_type'] == 'date'

@@ -769,6 +769,9 @@ class CollectionsController extends AppController
 				if ($value['field_type'] == 'text' || $value['field_type'] == 'textarea' || $value['field_type'] == 'html' || $value['field_type'] == 'markdown') {
 					$newValue = htmlentities($value['value']);
 				}
+				elseif ($value['field_type'] == 'number') {
+					$newValue = intval($value['value']);
+				}
 				elseif ($value['field_type'] == 'image') {
 					$originalPath        = $baseUrl . 'uploads/images/original/' . $value['value'];
 					$thumbnailSquarePath = $baseUrl . 'uploads/images/thumbnails/300x300/' . $value['value'];
@@ -899,6 +902,9 @@ class CollectionsController extends AppController
 			foreach ($setData as $key => $value) {
 				if ($value['field_type'] == 'text' || $value['field_type'] == 'textarea' || $value['field_type'] == 'html' || $value['field_type'] == 'markdown') {
 					$newValue = htmlentities($value['value']);
+				}
+				elseif ($value['field_type'] == 'number') {
+					$newValue = intval($value['value']);
 				}
 				elseif ($value['field_type'] == 'image') {
 					$originalPath        = $baseUrl . 'uploads/images/original/' . $value['value'];

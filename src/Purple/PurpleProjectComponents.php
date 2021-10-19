@@ -62,6 +62,13 @@ class PurpleProjectComponents
                 'text' => 'Markdown editor',
                 'options' => NULL
             ],
+            'number'        => [
+                'name'    => '',
+                'text' => 'Number input',
+                'options' => [
+                    'placeholder' => '', 'min' => 0, 'max' => '', 'step' => 1
+                ]
+            ],
             'password'    => [
                 'name'    => '',
                 'text' => 'Password',
