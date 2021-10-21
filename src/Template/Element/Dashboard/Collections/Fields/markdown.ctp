@@ -9,7 +9,7 @@
         $newArray = $default->append($options)->toArray();
 
         if (isset($value)) {
-            $newArray['value'] = $value;
+            $newArray['value'] = html_entity_decode($value);
         }
 
         if ($info != '') {

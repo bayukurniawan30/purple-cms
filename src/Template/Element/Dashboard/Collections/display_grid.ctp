@@ -1,5 +1,5 @@
 <div class="col-md-12">
-    <div class="uk-child-width-1-4@m uk-grid-match" uk-grid="masonry: true">
+    <div class="uk-child-width-1-4@m uk-grid-match" uk-grid="masonry: false">
         <?php
             foreach ($collections as $collection):
                 $countDatas = (int)$this->cell('Collections::countDatas', [$collection->id])->render();
