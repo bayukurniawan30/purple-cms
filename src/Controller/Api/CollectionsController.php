@@ -294,9 +294,14 @@ class CollectionsController extends AppController
                                     
                                 }
                                 else {
-                                    $content[$uidSlugArray[$key]] = $value;
+                                    if ($value['field_type'] == 'markdown' || $value['field_type'] == 'html') {
+                                        $value['value'] = html_entity_decode($value['value']);
+                                        $content[$uidSlugArray[$key]] = $value;
+                                    }
+                                    else {
+                                        $content[$uidSlugArray[$key]] = $value;
+                                    }
                                 }
-
                             }
 
                             array_push($return['data'], $content + $moreArray);
@@ -491,7 +496,13 @@ class CollectionsController extends AppController
                                     
                                 }
                                 else {
-                                    $content[$uidSlugArray[$key]] = $value;
+                                    if ($value['field_type'] == 'markdown' || $value['field_type'] == 'html') {
+                                        $value['value'] = html_entity_decode($value['value']);
+                                        $content[$uidSlugArray[$key]] = $value;
+                                    }
+                                    else {
+                                        $content[$uidSlugArray[$key]] = $value;
+                                    }
                                 }
 
                             }
@@ -585,7 +596,13 @@ class CollectionsController extends AppController
 
                         $content = [];
                         foreach ($decodeContent as $key => $value) {
-                            $content[$uidSlugArray[$key]] = $value;
+                            if ($value['field_type'] == 'markdown' || $value['field_type'] == 'html') {
+                                $value['value'] = html_entity_decode($value['value']);
+                                $content[$uidSlugArray[$key]] = $value;
+                            }
+                            else {
+                                $content[$uidSlugArray[$key]] = $value;
+                            }
                         }
 
                         $return['data'] = $content + $moreArray;
