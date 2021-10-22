@@ -882,6 +882,14 @@ class PurpleProjectSetup
 			'name'  => '2fa',
 			'value' => 'disable'
 		]);
+		$this->conn->insert('settings', [
+			'name'  => 'headlessfront',
+			'value' => 'disable'
+		]);
+		$this->conn->insert('settings', [
+			'name'  => 'headlessweb',
+			'value' => ''
+		]);
 
 		return $returnData;
 	}

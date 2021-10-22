@@ -28,12 +28,20 @@ class SearchController extends AppController
         else {
             $purpleSettings = new PurpleProjectSettings();
             $maintenance    = $purpleSettings->maintenanceMode();
+            $headlessFront  = $purpleSettings->headlessFront();
             $userLoggedIn   = $purpleSettings->checkUserLoggedIn();
 
             if ($maintenance == 'enable' && $userLoggedIn == false) {
                 return $this->redirect(
                     ['controller' => 'Maintenance', 'action' => 'index']
                 );
+            }
+            else {
+                if ($headlessFront == 'enable') {
+                    return $this->redirect(
+                        ['controller' => 'Headless', 'action' => 'index']
+                    );
+                }
             }
         }
     }

@@ -169,6 +169,29 @@
                     ]
                 );
             }
+            elseif ($name == 'headlessweb') {
+                echo $this->Form->text('value', [
+                    'class'             => 'form-control', 
+                    'placeholder'       => 'Provide full url with https:// or http://',
+                    'data-parsley-type' => 'url',
+                    'autofocus'         => 'autofocus',
+                    'value'             => $value
+                ]);
+            }
+            elseif ($name == 'headlessfront') {
+                echo $this->Form->select(
+                    'value',
+                    [
+                        'enable'  => 'Yes', 
+                        'disable' => 'No' 
+                    ],
+                    [
+                        'empty'    => 'Select Value', 
+                        'class'    => 'form-control',
+                        'required' => 'required'
+                    ]
+                );
+            }
             elseif ($name == 'smtppassword') {
                 echo $this->Form->password('value', [
                     'class'       => 'form-control', 

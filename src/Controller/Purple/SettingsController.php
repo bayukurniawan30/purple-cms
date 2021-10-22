@@ -144,22 +144,26 @@ class SettingsController extends AppController
         $queryDateFormat  = $this->Settings->find()->where(['name' => 'dateformat'])->first();
         $queryTimeFormat  = $this->Settings->find()->where(['name' => 'timeformat'])->first();
         $queryTimezone    = $this->Settings->find()->where(['name' => 'timezone'])->first();
+        $queryHeadless    = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
+        $queryHeadlessWeb = $this->Settings->find()->where(['name' => 'headlessweb'])->first();
 
         $purpleSettings = new PurpleProjectSettings();
         $timezone       = $purpleSettings->timezone();
 
 		$data = [
-            'pageTitle'         => 'General',
-            'pageBreadcrumb'    => 'Settings::General',
-            'settingSiteName'   => $querySiteName,
-            'settingTagLine'    => $queryTagLine,
-            'settingEmail'      => $queryEmail,
-            'settingPhone'      => $queryPhone,
-            'settingAddress'    => $queryAddress,
-            'settingDateFormat' => $queryDateFormat,
-            'settingTimeFormat' => $queryTimeFormat,
-            'settingTimezone'   => $queryTimezone,
-            'timezone'          => $timezone
+            'pageTitle'          => 'General',
+            'pageBreadcrumb'     => 'Settings::General',
+            'settingSiteName'    => $querySiteName,
+            'settingTagLine'     => $queryTagLine,
+            'settingEmail'       => $queryEmail,
+            'settingPhone'       => $queryPhone,
+            'settingAddress'     => $queryAddress,
+            'settingDateFormat'  => $queryDateFormat,
+            'settingTimeFormat'  => $queryTimeFormat,
+            'settingTimezone'    => $queryTimezone,
+            'settingHeadless'    => $queryHeadless,
+            'settingHeadlessWeb' => $queryHeadlessWeb,
+            'timezone'           => $timezone
         ];
     	$this->set($data);
 	}

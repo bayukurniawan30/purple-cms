@@ -31,6 +31,13 @@ class PagesController extends AppController
     public $imagesLimit = 30;
     public $pagesLimit  = 10;
 
+    private function reservedPageTitle() 
+    {
+	    $purpleGlobal      = new PurpleProjectGlobal();
+        $reservedPageTitle = $purpleGlobal->reservedPageTitle();
+
+        return $reservedPageTitle;
+    }
     public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
@@ -408,7 +415,7 @@ class PagesController extends AppController
                 $sessionID = $session->read('Admin.id');
 				$admin     = $this->Admins->get($sessionID);
 
-                $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
+                $reservedText = $this->reservedPageTitle();
 
                 $slug = Text::slug(strtolower($requestData->title));
                 $findDuplicate = $this->Pages->find()->where(['slug' => $slug]);
@@ -510,7 +517,7 @@ class PagesController extends AppController
                 else {
                     $slug = Text::slug(strtolower($this->request->getData('title')));
 
-                    $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
+                    $reservedText = $this->reservedPageTitle();
 
                     if (in_array($slug, $reservedText)) {
                         $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
@@ -716,7 +723,7 @@ class PagesController extends AppController
 
                 $slug = Text::slug(strtolower($requestData->title));
 
-                $reservedText = ['purple', 'setup', 'posts', 'tag', 'production-site'];
+                $reservedText = $this->reservedPageTitle();
 
                 if (in_array($slug, $reservedText)) {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);
@@ -781,7 +788,7 @@ class PagesController extends AppController
 
                 $slug = Text::slug(strtolower($requestData->title));
                     
-                $reservedText = ['purple', 'setup'];
+                $reservedText = $this->reservedPageTitle();
 
                 if (in_array($slug, $reservedText)) {
                     $json = json_encode(['status' => 'error', 'error' => "Can't save data. Please use another title, because the title is reserved word by Purple CMS. Please try again."]);

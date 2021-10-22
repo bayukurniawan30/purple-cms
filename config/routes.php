@@ -95,6 +95,14 @@ Router::scope('/', function (RouteBuilder $routes) {
 			['controller' => 'Maintenance', 'action' => 'ajaxGetEmail'], 
 			['_name' => 'ajaxGetNotifyEmail']
 	);
+
+	/**
+	 * Headless Routing
+	 */
+	$routes->connect('/headless', 
+			['controller' => 'Headless', 'action' => 'index'], 
+			['_name' => 'websiteSetAsHeadlessCms']
+	);
 	
 	/**
 	 * Home Routing

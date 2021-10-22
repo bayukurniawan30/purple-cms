@@ -390,4 +390,9 @@ class PurpleProjectGlobal
 		}
 		return $key;
 	}
+	public function reservedPageTitle()
+	{
+		$array = ['purple', 'setup', 'posts', 'tag', 'production-site', 'maintenance', 'headless'];
+		return $array;
+	}
 }

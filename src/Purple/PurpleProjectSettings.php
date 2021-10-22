@@ -81,4 +81,9 @@ class PurpleProjectSettings
         $query = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'comingsoon'])->first();
         return $query->value;
     }
+    public function headlessFront()
+    {
+        $query = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'headlessfront'])->first();
+        return $query->value;
+    }
 }
