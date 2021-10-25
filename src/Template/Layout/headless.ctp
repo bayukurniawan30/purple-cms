@@ -53,6 +53,13 @@
                 font-size: 1rem;
             }
         </style>
+        <?php if ($favicon != ''): ?>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="<?= $this->cell('Medias::mediaPath', [$favicon, 'image', 'original']) ?>" />
+        <?php else: ?>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="<?= $this->request->getAttribute("webroot").'master-assets/img/favicon.png' ?>">
+        <?php endif; ?>
         <script type="text/javascript">
             var cakeDebug    = "<?= $cakeDebug ?>",
                 formSecurity = "<?= $formSecurity ?>";

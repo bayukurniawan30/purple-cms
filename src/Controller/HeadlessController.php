@@ -62,7 +62,8 @@ class HeadlessController extends AppController
     	$data = [
             'web'                 => $web,
             'ldJsonWebsite'       => $websiteSchema,
-            'ldJsonOrganization'  => $orgSchema
+            'ldJsonOrganization'  => $orgSchema,
+            'favicon'             => $this->Settings->settingsFavicon()
     	];
 
         $this->set($data);

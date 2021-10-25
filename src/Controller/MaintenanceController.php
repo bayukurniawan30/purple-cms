@@ -74,7 +74,8 @@ class MaintenanceController extends AppController
     		'notifyEmail'         => $maintenance,
             'settingBgComingSoon' => $queryBackgroundComingSoon,
             'ldJsonWebsite'       => $websiteSchema,
-            'ldJsonOrganization'  => $orgSchema
+            'ldJsonOrganization'  => $orgSchema,
+            'favicon'             => $this->Settings->settingsFavicon()
     	];
 
         $this->set($data);

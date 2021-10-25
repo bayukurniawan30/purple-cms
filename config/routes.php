@@ -1136,6 +1136,7 @@ Router::prefix('api', function ($routes) {
 		->setPass(['slug'])
 		->setMethods(['GET']);
 
+	// Fetch Collection data by connecting collection
 	$routes->connect('/' . $apiVersion . '/collections/data/:slug/:connectingSlug/:connectingValue', 
 			['controller' => 'Collections', 'action' => 'dataByConnecting'], 
 			['_name' => $routeName . 'ViewCollectionDatasByConnecting'])
