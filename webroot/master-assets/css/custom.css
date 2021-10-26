@@ -553,6 +553,9 @@ select.form-control {
 }
 
 /* markdown editor */
+.CodeMirror {
+    height: auto!important;
+}
 .mdeditor_drop .dz-remove {
     display: none!important;
 }
@@ -578,6 +581,9 @@ select.form-control {
     left: 50%!important;
     top: 50%!important;
     transform: translate(-50%, -50%)!important;
+}
+.mdeditor_preview {
+    border-left: 1px solid #EEE;
 }
 
 /* Datepicker */
