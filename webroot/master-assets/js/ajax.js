@@ -324,7 +324,6 @@ $(document).ready(function() {
             else {
                 var ajaxButtonNormalState  = customButtonNormal;
                 var ajaxButtonNormalState  = customButtonNormal;
-
             }
 
             var ajaxProcessing = $.ajax({
@@ -365,6 +364,29 @@ $(document).ready(function() {
                         setTimeout(function() {
                             window.location=redirect;
                         }, 1500);
+                    }
+                    else if (redirectType == 'replace') {
+                        var replaceTarget = $(redirect.target),
+                            replaceAction = redirect.action;
+
+                        console.log(replaceTarget)
+                        console.log(replaceAction)
+
+                        if (replaceAction == 'val') {
+                            replaceTarget.val(content);
+                        }
+                        else if (replaceAction == 'html') {
+                            replaceTarget.html(content);
+                        }
+                        else if (replaceAction == 'text') {
+                            replaceTarget.text(content);
+                        }
+                        else if (replaceAction == 'append') {
+                            replaceTarget.append(content);
+                        }
+                        else if (replaceAction == 'prepend') {
+                            replaceTarget.prepend(content);
+                        }
                     }
                     else {
                         $(redirect).html(content);

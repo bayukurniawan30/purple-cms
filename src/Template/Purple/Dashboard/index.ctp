@@ -74,6 +74,24 @@
     </div>
 </div>
 
+<?php
+    if ($headlessStatus == 'enable'):
+?>
+<div class="row">
+    <div class="col-md-12">
+        <div class="uk-alert-warning uk-margin-medium-bottom" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>
+                <strong>Headless CMS Is Enabled</strong><br>
+                Visitors stats won't count. Please use third party service like <a href="https://analytics.google.com/analytics/web/" target="_blank">Google Analytics</a> in your Front-End.
+            </p>
+        </div>
+    </div>
+</div>
+<?php
+    endif;
+?>
+
 <div id="dashboard-main-panel" class="row">
     <div id="dashboard-statistic-container" class="col-md-7 grid-margin stretch-card">
         <div class="card">

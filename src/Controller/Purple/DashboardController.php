@@ -204,7 +204,9 @@ class DashboardController extends AppController
 
 			$allPosts       = $this->Blogs->dashboardStatistic();		
 			$draftPosts     = $this->Blogs->dashboardStatistic('draft');		
-			$oneMonthPosts  = $this->Blogs->lastMonthTotalPosts();		
+			$oneMonthPosts  = $this->Blogs->lastMonthTotalPosts();
+			
+			$headlessStatus = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
 
 			$data = [
 				'statisticVisitors'         => $purpleGlobal->shortenNumber($currentMonthVisitor),
@@ -228,7 +230,8 @@ class DashboardController extends AppController
 				'draftPosts'			    => $draftPosts,
 				'oneMonthPosts'			    => $oneMonthPosts,
 				'selectedMonth'				=> $selectedMonth,
-				'selectedYear'				=> $selectedYear
+				'selectedYear'				=> $selectedYear,
+				'headlessStatus'			=> $headlessStatus->value
 			];
 	    	$this->set($data);
 

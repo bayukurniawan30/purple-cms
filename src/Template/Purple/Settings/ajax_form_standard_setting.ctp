@@ -358,6 +358,13 @@
                 'class' => 'btn btn-gradient-primary'
             ]);
         }
+
+        if ($name == 'apiaccesskey') {
+            echo $this->Form->button('Generate Key', [
+                'id'    => 'button-generate-key',
+                'class' => 'btn btn-outline-success uk-margin-left'
+            ]);
+        }
     
         echo $this->Form->button('Cancel', [
             'id'          => 'button-close-modal',
@@ -387,8 +394,26 @@
         $('#fdb-code-editor-ace').ace({ theme: 'chrome', lang: 'html' }).removeAttr('required');
         <?php
             endif;
+
+            if ($name == 'apiaccesskey'):
         ?>
-        
+        var generateNewKey = {
+            button          : '#button-generate-key',
+            ajaxType        : 'POST',
+            sendData        : { action: "newKey" },
+            action          : 'other',
+            url             : '<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxGenerateApiKey"]); ?>',
+            redirectType    : 'replace',
+            redirect        : { target: "#purple-key", action: 'val' },
+            btnNormal       : $('#button-generate-key').html(),
+            btnLoading      : false
+        };
+
+        ajaxButton(generateNewKey.button, generateNewKey.ajaxType, generateNewKey.sendData, generateNewKey.action, generateNewKey.url, generateNewKey.redirectType, generateNewKey.redirect, generateNewKey.btnNormal, generateNewKey.btnLoading, false, false, true);
+        <?php
+            endif;
+        ?>
+
         $('#form-update-setting').parsley();
         
         var settingUpdate = {

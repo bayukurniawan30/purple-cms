@@ -134,6 +134,20 @@ class SettingsController extends AppController
             );
         }
 	}
+    public function apiKeyGenerator($length = 32)
+	{
+		$key = '';
+		list($usec, $sec) = explode(' ', microtime());
+		mt_srand((float) $sec + ((float) $usec * 100000));
+		
+		$inputs = array_merge(range('z','a'),range(0,9),range('A','Z'));
+
+		for ($i = 0; $i < $length; $i++)
+		{
+			$key .= $inputs[mt_rand(0,61)];
+		}
+		return $key;
+	}
 	public function general()
 	{
         $querySiteName    = $this->Settings->find()->where(['name' => 'sitename'])->first();
@@ -531,5 +545,24 @@ class SettingsController extends AppController
         else {
 	        throw new NotFoundException(__('Page not found'));
 	    }
+    }
+    public function ajaxGenerateApiKey()
+    {
+		$this->viewBuilder()->enableAutoLayout(false);
+
+        if ($this->request->is('ajax') || $this->request->is('post')) {
+            $hashApiKey = $this->apiKeyGenerator();
+
+            $json = json_encode(['status' => 'ok', 'content' => $hashApiKey]);
+
+            $this->response = $this->response->withType('json');
+            $this->response = $this->response->withStringBody($json);
+
+            $this->set(compact('json'));
+            $this->set('_serialize', 'json');
+        }
+        else {
+	        throw new NotFoundException(__('Page not found'));
+        }
     }
 }
