@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([
@@ -59,7 +59,7 @@
                 </div>
 
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([

@@ -17,13 +17,13 @@
             </div>
             <div class="card-body">
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([
                                     'Setting Name',
                                     'Value',
-                                    ['Action' => ['class' => 'uk-width-small text-center']]
+                                    ['Action' => ['class' => 'uk-width-small']]
                                 ]);
                             ?>
                         </thead>
@@ -31,7 +31,7 @@
                             <tr>
                                 <td>Site Name</td>
                                 <td><?= $settingSiteName->value ?></td>
-                                <td class="text-center">
+                                <td>
                                     <button type="button" class="btn btn-link btn-sm btn-fw button-link-to-modal-setting" data-purple-title="Site Name" data-purple-target="#modal-edit-settings" data-purple-id="<?= $settingSiteName->id ?>" data-purple-url="<?= $this->Url->build(["controller" => "Settings", "action" => "ajaxFormStandardSetting"]); ?>" data-purple-redirect="general" uk-tooltip="Change Site Name"><i class="mdi mdi-pencil"></i> Change</button>
                                 </td>
                             </tr>
@@ -77,7 +77,7 @@
             </div>
             <div class="card-body">
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([
@@ -123,7 +123,7 @@
             </div>
             <div class="card-body">
                 <div class="uk-overflow-auto">
-                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider">
+                    <table class="uk-table uk-table-justify uk-table-middle uk-table-divider table-settings">
                         <thead>
                             <?php
                                 echo $this->Html->tableHeaders([
