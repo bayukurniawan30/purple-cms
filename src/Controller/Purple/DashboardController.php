@@ -89,6 +89,8 @@ class DashboardController extends AppController
 			$plugins		= $purplePlugins->purplePlugins();
 			$this->set('plugins', $plugins);
 
+			$headlessStatus = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
+
 			$data = [
 				'sessionHost'       => $sessionHost,
 				'sessionID'         => $sessionID,
@@ -103,7 +105,7 @@ class DashboardController extends AppController
 				'title'             => 'Dashboard | Purple CMS',
 				'pageTitle'         => 'Dashboard',
 				'pageTitleIcon'     => 'mdi-home',
-				'pageBreadcrumb'    => 'Overview <span id="selected-date-range"></span> <a href="#" class="button-dashboard-date-range" data-purple-modal="#modal-select-date-range"><span class="dashboard-date-range bg-gradient-primary text-white" uk-tooltip="title:Select Month of Visit""><i class="mdi mdi-calendar"></i></span></a>',
+				'pageBreadcrumb'    => $headlessStatus->value == 'enable' ? '' : 'Overview <span id="selected-date-range"></span> <a href="#" class="button-dashboard-date-range" data-purple-modal="#modal-select-date-range"><span class="dashboard-date-range bg-gradient-primary text-white" uk-tooltip="title:Select Month of Visit""><i class="mdi mdi-calendar"></i></span></a>',
 				'appearanceFavicon' => $queryFavicon
 			];
 			$this->set($data);
@@ -116,6 +118,11 @@ class DashboardController extends AppController
 	}
 	public function index() 
 	{
+		$this->loadModel('Collections');
+		$this->loadModel('CollectionDatas');
+		$this->loadModel('Singletons');
+		$this->loadModel('SingletonDatas');
+
 		$session         = $this->getRequest()->getSession();
 		$sessionHost     = $session->read('Admin.host');
 		$sessionID       = $session->read('Admin.id');
@@ -207,6 +214,13 @@ class DashboardController extends AppController
 			$oneMonthPosts  = $this->Blogs->lastMonthTotalPosts();
 			
 			$headlessStatus = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
+			$headlessWeb    = $this->Settings->find()->where(['name' => 'headlessweb'])->first();
+
+			$totalCollections     = $this->Collections->total();
+			$totalCollectionDatas = $this->CollectionDatas->total();
+
+			$totalSingletons     = $this->Singletons->total();
+			$totalSingletonDatas = $this->SingletonDatas->total();
 
 			$data = [
 				'statisticVisitors'         => $purpleGlobal->shortenNumber($currentMonthVisitor),
@@ -231,7 +245,12 @@ class DashboardController extends AppController
 				'oneMonthPosts'			    => $oneMonthPosts,
 				'selectedMonth'				=> $selectedMonth,
 				'selectedYear'				=> $selectedYear,
-				'headlessStatus'			=> $headlessStatus->value
+				'headlessStatus'			=> $headlessStatus->value,
+				'headlessWeb'			    => $headlessWeb->value,
+				'totalCollections'			=> $totalCollections,
+				'totalCollectionDatas'		=> $totalCollectionDatas,
+				'totalSingletons'			=> $totalSingletons,
+				'totalSingletonDatas'		=> $totalSingletonDatas
 			];
 	    	$this->set($data);
 

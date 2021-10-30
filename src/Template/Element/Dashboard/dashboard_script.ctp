@@ -27,6 +27,8 @@
 		  	});
 		}
 		*/
+
+		var headlessStatus = '<?= $headlessStatus ?>';
 	
 		setTimeout(function() {
 			$('.greeting-to-user').addClass('uk-animation-fade uk-animation-reverse');
@@ -165,7 +167,7 @@
 		    $("#visit-sale-chart-legend").html(myChart.generateLegend());
 		}
 		
-		if ($('#bind-top-countries').length > 0) {
+		if ($('#bind-top-countries').length > 0 && headlessStatus == 'enable') {
 			var targetCountries = $('#bind-top-countries'),
 				data   = { page:'dashboard' },
 				url    = targetCountries.data('purple-url');
@@ -196,7 +198,7 @@
 			});
 		}
 
-		if ($('#bind-top-posts').length > 0) {
+		if ($('#bind-top-posts').length > 0 && headlessStatus == 'enable') {
 			var targetPosts = $('#bind-top-posts'),
 				data   = { page:'dashboard' },
 				url    = targetPosts.data('purple-url');

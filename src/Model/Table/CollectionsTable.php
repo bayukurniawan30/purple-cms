@@ -73,4 +73,19 @@ class CollectionsTable extends Table
             return $date->format('Y-m-d H:i:s');
         }
 	}
+    public function total($status = NULL)
+    {
+        $collections = $this->find();
+        if ($status == '0') {
+            $collections->where(['status' => '0']);
+        }
+        elseif ($status == '1') {
+            $collections->where(['status' => '1']);
+        }
+        elseif ($status == NULL) {
+            $collections->where(['OR' => [['status' => '0'], ['status' => '1']]]);
+        }
+
+        return $collections->count();
+    }
 }

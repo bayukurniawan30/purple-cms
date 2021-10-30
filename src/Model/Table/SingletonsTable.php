@@ -69,4 +69,19 @@ class SingletonsTable extends Table
             return $date->format('Y-m-d H:i:s');
         }
 	}
+    public function total($status = NULL)
+    {
+        $singletons = $this->find();
+        if ($status == '0') {
+            $singletons->where(['status' => '0']);
+        }
+        elseif ($status == '1') {
+            $singletons->where(['status' => '1']);
+        }
+        elseif ($status == NULL) {
+            $singletons->where(['OR' => [['status' => '0'], ['status' => '1']]]);
+        }
+
+        return $singletons->count();
+    }
 }

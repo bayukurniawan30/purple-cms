@@ -41,4 +41,16 @@ class CollectionDatasTable extends Table
         $date->setTimezone(new \DateTimeZone($timezone));
         return $date->format('Y-m-d H:i:s');
     }
+    public function total($collectionId = NULL)
+    {
+        $data = $this->find()->contain('Collections');
+        if ($collectionId != NULL) {
+            $data->where(['CollectionDatas.collection_id' => $collectionId]);
+        }
+        else {
+            $data->where(['OR' => [['Collections.status' => '0'], ['Collections.status' => '1']]]);
+        }
+
+        return $data->count();
+    }
 }

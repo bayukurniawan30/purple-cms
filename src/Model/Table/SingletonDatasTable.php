@@ -41,4 +41,16 @@ class SingletonDatasTable extends Table
         $date->setTimezone(new \DateTimeZone($timezone));
         return $date->format('Y-m-d H:i:s');
     }
+    public function total($singletonId = NULL)
+    {
+        $data = $this->find()->contain('Singletons');
+        if ($singletonId != NULL) {
+            $data->where(['Singletons.singleton_id' => $singletonId, 'OR' => [['Singletons.status' => '0'], ['Singletons.status' => '1']]]);
+        }
+        else {
+            $data->where(['OR' => [['Singletons.status' => '0'], ['Singletons.status' => '1']]]);
+        }
+
+        return $data->count();
+    }
 }
