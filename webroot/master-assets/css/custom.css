@@ -280,6 +280,11 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
     .outside-btn-toolbar .uk-align-right button:last-child {
         margin-right: 0;
     }
+    .outside-btn-toolbar .uk-align-right .btn-dark {
+        height: fit-content;
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
 }
 
 /* Weather Icon */
