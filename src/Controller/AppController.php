@@ -49,13 +49,23 @@ class AppController extends Controller
 
         }
         else {
+            $this->loadModel('Settings');
+
+            if ($this->request->getParam('prefix') == 'purple' && $this->request->getParam('controller') != 'Authenticate') {
+                $headlessStatus = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
+                $headlessWeb    = $this->Settings->find()->where(['name' => 'headlessweb'])->first();
+
+                $this->set([
+                    'headlessStatusForAdmin' => $headlessStatus->value,
+                    'headlessWebForAdmin'    => $headlessWeb->value
+                ]);
+            }
             // Timezone
             $purpleGlobal      = new PurpleProjectGlobal();
             $productionKeyInfo = $purpleGlobal->productionKeyInfo();
             if ($productionKeyInfo == 'filled') {
                 $session  = $this->getRequest()->getSession();
 
-                $this->loadModel('Settings');
                 $this->set('timeZone', $this->Settings->settingsTimeZone());
                 if (!$session->check('Purple.timezone')) {
                     $session->write('Purple.timezone', $this->Settings->settingsTimeZone());

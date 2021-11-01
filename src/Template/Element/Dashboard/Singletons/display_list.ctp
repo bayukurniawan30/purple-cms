@@ -21,7 +21,7 @@
                     'id'    => $singleton->id
                 ]);
         ?>
-        <li class="uk-width-1-1 uk-margin-remove-top" style="position: relative">
+        <li class="uk-width-1-1 uk-margin-remove-top components-list" style="position: relative">
             <div class="uk-card uk-card-default uk-card-small uk-card-body">
                 <div class="" uk-grid>
                     <div class="uk-width-1-3@m">
@@ -31,7 +31,7 @@
                         <span class="uk-text-muted uk-text-italic uk-text-small uk-margin-left"><?= $this->Purple->plural(count($decodeFields), ' field') ?> <?= $countDatas > 0 ? ' and ' . $this->Purple->plural($countDatas, ' data') : '' ?></span>
                     </div>
                     <div class="uk-width-expand@m">
-                        <div class="uk-inline uk-align-right">
+                        <div class="uk-inline uk-align-right component-action">
                             <?php
                                 if ($status != 'deleted'):
                             ?>

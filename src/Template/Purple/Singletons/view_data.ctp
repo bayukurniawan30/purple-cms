@@ -20,7 +20,7 @@
 ]); ?>
 
 <div class="row">
-    <div class="col-md-12 uk-margin-bottom">
+    <div class="col-md-12 uk-margin-bottom outside-btn-toolbar">
         <?php
             if ($singletonDatas->count() == 0):
         ?>

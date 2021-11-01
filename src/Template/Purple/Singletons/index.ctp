@@ -58,7 +58,7 @@
 ]); ?>
 
 <div class="row">
-    <div class="col-md-12 uk-margin-bottom">
+    <div class="col-md-12 uk-margin-bottom outside-btn-toolbar">
         <button type="button" class="btn btn-gradient-primary btn-toolbar-card btn-sm btn-icon-text" onclick="location.href='<?= $newSingletonUrl ?>'">
         <i class="mdi mdi-pencil btn-icon-prepend"></i>
             Add Singleton

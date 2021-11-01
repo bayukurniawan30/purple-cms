@@ -256,6 +256,30 @@ a[href="https://www.froala.com/wysiwyg-editor?k=u"] {
         margin-left: 0!important;
         margin-bottom: 10px;
     }
+    .outside-btn-toolbar .btn-toolbar-card {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 15px;
+    }
+    .outside-btn-toolbar .btn-toolbar-card:last-child {
+        margin-bottom: 0;
+    }
+    .outside-btn-toolbar .uk-align-right {
+        float: none;
+        display: flex;
+        width: 100%;
+        margin-top: 15px;
+        margin-left: 0;
+    }
+    .outside-btn-toolbar .uk-align-right button {
+        flex: 1;
+        margin-left: 0!important;
+        margin-right: 10px;
+    }
+    .outside-btn-toolbar .uk-align-right button:last-child {
+        margin-right: 0;
+    }
 }
 
 /* Weather Icon */
@@ -599,4 +623,84 @@ select.form-control {
 
 .display-list .uk-card-body:hover {
     background: rgb(240, 240, 240);
+}
+
+/* Settings table */
+.table-settings thead tr th:nth-child(1), .table-settings tbody tr td:nth-child(1) {
+    width: 30%;
+}
+
+.table-settings thead tr th:nth-child(2), .table-settings tbody tr td:nth-child(2) {
+    width: 60%;
+}
+
+.table-settings thead tr th:nth-child(3), .table-settings tbody tr td:nth-child(3) {
+    width: 10%;
+    text-align: center;
+}
+
+@media(max-width: 767px) {
+    .table-settings {
+        width: 800px;
+    }
+}
+
+.components-tab::before {
+    border-bottom: none;
+}
+
+.components-tab .uk-active .btn-outline-primary {
+    color: #fff;
+    background-color: #b66dff;
+    border-color: #b66dff;
+}
+
+@media(max-width: 767px) {
+    .components-list {
+        border-bottom: 1px solid #EEE;
+    }
+    
+    .components-list .component-action {
+        float: none;
+        display: flex;
+        margin-left: 0;
+        text-align: center;
+    }
+    .components-list .component-action a {
+        flex: 1;
+    }
+    .components-tab li {
+        display: block;
+        width: 100%;
+    }
+    .components-tab li button {
+        width: 100%;
+        padding: 0.675rem 2rem;
+        margin-left: 0!important;
+        margin-right: 0!important;
+        margin-bottom: 15px;
+    }
+    .components-tab li:last-child button {
+        margin-bottom: 0;
+    }
+    .components-table table {
+        width: 600px;
+        max-width: 600px;
+    }
+    #bind-added-field {
+        padding: 0;
+    }
+    #bind-added-field .uk-align-right {
+        float: none;
+        display: flex;
+        width: 100%;
+        padding-top: 15px;
+        margin-top: 10px;
+        margin-left: 0;
+        text-align: center;
+        border-top: 1px solid #EEE;
+    }
+    #bind-added-field .uk-align-right a {
+        flex: 1;
+    }
 }

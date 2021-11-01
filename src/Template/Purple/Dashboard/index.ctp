@@ -51,6 +51,160 @@
 
 <div id="dashboard-main-panel" class="row">
     <div id="dashboard-statistic-container" class="col-md-7 grid-margin stretch-card">
+        <?php
+            if ($headlessStatus == 'enable'):
+                $allCollectionUrl = $this->Url->build([
+                    '_name'  => 'adminCollections',
+                ]);
+
+                $newCollectionUrl = $this->Url->build([
+                    '_name'  => 'adminCollectionsAction',
+                    'action' => 'add'
+                ]);
+
+                $allSingletonUrl = $this->Url->build([
+                    '_name'  => 'adminSingletons',
+                ]);
+
+                $newSingletonUrl = $this->Url->build([
+                    '_name'  => 'adminSingletonsAction',
+                    'action' => 'add'
+                ]);
+        ?>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Components</h4>
+
+                <ul class="components-tab" uk-tab="swiping: false">
+                    <li><button class="btn btn-outline-primary">Collections</button></li>
+                    <li><button class="btn btn-outline-primary ml-2">Singletons</button></li>
+                </ul>
+                
+                <ul class="uk-switcher uk-margin" uk-switcher="swiping: false">
+                    <li>
+                        <?php
+                            if ($collectionsTable->count() > 0):
+                        ?>
+                        <div class="table-responsive components-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="20"> # </th>
+                                        <th width="150"> Name </th>
+                                        <th> Fields and Datas </th>
+                                        <th class="uk-visible@xl"> Created </th>
+                                        <th class="text-center"> Action </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        $i = 1;
+                                        foreach ($collectionsTable as $collTable):
+                                            $countDatas   = (int)$this->cell('Collections::countDatas', [$collTable->id])->render();
+                                            $decodeFields = json_decode($collTable->fields, true);
+
+                                            $viewDataUrl = $this->Url->build([
+                                                '_name' => 'adminCollectionsViewData',
+                                                'data'  => $collTable->slug
+                                            ]);
+                                    ?>
+                                    <tr>
+                                        <td> <?= $i ?> </td>
+                                        <td class="uk-text-truncate"> <?= $collTable->name ?> </td>
+                                        <td> Contain <?= $this->Purple->plural(count($decodeFields), ' field') ?> <?= $countDatas > 0 ? ' and ' . $this->Purple->plural($countDatas, ' data') : '' ?> </td>
+                                        <td class="uk-visible@xl"> <?= $this->Time->format(
+                                            $collTable->created,
+                                            'MMMM dd, yyyy HH:mm',
+                                            null,
+                                            ); ?> </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon" uk-tooltip="View" onclick="location.href='<?= $viewDataUrl ?>'">
+                                                <i class="mdi mdi-checkbox-multiple-blank-outline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                            $i++;
+                                        endforeach;
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <button class="btn btn-outline-primary btn-sm mt-3" onclick="location.href='<?= $allCollectionUrl ?>'">All Collections</button>
+                        <?php
+                            else:
+                        ?>
+                        <button class="btn btn-outline-primary btn-sm mt-3" onclick="location.href='<?= $newCollectionUrl ?>'">Create New Collection</button>
+                        <?php
+                            endif;
+                        ?>
+                    </li>
+                    <li>
+                    <?php
+                            if ($singletonsTable->count() > 0):
+                        ?>
+                        <div class="table-responsive components-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th width="20"> # </th>
+                                        <th width="150"> Name </th>
+                                        <th> Fields and Datas </th>
+                                        <th class="uk-visible@xl"> Created </th>
+                                        <th class="text-center"> Action </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        $j = 1;
+                                        foreach ($singletonsTable as $singTable):
+                                            $countDatas   = (int)$this->cell('Singletons::countDatas', [$singTable->id])->render();
+                                            $decodeFields = json_decode($singTable->fields, true);
+
+                                            $viewDataUrl = $this->Url->build([
+                                                '_name' => 'adminSingletonsViewData',
+                                                'data'  => $singTable->slug
+                                            ]);
+                                    ?>
+                                    <tr>
+                                        <td> <?= $j ?> </td>
+                                        <td class="uk-text-truncate"> <?= $singTable->name ?> </td>
+                                        <td> Contain <?= $this->Purple->plural(count($decodeFields), ' field') ?> <?= $countDatas > 0 ? ' and ' . $this->Purple->plural($countDatas, ' data') : '' ?> </td>
+                                        <td class="uk-visible@xl"> <?= $this->Time->format(
+                                            $singTable->created,
+                                            'MMMM dd, yyyy HH:mm',
+                                            null,
+                                            ); ?> </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-inverse-primary btn-rounded btn-icon" uk-tooltip="View" onclick="location.href='<?= $viewDataUrl ?>'">
+                                                <i class="mdi mdi-cube-outline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                            $j++;
+                                        endforeach;
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <button class="btn btn-outline-primary btn-sm mt-3" onclick="location.href='<?= $allSingletonUrl ?>'">All Singletons</button>
+                        <?php
+                            else:
+                        ?>
+                        <button class="btn btn-outline-primary btn-sm mt-3" onclick="location.href='<?= $newSingletonUrl ?>'">Create New Singleton</button>
+                        <?php
+                            endif;
+                        ?>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <?php
+            else:
+        ?>
         <div class="card">
             <div id="load-dashboard-statistic" class="card-body">
                 <div class="clearfix">
@@ -81,6 +235,9 @@
                 </div>
             </div>
         </div>
+        <?php
+            endif;
+        ?>
     </div>
     <div id="recent-activity-container" class="col-md-5 grid-margin stretch-card">
         <div class="card">
@@ -101,14 +258,14 @@
                             foreach ($histories as $history):
                         ?>
                         <tr>
-                            <td class="text-center">
+                            <td class="text-center uk-table-shrink">
                                 <?php if ($history->admin->photo === NULL): ?>
                                 <img class="initial-photo" src="" alt="<?= $history->admin->get('display_name') ?>" data-name="<?= $history->admin->get('display_name') ?>" data-height="28" data-width="28" data-char-count="2" data-font-size="14" style="max-width: none;">
                                 <?php else: ?>
                                 <img src="<?= $this->cell('Medias::mediaPath', [$history->admin->photo, 'image', 'original']) ?>" alt="<?= $history->admin->get('display_name') ?>" width="28" height="28" style="max-width: none;">
                                 <?php endif; ?>    
                             </td>
-                            <td uk-tooltip="title:<?= $history->admin->get('display_name').' '.$history->detail ?>; pos:bottom">
+                            <td uk-tooltip="title:<?= $history->admin->get('display_name').' '.$history->detail ?>; pos:bottom-left; offset: -15">
                                 <?= $history->title ?><br>
                                 <small><?= $history->admin->get('display_name') ?></small> - <small data-livestamp="<?= $history->created ?>"></small>
                             </td>

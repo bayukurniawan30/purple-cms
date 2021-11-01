@@ -69,6 +69,12 @@ class SingletonsTable extends Table
             return $date->format('Y-m-d H:i:s');
         }
 	}
+    public function showInDashboard($limit = 5)
+    {
+        $collections = $this->find()->where(['OR' => [['status' => '0'], ['status' => '1']]])->order(['id' => 'DESC'])->limit($limit);
+
+        return $collections;
+    }
     public function total($status = NULL)
     {
         $singletons = $this->find();

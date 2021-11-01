@@ -53,9 +53,9 @@
                     </div>
                 </a>
                 <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="<?= $this->Url->build(['_name' => 'home']); ?>" target="_blank">
+                    <a class="dropdown-item" href="<?= $headlessStatusForAdmin == 'enable' ? $headlessWebForAdmin : $this->Url->build(['_name' => 'home']); ?>" target="_blank">
                         <i class="mdi mdi-web mr-2 text-success"></i>
-                        Go to Website
+                        Go to <?= $headlessStatusForAdmin == 'enable' ? 'Front-End' : 'Website' ?>
                     </a>
                     <a id="messages-with-counter" class="dropdown-item" href="<?= $this->Url->build(['_name' => 'adminMessages']); ?>">
                         <i class="mdi mdi-email-outline mr-2 text-success"></i>

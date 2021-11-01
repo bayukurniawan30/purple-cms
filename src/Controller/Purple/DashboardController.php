@@ -141,117 +141,130 @@ class DashboardController extends AppController
 				'level' => $queryAdmin->level
 			];
 
-			// Dashboard mont of visit form
-	        $dashboardMonthOfVisit  = new DashboardMonthOfVisitForm();
-
-			// Get last month name and year
-			$lastMonth        = date('Y-m', strtotime(date('Y-m')." -1 month"));
-			$explodeLastMonth = explode('-', $lastMonth);
-			$lastMonthName    = $explodeLastMonth[1];
-			$lastMonthYear    = $explodeLastMonth[0];
-
-			$purpleGlobal  = new PurpleProjectGlobal();
-
-			$currentMonthVisitor    = $this->Visitors->countVisitorsInMonth();
-			$lastMonthVisitor       = $this->Visitors->countVisitorsInMonth($lastMonthYear, $lastMonthName);
-			$totalAllVisitors       = $this->Visitors->totalAllVisitors();
-			$totalUniqueVisitors    = $this->Visitors->totalUniqueVisitors();
-			$totalMobileVisitors    = $this->Visitors->totalMobileVisitors();
-			$twoWeeksVisitors       = $this->Visitors->lastTwoWeeksTotalVisitors();
-			$twoWeeksBeforeVisitors = $this->Visitors->lastTwoWeeksBeforeTotalVisitors();
-			if ($twoWeeksVisitors > $twoWeeksBeforeVisitors) {
-				$twoWeeksIcon = 'up';
-			}
-			elseif ($twoWeeksVisitors == $twoWeeksBeforeVisitors) {
-				$twoWeeksIcon = 'same';
-			}
-			elseif ($twoWeeksVisitors < $twoWeeksBeforeVisitors) {
-				$twoWeeksIcon = 'down';
-			}
-
-			if ($lastMonthVisitor > 0) {
-			    $precentageVisitor = round(abs($currentMonthVisitor - $lastMonthVisitor) / $lastMonthVisitor * 100, 2);
-			}
-			else {
-				$precentageVisitor = $currentMonthVisitor * 100;
-			}
-
-			if($lastMonthVisitor > $currentMonthVisitor) {
-				$visitorsCard = 'Decreased by '.$precentageVisitor.'%';
-			} 
-			elseif($lastMonthVisitor < $currentMonthVisitor)  {
-				if ($precentageVisitor > 1000) {
-					$visitorsCard = 'Increased 10 times more than last month';
-				}
-				else {
-					$visitorsCard = 'Increased by '.$precentageVisitor.'%'; 
-				}
-			}
-			elseif($lastMonthVisitor == $currentMonthVisitor) {
-				$visitorsCard = 'Same as last month';
-			}
-
-			$monthLatinArray  = array();
-			for ($m = 1; $m <= 12; $m++) {
-				$monthLatin   = date('F', mktime(0, 0, 0, $m, 10));
-				$monthNumber  = date('m', mktime(0, 0, 0, $m, 10));
-				$monthLatinArray[$monthNumber]  = $monthLatin;
-			}
-			$selectedMonth = date('m');
-
-			$yearArray = array();
-			for ($y = 2015; $y <= date('Y'); $y++) {
-				$yearArray[$y]  = $y;
-			}
-			$selectedYear = date('Y');
-
-
-			$allComments    = $this->Comments->dashboardStatistic();		
-			$unreadComments = $this->Comments->dashboardStatistic('unread');	
-
-			$allPosts       = $this->Blogs->dashboardStatistic();		
-			$draftPosts     = $this->Blogs->dashboardStatistic('draft');		
-			$oneMonthPosts  = $this->Blogs->lastMonthTotalPosts();
-			
 			$headlessStatus = $this->Settings->find()->where(['name' => 'headlessfront'])->first();
 			$headlessWeb    = $this->Settings->find()->where(['name' => 'headlessweb'])->first();
 
-			$totalCollections     = $this->Collections->total();
-			$totalCollectionDatas = $this->CollectionDatas->total();
+			if ($headlessStatus->value == 'enable') {
+				$totalCollections     = $this->Collections->total();
+				$totalCollectionDatas = $this->CollectionDatas->total();
+				$collectionsTable     = $this->Collections->showInDashboard();
 
-			$totalSingletons     = $this->Singletons->total();
-			$totalSingletonDatas = $this->SingletonDatas->total();
+				$totalSingletons     = $this->Singletons->total();
+				$totalSingletonDatas = $this->SingletonDatas->total();
+				$singletonsTable     = $this->Singletons->showInDashboard();
+			}
+			else {
+				// Dashboard mont of visit form
+				$dashboardMonthOfVisit  = new DashboardMonthOfVisitForm();
+
+				// Get last month name and year
+				$lastMonth        = date('Y-m', strtotime(date('Y-m')." -1 month"));
+				$explodeLastMonth = explode('-', $lastMonth);
+				$lastMonthName    = $explodeLastMonth[1];
+				$lastMonthYear    = $explodeLastMonth[0];
+
+				$purpleGlobal  = new PurpleProjectGlobal();
+
+				$currentMonthVisitor    = $this->Visitors->countVisitorsInMonth();
+				$lastMonthVisitor       = $this->Visitors->countVisitorsInMonth($lastMonthYear, $lastMonthName);
+				$totalAllVisitors       = $this->Visitors->totalAllVisitors();
+				$totalUniqueVisitors    = $this->Visitors->totalUniqueVisitors();
+				$totalMobileVisitors    = $this->Visitors->totalMobileVisitors();
+				$twoWeeksVisitors       = $this->Visitors->lastTwoWeeksTotalVisitors();
+				$twoWeeksBeforeVisitors = $this->Visitors->lastTwoWeeksBeforeTotalVisitors();
+				if ($twoWeeksVisitors > $twoWeeksBeforeVisitors) {
+					$twoWeeksIcon = 'up';
+				}
+				elseif ($twoWeeksVisitors == $twoWeeksBeforeVisitors) {
+					$twoWeeksIcon = 'same';
+				}
+				elseif ($twoWeeksVisitors < $twoWeeksBeforeVisitors) {
+					$twoWeeksIcon = 'down';
+				}
+
+				if ($lastMonthVisitor > 0) {
+					$precentageVisitor = round(abs($currentMonthVisitor - $lastMonthVisitor) / $lastMonthVisitor * 100, 2);
+				}
+				else {
+					$precentageVisitor = $currentMonthVisitor * 100;
+				}
+
+				if($lastMonthVisitor > $currentMonthVisitor) {
+					$visitorsCard = 'Decreased by '.$precentageVisitor.'%';
+				} 
+				elseif($lastMonthVisitor < $currentMonthVisitor)  {
+					if ($precentageVisitor > 1000) {
+						$visitorsCard = 'Increased 10 times more than last month';
+					}
+					else {
+						$visitorsCard = 'Increased by '.$precentageVisitor.'%'; 
+					}
+				}
+				elseif($lastMonthVisitor == $currentMonthVisitor) {
+					$visitorsCard = 'Same as last month';
+				}
+
+				$monthLatinArray  = array();
+				for ($m = 1; $m <= 12; $m++) {
+					$monthLatin   = date('F', mktime(0, 0, 0, $m, 10));
+					$monthNumber  = date('m', mktime(0, 0, 0, $m, 10));
+					$monthLatinArray[$monthNumber]  = $monthLatin;
+				}
+				$selectedMonth = date('m');
+
+				$yearArray = array();
+				for ($y = 2015; $y <= date('Y'); $y++) {
+					$yearArray[$y]  = $y;
+				}
+				$selectedYear = date('Y');
+
+
+				$allComments    = $this->Comments->dashboardStatistic();		
+				$unreadComments = $this->Comments->dashboardStatistic('unread');	
+
+				$allPosts       = $this->Blogs->dashboardStatistic();		
+				$draftPosts     = $this->Blogs->dashboardStatistic('draft');		
+				$oneMonthPosts  = $this->Blogs->lastMonthTotalPosts();
+			}
 
 			$data = [
-				'statisticVisitors'         => $purpleGlobal->shortenNumber($currentMonthVisitor),
-				'precentageVisitors'        => $precentageVisitor.'%',
-				'visitorsCard'              => $visitorsCard,
-				'visitorsMonth'             => $this->Visitors->lastSixMonthVisitors(),
-				'totalVisitors6Month'       => $this->Visitors->lastSixMonthTotalVisitors(),
-				'totalUniqueVisitors6Month' => $this->Visitors->lastSixMonthTotalUniqueVisitors(),
-				'totalMobileVisitors6Month' => $this->Visitors->lastSixMonthTotalMobileVisitors(),
-				'totalAllVisitors'     		=> $totalAllVisitors,
-				'totalUniqueVisitors'     	=> $totalUniqueVisitors,
-				'totalMobileVisitors'     	=> $totalMobileVisitors,
-				'twoWeeksVisitors'     		=> $twoWeeksVisitors,
-				'twoWeeksIcon'    			=> $twoWeeksIcon,
-				'dashboardMonthOfVisit'     => $dashboardMonthOfVisit,
-				'monthLatinArray'			=> $monthLatinArray,
-				'yearArray'					=> $yearArray,
-				'allComments'				=> $allComments,
-				'unreadComments'			=> $unreadComments,
-				'allPosts'			     	=> $allPosts,
-				'draftPosts'			    => $draftPosts,
-				'oneMonthPosts'			    => $oneMonthPosts,
-				'selectedMonth'				=> $selectedMonth,
-				'selectedYear'				=> $selectedYear,
-				'headlessStatus'			=> $headlessStatus->value,
-				'headlessWeb'			    => $headlessWeb->value,
-				'totalCollections'			=> $totalCollections,
-				'totalCollectionDatas'		=> $totalCollectionDatas,
-				'totalSingletons'			=> $totalSingletons,
-				'totalSingletonDatas'		=> $totalSingletonDatas
+				'headlessStatus' => $headlessStatus->value,
+				'headlessWeb'	 => $headlessWeb->value,
 			];
+
+			if ($headlessStatus->value == 'enable') {
+				$data['totalCollections']     = $totalCollections;
+				$data['totalCollectionDatas'] = $totalCollectionDatas;
+				$data['collectionsTable']     = $collectionsTable;
+				$data['totalSingletons']      = $totalSingletons;
+				$data['totalSingletonDatas']  = $totalSingletonDatas;
+				$data['singletonsTable']      = $singletonsTable;
+			}
+			else {
+				$data['statisticVisitors']         = $purpleGlobal->shortenNumber($currentMonthVisitor);
+				$data['precentageVisitors']        = $precentageVisitor.'%';
+				$data['visitorsCard']              = $visitorsCard;
+				$data['visitorsMonth']             = $this->Visitors->lastSixMonthVisitors();
+				$data['totalVisitors6Month']       = $this->Visitors->lastSixMonthTotalVisitors();
+				$data['totalUniqueVisitors6Month'] = $this->Visitors->lastSixMonthTotalUniqueVisitors();
+				$data['totalMobileVisitors6Month'] = $this->Visitors->lastSixMonthTotalMobileVisitors();
+				$data['totalAllVisitors']          = $totalAllVisitors;
+				$data['totalUniqueVisitors']       = $totalUniqueVisitors;
+				$data['totalMobileVisitors']       = $totalMobileVisitors;
+				$data['twoWeeksVisitors']          = $twoWeeksVisitors;
+				$data['twoWeeksIcon']              = $twoWeeksIcon;
+				$data['dashboardMonthOfVisit']     = $dashboardMonthOfVisit;
+				$data['monthLatinArray']           = $monthLatinArray;
+				$data['yearArray']                 = $yearArray;
+				$data['selectedMonth']             = $selectedMonth;
+				$data['selectedYear']              = $selectedYear;
+				$data['allComments']               = $allComments;
+				$data['unreadComments']            = $unreadComments;
+				$data['allPosts']                  = $allPosts;
+				$data['draftPosts']                = $draftPosts;
+				$data['oneMonthPosts']             = $oneMonthPosts;
+			}
+
 	    	$this->set($data);
 
 	        if ($loggedInAdmin['level'] == 1) {
