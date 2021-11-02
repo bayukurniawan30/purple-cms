@@ -611,8 +611,14 @@ select.form-control {
     top: 50%!important;
     transform: translate(-50%, -50%)!important;
 }
+.mdeditor_markdown {
+    border-right: 1px solid #EEE!important;
+}
 .mdeditor_preview {
-    border-left: 1px solid #EEE;
+    border-left: 1px solid #EEE!important;
+}
+ins {
+    background: #fff;
 }
 
 /* Datepicker */

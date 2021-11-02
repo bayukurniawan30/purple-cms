@@ -218,8 +218,9 @@ class CollectionsController extends AppController
 		// API Response
 		$apiResult = NULL;
 		/**
-		 *  Some host can't resolve domain, but try it in Postman
+		 *  If your host can't resolve domain, comment the code below, but try it in Postman
 		 *
+		 */
 		$endpointUrl = Router::url([
 			'_name' => 'apiv1ViewCollectionDatas',
 			'slug'  => $collection->slug
@@ -232,7 +233,7 @@ class CollectionsController extends AppController
 			'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
 		]);
 		$apiResult = $response->getStringBody();
-		*/
+		// End of API Response
 
 		$data = [
 			'pageTitle'            => $collection->name,
@@ -330,8 +331,9 @@ class CollectionsController extends AppController
 				// API Response
 				$apiResult = NULL;
 				/**
-				 *  Some host can't resolve domain, but try it in Postman
+				 *  If your host can't resolve domain, comment the code below, but try it in Postman
 				 *
+				 */
 				$endpointUrl = Router::url([
 					'_name'    => 'apiv1ViewCollectionDataDetails',
 					'slug'     => $collectionData->slug,
@@ -345,7 +347,7 @@ class CollectionsController extends AppController
 					'headers' => ['X-Purple-Api-Key' => $apiAccessKey->value]
 				]);
 				$apiResult = $response->getStringBody();
-				*/
+				// End of API Response
 			}
 
 			$data = [
