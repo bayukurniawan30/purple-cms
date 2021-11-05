@@ -10,6 +10,12 @@
 	- [Debug Mode](debug-mode.md)
 	- [Production](production.md)
 
+- **Headless CMS**
+	- [Enable Headless CMS](enable-headless-cms.md)
+	- [Collections](components-collections.md)
+	- [Singletons](components-singletons.md)
+	- [Fields](fields.md)
+
 - **Purple CLI**  
 	- [Database](cli-database.md)
 	- [Model](cli-model.md)
