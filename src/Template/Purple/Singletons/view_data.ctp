@@ -226,6 +226,8 @@
             if ($singletonDatas->count() > 0):
         ?>
         var dataTable = $('.purple-datatable').DataTable({
+            paging: false,
+            searching: false,
             "columnDefs": [{
                 "targets": -1,
                 "orderable": false
