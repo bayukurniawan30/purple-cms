@@ -37,7 +37,7 @@
 			$('.greeting-to-user').hide('500');
 		}, 5800);
 
-		if ($("#visit-sale-chart").length) {
+		if ($("#visit-sale-chart").length > 0 && headlessStatus == 'disable') {
 			<?php
 				$firstMonth = ucwords(strtolower($visitorsMonth[0]));
 				$lastMonth  = ucwords(strtolower($visitorsMonth[5]));
@@ -167,7 +167,7 @@
 		    $("#visit-sale-chart-legend").html(myChart.generateLegend());
 		}
 		
-		if ($('#bind-top-countries').length > 0 && headlessStatus == 'enable') {
+		if ($('#bind-top-countries').length > 0 && headlessStatus == 'disable') {
 			var targetCountries = $('#bind-top-countries'),
 				data   = { page:'dashboard' },
 				url    = targetCountries.data('purple-url');
@@ -183,6 +183,7 @@
 				cache: false
 			});
 			ajaxProcessing.done(function(msg) {
+				console.log(msg);
 				if (cakeDebug == 'on') {
 					console.log(msg);
 				}
@@ -198,7 +199,7 @@
 			});
 		}
 
-		if ($('#bind-top-posts').length > 0 && headlessStatus == 'enable') {
+		if ($('#bind-top-posts').length > 0 && headlessStatus == 'disable') {
 			var targetPosts = $('#bind-top-posts'),
 				data   = { page:'dashboard' },
 				url    = targetPosts.data('purple-url');
