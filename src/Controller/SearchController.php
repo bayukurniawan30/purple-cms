@@ -8,6 +8,7 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectSeo;
 use App\Purple\PurpleProjectSettings;
 use App\Form\SearchForm;
+use App\Purple\PurpleProjectApi;
 use Carbon\Carbon;
 use EngageTheme\Functions\ThemeFunction;
 

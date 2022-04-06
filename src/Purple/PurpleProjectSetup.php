@@ -13,6 +13,8 @@ use DateTime;
 
 class PurpleProjectSetup
 {
+	protected $conn;
+	
 	public function __construct() {
 		$conn = ConnectionManager::get('default');
         $this->conn = $conn;

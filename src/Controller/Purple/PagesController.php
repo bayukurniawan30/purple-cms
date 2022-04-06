@@ -1284,89 +1284,7 @@ class PagesController extends AppController
 
             ob_start();
 
-            function createHtmlFromArray($array) {
-                echo '<ul>';
-
-                $treeId    = '';
-                $tagId     = '';
-                $treeClass = '';
-
-                foreach ($array['child'] as $data) {
-                    if ($data['node'] == 'element') {
-                        $tag = $data['tag'];
-
-
-                        if (array_key_exists('attr', $data)) {
-                            if (array_key_exists('class', $data['attr'])) {
-                                $tagClass = $data['attr']['class'];
-                                if (is_array($tagClass)) {
-                                    $countClass = count($tagClass);
-                                    if ($countClass > 1) {
-                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'...</span>';
-                                    }
-                                    else {
-                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'</span>';
-                                    }
-
-                                    $treeClass = implode('::', $tagClass); 
-                                }
-                                else {
-                                    if ($tagClass == '') {
-                                        $formatedClass = '';
-                                        $treeClass     = 'empty-class';
-                                    }
-                                    else {
-                                        $formatedClass = ' <span class="uk-text-muted">'.$tagClass.'</span>';
-                                        $treeClass     = $tagClass;
-                                    }
-                                }
-                            }
-                            else {
-                                $formatedClass = '';
-                                $treeClass     = 'empty-class';
-                            }
-
-                            if (array_key_exists('id', $data['attr'])) {
-                                if ($data['attr']['id'] == '') {
-                                    $tagId = 'empty-id';
-                                    $formatedId = '';
-                            }
-                                else {
-                                    $tagId = $data['attr']['id'];
-                                    $formatedId = '<span class="text-success">#'.$tagId.'</span>';
-                                }
-                            }
-                            else {
-                                $formatedId = '';
-                                $tagId      = 'empty-id';
-                            }
-
-                            if (array_key_exists('data-tree-id', $data['attr'])) {
-                                $treeId = $data['attr']['data-tree-id'];
-                            }
-                            else {
-                                $treeId = '';
-                            }
-                        }
-                        else {
-                            $formatedClass = '';
-                            $formatedId    = '';
-                        }
-
-                        echo '<li class="jstree-open" data-jstree=\'{"icon":"fa fa-code"}\' data-purple-tree-hover="yes" data-purple-tree-id="'.$treeId.'" data-purple-tree-tag="'.$tag.'" data-purple-tree-class="'.$treeClass.'" data-purple-tree-hash="'.$tagId.'"><a href="#"><strong>'.$tag.'</strong>'.$formatedId.$formatedClass.'</a>';
-
-                        if (array_key_exists("child",$data)) {
-                            createHtmlFromArray($data);
-                        }
-                        else {
-                            echo '</li>';
-                        }
-                    }
-                }
-                echo '</ul>';
-            }
-            
-            createHtmlFromArray($jsonDecode);
+            $this->createHtmlFromArray($jsonDecode);
             
             $htmlNow = ob_get_contents();
             ob_end_clean();
@@ -1417,5 +1335,91 @@ class PagesController extends AppController
         else {
             throw new NotFoundException(__('Page not found'));
         }
+    }
+
+    private function createHtmlFromArray(array $array): string
+    {
+        $html = '<ul>';    
+        
+        $treeId    = '';
+        $tagId     = '';
+        $treeClass = '';
+
+        foreach ($array['child'] as $data) {
+            if ($data['node'] == 'element') {
+                $tag = $data['tag'];
+
+
+                if (array_key_exists('attr', $data)) {
+                    if (array_key_exists('class', $data['attr'])) {
+                        $tagClass = $data['attr']['class'];
+                        if (is_array($tagClass)) {
+                            $countClass = count($tagClass);
+                            if ($countClass > 1) {
+                                $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'...</span>';
+                            }
+                            else {
+                                $formatedClass = ' <span class="uk-text-muted">'.$tagClass[0].'</span>';
+                            }
+
+                            $treeClass = implode('::', $tagClass); 
+                        }
+                        else {
+                            if ($tagClass == '') {
+                                $formatedClass = '';
+                                $treeClass     = 'empty-class';
+                            }
+                            else {
+                                $formatedClass = ' <span class="uk-text-muted">'.$tagClass.'</span>';
+                                $treeClass     = $tagClass;
+                            }
+                        }
+                    }
+                    else {
+                        $formatedClass = '';
+                        $treeClass     = 'empty-class';
+                    }
+
+                    if (array_key_exists('id', $data['attr'])) {
+                        if ($data['attr']['id'] == '') {
+                            $tagId = 'empty-id';
+                            $formatedId = '';
+                    }
+                        else {
+                            $tagId = $data['attr']['id'];
+                            $formatedId = '<span class="text-success">#'.$tagId.'</span>';
+                        }
+                    }
+                    else {
+                        $formatedId = '';
+                        $tagId      = 'empty-id';
+                    }
+
+                    if (array_key_exists('data-tree-id', $data['attr'])) {
+                        $treeId = $data['attr']['data-tree-id'];
+                    }
+                    else {
+                        $treeId = '';
+                    }
+                }
+                else {
+                    $formatedClass = '';
+                    $formatedId    = '';
+                }
+
+                $html .= '<li class="jstree-open" data-jstree=\'{"icon":"fa fa-code"}\' data-purple-tree-hover="yes" data-purple-tree-id="'.$treeId.'" data-purple-tree-tag="'.$tag.'" data-purple-tree-class="'.$treeClass.'" data-purple-tree-hash="'.$tagId.'"><a href="#"><strong>'.$tag.'</strong>'.$formatedId.$formatedClass.'</a>';
+
+                if (array_key_exists("child",$data)) {
+                    $this->createHtmlFromArray($data);
+                }
+                else {
+                    $html .= '</li>';
+                }
+            }
+        }
+        
+        $html .= '</ul>';
+
+        return $html;
     }
 }

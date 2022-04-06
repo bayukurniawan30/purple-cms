@@ -8,6 +8,7 @@ use App\Purple\PurpleProjectGlobal;
 use App\Purple\PurpleProjectApi;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Filesystem\File;
+use Cake\Http\Exception\NotFoundException;
 use Particle\Filter\Filter;
 
 class ProductionController extends AppController

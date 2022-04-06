@@ -17,6 +17,7 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use App\Purple\PurpleProjectGlobal;
+use Cake\Http\Exception\NotFoundException;
 
 /**
  * Application Controller

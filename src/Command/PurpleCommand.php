@@ -190,6 +190,10 @@ class PurpleCommand extends Command
             elseif ($value == 'heroku') {
                 if ($args->getOption('database_info')) {
                     if ($request->getEnv("PURPLE_DEPLOY_PLATFORM") !== false && $request->getEnv("PURPLE_DEPLOY_PLATFORM") == 'heroku' && file_exists(CONFIG . '.env')) {
+                        $envDbName = '';
+                        $envDbUser = '';
+                        $envDbPass = '';
+                        
                         if (getenv("PURPLE_DATABASE_DRIVER") == 'mysql') {
                             $clearMysqlUrl = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
@@ -207,7 +211,7 @@ class PurpleCommand extends Command
                         
                         $databaseNameEnv = $envDbName;
                         $databaseUserEnv = $envDbUser;
-                        $databasePassEnv = $envDbName;
+                        $databasePassEnv = $envDbPass;
 
                         $result = $databaseNameEnv . ',' . $databaseUserEnv . ',' . $databasePassEnv;
                         $io->out($result);

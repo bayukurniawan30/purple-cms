@@ -17,6 +17,7 @@ use Cake\Utility\Security;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Carbon\Carbon;
+use Exception;
 use Particle\Filter\Filter;
 
 class SetupController extends AppController
