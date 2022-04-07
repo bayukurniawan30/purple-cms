@@ -6,7 +6,7 @@ use Cake\View\Helper;
 
 class PurpleHelper extends Helper
 {
-    public function readableFileSize($bytes, $precision = 2)
+    public function readableFileSize(int $bytes, int $precision = 2): string
     {
     	$units = array('B', 'KB', 'MB', 'GB', 'TB'); 
         $bytes = max($bytes, 0); 
@@ -15,26 +15,26 @@ class PurpleHelper extends Helper
         $bytes /= pow(1024, $pow);
         return round($bytes, $precision) . ' ' . $units[$pow]; 
     }
-    public function shortenNumber($n, $precision = 2) 
+    public function shortenNumber(int $number, int $precision = 2): string
     {
-        if ($n < 1000) { 
-            $n_format = number_format($n);
+        if ($number < 1000) { 
+            $numberFormat = number_format($number);
         }
-        elseif ($n < 1000000) {
+        elseif ($number < 1000000) {
             // Anything less than a million
-            $n_format = number_format($n / 1000, $precision) . 'K';
+            $numberFormat = number_format($number / 1000, $precision) . 'K';
         }
-        elseif ($n < 1000000000) {
+        elseif ($number < 1000000000) {
             // Anything less than a billion
-            $n_format = number_format($n / 1000000, $precision) . 'M';
+            $numberFormat = number_format($number / 1000000, $precision) . 'M';
         }
         else {
             // At least a billion
-            $n_format = number_format($n / 1000000000, $precision) . 'B';
+            $numberFormat = number_format($number / 1000000000, $precision) . 'B';
         }
-        return $n_format;
+        return $numberFormat;
     }
-    public function notificationCounter($number) 
+    public function notificationCounter(int $number): string 
     {
         if ($number > 10) {
             return '10+';
@@ -53,14 +53,14 @@ class PurpleHelper extends Helper
         }
         else {
             if ($shorten == false) {
-                return $number . $verb . $addition;
+                return $number . ' ' . $verb . $addition;
             }
             else {
                 return $this->shortenNumber($number) . ' ' . $verb . $addition;
             }
         }
     }
-    public function getAllFuncInHtml($html)
+    public function getAllFuncInHtml(string $html) 
     {
         if (strpos($html, '{{function|') !== false && strpos($html, '}}') !== false) {
             preg_match_all('/{{(.*?)}}/', $html, $matches);

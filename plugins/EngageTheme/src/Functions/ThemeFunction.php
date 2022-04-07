@@ -6,6 +6,8 @@ use Cake\ORM\TableRegistry;
 
 class ThemeFunction
 {
+    private $webroot;
+    
     private $themeSlug = 'engage_theme';
 
     public function __construct($webroot) 
