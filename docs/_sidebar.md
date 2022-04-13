@@ -18,10 +18,12 @@
 
 - **Purple CLI**  
 	- [Database](cli-database.md)
+	- [Key](cli-key.md)
 	- [Model](cli-model.md)
 	- [Theme](cli-theme.md)
 
 - **Developer Guide**
     - [Generate Documentation](generate-documentation.md)
+    - [Migrate and Feed Database](migrate-seed-db.md)
     - [Creating Theme](creating-theme.md)
     - [Customizing](customizing.md)

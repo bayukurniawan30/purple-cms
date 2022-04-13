@@ -7,10 +7,11 @@ use Cake\Http\ServerRequest;
 use Cake\Http\Client;
 use Cake\Cache\Cache;
 use App\Purple\PurpleProjectGlobal;
+use App\Purple\PurpleProjectSettings;
 
 class VisitorsTable extends Table
 {
-	public function initialize(array $config)
+    public function initialize(array $config)
 	{
         $this->setTable('visitors');
 		$this->setPrimaryKey('id');
@@ -20,7 +21,7 @@ class VisitorsTable extends Table
         $serverRequest   = new ServerRequest();
         $session         = $serverRequest->getSession();
         $timezone        = $session->read('Purple.timezone');
-        $settingTimezone = $session->read('Purple.settingTimezone');
+        $settingTimezone = $session->check('Purple.settingTimezone') ? $session->read('Purple.settingTimezone') : PurpleProjectSettings::timezone();
 
         $date = new \DateTime(date('Y-m-d H:i:s'), new \DateTimeZone($settingTimezone));
         if ($session->check('Purple.timezone')) {
@@ -291,20 +292,35 @@ class VisitorsTable extends Table
         
         $http = new Client();
 
+        $localIp = ['::1', '127.0.0.1'];
+
         if (($cache = Cache::read('visitor_' . $ip)) === false) {
-            $response     = $http->get($apiPath . '/visitor/look-up/' . $ip);
-            if ($response->isOk()) {
-                $verifyResult = $response->getStringBody();
-                $decodeResult = json_decode($verifyResult, true);
+            if (in_array($ip, $localIp)) {
                 $data         = [
-                    'country_code'    => $decodeResult['country_code'],
-                    'country_name'    => $decodeResult['country_name'],
-                    'city'            => $decodeResult['city'],
-                    'zip'             => $decodeResult['zip'],
-                    'flag'            => $decodeResult['location']['country_flag'],
+                    'country_code' => null,
+                    'country_name' => null,
+                    'city'         => null,
+                    'zip'          => null,
+                    'flag'         => null,
                 ];
 
                 Cache::write('visitor_' . $ip, json_encode($data));
+            }
+            else {
+                $response = $http->get($apiPath . '/visitor/look-up/' . $ip);
+                if ($response->isOk()) {
+                    $verifyResult = $response->getStringBody();
+                    $decodeResult = json_decode($verifyResult, true);
+                    $data         = [
+                        'country_code'    => $decodeResult['country_code'],
+                        'country_name'    => $decodeResult['country_name'],
+                        'city'            => $decodeResult['city'],
+                        'zip'             => $decodeResult['zip'],
+                        'flag'            => $decodeResult['location']['country_flag'],
+                    ];
+
+                    Cache::write('visitor_' . $ip, json_encode($data));
+                }
             }
         }
 

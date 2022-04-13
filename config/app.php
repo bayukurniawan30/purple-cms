@@ -163,6 +163,7 @@ return [
         'encoding' => env('APP_ENCODING', 'UTF-8'),
         'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
         'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
+        'defaultTimezoneString' => env('APP_DEFAULT_TIMEZONE_STRING', '(UTC+08:00) Asia/Makassar'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',

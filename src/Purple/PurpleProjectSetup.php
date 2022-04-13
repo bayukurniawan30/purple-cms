@@ -275,7 +275,7 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 				name VARCHAR( 100 ) NOT NULL,
 				slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
-			    fields TEXT NOT NULL,
+			    fields MEDIUMTEXT NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
 			    connecting CHAR( 1 ) NOT NULL,
 			    sorting VARCHAR( 50 ) NOT NULL,
@@ -287,7 +287,7 @@ class PurpleProjectSetup
 
 		$this->conn->execute('CREATE table collection_datas (
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    content MEDIUMTEXT NOT NULL,
+			    content LONGTEXT NOT NULL,
 				slug VARCHAR( 191 ) NULL ' . $pgsqlTableUnique . ',
 				slug_target VARCHAR( 100 ) NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
@@ -380,14 +380,14 @@ class PurpleProjectSetup
         $this->conn->execute('CREATE table blogs(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    title VARCHAR( 255 ) NOT NULL,
-			    content TEXT NOT NULL,
+			    content MEDIUMTEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,
 			    slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    blog_type_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blog_types', 'id') . ',
 			    blog_category_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blog_categories', 'id') . ',
 			    comment VARCHAR( 3 ) NOT NULL,
-			    featured VARCHAR( 500 ) NULL,
+			    featured VARCHAR( 255 ) NULL,
 			    selected CHAR( 3 ) NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
@@ -406,13 +406,13 @@ class PurpleProjectSetup
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 			    name VARCHAR( 50 ) NOT NULL,
 			    email VARCHAR( 100 ) NOT NULL,
-			    content VARCHAR( 1000 ) NOT NULL,
+			    content TEXT NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    status ' . $typeInteger. '( 1 ) NOT NULL,
 			    reply ' . $typeInteger. '( 11 ) NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NULL,
 			    admin_id ' . $typeInteger. '( 11 ) NULL ' . $this->pgsqlForeignKey('admins', 'id') . ',
-			    blog_id ' . $typeInteger. '( 1 ) NOT NULL ' . $this->pgsqlForeignKey('blogs', 'id') . '
+			    blog_id ' . $typeInteger. '( 11 ) NOT NULL ' . $this->pgsqlForeignKey('blogs', 'id') . '
 			    ' . $this->mysqlForeignKey('admin_comment', 'admin_id', 'admins', 'id', true, true) . '
 			    ' . $this->mysqlForeignKey('blog_comment', 'blog_id', 'blogs', 'id') . ')' . $storageEngine . ';');
 
@@ -448,7 +448,7 @@ class PurpleProjectSetup
 			    subject VARCHAR( 100 ) NOT NULL,
 			    content TEXT NOT NULL,
 			    name VARCHAR( 50 ) NOT NULL,
-			    email VARCHAR( 200 ) NOT NULL,
+			    email VARCHAR( 100 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    is_read ' . $typeInteger. '( 1 ) NOT NULL,
 			    folder VARCHAR( 20 ) NOT NULL,
@@ -470,7 +470,7 @@ class PurpleProjectSetup
 
         $this->conn->execute('CREATE table generals(
 			    id ' . $autoIncrement . ' PRIMARY KEY,
-			    content TEXT NOT NULL,
+			    content LONGTEXT NOT NULL,
 			    meta_keywords TEXT NULL,
 			    meta_description TEXT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
@@ -495,9 +495,9 @@ class PurpleProjectSetup
 		$this->conn->execute('CREATE table singletons (
 			    id ' . $autoIncrement . ' PRIMARY KEY,
 				name VARCHAR( 100 ) NOT NULL,
-				slug VARCHAR( 191 ) NOT NULL ' . $pgsqlTableUnique . ',
+				slug VARCHAR( 100 ) NOT NULL ' . $pgsqlTableUnique . ',
 			    content TEXT NULL,
-			    fields TEXT NOT NULL,
+			    fields MEDIUMTEXT NOT NULL,
 			    status CHAR( 1 ) NOT NULL,
 			    created ' . $typeDatetime . ' NOT NULL,
 			    modified ' . $typeDatetime . ' NULL,

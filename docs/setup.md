@@ -13,3 +13,7 @@ Fill the site name and your data to create your account. Please use valid email,
 #### Finishing Setup
 
 Finish the setup by pressing the Start Purple Button. If you are connected to the internet, you will get the email with the Sign In data (Please check your inbox and spam folder). 
+
+#### Setup Using CLI
+
+To setup Purple CMS using CLI, use [Migrate and Seed command](migrate-seed-db.md). But before that, you need to save the database information, [Click Here](cli-database.md) to view the instruction. Then [Generare the secret key and production key](cli-key.md). After that, migrate and seed the database.

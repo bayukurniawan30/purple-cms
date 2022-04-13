@@ -2,15 +2,28 @@
 
 namespace App\Purple;
 
+use Cake\Datasource\Exception\MissingDatasourceConfigException;
+use Cake\Database\Exception;
+use BadMethodCallException;
 use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Session;
 use DateTimeZone;
 use DateTime;
+use RuntimeException;
 
 class PurpleProjectSettings 
 {
-	public function timezone($return = 'area') 
+    /**
+     * 
+     * @param string $return area|time
+     * @return mixed 
+     * @throws MissingDatasourceConfigException 
+     * @throws RuntimeException 
+     * @throws Exception 
+     * @throws BadMethodCallException 
+     */
+	public static function timezone($return = 'area') 
 	{
 		$query = TableRegistry::getTableLocator()->get('Settings')->find()->where(['name' => 'timezone'])->first();
 		

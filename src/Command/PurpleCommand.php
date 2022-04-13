@@ -1,10 +1,12 @@
 <?php
 namespace App\Command;
 
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\ConnectionManager;
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
 use Cake\Http\ServerRequest;
@@ -20,7 +22,7 @@ class PurpleCommand extends Command
     protected function buildOptionParser(ConsoleOptionParser $parser)
     {
         $parser->addArguments([
-            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme', 'deploy', 'https', 'htaccess']],
+            'type'  => ['help' => 'Purple command type', 'required' => true, 'choices'  => ['database', 'model', 'theme', 'deploy', 'https', 'htaccess', 'key']],
             'value' => ['help' => 'Command value', 'required' => true]
         ])
         ->addOption('display', [
@@ -552,6 +554,32 @@ class PurpleCommand extends Command
             else {
                 $io->error('Empty option for theme type and migrate value');
             }
+        }
+        elseif ($type == 'key') {
+            if ($value == 'generate') {
+                // write secret key to secret.key
+                $key  = \Dcrypt\OpensslKey::create();
+				$file = new File(CONFIG . 'secret.key');
+				$file->write($key);
+
+                // write production key to production_key.php
+                $connection    = ConnectionManager::get('default');
+                $hasher        = new DefaultPasswordHasher();
+                $keyFile       = new File(CONFIG . 'production_key.php');
+                $productionKey = $hasher->hash(time());
+                $keyFile->write($productionKey);
+                
+                // update production key in settings table
+                $prodKeyDb = $connection->update('settings', ['value' => $productionKey], ['name' => 'productionkey']);
+
+                $io->success('Secret and production key has been generated');
+            }
+            else {
+                $io->error('Failed to generate secret and production key');
+            }
+        }
+        else {
+            $io->error('Empty option for theme type');
         }
     }
 }

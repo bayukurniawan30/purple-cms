@@ -38,7 +38,7 @@ class CustomPagesTable extends Table
         $serverRequest   = new ServerRequest();
         $session         = $serverRequest->getSession();
         $timezone        = $session->read('Purple.timezone');
-        $settingTimezone = $session->read('Purple.settingTimezone');
+        $settingTimezone = $session->check('Purple.settingTimezone') ? $session->read('Purple.settingTimezone') : PurpleProjectSettings::timezone();
 
         $date = new \DateTime($created, new \DateTimeZone($settingTimezone));
         $date->setTimezone(new \DateTimeZone($timezone));
@@ -53,7 +53,7 @@ class CustomPagesTable extends Table
             $serverRequest   = new ServerRequest();
             $session         = $serverRequest->getSession();
             $timezone        = $session->read('Purple.timezone');
-            $settingTimezone = $session->read('Purple.settingTimezone');
+            $settingTimezone = $session->check('Purple.settingTimezone') ? $session->read('Purple.settingTimezone') : PurpleProjectSettings::timezone();
 
             $date = new \DateTime($modified, new \DateTimeZone($settingTimezone));
             $date->setTimezone(new \DateTimeZone($timezone));
